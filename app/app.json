@@ -3,6 +3,7 @@
     "name": "travelbuddy",
     "slug": "travelbuddy",
     "version": "1.0.0",
+    "owner": "zpi-travelbuddy",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
@@ -19,7 +20,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.zpitravelbuddy.travelbuddy"
     },
     "web": {
       "bundler": "metro",
@@ -31,6 +33,11 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "e79b62a2-a402-4f89-b52b-6b197f7fdd5d"
+      }
     }
   }
 }
