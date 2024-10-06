@@ -24,16 +24,19 @@ export default [
       "web-build/",
     ],
   },
-  {
-    rules: {
-      "react/react-in-jsx-scope": "off",
-      "no-unused-vars": "warn",
-      "no-use-before-define": ["error", { functions: false, classes: false }],
-      "prettier/prettier": "error",
-    },
-  },
   pluginJs.configs.recommended,
   ...tseslint.configs.recommended,
   pluginReact.configs.flat.recommended,
   eslintPluginPrettierRecommended,
+  {
+    rules: {
+      "react/react-in-jsx-scope": "off",
+      "@typescript-eslint/no-unused-vars": "warn",
+      "prettier/prettier": "error",
+      "react/jsx-uses-react": "off",
+      "react/no-unescaped-entities": "off",
+      "@typescript-eslint/no-require-imports": "off",
+      "no-use-before-define": "warn",
+    },
+  },
 ];

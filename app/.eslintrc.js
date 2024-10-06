@@ -5,7 +5,7 @@ module.exports = {
     es2021: true,
     node: true,
   },
-  global: {
+  globals: {
     module: "readonly",
   },
   parser: "@typescript-eslint/parser",
@@ -29,8 +29,11 @@ module.exports = {
   rules: {
     "react/react-in-jsx-scope": "off",
     "no-unused-vars": "warn",
-    "no-use-before-define": ["error", { functions: false, classes: false }],
     "prettier/prettier": "error",
+    "react/jsx-uses-react": "off",
+    "react/no-unescaped-entities": "off",
+    "@typescript-eslint/no-require-imports": "off",
+    "no-use-before-define": "off",
   },
   settings: {
     react: {
