@@ -13,6 +13,7 @@
     "build:prev": "eas build --platform android --profile preview --local",
     "build:prod": "eas build --platform android --profile production --local",
     "lint": "eslint .",
+    "lint-fix": "eslint --fix .",
     "prettier": "prettier --write ."
   },
   "jest": {
