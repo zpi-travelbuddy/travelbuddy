@@ -14,7 +14,7 @@ Jako użytkownik, chcę mieć możliwość wylogowania się z aplikacji, aby zap
 
 Jako użytkownik, chcę móc ustawić swoje preferencje i wymagane udogodnienia, takie jak niepełnosprawność, posiadanie zwierzęcia, wegetarianizm czy weganizm, aby aplikacja mogła dostosowywać rekomendacje wydarzeń do moich potrzeb.
 
-Jako użytkownik, chcę mieć możliwość stworzenia nowej wycieczki, w której będę mógł zaplanować wydarzenia, aby zorganizować mój wyjazd.
+Jako użytkownik, chcę mieć możliwość stworzenia nowej wycieczki, w której będę mógł zaplanować wydarzenia.
 
 Jako użytkownik, chcę mieć możliwość przeglądania wcześniej utworzonych wycieczek.
 
@@ -32,7 +32,7 @@ Jako użytkownik, chcę mieć możliwość wyboru rekomendowanych wydarzeń na p
 
 Jako użytkownik chcę mieć możliwość przeglądania szczegółów wydarzenia.
 
-Jako użytkownik, chcę zobaczyć na tyle na ile to możliwe statystyki miejsc, takie jak średni koszt na osobę, średni czas trwania oraz średnia ocena, aby móc lepiej ocenić, czy wydarzenie pasuje do mojego planu i budżetu.
+Jako użytkownik, chcę zobaczyć w miarę możliwości statystyki miejsc, takie jak średni koszt na osobę, średni czas trwania oraz średnia ocena, aby móc lepiej ocenić, czy wydarzenie pasuje do mojego planu i budżetu.
 
 Jako użytkownik, chcę móc wpisać przewidywany koszt wydarzenia podczas jego tworzenia, aby łatwiej zaplanować budżet na całą wycieczkę.
 
@@ -40,13 +40,13 @@ Jako użytkownik, chcę móc po zakończeniu wydarzenia wpisać rzeczywisty czas
 
 Jako użytkownik, chcę mieć możliwość edytowania szczegółów wydarzenia
 
-Jako użytkownik, chcę mieć możliwość usuwania wydarzeń z wycieczki, aby móc edytować mój plan podróży w razie potrzeby.
+Jako użytkownik, chcę mieć możliwość usuwania wydarzeń z wycieczki, aby móc edytować mój plan zwiedzania w razie potrzeby.
 
-Jako użytkownik, chcę móc usunąć całą wycieczkę, jeśli zdecyduję, że nie jest już aktualna, aby utrzymać porządek w moich planach podróży.
+Jako użytkownik, chcę móc usunąć całą wycieczkę, jeśli zdecyduję, że nie jest już aktualna.
 
 Jako użytkownik, chcę móc ustawić przypomnienia o nadchodzących wydarzeniach, aby nie zapomnieć o ważnych atrakcjach podczas wycieczki.
 
-Jako użytkownik, chcę mieć możliwość dodania wydarzenia typu “przemieszczanie się”, aby zarejestrować czas na podróż między dwiema lokalizacjami.
+Jako użytkownik, chcę mieć możliwość dodania wydarzenia typu “przemieszczanie się”, aby zaplanować czas na podróż między dwiema lokalizacjami.
 
 Jako użytkownik, chcę mieć możliwość wpisania samemu czasu przemieszczania się, na wypadek niestandardowej metody transportu.
 
