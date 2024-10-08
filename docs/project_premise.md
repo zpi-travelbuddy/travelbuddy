@@ -1,7 +1,7 @@
 # **Fiszka Projektowa (Project Premise)**
 
 ## 1. Tytuł Projektu
-Aplikacja do planowania spersonalizowanego zwiedzania zabytków, atrakcji turystycznych i miejsc kulturalnych z uwzględnieniem preferencji, ograniczeń czasowych i budżetowych.
+Aplikacja mobilna do planowania spersonalizowanego zwiedzania zabytków, atrakcji turystycznych i miejsc kulturalnych z uwzględnieniem preferencji, ograniczeń czasowych i budżetowych.
 
 ## 2. Akronim
 Travel Buddy
@@ -17,23 +17,22 @@ dr inż. Marcin Kawalerowicz
 
 ## 5. Syntetyczny Opis Projektu
 Główne funkcjonalności aplikacji obejmują:
-- **Personalizacja proponowanych atrakcji na podstawie preferencji użytkownika:**
-    - Tworzenie profilu użytkownika z preferencjami dotyczącymi typów atrakcji, kuchni, zainteresowań kulturalnych i historycznych.
-    - Analiza danych w celu rekomendowania najbardziej odpowiednich miejsc do odwiedzenia.
-- **Planowanie wycieczki w kontekście ograniczeń czasowych i budżetowych:**
-    - Opcja ustalania dostępnego czasu i budżetu.
-    - Generowanie sugestii na podstawie profilu użytkownika.
-- **Optymalizacja trasy zwiedzania:**
-    - Możliwość wyznaczania optymalnej trasy między punktami zainteresowania.
-    - Uwzględnienie czasu potrzebnego na przejście lub dojazd między miejscami.
+- **Umożliwienie spersonalizowanego zwiedzania:**
+    - Stworzenie aplikacji mobilnej, która dostosowuje rekomendacje atrakcji turystycznych do indywidualnych preferencji użytkowników, takich jak rodzaj zabytków, ulubione kuchnie, zainteresowania kulturalne i tematyczne.
 
-- **Synchronizacja z kalendarzem użytkownika.**
-    - Możliwość synchronizacji planów zwiedzania z kalendarzem na urządzeniu użytkownika. 
+- **Łatwe zarządzanie i zapisywanie planów swoich podróży:**
+    - Umożliwienie użytkownikom efektywnego planowania wizyt, uwzględniając ich dostępny czas i budżet, co pozwala na maksymalne wykorzystanie ich doświadczeń turystycznych.
+
+- **Zwiększenie dostępności informacji:**
+    - Zapewnienie użytkownikom dostępu do aktualnych informacji na temat atrakcji turystycznych, w tym godzin otwarcia, cen biletów oraz ich lokalizacji.
 
 - **Dostosowanie aplikacji do potrzeb osób z niepełnosprawnościami.**
     - Opisy alternatywne (alt text) dla obrazów i innych elementów graficznych.
     - Opcja zmiany rozmiaru czcionki, aby osoby z wadami wzroku mogły dostosować tekst do swoich potrzeb.
     - Możliwość włączenia trybu wysokiego kontrastu, który ułatwia czytanie dla osób z osłabionym wzrokiem.
+
+- **Spersonalizowane trasy tematyczne:**
+    - Tworzenie przez użytkownika tras zwiedzania skupionych na określonych tematach takich jak … ????
 
 - **Personalizacja aplikacji:**
     - Tryb nocny z ciemnym tłem i jasnym tekstem, aby zmniejszyć zmęczenie oczu.
@@ -83,7 +82,7 @@ W tym etapie kluczowe jest dopracowanie wszystkich funkcjonalności oraz przepro
 - Pełna działająca aplikacja, przeprowadzenie wszystkich testów (funkcjonalnych, wydajnościowych, na różnych urządzeniach).
 
 ### Etap 4
-W tym etapie celem jest przygotowanie aplikacji do udostępnienia użytkownikom oraz sporządzenie kompletnej dokumentacji technicznej i użytkowej. Przygotowana dokumentacja zawiera szczegółowe informacje dotyczące architektury aplikacji, baz danych, API, oraz wszelkich niezbędnych konfiguracji systemowych. Również należy zapewnić,  że wszystkie serwisy, bazy danych, oraz połączenia API są poprawnie skonfigurowane i działają bez zakłóceń.
+W tym etapie celem jest przygotowanie aplikacji do udostępnienia użytkownikom oraz sporządzenie kompletnej dokumentacji technicznej i użytkowej. Przygotowana dokumentacja zawiera szczegółowe informacje dotyczące architektury aplikacji, baz danych, API, oraz wszelkich niezbędnych konfiguracji systemowych. Również należy zapewnić, że wszystkie serwisy, bazy danych, oraz połączenia API są poprawnie skonfigurowane i działają bez zakłóceń.
 
 **Kamień milowy:**  
 - Wdrożenie aplikacji do sklepu Google Play, kompletna dokumentacja techniczna i użytkowa.
@@ -121,12 +120,20 @@ W tym etapie celem jest przygotowanie aplikacji do udostępnienia użytkownikom 
 
 
 #### Ograniczenia:
--  Aplikacja musi działać płynnie na szerokim zakresie urządzeń, co oznacza konieczność optymalizacji pod kątem starszych modeli smartfonów o niższej wydajności; Android >= 6.0 (SDK >= 23).
+- Aplikacja musi działać płynnie na szerokim zakresie urządzeń, co oznacza konieczność optymalizacji pod kątem starszych modeli smartfonów o niższej wydajności; Android >= 6.0 (SDK >= 23).
 - Budżet projektu jest ograniczony, co wymusza priorytetyzację kluczowych funkcji i rezygnację z niektórych mniej istotnych lub bardziej kosztownych opcji (np. bardzo zaawansowane funkcje AI czy API).
 - Harmonogram projektu nie może przekroczyć założonych 9 tygodni, co ogranicza liczbę iteracji i potencjalnych zmian w późnych fazach projektu.
 - Każdy etap projektu musi być ściśle monitorowany, aby uniknąć opóźnień, co może wymusić ograniczenie liczby dodatkowych funkcji na późnym etapie projektu.
 - Aplikacja będzie zależna od jakości i dostępności zewnętrznych API (np. Google API). Ograniczona dostępność danych (np. niedokładne godziny otwarcia, brak wszystkich danych o atrakcjach) może negatywnie wpłynąć na jakość rekomendacji.
 - Aplikacja może być narażona na zmiany w regulaminach korzystania z API dostarczanych przez zewnętrzne firmy, co może ograniczyć dostęp do niektórych danych lub zwiększyć koszty.
+
+
+
+#### MVP - spis funkcjonalności:
+-
+-
+-
+-
 
 
 
