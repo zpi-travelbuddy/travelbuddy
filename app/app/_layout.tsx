@@ -1,9 +1,16 @@
 import { Stack } from "expo-router";
+import { PaperProvider } from "react-native-paper";
+import {
+  lightThemeHighContrast,
+  darkThemeHighContrast,
+} from "@/constants/Colors";
 
 export default function RootLayout() {
   return (
-    <Stack>
-      <Stack.Screen name="index" />
-    </Stack>
+    <PaperProvider theme={lightThemeHighContrast}>
+      <Stack>
+        <Stack.Screen name="index" />
+      </Stack>
+    </PaperProvider>
   );
 }
