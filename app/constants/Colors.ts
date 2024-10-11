@@ -1,4 +1,7 @@
-import { DarkTheme, DefaultTheme } from "@react-navigation/native";
+import {
+  MD3LightTheme as DefaultTheme,
+  MD3DarkTheme as DarkTheme,
+} from "react-native-paper";
 
 interface AppTheme {
   colors: Colors;
