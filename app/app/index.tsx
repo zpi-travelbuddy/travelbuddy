@@ -1,8 +1,11 @@
+import { darkThemeHighContrast } from "@/constants/Colors";
+import useFontStyles from "@/hooks/useFontStyles";
 import { Text, View } from "react-native";
 import { useTheme } from "react-native-paper";
 
 export default function Index() {
   const theme = useTheme();
+  const fontStyles = useFontStyles();
 
   return (
     <View
@@ -15,6 +18,7 @@ export default function Index() {
     >
       <Text
         style={{
+          ...fontStyles.x_large,
           color: theme.colors.onBackground,
         }}
       >

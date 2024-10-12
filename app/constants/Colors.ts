@@ -7,8 +7,6 @@ interface AppTheme {
   colors: Colors;
 }
 
-interface HighContrastAppTheme extends AppTheme {}
-
 interface Colors {
   primary: string;
   surfaceTint: string;
@@ -172,7 +170,7 @@ export const darkTheme: AppTheme = {
   } as Colors,
 };
 
-export const darkThemeHighContrast: HighContrastAppTheme = {
+export const darkThemeHighContrast: AppTheme = {
   ...DarkTheme,
   colors: {
     ...DarkTheme.colors,
@@ -228,7 +226,7 @@ export const darkThemeHighContrast: HighContrastAppTheme = {
   },
 };
 
-export const lightThemeHighContrast: HighContrastAppTheme = {
+export const lightThemeHighContrast: AppTheme = {
   ...DefaultTheme,
   colors: {
     ...DefaultTheme.colors,
