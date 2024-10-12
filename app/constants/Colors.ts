@@ -3,10 +3,6 @@ import {
   MD3DarkTheme as DarkTheme,
 } from "react-native-paper";
 
-interface AppTheme {
-  colors: Colors;
-}
-
 interface Colors {
   primary: string;
   surfaceTint: string;
@@ -57,6 +53,10 @@ interface Colors {
   surfaceContainer: string;
   surfaceContainerHigh: string;
   surfaceContainerHighest: string;
+}
+
+interface AppTheme {
+  colors: Colors;
 }
 
 export const lightTheme: AppTheme = {

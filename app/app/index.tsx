@@ -1,4 +1,3 @@
-import { darkThemeHighContrast } from "@/constants/Colors";
 import useFontStyles from "@/hooks/useFontStyles";
 import { Text, View } from "react-native";
 import { useTheme } from "react-native-paper";
