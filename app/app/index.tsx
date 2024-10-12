@@ -1,10 +1,9 @@
-import useFontStyles from "@/hooks/useFontStyles";
-import { Text, View } from "react-native";
+import { View } from "react-native";
+import { Text } from "react-native-paper";
 import { useTheme } from "react-native-paper";
 
 export default function Index() {
   const theme = useTheme();
-  const fontStyles = useFontStyles();
 
   return (
     <View
@@ -15,14 +14,7 @@ export default function Index() {
         backgroundColor: theme.colors.background,
       }}
     >
-      <Text
-        style={{
-          ...fontStyles.x_large,
-          color: theme.colors.onBackground,
-        }}
-      >
-        Edit app/index.tsx to edit this screen.
-      </Text>
+      <Text>Edit app/index.tsx to edit this screen.</Text>
     </View>
   );
 }
