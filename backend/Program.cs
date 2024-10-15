@@ -30,6 +30,9 @@ namespace TravelBuddyAPI
 
             builder.Services.AddEndpointsApiExplorer();
 
+            // Register GeoapifyClient as a service
+            builder.Services.AddScoped<Services.GeoapifyClient>();
+
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
@@ -55,11 +58,15 @@ namespace TravelBuddyAPI
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
+            // Development configuration
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
+
+                // Adding secrets to the configuration from .env file
+                DotNetEnv.Env.Load(); // For running app outside of Docker
+                app.Configuration["GEOAPIFY_KEY"] = DotNetEnv.Env.GetString("GEOAPIFY_KEY");
             }
 
             app.UseHttpsRedirection();
@@ -76,6 +83,17 @@ namespace TravelBuddyAPI
             app.MapTripPointsEndpoints();
             app.MapPlacesEndpoints();
             app.MapFavouriteProfilesEndpoints();
+
+            // Development enpoints
+            if (app.Environment.IsDevelopment())
+            {
+                app.MapGeoapifyEndpoints();
+            }
+
+            // Set the culture to US
+            var cultureInfo = new System.Globalization.CultureInfo("en-US");
+            System.Globalization.CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
+            System.Globalization.CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
 
             // Development enpoints
             if (app.Environment.IsDevelopment())
