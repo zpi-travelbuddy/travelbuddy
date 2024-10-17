@@ -37,12 +37,13 @@ namespace TravelBuddyAPI
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            // Load environment variables and set client secret
+            // Adding secrets to the configuration from .env file
             if (builder.Environment.IsDevelopment())
             {
-                DotNetEnv.Env.Load();
+                DotNetEnv.Env.Load(); // For running app outside of Docker
                 builder.Configuration["CLIENT_SECRET"] = DotNetEnv.Env.GetString("CLIENT_SECRET");
                 builder.Configuration["MSSQL_SA_PASSWORD"] = DotNetEnv.Env.GetString("MSSQL_SA_PASSWORD");
+                builder.Configuration["GEOAPIFY_KEY"] = DotNetEnv.Env.GetString("GEOAPIFY_KEY");
             }
 
             builder.Services.Configure<MicrosoftIdentityOptions>(options =>
@@ -63,10 +64,6 @@ namespace TravelBuddyAPI
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
-
-                // Adding secrets to the configuration from .env file
-                DotNetEnv.Env.Load(); // For running app outside of Docker
-                app.Configuration["GEOAPIFY_KEY"] = DotNetEnv.Env.GetString("GEOAPIFY_KEY");
             }
 
             app.UseHttpsRedirection();
