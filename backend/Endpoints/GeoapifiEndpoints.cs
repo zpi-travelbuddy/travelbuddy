@@ -8,7 +8,7 @@ public static class GeoapifyEndpoints
     {
         var group = app.MapGroup("/geoapify");
 
-        group.MapGet("/autocomplete", AddressAutocomplete);
+        group.MapGet("/autocomplete", AddressAutocomplete).RequireAuthorization();
         group.MapGet("/details", Details);
         group.MapGet("/isoline", Isoline);
         group.MapGet("/nearbyPlaces/circle", NearbyPlacesByCircle);
