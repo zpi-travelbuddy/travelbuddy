@@ -87,10 +87,6 @@ namespace TravelBuddyAPI
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
-
-                // Adding secrets to the configuration from .env file
-                DotNetEnv.Env.Load(); // For running app outside of Docker
-                app.Configuration["GEOAPIFY_KEY"] = DotNetEnv.Env.GetString("GEOAPIFY_KEY");
             }
 
             app.UseHttpsRedirection();
