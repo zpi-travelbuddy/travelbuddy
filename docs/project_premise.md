@@ -97,7 +97,7 @@ W tym etapie kluczowym zadaniem jest stworzenie pierwszej, działającej wersji 
 - Aplikacja gotowa w wersji MVP
 
 ### Etap 3
-W tym etapie kluczowe jest dopracowanie wszystkich funkcjonalności oraz rozpoczęcie przeprowadzenia testów aplikacji przed jej wdrożeniem. Trzeba zaimplementować i dopracować wszystkie zaplanowane funkcje, integrację z API oraz elementów UI/UX. Należy również dokonać optymalizacji działania aplikacji, poprawy wydajności oraz usunąć drobne błędy. Ważną częścią tego etapu jest także przeprowadzenie testów funkcjonalnych, wydajnościowych oraz testów na różnych urządzeniach. Trzeba zweryfikować poprawność działania aplikacji w realistycznych warunkach użytkowania i upewnić się, że aplikacja jest stabilna i wolna od krytycznych błędów.
+W tym etapie kluczowe jest dopracowanie =funkcjonalności oraz rozpoczęcie przeprowadzenia testów aplikacji przed jej wdrożeniem. Trzeba zaimplementować zaplanowane funkcje, integrację z API oraz elementy UI/UX. Należy również dokonać optymalizacji działania aplikacji, poprawy wydajności oraz usunąć drobne błędy. Ważną częścią tego etapu jest także przeprowadzenie testów funkcjonalnych, wydajnościowych oraz testów na różnych urządzeniach. Trzeba zweryfikować poprawność działania aplikacji w realistycznych warunkach użytkowania i upewnić się, że aplikacja jest stabilna i wolna od krytycznych błędów.
 
 **Kamień milowy:**  
 - Zaimplementowane i przetestowane co najmniej 70% założonych funkcjonalności
