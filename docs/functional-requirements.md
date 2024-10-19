@@ -12,7 +12,7 @@ Jako gość, chcę mieć możliwość zalogowania się do aplikacji za pomocą s
 
 Jako użytkownik, chcę mieć możliwość wylogowania się z aplikacji, aby uniemożliwić innym osobom dostęp do mojego konta oraz zapisanych planów wycieczek.
 
-Jako użytkownik, chcę móc ustawić swoje preferencje i wymagane udogodnienia, takie jak niepełnosprawność, posiadanie zwierzęcia, wegetarianizm czy weganizm, aby aplikacja mogła dostosowywać rekomendacje atrakcji do moich potrzeb.
+Jako użytkownik, chcę mieć możliwość ustawienia motywu, wielkości czcionki i wysokości kontrastu, aby dostosować interfejs aplikacji do własnych potrzeb.
 
 Jako użytkownik, chcę mieć możliwość stworzenia nowej wycieczki, w której będę mógł zaplanować punkty wycieczki.
 
@@ -48,7 +48,7 @@ Jako użytkownik, chcę móc usunąć całą wycieczkę, w tym zawarte w niej dn
 
 Jako użytkownik, chcę móc ustawić przypomnienia o nadchodzących punktach wycieczki, aby o nich nie zapomnieć.
 
-Jako użytkownik, chcę mieć możliwość dodania transferu pomiędzy dwoma punktami wycieczki.
+Jako użytkownik, chcę mieć możliwość dodaniawania, zmieniania i usuwania transferów pomiędzy dwoma punktami wycieczki.
 
 Jako użytkownik, chcę mieć możliwość wpisania samemu czasu transferu, na wypadek niestandardowej metody transportu, aby uwzględnić indywidualne środki lokomocji, takie jak rower czy piesza wędrówka, w harmonogramie.
 
@@ -63,3 +63,11 @@ Jako użytkownik, chcę móc zobaczyć, jakie atrakcje otrzymały ode mnie najle
 Jako użytkownik, chcę móc śledzić, ile pieniędzy wydałem na poszczególne punkty wycieczki i na całe wycieczki, aby móc kontrolować mój budżet podróży.
 
 Jako użytkownik, chcę mieć możliwość dodawania punktów wycieczki do kalendarza na swoim urządzeniu.
+
+Jako użytkownik, chcę mieć możliwość tworzenia i zarządzania profilami preferencji, wybierając kategorie miejsc, które będą potem rekomendowane podczas planowania wycieczki.
+
+Jako użytkownik, chcę móc wybrać profil preferencji podczas tworzenia wycieczki.
+
+Jako użytkownik, chcę mieć możliwość tworzenia i zarządzania profilami udogodnień, wybierając wymagane udogodnienia, które będą brane pod uwagę przy rekomendacji miejsc podczas planowania wycieczki.
+
+Jako użytkownik, chcę móc wybrać profil udogodnień podczas tworzenia wycieczki.
