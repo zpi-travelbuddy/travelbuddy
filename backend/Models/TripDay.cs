@@ -17,13 +17,13 @@ public class TripDay
     public DateTime Date { get; set; }
 
     [NotMapped]
-    public decimal? ActualCost
+    public decimal? Cost
     {
         get => TripPoints?.Sum(tp => tp?.Review?.ActualCost ?? tp?.PredictedCost);
     }
 
     [NotMapped]
-    public TimeSpan? ActualTimeSpentOnTripPoints
+    public TimeSpan? TimeSpentOnTripPoints
     {
         get => TripPoints?.Aggregate(TimeSpan.Zero, (sum, tp) => sum + (tp?.Review?.ActualTimeSpent
                                 ?? (tp?.StartTime != null && tp?.EndTime != null ? tp.EndTime - tp.StartTime : TimeSpan.Zero)));

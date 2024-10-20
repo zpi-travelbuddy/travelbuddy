@@ -13,7 +13,14 @@ public class ProviderPlace : Place
     public List<PlaceCategory>? Categories { get; set; }
 
     [NotMapped]
-    public decimal? AverageCostPerPerson { get => Reviews?.Average(r => r.ActualCostPerPerson); }
+    public decimal? AverageCostPerPerson
+    {
+        get
+        {
+            decimal? average = Reviews?.Average(r => r.ActualCostPerPerson);
+            return average.HasValue ? Math.Round(average.Value, 2) : null;
+        }
+    }
 
     [NotMapped]
     public TimeSpan? AverageTimeSpent
@@ -26,5 +33,12 @@ public class ProviderPlace : Place
     }
 
     [NotMapped]
-    public decimal? AverageRating { get => Reviews?.Average(r => r.Rating); }
+    public decimal? AverageRating
+    {
+        get
+        {
+            decimal? average = Reviews?.Average(r => r.Rating);
+            return average.HasValue ? Math.Round(average.Value, 1) : null;
+        }
+    }
 }

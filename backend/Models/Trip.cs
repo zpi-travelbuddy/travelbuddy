@@ -6,7 +6,6 @@ namespace TravelBuddyAPI.Models;
 
 public class Trip
 {
-
     [Required]
     [Key]
     public Guid Id { get; set; }
@@ -33,13 +32,12 @@ public class Trip
 
     [Required]
     [Range(0, double.MaxValue, ErrorMessage = $"{nameof(Budget)} must be a positive number.")]
-    [RegularExpression(@"\d+(\.\d{1,2})?", ErrorMessage = $"{nameof(Budget)} can have a maximum of 2 decimal places.")]
     public decimal Budget { get; set; }
 
     [NotMapped]
     public decimal BudgetPerPerson
     {
-        get => Budget / NumberOfTravelers;
+        get => Math.Round(Budget / NumberOfTravelers, 2);
     }
 
     [Required]
@@ -57,21 +55,21 @@ public class Trip
     public bool? IsFinished { get => TripDays?.All(td => td?.IsFinished ?? true); }
 
     [NotMapped]
-    public decimal? ActualCost
+    public decimal? Cost
     {
-        get => TripDays?.Sum(td => td?.ActualCost);
+        get => TripDays?.Sum(td => td?.Cost);
     }
 
     [NotMapped]
-    public decimal? ActualCostPerPerson
+    public decimal? CostPerPerson
     {
-        get => ActualCost / NumberOfTravelers;
+        get => Cost.HasValue ? Math.Round(Cost.Value / NumberOfTravelers, 2) : null;
     }
 
     [NotMapped]
     public TimeSpan? TimeSpentOnTripPoints
     {
-        get => TripDays?.Aggregate(TimeSpan.Zero, (sum, td) => sum + (td?.ActualTimeSpentOnTripPoints ?? TimeSpan.Zero));
+        get => TripDays?.Aggregate(TimeSpan.Zero, (sum, td) => sum + (td?.TimeSpentOnTripPoints ?? TimeSpan.Zero));
     }
 
     public List<TripDay>? TripDays { get; set; }

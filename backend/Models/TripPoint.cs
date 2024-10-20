@@ -17,11 +17,10 @@ public class TripPoint{
 
     [Required]
     [Range(0, double.MaxValue, ErrorMessage = $"{nameof(PredictedCost)} must be a positive number.")]
-    [RegularExpression(@"\d+(\.\d{1,2})?", ErrorMessage = $"{nameof(PredictedCost)} can have a maximum of 2 decimal places.")]
     public decimal PredictedCost { get; set; }
 
     [NotMapped]
-    public decimal? PredictedCostPerPerson => PredictedCost / Trip?.NumberOfTravelers;
+    public decimal? PredictedCostPerPerson => Trip is null ? null : Math.Round(PredictedCost / Trip.NumberOfTravelers);
 
     [Required]
     public TimeOnly StartTime { get; set; }

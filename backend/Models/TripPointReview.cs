@@ -27,11 +27,10 @@ public class TripPointReview
 
     [Required]
     [Range(0, double.MaxValue, ErrorMessage = $"{nameof(ActualCost)} must be a positive number.")]
-    [RegularExpression(@"\d+(\.\d{1,2})?", ErrorMessage = $"{nameof(ActualCost)} can have a maximum of 2 decimal places.")]
     public decimal? ActualCost { get; set; }
 
     [NotMapped]
-    public decimal? ActualCostPerPerson => ActualCost / Trip?.NumberOfTravelers;
+    public decimal? ActualCostPerPerson => ActualCost.HasValue && Trip is not null ? Math.Round(ActualCost.Value / Trip.NumberOfTravelers) : null;
 
     public TimeSpan? ActualTimeSpent { get; set; }
 
