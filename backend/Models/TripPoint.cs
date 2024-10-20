@@ -10,6 +10,11 @@ public class TripPoint{
     public Guid Id { get; set; }
 
     [Required]
+    public string? Name { get; set; }
+
+    public string? Comment { get; set; }
+
+    [Required]
     public Guid TripDayId { get; set; }
     public TripDay? TripDay { get; set; }
 
