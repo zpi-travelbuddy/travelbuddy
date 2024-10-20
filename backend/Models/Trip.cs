@@ -22,6 +22,12 @@ public class Trip
     public int NumberOfTravelers { get; set; }
 
     [Required]
+    public DateTime StartDate { get; set; }
+
+    [Required]
+    public DateTime EndDate { get; set; }
+
+    [Required]
     public Guid DestinationId { get; set; }
     public Place? Destination { get; set; }
 
@@ -48,7 +54,7 @@ public class Trip
     public ConditionProfile? ConditionProfile { get; set; }
 
     [NotMapped]
-    public bool IsFinished { get; set; }
+    public bool? IsFinished { get => TripDays?.All(td => td?.IsFinished ?? true); }
 
     [NotMapped]
     public decimal? ActualCost

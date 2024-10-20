@@ -30,7 +30,7 @@ public class TripDay
     }
 
     [NotMapped]
-    public bool IsFinished { get; set; }
+    public bool? IsFinished { get => !TripPoints?.Any(tp => tp?.Status.Equals(Enums.TripPointStatus.planned) ?? false); }
 
     public List<TripPoint>? TripPoints { get; set; }
 }

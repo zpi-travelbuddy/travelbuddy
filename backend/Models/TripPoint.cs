@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using TravelBuddyAPI.Enums;
 
 namespace TravelBuddyAPI.Models;
 
@@ -32,15 +33,14 @@ public class TripPoint{
 
     public TimeOnly ClosingTime { get; set; }
 
-    [NotMapped]
-    public bool IsFinished { get; set; }
+    public TripPointStatus Status { get; set; }
 
     [Required]
     public Place? Place { get; set; }
 
     public TripPointReview? Review { get; set; }
 
-    public TransferPoint? TransferTo { get; set; }
+    public TransferPoint? TransferIn { get; set; }
 
-    public TransferPoint? TransferFrom { get; set; }
+    public TransferPoint? TransferOut { get; set; }
 }
