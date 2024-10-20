@@ -30,7 +30,7 @@ public class TripPointReview
     public decimal? ActualCost { get; set; }
 
     [NotMapped]
-    public decimal? ActualCostPerPerson => ActualCost.HasValue && Trip is not null ? Math.Round(ActualCost.Value / Trip.NumberOfTravelers) : null;
+    public decimal? ActualCostPerPerson => ActualCost.HasValue && Trip is not null ? Math.Round(ActualCost.Value / Trip.NumberOfTravelers, 2) : null;
 
     public TimeSpan? ActualTimeSpent { get; set; }
 

@@ -20,7 +20,7 @@ public class TripPoint{
     public decimal PredictedCost { get; set; }
 
     [NotMapped]
-    public decimal? PredictedCostPerPerson => Trip is null ? null : Math.Round(PredictedCost / Trip.NumberOfTravelers);
+    public decimal? PredictedCostPerPerson => Trip is null ? null : Math.Round(PredictedCost / Trip.NumberOfTravelers, 2);
 
     [Required]
     public TimeOnly StartTime { get; set; }
