@@ -55,6 +55,7 @@ namespace TravelBuddyAPI
             app.MapTransferPointsEndpoints();
             app.MapTripPointsEndpoints();
             app.MapPlacesEndpoints();
+            app.MapFavouriteProfilesEndpoints();
 
             app.Run();
         }
