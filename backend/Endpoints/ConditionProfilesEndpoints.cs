@@ -1,5 +1,6 @@
 
 using TravelBuddyAPI.Models;
+using TravelBuddyAPI.ViewModels.ConditionProfile;
 
 namespace TravelBuddyAPI.Endpoints;
 
@@ -30,32 +31,32 @@ public static class ConditionProfilesEndpoints
         return app;
     }
 
-    private static async Task GetAvailableConditionsAsync()
+    private static async Task<IResult> GetAvailableConditionsAsync()
     {
         throw new NotImplementedException();
     }
 
-    private static async Task GetAvailableConditionProfilesAsync()
+    private static async Task<IResult> GetAvailableConditionProfilesAsync()
     {
         throw new NotImplementedException();
     }
 
-    private static async Task GetConditionProfileDetailsAsync(Guid id)
+    private static async Task<IResult> GetConditionProfileDetailsAsync(Guid id)
     {
         throw new NotImplementedException();
     }
 
-    private static async Task DeleteConditionProfileAsync(Guid id)
+    private static async Task<IResult> DeleteConditionProfileAsync(Guid id)
     {
         throw new NotImplementedException();
     }
 
-    private static async Task EditConditionProfileAsync(ConditionProfile categoryProfile)
+    private static async Task<IResult> EditConditionProfileAsync(ConditionProfileModificationViewModel categoryProfile)
     {
         throw new NotImplementedException();
     }
 
-    private static async Task CreateConditionProfileAsync(ConditionProfile categoryProfile)
+    private static async Task<IResult> CreateConditionProfileAsync(ConditionProfileCreationViewModel categoryProfile)
     {
         throw new NotImplementedException();
     }

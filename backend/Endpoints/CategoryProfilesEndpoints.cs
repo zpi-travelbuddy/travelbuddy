@@ -1,5 +1,6 @@
 
 using TravelBuddyAPI.Models;
+using TravelBuddyAPI.ViewModels.CategoryProfile;
 
 namespace TravelBuddyAPI.Endpoints;
 
@@ -30,32 +31,32 @@ public static class CategoryProfilesEndpoints
         return app;
     }
 
-    private static async Task GetAvailableCategoriesAsync()
+    private static async Task<IResult> GetAvailableCategoriesAsync()
     {
         throw new NotImplementedException();
     }
 
-    private static async Task GetAvailableCategoryProfilesAsync()
+    private static async Task<IResult> GetAvailableCategoryProfilesAsync()
     {
         throw new NotImplementedException();
     }
 
-    private static async Task GetCategoryProfileDetailsAsync(Guid id)
+    private static async Task<IResult> GetCategoryProfileDetailsAsync(Guid id)
     {
         throw new NotImplementedException();
     }
 
-    private static async Task DeleteCategoryProfileAsync(Guid id)
+    private static async Task<IResult> DeleteCategoryProfileAsync(Guid id)
     {
         throw new NotImplementedException();
     }
 
-    private static async Task EditCategoryProfileAsync(CategoryProfile categoryProfile)
+    private static async Task<IResult> EditCategoryProfileAsync(CategoryProfileModificationViewModel categoryProfile)
     {
         throw new NotImplementedException();
     }
 
-    private static async Task CreateCategoryProfileAsync(CategoryProfile categoryProfile)
+    private static async Task<IResult> CreateCategoryProfileAsync(CategoryProfileCreationViewModel categoryProfile)
     {
         throw new NotImplementedException();
     }

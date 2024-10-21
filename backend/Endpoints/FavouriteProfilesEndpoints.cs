@@ -26,27 +26,27 @@ public static class FavouriteProfilesEndpoints
         return app;
     }
     
-    private static async Task GetFavouriteProfilesAsync(HttpContext context)
+    private static async Task<IResult> GetFavouriteProfilesAsync()
     {
         throw new NotImplementedException();
     }
 
-    private static async Task RemoveConditionProfileFromFavouritesAsync(Guid id)
+    private static async Task<IResult> RemoveConditionProfileFromFavouritesAsync(Guid id)
     {
         throw new NotImplementedException();
     }
 
-    private static async Task AddConditionProfileToFavouritesAsync(Guid id)
+    private static async Task<IResult> AddConditionProfileToFavouritesAsync(Guid id)
     {
         throw new NotImplementedException();
     }
 
-    private static async Task RemoveCategoryProfileFromFavouritesAsync(Guid id)
+    private static async Task<IResult> RemoveCategoryProfileFromFavouritesAsync(Guid id)
     {
         throw new NotImplementedException();
     }
 
-    private static async Task AddCategoryProfileToFavouritesAsync(Guid id)
+    private static async Task<IResult> AddCategoryProfileToFavouritesAsync(Guid id)
     {
         throw new NotImplementedException();
     }

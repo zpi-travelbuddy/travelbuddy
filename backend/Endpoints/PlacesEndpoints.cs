@@ -14,7 +14,7 @@ public static class PlacesEndpoints{
         return app;
     }
 
-    private static async Task GetAutocompletePlacesAsync(string query, decimal? latitude, decimal? longitude)
+    private static async Task<IResult> GetAutocompletePlacesAsync(string query, decimal? latitude, decimal? longitude)
     {
         throw new NotImplementedException();
     }

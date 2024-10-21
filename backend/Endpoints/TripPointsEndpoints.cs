@@ -1,5 +1,7 @@
 
 using TravelBuddyAPI.Models;
+using TravelBuddyAPI.ViewModels.TripPoint;
+using TravelBuddyAPI.ViewModels.TripPointReview;
 
 namespace TravelBuddyAPI.Endpoints;
 
@@ -34,7 +36,7 @@ public static class TripPointsEndpoints{
         throw new NotImplementedException();
     }
 
-    private static async Task<IResult> ReviewTripPointAsync(TripPointReview tripPointReview)
+    private static async Task<IResult> ReviewTripPointAsync(TripPointReviewCreationViewModel tripPointReview)
     {
         throw new NotImplementedException();
     }
@@ -49,12 +51,12 @@ public static class TripPointsEndpoints{
         throw new NotImplementedException();
     }
 
-    private static async Task<IResult> EditTripPointAsync(TripPoint tripPoint)
+    private static async Task<IResult> EditTripPointAsync(TripPointModificationViewModel tripPoint)
     {
         throw new NotImplementedException();
     }
 
-    private static async Task<IResult> CreateTripPointAsync(TripPoint tripPoint)
+    private static async Task<IResult> CreateTripPointAsync(TripPointCreationViewModel tripPoint)
     {
         throw new NotImplementedException();
     }

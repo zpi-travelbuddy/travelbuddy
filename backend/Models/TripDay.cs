@@ -14,7 +14,7 @@ public class TripDay
     public Trip? Trip { get; set; }
 
     [Required]
-    public DateTime Date { get; set; }
+    public DateOnly Date { get; set; }
 
     [NotMapped]
     public decimal? Cost

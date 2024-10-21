@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Identity.Web;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using TravelBuddyAPI.Endpoints;
 
 namespace TravelBuddyAPI

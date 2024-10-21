@@ -21,10 +21,10 @@ public class Trip
     public int NumberOfTravelers { get; set; }
 
     [Required]
-    public DateTime StartDate { get; set; }
+    public DateOnly StartDate { get; set; }
 
     [Required]
-    public DateTime EndDate { get; set; }
+    public DateOnly EndDate { get; set; }
 
     [Required]
     public Guid DestinationId { get; set; }
