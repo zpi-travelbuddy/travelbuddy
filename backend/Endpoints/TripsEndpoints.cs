@@ -45,7 +45,15 @@ public static class TripsEndpoints
         group.MapGet("/statistics", GetTripStatisticsAsync)
             .WithName("GetTripStatistics");
 
+        group.MapGet("/availableCurrencies", GetAvailableCurrenciesAsync)
+            .WithName("GetAvailableCurrencies");
+
         return app;
+    }
+
+    private static async Task GetAvailableCurrenciesAsync()
+    {
+        throw new NotImplementedException();
     }
 
     private static async Task<IResult> GetTripStatisticsAsync(int year, int? month)
