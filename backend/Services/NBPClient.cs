@@ -16,9 +16,10 @@ public class NBPClient : INBPService
 
     public async Task<string?> GetRateAsync(string currencyCode, DateOnly? date = null)
     {
-        var request = date != null 
-            ? new RestRequest($"rates/a/{currencyCode}/{date.Value.ToString("yyyy-MM-dd")}", Method.Get) 
-            : new RestRequest($"rates/a/{currencyCode}", Method.Get);
+        var endpoint = date.HasValue 
+            ? $"rates/a/{currencyCode}/{date.Value:yyyy-MM-dd}" 
+            : $"rates/a/{currencyCode}";
+        var request = new RestRequest(endpoint, Method.Get);
 
         var response = await _client.ExecuteAsync(request);
         if (!response.IsSuccessful)
