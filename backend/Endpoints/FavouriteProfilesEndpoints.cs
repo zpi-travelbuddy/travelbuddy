@@ -18,7 +18,7 @@ public static class FavouriteProfilesEndpoints
             .WithName("AddConditionProfileToFavourites");
 
         group.MapGet("/conditionProfile/remove/{id}", RemoveConditionProfileFromFavouritesAsync)
-            .WithName("AddConditionProfileToFavourites");
+            .WithName("RemoveConditionProfileFromFavourites");
 
         group.MapGet("", GetFavouriteProfilesAsync)
             .WithName("GetFavouriteProfiles");
