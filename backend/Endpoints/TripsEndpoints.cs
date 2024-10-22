@@ -1,5 +1,9 @@
 using TravelBuddyAPI.Models;
 using TravelBuddyAPI.DTOs.Trip;
+using Microsoft.AspNetCore.Http.HttpResults;
+using TravelBuddyAPI.DTOs.TripDay;
+using TravelBuddyAPI.DTOs.Place;
+using TravelBuddyAPI.DTOs.Currency;
 
 namespace TravelBuddyAPI.Endpoints;
 
@@ -50,69 +54,82 @@ public static class TripsEndpoints
 
         return app;
     }
-    
-    private static async Task<IResult> GetAvailableCurrenciesAsync()
+
+    private static async Task<Results<Ok<List<CurrencyDTO>>, NotFound<string>>> GetAvailableCurrenciesAsync()
     {
-        throw new NotImplementedException();
+        await Task.CompletedTask;
+        return TypedResults.NotFound("Not implemented");
     }
 
-    private static async Task<IResult> GetTripStatisticsAsync(int year, int? month)
+    private static async Task<IResult> GetTripStatisticsAsync(int year, int? month) // TODO
     {
-        throw new NotImplementedException();
+        await Task.CompletedTask;
+        return TypedResults.BadRequest("Not implemented");
     }
 
-    private static async Task<IResult> GetTripSummaryAsync(Guid id)
+    private static async Task<IResult> GetTripSummaryAsync(Guid id) // TODO
     {
-        throw new NotImplementedException();
+        await Task.CompletedTask;
+        return TypedResults.BadRequest("Not implemented");
     }
 
-    private static async Task<IResult> GetPastTripsWithStatisticsAsync()
+    private static async Task<IResult> GetPastTripsWithStatisticsAsync() // TODO
     {
-        throw new NotImplementedException();
+        await Task.CompletedTask;
+        return TypedResults.BadRequest("Not implemented");
     }
 
-    private static async Task<IResult> GetAutocompleteDestinationsAsync(string query)
+    private static async Task<Results<Ok<List<PlaceOverviewDTO>>, NotFound<string>>> GetAutocompleteDestinationsAsync(string query)
     {
-        throw new NotImplementedException();
+        await Task.CompletedTask;
+        return TypedResults.NotFound("Not implemented");
     }
 
-    private static async Task<IResult> DeleteTripAsync(Guid id)
+    private static async Task<Results<NoContent, NotFound<string>>> DeleteTripAsync(Guid id)
     {
-        throw new NotImplementedException();
+        await Task.CompletedTask;
+        return TypedResults.NotFound("Not implemented");
     }
 
-    private static async Task<IResult> GetTripDetailsAsync(Guid id)
+    private static async Task<Results<Ok<TripDetailsDTO>, NotFound<string>>> GetTripDetailsAsync(Guid id)
     {
-        throw new NotImplementedException();
+        await Task.CompletedTask;
+        return TypedResults.NotFound("Not implemented");
     }
 
-    private static async Task<IResult> GetCurrentTripsAsync()
+    private static async Task<Results<Ok<List<TripOverviewDTO>>, NotFound<string>>> GetCurrentTripsAsync()
     {
-        throw new NotImplementedException();
+        await Task.CompletedTask;
+        return TypedResults.NotFound("Not implemented");
     }
 
-    private static async Task<IResult> GetPastTripsAsync()
+    private static async Task<Results<Ok<List<TripOverviewDTO>>, NotFound<string>>> GetPastTripsAsync()
     {
-        throw new NotImplementedException();
+        await Task.CompletedTask;
+        return TypedResults.NotFound("Not implemented");
     }
 
-    private static async Task<IResult> EditTripAsync(Guid id, TripDTO trip)
+    private static async Task<Results<Accepted<string>, NotFound<string>>> EditTripAsync(Guid id, TripRequestDTO trip)
     {
-        throw new NotImplementedException();
+        await Task.CompletedTask;
+        return TypedResults.NotFound("Not implemented");
     }
 
-    private static async Task<IResult> CreateTripAsync(TripDTO trip)
+    private static async Task<Results<Created<TripRequestDTO>, BadRequest<string>>> CreateTripAsync(TripRequestDTO trip)
     {
-        throw new NotImplementedException();
+        await Task.CompletedTask;
+        return TypedResults.BadRequest("Not implemented");
     }
 
-    private static async Task<IResult> GetTripDayDetailsAsync(Guid id)
+    private static async Task<Results<Ok<TripDayDetailsDTO>, NotFound<string>>> GetTripDayDetailsAsync(Guid id)
     {
-        throw new NotImplementedException();
+        await Task.CompletedTask;
+        return TypedResults.NotFound("Not implemented");
     }
 
-    private static async Task<IResult> GetRecomendationsAsync(Guid tripDayId)
+    private static async Task<Results<Ok<List<PlaceOverviewDTO>>, NotFound<string>>> GetRecomendationsAsync(Guid tripDayId)
     {
-        throw new NotImplementedException();
+        await Task.CompletedTask;
+        return TypedResults.NotFound("Not implemented");
     }
 }

@@ -2,6 +2,7 @@
 using TravelBuddyAPI.Models;
 using TravelBuddyAPI.DTOs.TripPoint;
 using TravelBuddyAPI.DTOs.TripPointReview;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace TravelBuddyAPI.Endpoints;
 
@@ -35,38 +36,45 @@ public static class TripPointsEndpoints
         return app;
     }
 
-    private static async Task<IResult> GetAvailableSupercategoriesAsync()
+    private static async Task<IResult> GetAvailableSupercategoriesAsync() // TODO
     {
-        throw new NotImplementedException();
+        await Task.CompletedTask;
+        return TypedResults.BadRequest("Not implemented");
     }
 
-    private static async Task<IResult> GetTripPointsReviewsAsync()
+    private static async Task<Results<Ok<List<TripPointOverviewDTO>>, NotFound<string>>> GetTripPointsReviewsAsync()
     {
-        throw new NotImplementedException();
+        await Task.CompletedTask;
+        return TypedResults.NotFound("Not implemented");
     }
 
-    private static async Task<IResult> ReviewTripPointAsync(DTOs.TripPointReview.TripPointReviewDTO tripPointReview)
+    private static async Task<Results<Created<TripPointReviewRequestDTO>, BadRequest<string>>> ReviewTripPointAsync(TripPointReviewRequestDTO tripPointReview)
     {
-        throw new NotImplementedException();
+        await Task.CompletedTask;
+        return TypedResults.BadRequest("Not implemented");
     }
 
-    private static async Task<IResult> GetTripPointDetailsAsync(Guid id)
+    private static async Task<Results<Ok<TripPointDetailsDTO>, NotFound<string>>> GetTripPointDetailsAsync(Guid id)
     {
-        throw new NotImplementedException();
+        await Task.CompletedTask;
+        return TypedResults.NotFound("Not implemented");
     }
 
-    private static async Task<IResult> DeleteTripPointAsync(Guid id)
+    private static async Task<Results<NoContent, NotFound<string>>> DeleteTripPointAsync(Guid id)
     {
-        throw new NotImplementedException();
+        await Task.CompletedTask;
+        return TypedResults.NotFound("Not implemented");
     }
 
-    private static async Task<IResult> EditTripPointAsync(Guid id, DTOs.TripPoint.TripPointDTO tripPoint)
+    private static async Task<Results<Accepted<string>, NotFound<string>>> EditTripPointAsync(Guid id, DTOs.TripPoint.TripPointRequestDTO tripPoint)
     {
-        throw new NotImplementedException();
+        await Task.CompletedTask;
+        return TypedResults.NotFound("Not implemented");
     }
 
-    private static async Task<IResult> CreateTripPointAsync(DTOs.TripPoint.TripPointDTO tripPoint)
+    private static async Task<Results<Created<TripPointRequestDTO>, BadRequest<string>>> CreateTripPointAsync(DTOs.TripPoint.TripPointRequestDTO tripPoint)
     {
-        throw new NotImplementedException();
+        await Task.CompletedTask;
+        return TypedResults.BadRequest("Not implemented");
     }
 }

@@ -2,6 +2,7 @@
 using Sprache;
 using TravelBuddyAPI.Models;
 using TravelBuddyAPI.DTOs.TransferPoint;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace TravelBuddyAPI.Endpoints;
 
@@ -21,19 +22,21 @@ public static class TransferPointsEndpoints
             .WithName("DeleteTransferPoint");  
     }
 
-    private static async Task<IResult> CreateTransferPointAsync(TransferPointDTO transferPoint)
+    private static async Task<Results<Created<TransferPointDTO>,BadRequest<string>>> CreateTransferPointAsync(TransferPointDTO transferPoint)
     {
-        //throw new NotImplementedException();
-        return Results.Ok(new TransferPoint());
+        await Task.CompletedTask;
+        return TypedResults.BadRequest("Not implemented");
     }
 
-    private static async Task EditTransferPointAsync(Guid id, TransferPointDTO transferPoint)
+    private static async Task<Results<Accepted<string>,NotFound<string>>> EditTransferPointAsync(Guid id, TransferPointDTO transferPoint)
     {
-        throw new NotImplementedException();
+        await Task.CompletedTask;
+        return TypedResults.NotFound("Not implemented");
     }
 
-    private static async Task DeleteTransferPointAsync(Guid id)
+    private static async Task<Results<NoContent,NotFound<string>>> DeleteTransferPointAsync(Guid id)
     {
-        throw new NotImplementedException();
+        await Task.CompletedTask;
+        return TypedResults.NotFound("Not implemented");
     }
 }

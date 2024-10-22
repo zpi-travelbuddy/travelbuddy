@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace TravelBuddyAPI.DTOs.ConditionProfile;
 
 [NotMapped]
-public class ConditionProfileDTO
+public class ConditionProfileRequestDTO
 {
     [Required]
     public string? Name { get; set; }

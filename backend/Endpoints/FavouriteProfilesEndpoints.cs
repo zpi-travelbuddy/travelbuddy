@@ -1,5 +1,8 @@
 
 
+using Microsoft.AspNetCore.Http.HttpResults;
+using TravelBuddyAPI.DTOs.FavouriteProfiles;
+
 namespace TravelBuddyAPI.Endpoints;
 
 public static class FavouriteProfilesEndpoints
@@ -26,28 +29,33 @@ public static class FavouriteProfilesEndpoints
         return app;
     }
     
-    private static async Task<IResult> GetFavouriteProfilesAsync()
+    private static async Task<Results<Created<FavouriteProfilesDTO>, NotFound<string>>> GetFavouriteProfilesAsync()
     {
-        throw new NotImplementedException();
+        await Task.CompletedTask;
+        return TypedResults.NotFound("Not implemented");
     }
 
-    private static async Task<IResult> RemoveConditionProfileFromFavouritesAsync(Guid id)
+    private static async Task<Results<NoContent, NotFound<string>>> RemoveConditionProfileFromFavouritesAsync(Guid id)
     {
-        throw new NotImplementedException();
+        await Task.CompletedTask;
+        return TypedResults.NotFound("Not implemented");
     }
 
-    private static async Task<IResult> AddConditionProfileToFavouritesAsync(Guid id)
+    private static async Task<Results<Created<FavouriteProfilesDTO>, BadRequest<string>>> AddConditionProfileToFavouritesAsync(Guid id)
     {
-        throw new NotImplementedException();
+        await Task.CompletedTask;
+        return TypedResults.BadRequest("Not implemented");
     }
 
-    private static async Task<IResult> RemoveCategoryProfileFromFavouritesAsync(Guid id)
+    private static async Task<Results<NoContent, NotFound<string>>> RemoveCategoryProfileFromFavouritesAsync(Guid id)
     {
-        throw new NotImplementedException();
+        await Task.CompletedTask;
+        return TypedResults.NotFound("Not implemented");
     }
 
-    private static async Task<IResult> AddCategoryProfileToFavouritesAsync(Guid id)
+    private static async Task<Results<Created<FavouriteProfilesDTO>, BadRequest<string>>> AddCategoryProfileToFavouritesAsync(Guid id)
     {
-        throw new NotImplementedException();
+        await Task.CompletedTask;
+        return TypedResults.BadRequest("Not implemented");
     }
 }

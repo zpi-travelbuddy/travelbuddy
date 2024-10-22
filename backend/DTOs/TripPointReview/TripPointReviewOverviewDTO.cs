@@ -4,15 +4,16 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace TravelBuddyAPI.DTOs.TripPointReview;
 
 [NotMapped]
-public class TripPointReviewDTO
+public class TripPointReviewOverviewDTO
 {
     [Required]
     public Guid TripPointId { get; set; }
 
-    [Range(0, double.MaxValue, ErrorMessage = $"{nameof(ActualCost)} must be a positive number.")]
-    public decimal? ActualCost { get; set; }
+    [Required]
+    public string? PlaceId { get; set; }
 
-    public TimeSpan? ActualTimeSpent { get; set; }
+    [Required]
+    public string? PlaceName { get; set; }
 
     [Range(0, 5)]
     [RegularExpression(@"^\d+(\.0|\.5)?$", ErrorMessage = $"{nameof(Rating)} must have at most one digit after the decimal point, which can only be 0 or 5.")]

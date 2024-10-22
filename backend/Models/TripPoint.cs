@@ -31,7 +31,7 @@ public class TripPoint{
     public TimeOnly StartTime { get; set; }
 
     [Required]
-    public TimeOnly EndTime { get; set; } // TODO add validation
+    public TimeOnly EndTime { get; set; }
 
     public TimeOnly OpeningTime { get; set; }
 

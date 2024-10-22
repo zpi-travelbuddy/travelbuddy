@@ -1,8 +1,12 @@
+using Microsoft.AspNetCore.Http.HttpResults;
+using TravelBuddyAPI.DTOs.Place;
 
 namespace TravelBuddyAPI.Endpoints;
 
-public static class PlacesEndpoints{
-    public static WebApplication MapPlacesEndpoints(this WebApplication app){
+public static class PlacesEndpoints
+{
+    public static WebApplication MapPlacesEndpoints(this WebApplication app)
+    {
         var group = app.MapGroup("/places").RequireAuthorization();
 
         group.MapGet("/{id}", GetPlaceDetailsAsync)
@@ -14,13 +18,15 @@ public static class PlacesEndpoints{
         return app;
     }
 
-    private static async Task<IResult> GetAutocompletePlacesAsync(string query, decimal? latitude, decimal? longitude)
+    private static async Task<Results<Ok<List<PlaceOverviewDTO>>, NotFound<string>>> GetAutocompletePlacesAsync(string query, decimal? latitude, decimal? longitude)
     {
-        throw new NotImplementedException();
+        await Task.CompletedTask;
+        return TypedResults.NotFound("Not implemented");
     }
 
-    private static async Task<IResult> GetPlaceDetailsAsync(Guid id)
+    private static async Task<Results<Ok<PlaceDetailsDTO>, NotFound<string>>> GetPlaceDetailsAsync(Guid id)
     {
-        throw new NotImplementedException();
+        await Task.CompletedTask;
+        return TypedResults.NotFound("Not implemented");
     }
 }

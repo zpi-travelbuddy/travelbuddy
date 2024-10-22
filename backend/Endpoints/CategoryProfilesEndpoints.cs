@@ -1,6 +1,7 @@
 
 using TravelBuddyAPI.Models;
 using TravelBuddyAPI.DTOs.CategoryProfile;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace TravelBuddyAPI.Endpoints;
 
@@ -31,33 +32,39 @@ public static class CategoryProfilesEndpoints
         return app;
     }
 
-    private static async Task<IResult> GetAvailableCategoriesAsync()
+    private static async Task<Results<Ok<List<string>>, NotFound<string>>> GetAvailableCategoriesAsync() // TODO create DTO for PlaceCategory
     {
-        throw new NotImplementedException();
+        await Task.CompletedTask;
+        return TypedResults.NotFound("test");
     }
 
-    private static async Task<IResult> GetAvailableCategoryProfilesAsync()
+    private static async Task<Results<Ok<CategoryProfileOverviewDTO>, NotFound<string>>> GetAvailableCategoryProfilesAsync()
     {
-        throw new NotImplementedException();
+        await Task.CompletedTask;
+        return TypedResults.NotFound("Not implemented");
     }
 
-    private static async Task<IResult> GetCategoryProfileDetailsAsync(Guid id)
+    private static async Task<Results<Ok<CategoryProfileDetailsDTO>, NotFound<string>>> GetCategoryProfileDetailsAsync(Guid id)
     {
-        throw new NotImplementedException();
+        await Task.CompletedTask;
+        return TypedResults.NotFound("Not implemented");
     }
 
-    private static async Task<IResult> DeleteCategoryProfileAsync(Guid id)
+    private static async Task<Results<NoContent, NotFound<string>>> DeleteCategoryProfileAsync(Guid id)
     {
-        throw new NotImplementedException();
+        await Task.CompletedTask;
+        return TypedResults.NotFound("Not implemented");
     }
 
-    private static async Task<IResult> EditCategoryProfileAsync(Guid id, CategoryProfileDTO categoryProfile)
+    private static async Task<Results<Accepted<string>, NotFound<string>>> EditCategoryProfileAsync(Guid id, CategoryProfileRequestDTO categoryProfile)
     {
-        throw new NotImplementedException();
+        await Task.CompletedTask;
+        return TypedResults.NotFound("Not implemented");
     }
 
-    private static async Task<IResult> CreateCategoryProfileAsync(CategoryProfileDTO categoryProfile)
+    private static async Task<Results<Created<CategoryProfileRequestDTO>, BadRequest<string>>> CreateCategoryProfileAsync(CategoryProfileDetailsDTO categoryProfile)
     {
-        throw new NotImplementedException();
+        await Task.CompletedTask;
+        return TypedResults.BadRequest("Not implemented");
     }
 }
