@@ -1,3 +1,5 @@
+using System.Text.Json;
+using TravelBuddy.ViewModels.Currency;
 using TravelBuddyAPI.Services;
 
 namespace TravelBuddyAPI.Endpoints;
@@ -33,7 +35,25 @@ public static class NBPEndpoints
         try
         {
             var response = await client.GetCurrencyAsync();
-            return Results.Content(response, "application/json");
+
+            if (response is null)
+            {
+                return Results.BadRequest("Response is null");
+            }
+
+            var jsonDocument = JsonDocument.Parse(response);
+            var ratesElement = jsonDocument.RootElement[0].GetProperty("rates");
+
+            var currencyList = ratesElement.EnumerateArray()
+                                        .Select(rate => new CurrencyViewModel
+                                        {
+                                            Code = rate.GetProperty("code").GetString(),
+                                            Name = rate.GetProperty("currency").GetString()
+                                        })
+                                        .ToList();
+
+            return Results.Ok(currencyList);
+
         }
         catch (HttpRequestException ex)
         {
