@@ -5,7 +5,8 @@ using TravelBuddyAPI.DTOs.TripPointReview;
 
 namespace TravelBuddyAPI.Endpoints;
 
-public static class TripPointsEndpoints{
+public static class TripPointsEndpoints
+{
     public static WebApplication MapTripPointsEndpoints(this WebApplication app)
     {
         var group = app.MapGroup("/tripPoints").RequireAuthorization();
