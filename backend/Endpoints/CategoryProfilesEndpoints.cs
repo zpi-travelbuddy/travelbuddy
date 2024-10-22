@@ -2,6 +2,7 @@
 using TravelBuddyAPI.Models;
 using TravelBuddyAPI.DTOs.CategoryProfile;
 using Microsoft.AspNetCore.Http.HttpResults;
+using TravelBuddyAPI.DTOs.PlaceCategory;
 
 namespace TravelBuddyAPI.Endpoints;
 
@@ -32,7 +33,7 @@ public static class CategoryProfilesEndpoints
         return app;
     }
 
-    private static async Task<Results<Ok<List<string>>, NotFound<string>>> GetAvailableCategoriesAsync() // TODO create DTO for PlaceCategory
+    private static async Task<Results<Ok<List<PlaceCategoryDTO>>, NotFound<string>>> GetAvailableCategoriesAsync()
     {
         await Task.CompletedTask;
         return TypedResults.NotFound("test");

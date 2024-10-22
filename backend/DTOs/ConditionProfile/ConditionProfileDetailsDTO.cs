@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using TravelBuddyAPI.DTOs.PlaceCondition;
 using TravelBuddyAPI.Models;
 
 namespace TravelBuddyAPI.DTOs.ConditionProfile;
@@ -11,5 +12,5 @@ public class ConditionProfileDetailsDTO
     public string? Name { get; set; }
 
     [Required]
-    public List<PlaceCondition>? Conditions { get; set; } // TODO create DTO for PlaceCondition
+    public List<PlaceConditionDTO>? Conditions { get; set; }
 }

@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using TravelBuddyAPI.DTOs.PlaceCategory;
 using TravelBuddyAPI.Models;
 
 namespace TravelBuddyAPI.DTOs.CategoryProfile;
@@ -11,5 +12,5 @@ public class CategoryProfileDetailsDTO
     public string? Name { get; set; }
 
     [Required]
-    public List<PlaceCategory>? Categories { get; set; } // TODO create DTO for PlaceCategory
+    public List<PlaceCategoryDTO>? Categories { get; set; }
 }

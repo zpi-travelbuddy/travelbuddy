@@ -2,6 +2,7 @@
 using TravelBuddyAPI.Models;
 using TravelBuddyAPI.DTOs.ConditionProfile;
 using Microsoft.AspNetCore.Http.HttpResults;
+using TravelBuddyAPI.DTOs.PlaceCondition;
 
 namespace TravelBuddyAPI.Endpoints;
 
@@ -32,7 +33,7 @@ public static class ConditionProfilesEndpoints
         return app;
     }
 
-    private static async Task<IResult> GetAvailableConditionsAsync() // TODO create DTO for PlaceCondition
+    private static async Task<Results<Ok<List<PlaceConditionDTO>>, NotFound<string>>> GetAvailableConditionsAsync()
     {
         await Task.CompletedTask;
         return TypedResults.NotFound("Not implemented");

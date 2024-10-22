@@ -1,6 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using TravelBuddyAPI.DTOs.Place;
+using TravelBuddyAPI.DTOs.PlaceCategory;
+using TravelBuddyAPI.DTOs.TripPointReview;
 using TravelBuddyAPI.Enums;
 
 namespace TravelBuddyAPI.DTOs.TripPoint;
@@ -43,6 +45,8 @@ public class TripPointDetailsDTO
     public Guid PlaceId { get; set; }
     public PlaceOverviewDTO? Place { get; set; }
 
-    public Models.TripPointReview? Review { get; set; } // TODO Add TripPointReviewDTO
-    // TODO Possibly add category
+    public TripPointReviewDetailsDTO? Review { get; set; }
+
+    public PlaceCategoryDTO? Category { get; set; }
+
 }

@@ -61,22 +61,22 @@ public static class TripsEndpoints
         return TypedResults.NotFound("Not implemented");
     }
 
-    private static async Task<IResult> GetTripStatisticsAsync(int year, int? month) // TODO
+    private static async Task<Results<Ok<TripStatisticsDTO>, NotFound<string>>> GetTripStatisticsAsync(int year, int? month, string currencyCode)
     {
         await Task.CompletedTask;
-        return TypedResults.BadRequest("Not implemented");
+        return TypedResults.NotFound("Not implemented");
     }
 
-    private static async Task<IResult> GetTripSummaryAsync(Guid id) // TODO
+    private static async Task<Results<Ok<TripSummaryDTO>, NotFound<string>>> GetTripSummaryAsync(Guid id)
     {
         await Task.CompletedTask;
-        return TypedResults.BadRequest("Not implemented");
+        return TypedResults.NotFound("Not implemented");
     }
 
-    private static async Task<IResult> GetPastTripsWithStatisticsAsync() // TODO
+    private static async Task<Results<Ok<List<TripOverviewWithStatisticsDTO>>, NotFound<string>>> GetPastTripsWithStatisticsAsync()
     {
         await Task.CompletedTask;
-        return TypedResults.BadRequest("Not implemented");
+        return TypedResults.NotFound("Not implemented");
     }
 
     private static async Task<Results<Ok<List<PlaceOverviewDTO>>, NotFound<string>>> GetAutocompleteDestinationsAsync(string query)

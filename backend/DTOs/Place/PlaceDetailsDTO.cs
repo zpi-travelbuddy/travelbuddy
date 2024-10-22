@@ -1,5 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using TravelBuddyAPI.DTOs.PlaceCategory;
+using TravelBuddyAPI.DTOs.PlaceCondition;
 using TravelBuddyAPI.Models;
 
 namespace TravelBuddyAPI.DTOs.Place;
@@ -40,9 +42,9 @@ public class PlaceDetailsDTO
 
     public decimal? AverageRating { get; set; }
 
-    public List<Guid>? Conditions { get; set; } // TODO Add PlaceConditionDTO
+    public List<PlaceConditionDTO>? Conditions { get; set; }
 
-    public List<Guid>? Categories { get; set; } // TODO Add PlaceCategoryDTO
+    public List<PlaceCategoryDTO>? Categories { get; set; }
 
-    public PlaceCategory? SuperCategory { get; set; } // TODO Add PlaceCategoryDTO
+    public PlaceCategoryDTO? SuperCategory { get; set; }
 }

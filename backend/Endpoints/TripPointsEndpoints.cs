@@ -3,6 +3,7 @@ using TravelBuddyAPI.Models;
 using TravelBuddyAPI.DTOs.TripPoint;
 using TravelBuddyAPI.DTOs.TripPointReview;
 using Microsoft.AspNetCore.Http.HttpResults;
+using TravelBuddyAPI.DTOs.PlaceCategory;
 
 namespace TravelBuddyAPI.Endpoints;
 
@@ -36,10 +37,10 @@ public static class TripPointsEndpoints
         return app;
     }
 
-    private static async Task<IResult> GetAvailableSupercategoriesAsync() // TODO
+    private static async Task<Results<Ok<List<PlaceCategoryDTO>>, NotFound<string>>> GetAvailableSupercategoriesAsync()
     {
         await Task.CompletedTask;
-        return TypedResults.BadRequest("Not implemented");
+        return TypedResults.NotFound("Not implemented");
     }
 
     private static async Task<Results<Ok<List<TripPointOverviewDTO>>, NotFound<string>>> GetTripPointsReviewsAsync()
