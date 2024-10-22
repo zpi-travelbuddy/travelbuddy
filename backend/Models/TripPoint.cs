@@ -40,6 +40,7 @@ public class TripPoint{
     public TripPointStatus Status { get; set; }
 
     [Required]
+    public Guid PlaceId { get; set; }
     public Place? Place { get; set; }
 
     public TripPointReview? Review { get; set; }
