@@ -17,7 +17,8 @@ public class TripPointReview
     public Guid TripPointId { get; set; }
     public TripPoint? TripPoint { get; set; }
 
-    public Currency? Currency { get; set; }
+    [RegularExpression(@"^[A-Z]{3}$", ErrorMessage = $"{nameof(CurrencyCode)} must be a valid 3-letter ISO 4217 code.")]
+    public string? CurrencyCode { get; set; }
 
     public Trip? Trip => TripPoint?.Trip;
 

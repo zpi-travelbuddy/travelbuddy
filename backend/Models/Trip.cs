@@ -41,7 +41,8 @@ public class Trip
     }
 
     [Required]
-    public Currency Currency { get; set; }
+    [RegularExpression(@"^[A-Z]{3}$", ErrorMessage = $"{nameof(CurrencyCode)} must be a valid 3-letter ISO 4217 code.")]
+    public string? CurrencyCode { get; set; }
 
     [Required]
     public Guid CategoryProfileId { get; set; }
