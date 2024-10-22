@@ -10,10 +10,10 @@ public static class TripPointsEndpoints{
     {
         var group = app.MapGroup("/tripPoints").RequireAuthorization();
 
-        group.MapPost("/create", CreateTripPointAsync)
+        group.MapPost("", CreateTripPointAsync)
             .WithName("CreateTripPoint");
 
-        group.MapPost("/edit", EditTripPointAsync)
+        group.MapPut("/{id}", EditTripPointAsync)
             .WithName("EditTripPoint");
 
         group.MapPost("/submitReview", ReviewTripPointAsync)
@@ -22,13 +22,21 @@ public static class TripPointsEndpoints{
         group.MapGet("/reviews", GetTripPointsReviewsAsync)
             .WithName("GetTripPointsReviews");
 
-        group.MapGet("/delete/{id}", DeleteTripPointAsync)
+        group.MapDelete("/{id}", DeleteTripPointAsync)
             .WithName("DeleteTripPoint");
 
-        group.MapGet("/details/{id}", GetTripPointDetailsAsync)
+        group.MapGet("/{id}", GetTripPointDetailsAsync)
             .WithName("GetTripPointDetails");
 
+        group.MapGet("/supercategories", GetAvailableSupercategoriesAsync)
+            .WithName("GetAvailableSupercategories");
+
         return app;
+    }
+
+    private static async Task<IResult> GetAvailableSupercategoriesAsync()
+    {
+        throw new NotImplementedException();
     }
 
     private static async Task<IResult> GetTripPointsReviewsAsync()
@@ -51,7 +59,7 @@ public static class TripPointsEndpoints{
         throw new NotImplementedException();
     }
 
-    private static async Task<IResult> EditTripPointAsync(TripPointModificationViewModel tripPoint)
+    private static async Task<IResult> EditTripPointAsync(Guid id, TripPointModificationViewModel tripPoint)
     {
         throw new NotImplementedException();
     }

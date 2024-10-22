@@ -10,16 +10,16 @@ public static class CategoryProfilesEndpoints
     {
         var group = app.MapGroup("/categoryProfiles").RequireAuthorization();
 
-        group.MapPost("/create", CreateCategoryProfileAsync)
+        group.MapPost("", CreateCategoryProfileAsync)
             .WithName("CreateCategoryProfile");
 
-        group.MapPost("/edit", EditCategoryProfileAsync)
+        group.MapPut("/{id}", EditCategoryProfileAsync)
             .WithName("EditCategoryProfile");
 
-        group.MapGet("/delete/{id}", DeleteCategoryProfileAsync)
+        group.MapDelete("/{id}", DeleteCategoryProfileAsync)
             .WithName("DeleteCategoryProfile");
 
-        group.MapGet("/details/{id}", GetCategoryProfileDetailsAsync)
+        group.MapGet("/{id}", GetCategoryProfileDetailsAsync)
             .WithName("GetCategoryProfileDetails");
 
         group.MapGet("", GetAvailableCategoryProfilesAsync)
@@ -51,7 +51,7 @@ public static class CategoryProfilesEndpoints
         throw new NotImplementedException();
     }
 
-    private static async Task<IResult> EditCategoryProfileAsync(CategoryProfileModificationViewModel categoryProfile)
+    private static async Task<IResult> EditCategoryProfileAsync(Guid id, CategoryProfileModificationViewModel categoryProfile)
     {
         throw new NotImplementedException();
     }

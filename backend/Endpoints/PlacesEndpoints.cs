@@ -5,7 +5,7 @@ public static class PlacesEndpoints{
     public static WebApplication MapPlacesEndpoints(this WebApplication app){
         var group = app.MapGroup("/places").RequireAuthorization();
 
-        group.MapGet("/details/{id}", GetPlaceDetailsAsync)
+        group.MapGet("/{id}", GetPlaceDetailsAsync)
             .WithName("GetPlaceDetails");
 
         group.MapGet("/autocomplete", GetAutocompletePlacesAsync)

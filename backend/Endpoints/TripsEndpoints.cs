@@ -9,16 +9,16 @@ public static class TripsEndpoints
     {
         var group = app.MapGroup("/trips").RequireAuthorization();
 
-        group.MapPost("/create", CreateTripAsync)
+        group.MapPost("", CreateTripAsync)
             .WithName("CreateTrip");
 
-        group.MapPost("/edit", EditTripAsync)
+        group.MapPut("/{id}", EditTripAsync)
             .WithName("EditTrip");
 
-        group.MapGet("/delete/{id}", DeleteTripAsync)
+        group.MapDelete("/{id}", DeleteTripAsync)
             .WithName("DeleteTrip");
 
-        group.MapGet("/details/{id}", GetTripDetailsAsync)
+        group.MapGet("/{id}", GetTripDetailsAsync)
             .WithName("GetTripDetails");
 
         group.MapGet("/summary/{id}", GetTripSummaryAsync)
@@ -40,7 +40,7 @@ public static class TripsEndpoints
             .WithName("GetTripDayDetails");
 
         group.MapGet("/recomendations/{tripDayId}", GetRecomendationsAsync)
-            .WithName("EditTripDay");
+            .WithName("GetRecomendations");
 
         group.MapGet("/statistics", GetTripStatisticsAsync)
             .WithName("GetTripStatistics");
@@ -50,8 +50,8 @@ public static class TripsEndpoints
 
         return app;
     }
-
-    private static async Task GetAvailableCurrenciesAsync()
+    
+    private static async Task<IResult> GetAvailableCurrenciesAsync()
     {
         throw new NotImplementedException();
     }
@@ -96,7 +96,7 @@ public static class TripsEndpoints
         throw new NotImplementedException();
     }
 
-    private static async Task<IResult> EditTripAsync(TripModificationViewModel trip)
+    private static async Task<IResult> EditTripAsync(Guid id, TripModificationViewModel trip)
     {
         throw new NotImplementedException();
     }

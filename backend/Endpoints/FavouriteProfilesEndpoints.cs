@@ -8,16 +8,16 @@ public static class FavouriteProfilesEndpoints
     {
         var group = app.MapGroup("/favourites").RequireAuthorization();
 
-        group.MapGet("/categoryProfile/add/{id}", AddCategoryProfileToFavouritesAsync)
+        group.MapPost("/categoryProfile/{id}", AddCategoryProfileToFavouritesAsync)
             .WithName("AddCategoryProfileToFavourites");
 
-        group.MapGet("/categoryProfile/remove/{id}", RemoveCategoryProfileFromFavouritesAsync)
+        group.MapDelete("/categoryProfile/{id}", RemoveCategoryProfileFromFavouritesAsync)
             .WithName("RemoveCategoryProfileFromFavourites");
 
-        group.MapGet("/conditionProfile/add/{id}", AddConditionProfileToFavouritesAsync)
+        group.MapPost("/conditionProfile/{id}", AddConditionProfileToFavouritesAsync)
             .WithName("AddConditionProfileToFavourites");
 
-        group.MapGet("/conditionProfile/remove/{id}", RemoveConditionProfileFromFavouritesAsync)
+        group.MapDelete("/conditionProfile/{id}", RemoveConditionProfileFromFavouritesAsync)
             .WithName("RemoveConditionProfileFromFavourites");
 
         group.MapGet("", GetFavouriteProfilesAsync)

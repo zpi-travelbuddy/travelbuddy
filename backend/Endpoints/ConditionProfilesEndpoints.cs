@@ -10,16 +10,16 @@ public static class ConditionProfilesEndpoints
     {
         var group = app.MapGroup("/conditionProfiles").RequireAuthorization();
 
-        group.MapPost("/create", CreateConditionProfileAsync)
+        group.MapPost("", CreateConditionProfileAsync)
             .WithName("CreateConditionProfile");
 
-        group.MapPost("/edit", EditConditionProfileAsync)
+        group.MapPut("/{id}", EditConditionProfileAsync)
             .WithName("EditConditionProfile");
 
-        group.MapGet("/delete/{id}", DeleteConditionProfileAsync)
+        group.MapDelete("/{id}", DeleteConditionProfileAsync)
             .WithName("DeleteConditionProfile");
 
-        group.MapGet("/details/{id}", GetConditionProfileDetailsAsync)
+        group.MapGet("/{id}", GetConditionProfileDetailsAsync)
             .WithName("GetConditionProfileDetails");
 
         group.MapGet("", GetAvailableConditionProfilesAsync)
@@ -51,7 +51,7 @@ public static class ConditionProfilesEndpoints
         throw new NotImplementedException();
     }
 
-    private static async Task<IResult> EditConditionProfileAsync(ConditionProfileModificationViewModel categoryProfile)
+    private static async Task<IResult> EditConditionProfileAsync(Guid id, ConditionProfileModificationViewModel categoryProfile)
     {
         throw new NotImplementedException();
     }

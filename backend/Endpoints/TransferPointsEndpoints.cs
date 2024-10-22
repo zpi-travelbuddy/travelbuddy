@@ -11,13 +11,13 @@ public static class TransferPointsEndpoints
     {
         var group = app.MapGroup("/transferPoints").RequireAuthorization();
 
-        group.MapPost("/create", CreateTransferPointAsync)
+        group.MapPost("", CreateTransferPointAsync)
             .WithName("CreateTransferPoint");
 
-        group.MapPost("/edit", EditTransferPointAsync)
+        group.MapPut("/{id}", EditTransferPointAsync)
             .WithName("EditTransferPoint");
 
-        group.MapGet("/delete/{id}", DeleteTransferPointAsync)
+        group.MapDelete("/{id}", DeleteTransferPointAsync)
             .WithName("DeleteTransferPoint");  
     }
 
@@ -27,7 +27,7 @@ public static class TransferPointsEndpoints
         return Results.Ok(new TransferPoint());
     }
 
-    private static async Task EditTransferPointAsync(TransferPointModificationViewModel transferPoint)
+    private static async Task EditTransferPointAsync(Guid id, TransferPointModificationViewModel transferPoint)
     {
         throw new NotImplementedException();
     }
