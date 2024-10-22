@@ -17,7 +17,8 @@
       "supportsTablet": true
     },
     "android": {
-      "package": "com.zpitravelbuddy.travelbuddy"
+      "package": "com.zpitravelbuddy.travelbuddy",
+      "userInterfaceStyle": "automatic"
     },
     "web": {
       "bundler": "metro",

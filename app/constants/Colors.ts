@@ -2,66 +2,11 @@ import {
   MD3LightTheme as DefaultTheme,
   MD3DarkTheme as DarkTheme,
 } from "react-native-paper";
+import { MD3Colors } from "react-native-paper/lib/typescript/types";
 
-interface Colors {
-  primary: string;
-  surfaceTint: string;
-  onPrimary: string;
-  primaryContainer: string;
-  onPrimaryContainer: string;
-  secondary: string;
-  onSecondary: string;
-  secondaryContainer: string;
-  onSecondaryContainer: string;
-  tertiary: string;
-  onTertiary: string;
-  tertiaryContainer: string;
-  onTertiaryContainer: string;
-  error: string;
-  onError: string;
-  errorContainer: string;
-  onErrorContainer: string;
-  background: string;
-  onBackground: string;
-  surface: string;
-  onSurface: string;
-  surfaceVariant: string;
-  onSurfaceVariant: string;
-  outline: string;
-  outlineVariant: string;
-  shadow: string;
-  scrim: string;
-  inverseSurface: string;
-  inverseOnSurface: string;
-  inversePrimary: string;
-  primaryFixed: string;
-  onPrimaryFixed: string;
-  primaryFixedDim: string;
-  onPrimaryFixedVariant: string;
-  secondaryFixed: string;
-  onSecondaryFixed: string;
-  secondaryFixedDim: string;
-  onSecondaryFixedVariant: string;
-  tertiaryFixed: string;
-  onTertiaryFixed: string;
-  tertiaryFixedDim: string;
-  onTertiaryFixedVariant: string;
-  surfaceDim: string;
-  surfaceBright: string;
-  surfaceContainerLowest: string;
-  surfaceContainerLow: string;
-  surfaceContainer: string;
-  surfaceContainerHigh: string;
-  surfaceContainerHighest: string;
-}
-
-interface AppTheme {
-  colors: Colors;
-}
-
-export const lightTheme: AppTheme = {
-  ...DefaultTheme,
-  colors: {
+export const Colors = {
+  light: {
+    ...DefaultTheme.colors,
     primary: "#226A4C",
     surfaceTint: "#226A4C",
     onPrimary: "#FFFFFF",
@@ -111,124 +56,8 @@ export const lightTheme: AppTheme = {
     surfaceContainer: "#E9EFF0",
     surfaceContainerHigh: "#E3E9EA",
     surfaceContainerHighest: "#DEE3E5",
-  } as Colors,
-};
-
-export const darkTheme: AppTheme = {
-  ...DarkTheme,
-  colors: {
-    ...DarkTheme.colors,
-    primary: "#8ED5B1",
-    surfaceTint: "#8ED5B1",
-    onPrimary: "#003824",
-    primaryContainer: "#005236",
-    onPrimaryContainer: "#AAF2CC",
-    secondary: "#B4CCBD",
-    onSecondary: "#20352A",
-    secondaryContainer: "#364B40",
-    onSecondaryContainer: "#D0E9D8",
-    tertiary: "#A5CDDE",
-    onTertiary: "#063543",
-    tertiaryContainer: "#244C5A",
-    onTertiaryContainer: "#C0E9FB",
-    error: "#FFB4AB",
-    onError: "#690005",
-    errorContainer: "#93000A",
-    onErrorContainer: "#FFDAD6",
-    background: "#0F1511",
-    onBackground: "#DEE4DE",
-    surface: "#0E1415",
-    onSurface: "#DEE3E5",
-    surfaceVariant: "#404943",
-    onSurfaceVariant: "#C0C9C1",
-    outline: "#8A938C",
-    outlineVariant: "#404943",
-    shadow: "#000000",
-    scrim: "#000000",
-    inverseSurface: "#DEE3E5",
-    inverseOnSurface: "#2B3133",
-    inversePrimary: "#226A4C",
-    primaryFixed: "#AAF2CC",
-    onPrimaryFixed: "#002113",
-    primaryFixedDim: "#8ED5B1",
-    onPrimaryFixedVariant: "#005236",
-    secondaryFixed: "#D0E9D8",
-    onSecondaryFixed: "#0A1F16",
-    secondaryFixedDim: "#B4CCBD",
-    onSecondaryFixedVariant: "#364B40",
-    tertiaryFixed: "#C0E9FB",
-    onTertiaryFixed: "#001F29",
-    tertiaryFixedDim: "#A5CDDE",
-    onTertiaryFixedVariant: "#244C5A",
-    surfaceDim: "#0E1415",
-    surfaceBright: "#343A3B",
-    surfaceContainerLowest: "#090F10",
-    surfaceContainerLow: "#171D1E",
-    surfaceContainer: "#1B2122",
-    surfaceContainerHigh: "#252B2C",
-    surfaceContainerHighest: "#303637",
-  } as Colors,
-};
-
-export const darkThemeHighContrast: AppTheme = {
-  ...DarkTheme,
-  colors: {
-    ...DarkTheme.colors,
-    primary: "#EEFFF2",
-    surfaceTint: "#8ED5B1",
-    onPrimary: "#000000",
-    primaryContainer: "#92DAB5",
-    onPrimaryContainer: "#000000",
-    secondary: "#EEFFF2",
-    onSecondary: "#000000",
-    secondaryContainer: "#B8D1C1",
-    onSecondaryContainer: "#000000",
-    tertiary: "#F6FBFF",
-    onTertiary: "#000000",
-    tertiaryContainer: "#A9D1E2",
-    onTertiaryContainer: "#000000",
-    error: "#FFF9F9",
-    onError: "#000000",
-    errorContainer: "#FFBAB1",
-    onErrorContainer: "#000000",
-    background: "#0F1511",
-    onBackground: "#DEE4DE",
-    surface: "#0E1415",
-    onSurface: "#FFFFFF",
-    surfaceVariant: "#404943",
-    onSurfaceVariant: "#F4FDF5",
-    outline: "#C4CDC5",
-    outlineVariant: "#C4CDC5",
-    shadow: "#000000",
-    scrim: "#000000",
-    inverseSurface: "#DEE3E5",
-    inverseOnSurface: "#000000",
-    inversePrimary: "#00311F",
-    primaryFixed: "#AEF6D0",
-    onPrimaryFixed: "#000000",
-    primaryFixedDim: "#92DAB5",
-    onPrimaryFixedVariant: "#001B0F",
-    secondaryFixed: "#D4EDDC",
-    onSecondaryFixed: "#000000",
-    secondaryFixedDim: "#B8D1C1",
-    onSecondaryFixedVariant: "#051A11",
-    tertiaryFixed: "#C5EDFF",
-    onTertiaryFixed: "#000000",
-    tertiaryFixedDim: "#A9D1E2",
-    onTertiaryFixedVariant: "#001922",
-    surfaceDim: "#0E1415",
-    surfaceBright: "#343A3B",
-    surfaceContainerLowest: "#090F10",
-    surfaceContainerLow: "#171D1E",
-    surfaceContainer: "#1B2122",
-    surfaceContainerHigh: "#252B2C",
-    surfaceContainerHighest: "#303637",
-  },
-};
-
-export const lightThemeHighContrast: AppTheme = {
-  ...DefaultTheme,
-  colors: {
+  } as MD3Colors,
+  lightHighContrast: {
     ...DefaultTheme.colors,
     primary: "#002819",
     surfaceTint: "#226A4C",
@@ -279,5 +108,109 @@ export const lightThemeHighContrast: AppTheme = {
     surfaceContainer: "#E9EFF0",
     surfaceContainerHigh: "#E3E9EA",
     surfaceContainerHighest: "#DEE3E5",
-  },
+  } as MD3Colors,
+  dark: {
+    ...DarkTheme.colors,
+    primary: "#8ED5B1",
+    surfaceTint: "#8ED5B1",
+    onPrimary: "#003824",
+    primaryContainer: "#005236",
+    onPrimaryContainer: "#AAF2CC",
+    secondary: "#B4CCBD",
+    onSecondary: "#20352A",
+    secondaryContainer: "#364B40",
+    onSecondaryContainer: "#D0E9D8",
+    tertiary: "#A5CDDE",
+    onTertiary: "#063543",
+    tertiaryContainer: "#244C5A",
+    onTertiaryContainer: "#C0E9FB",
+    error: "#FFB4AB",
+    onError: "#690005",
+    errorContainer: "#93000A",
+    onErrorContainer: "#FFDAD6",
+    background: "#0F1511",
+    onBackground: "#DEE4DE",
+    surface: "#0E1415",
+    onSurface: "#DEE3E5",
+    surfaceVariant: "#404943",
+    onSurfaceVariant: "#C0C9C1",
+    outline: "#8A938C",
+    outlineVariant: "#404943",
+    shadow: "#000000",
+    scrim: "#000000",
+    inverseSurface: "#DEE3E5",
+    inverseOnSurface: "#2B3133",
+    inversePrimary: "#226A4C",
+    primaryFixed: "#AAF2CC",
+    onPrimaryFixed: "#002113",
+    primaryFixedDim: "#8ED5B1",
+    onPrimaryFixedVariant: "#005236",
+    secondaryFixed: "#D0E9D8",
+    onSecondaryFixed: "#0A1F16",
+    secondaryFixedDim: "#B4CCBD",
+    onSecondaryFixedVariant: "#364B40",
+    tertiaryFixed: "#C0E9FB",
+    onTertiaryFixed: "#001F29",
+    tertiaryFixedDim: "#A5CDDE",
+    onTertiaryFixedVariant: "#244C5A",
+    surfaceDim: "#0E1415",
+    surfaceBright: "#343A3B",
+    surfaceContainerLowest: "#090F10",
+    surfaceContainerLow: "#171D1E",
+    surfaceContainer: "#1B2122",
+    surfaceContainerHigh: "#252B2C",
+    surfaceContainerHighest: "#303637",
+  } as MD3Colors,
+  darkHighContrast: {
+    ...DarkTheme.colors,
+    primary: "#EEFFF2",
+    surfaceTint: "#8ED5B1",
+    onPrimary: "#000000",
+    primaryContainer: "#92DAB5",
+    onPrimaryContainer: "#000000",
+    secondary: "#EEFFF2",
+    onSecondary: "#000000",
+    secondaryContainer: "#B8D1C1",
+    onSecondaryContainer: "#000000",
+    tertiary: "#F6FBFF",
+    onTertiary: "#000000",
+    tertiaryContainer: "#A9D1E2",
+    onTertiaryContainer: "#000000",
+    error: "#FFF9F9",
+    onError: "#000000",
+    errorContainer: "#FFBAB1",
+    onErrorContainer: "#000000",
+    background: "#0F1511",
+    onBackground: "#DEE4DE",
+    surface: "#0E1415",
+    onSurface: "#FFFFFF",
+    surfaceVariant: "#404943",
+    onSurfaceVariant: "#F4FDF5",
+    outline: "#C4CDC5",
+    outlineVariant: "#C4CDC5",
+    shadow: "#000000",
+    scrim: "#000000",
+    inverseSurface: "#DEE3E5",
+    inverseOnSurface: "#000000",
+    inversePrimary: "#00311F",
+    primaryFixed: "#AEF6D0",
+    onPrimaryFixed: "#000000",
+    primaryFixedDim: "#92DAB5",
+    onPrimaryFixedVariant: "#001B0F",
+    secondaryFixed: "#D4EDDC",
+    onSecondaryFixed: "#000000",
+    secondaryFixedDim: "#B8D1C1",
+    onSecondaryFixedVariant: "#051A11",
+    tertiaryFixed: "#C5EDFF",
+    onTertiaryFixed: "#000000",
+    tertiaryFixedDim: "#A9D1E2",
+    onTertiaryFixedVariant: "#001922",
+    surfaceDim: "#0E1415",
+    surfaceBright: "#343A3B",
+    surfaceContainerLowest: "#090F10",
+    surfaceContainerLow: "#171D1E",
+    surfaceContainer: "#1B2122",
+    surfaceContainerHigh: "#252B2C",
+    surfaceContainerHighest: "#303637",
+  } as MD3Colors,
 };

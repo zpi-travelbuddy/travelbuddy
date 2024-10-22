@@ -1,31 +1,35 @@
 import { Stack } from "expo-router";
-import { PaperProvider, configureFonts } from "react-native-paper";
-import {
-  lightThemeHighContrast,
-  darkThemeHighContrast,
-} from "@/constants/Colors";
-import { FontConfigs } from "@/constants/FontConfigs";
+import { PaperProvider } from "react-native-paper";
+import { Themes } from "@/constants/Themes";
 import {
   Manrope_400Regular,
   Manrope_500Medium,
   useFonts,
 } from "@expo-google-fonts/manrope";
 import { useEffect } from "react";
+import { useColorScheme } from "react-native";
+import { useMemo, useState } from "react";
 import * as SplashScreen from "expo-splash-screen";
-import { ThemeProp } from "react-native-paper/lib/typescript/types";
-
-const theme: ThemeProp = {
-  ...lightThemeHighContrast,
-  fonts: configureFonts({ config: FontConfigs.manrope }),
-};
 
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+  const systemTheme = useColorScheme();
+
   const [loaded, error] = useFonts({
     Manrope_400Regular,
     Manrope_500Medium,
   });
+
+  const theme = useMemo(() => {
+    switch (systemTheme) {
+      case "dark":
+        return Themes.darkTheme;
+      case "light":
+      default:
+        return Themes.lightTheme;
+    }
+  }, [systemTheme]);
 
   useEffect(() => {
     if (loaded || error) {
