@@ -71,3 +71,5 @@ Jako użytkownik, chcę móc wybrać profil preferencji podczas tworzenia wyciec
 Jako użytkownik, chcę mieć możliwość tworzenia i zarządzania profilami udogodnień, wybierając wymagane udogodnienia, które będą brane pod uwagę przy rekomendacji miejsc podczas planowania wycieczki, aby wybrane atrakcje były zgodne z moimi wymaganiami.
 
 Jako użytkownik, chcę móc wybrać profil udogodnień podczas tworzenia wycieczki, aby rekomendowane atrakcje spełniały moje wymagania.
+
+Jako użytkownik, chcę oznaczyć punkt wycieczki jako nieodwiedzony, aby zostawić po nim ślad ale nie liczyć go do wydatków.
