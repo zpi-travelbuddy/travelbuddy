@@ -1,20 +1,26 @@
+import { TripCard } from "@/components/TripCard";
 import { View } from "react-native";
-import { Text } from "react-native-paper";
+import { Provider } from "react-native-paper";
 import { useTheme } from "react-native-paper";
 
 export default function Index() {
   const theme = useTheme();
 
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: theme.colors.background,
-      }}
-    >
-      <Text>Edit app/index.tsx to edit this screen.</Text>
-    </View>
+    <Provider theme={theme}>
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <TripCard
+          title="Wycieczka do Milicza"
+          subtitle="10.06.2024 - 15.06.2024"
+          imageUri="https://picsum.photos/888"
+        />
+      </View>
+    </Provider>
   );
 }
