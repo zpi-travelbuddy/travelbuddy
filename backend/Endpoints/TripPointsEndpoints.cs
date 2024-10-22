@@ -1,7 +1,7 @@
 
 using TravelBuddyAPI.Models;
-using TravelBuddyAPI.ViewModels.TripPoint;
-using TravelBuddyAPI.ViewModels.TripPointReview;
+using TravelBuddyAPI.DTOs.TripPoint;
+using TravelBuddyAPI.DTOs.TripPointReview;
 
 namespace TravelBuddyAPI.Endpoints;
 
@@ -44,7 +44,7 @@ public static class TripPointsEndpoints{
         throw new NotImplementedException();
     }
 
-    private static async Task<IResult> ReviewTripPointAsync(TripPointReviewCreationViewModel tripPointReview)
+    private static async Task<IResult> ReviewTripPointAsync(DTOs.TripPointReview.TripPointDTO tripPointReview)
     {
         throw new NotImplementedException();
     }
@@ -59,12 +59,12 @@ public static class TripPointsEndpoints{
         throw new NotImplementedException();
     }
 
-    private static async Task<IResult> EditTripPointAsync(Guid id, TripPointModificationViewModel tripPoint)
+    private static async Task<IResult> EditTripPointAsync(Guid id, DTOs.TripPoint.TripPointDTO tripPoint)
     {
         throw new NotImplementedException();
     }
 
-    private static async Task<IResult> CreateTripPointAsync(TripPointCreationViewModel tripPoint)
+    private static async Task<IResult> CreateTripPointAsync(DTOs.TripPoint.TripPointDTO tripPoint)
     {
         throw new NotImplementedException();
     }

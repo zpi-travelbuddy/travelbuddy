@@ -1,15 +1,11 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using TravelBuddyAPI.Enums;
 
-namespace TravelBuddyAPI.ViewModels.TripPoint;
+namespace TravelBuddyAPI.DTOs.TripPoint;
 
 [NotMapped]
-public class TripPointModificationViewModel
+public class TripPointDTO
 {
-    [Required]
-    public Guid Id { get; set; }
-
     [Required]
     public string? Name { get; set; }
 
@@ -27,7 +23,4 @@ public class TripPointModificationViewModel
 
     [Required]
     public TimeOnly EndTime { get; set; }
-
-    [Required]
-    public TripPointStatus Status { get; set; }
 }

@@ -1,14 +1,14 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace TravelBuddyAPI.ViewModels.CategoryProfile;
+namespace TravelBuddyAPI.DTOs.ConditionProfile;
 
 [NotMapped]
-public class CategoryProfileCreationViewModel
+public class ConditionProfileDTO
 {
     [Required]
     public string? Name { get; set; }
 
     [Required]
-    public List<Guid>? CategoryIds { get; set; }
+    public List<Guid>? ConditionIds { get; set; }
 }

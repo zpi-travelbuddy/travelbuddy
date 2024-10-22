@@ -1,7 +1,7 @@
 
 using Sprache;
 using TravelBuddyAPI.Models;
-using TravelBuddyAPI.ViewModels.TransferPoint;
+using TravelBuddyAPI.DTOs.TransferPoint;
 
 namespace TravelBuddyAPI.Endpoints;
 
@@ -21,13 +21,13 @@ public static class TransferPointsEndpoints
             .WithName("DeleteTransferPoint");  
     }
 
-    private static async Task<IResult> CreateTransferPointAsync(TransferPointCreationViewModel transferPoint)
+    private static async Task<IResult> CreateTransferPointAsync(TransferPointDTO transferPoint)
     {
         //throw new NotImplementedException();
         return Results.Ok(new TransferPoint());
     }
 
-    private static async Task EditTransferPointAsync(Guid id, TransferPointModificationViewModel transferPoint)
+    private static async Task EditTransferPointAsync(Guid id, TransferPointDTO transferPoint)
     {
         throw new NotImplementedException();
     }

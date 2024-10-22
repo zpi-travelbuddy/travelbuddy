@@ -1,10 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace TravelBuddyAPI.ViewModels.TripPointReview;
+namespace TravelBuddyAPI.DTOs.TripPointReview;
 
 [NotMapped]
-public class TripPointReviewCreationViewModel
+public class TripPointDTO
 {
     [Required]
     public Guid TripPointId { get; set; }

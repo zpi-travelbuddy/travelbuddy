@@ -1,6 +1,6 @@
 
 using TravelBuddyAPI.Models;
-using TravelBuddyAPI.ViewModels.ConditionProfile;
+using TravelBuddyAPI.DTOs.ConditionProfile;
 
 namespace TravelBuddyAPI.Endpoints;
 
@@ -51,12 +51,12 @@ public static class ConditionProfilesEndpoints
         throw new NotImplementedException();
     }
 
-    private static async Task<IResult> EditConditionProfileAsync(Guid id, ConditionProfileModificationViewModel categoryProfile)
+    private static async Task<IResult> EditConditionProfileAsync(Guid id, ConditionProfileDTO categoryProfile)
     {
         throw new NotImplementedException();
     }
 
-    private static async Task<IResult> CreateConditionProfileAsync(ConditionProfileCreationViewModel categoryProfile)
+    private static async Task<IResult> CreateConditionProfileAsync(ConditionProfileDTO categoryProfile)
     {
         throw new NotImplementedException();
     }

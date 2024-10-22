@@ -2,10 +2,10 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using TravelBuddyAPI.Enums;
 
-namespace TravelBuddyAPI.ViewModels.TransferPoint;
+namespace TravelBuddyAPI.DTOs.TransferPoint;
 
 [NotMapped]
-public class TransferPointCreationViewModel
+public class TransferPointDTO
 {
     [Required]
     public Guid TripDayId { get; set; }

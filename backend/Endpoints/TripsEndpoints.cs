@@ -1,5 +1,5 @@
 using TravelBuddyAPI.Models;
-using TravelBuddyAPI.ViewModels.Trip;
+using TravelBuddyAPI.DTOs.Trip;
 
 namespace TravelBuddyAPI.Endpoints;
 
@@ -96,12 +96,12 @@ public static class TripsEndpoints
         throw new NotImplementedException();
     }
 
-    private static async Task<IResult> EditTripAsync(Guid id, TripModificationViewModel trip)
+    private static async Task<IResult> EditTripAsync(Guid id, TripDTO trip)
     {
         throw new NotImplementedException();
     }
 
-    private static async Task<IResult> CreateTripAsync(TripCreationViewModel trip)
+    private static async Task<IResult> CreateTripAsync(TripDTO trip)
     {
         throw new NotImplementedException();
     }

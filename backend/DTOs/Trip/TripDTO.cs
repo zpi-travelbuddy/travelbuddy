@@ -2,10 +2,10 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using TravelBuddyAPI.Enums;
 
-namespace TravelBuddyAPI.ViewModels.Trip;
+namespace TravelBuddyAPI.DTOs.Trip;
 
 [NotMapped]
-public class TripCreationViewModel{
+public class TripDTO{
     [Required]
     public string? Name { get; set; }
 
