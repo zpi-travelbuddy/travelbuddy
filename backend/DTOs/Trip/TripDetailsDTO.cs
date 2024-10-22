@@ -1,11 +1,17 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using TravelBuddyAPI.DTOs.TripDay;
 using TravelBuddyAPI.Enums;
 
 namespace TravelBuddyAPI.DTOs.Trip;
 
 [NotMapped]
-public class TripDTO{
+public class TripDetailsDTO
+{
+    [Required]
+    [Key]
+    public Guid Id { get; set; }
+
     [Required]
     public string? Name { get; set; }
 
@@ -36,4 +42,4 @@ public class TripDTO{
     [Required]
     public Guid ConditionProfileId { get; set; }
 
-}
+    public List<TripDayOverviewDTO>? TripDays { get; set; }}
