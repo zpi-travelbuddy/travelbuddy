@@ -33,4 +33,6 @@ public class TripDay
     public bool? IsFinished { get => !TripPoints?.Any(tp => tp?.Status.Equals(Enums.TripPointStatus.planned) ?? false); }
 
     public List<TripPoint>? TripPoints { get; set; }
+
+    public List<TransferPoint>? TransferPoints { get; set; }
 }
