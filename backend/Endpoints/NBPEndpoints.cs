@@ -45,7 +45,7 @@ public static class NBPEndpoints
             var ratesElement = jsonDocument.RootElement[0].GetProperty("rates");
 
             var currencyList = ratesElement.EnumerateArray()
-                                        .Select(rate => new CurrencyViewModel
+                                        .Select(rate => new CurrencyDTO
                                         {
                                             Code = rate.GetProperty("code").GetString(),
                                             Name = rate.GetProperty("currency").GetString()
