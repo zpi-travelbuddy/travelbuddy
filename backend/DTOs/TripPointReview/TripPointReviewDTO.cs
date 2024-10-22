@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace TravelBuddyAPI.DTOs.TripPointReview;
 
 [NotMapped]
-public class TripPointDTO
+public class TripPointReviewDTO
 {
     [Required]
     public Guid TripPointId { get; set; }

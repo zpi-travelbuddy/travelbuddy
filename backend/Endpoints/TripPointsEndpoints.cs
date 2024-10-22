@@ -44,7 +44,7 @@ public static class TripPointsEndpoints{
         throw new NotImplementedException();
     }
 
-    private static async Task<IResult> ReviewTripPointAsync(DTOs.TripPointReview.TripPointDTO tripPointReview)
+    private static async Task<IResult> ReviewTripPointAsync(DTOs.TripPointReview.TripPointReviewDTO tripPointReview)
     {
         throw new NotImplementedException();
     }
