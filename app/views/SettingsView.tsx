@@ -1,6 +1,16 @@
-import React, { useState } from "react";
+import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import { Dimensions, StyleSheet, View } from "react-native";
-import { Title, List, Switch, Button, Divider, Text } from "react-native-paper";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import {
+  Title,
+  List,
+  Switch,
+  Button,
+  Divider,
+  Text,
+  RadioButton,
+} from "react-native-paper";
 
 type RenderListItemProps = {
   title: string;
@@ -14,7 +24,25 @@ const SettingsView = () => {
   const styles = createStyles();
   const [isSwitchOn, setIsSwitchOn] = useState(false);
 
+  const sheetRef = useRef<BottomSheet>(null);
+  const [isOpen, setIsOpen] = useState(false);
+
+  const snapPoints = useMemo(() => ["30%", "70%", "100%"], []);
+
+  const handleSnapPress = useCallback((index: number) => {
+    sheetRef.current?.snapToIndex(index);
+    setIsOpen(true);
+  }, []);
+
   const toggleSwitch = () => setIsSwitchOn((prev) => !prev);
+
+  const items = ["test1", "test2", "test3"];
+  const [selectedOption, setSelectedOption] = useState<string>("");
+
+  const handleSelect = (item: string) => {
+    setSelectedOption(item);
+    sheetRef.current?.close();
+  };
 
   const renderListItem = ({
     title,
@@ -28,13 +56,16 @@ const SettingsView = () => {
   );
 
   return (
-    <View style={styles.container}>
+    <GestureHandlerRootView style={styles.container}>
       <View style={styles.content}>
         <Title style={styles.title}>Wygląd</Title>
         {renderListItem({
           title: "Czcionka",
           rightComponent: () => <Text style={styles.rightText}>średnia</Text>,
-          onPress: () => console.log("Czcionka kliknięta"),
+          onPress: () => {
+            console.log("Czcionka kliknięty");
+            handleSnapPress(1);
+          },
         })}
         {renderListItem({
           title: "Motyw",
@@ -91,7 +122,33 @@ const SettingsView = () => {
       >
         Wyloguj się
       </Button>
-    </View>
+
+      <BottomSheet
+        ref={sheetRef}
+        index={-1}
+        snapPoints={snapPoints}
+        enablePanDownToClose={true}
+        onClose={() => {
+          sheetRef.current?.close();
+        }}
+      >
+        <BottomSheetView style={styles.bottomSheetContainer}>
+          {items.map((item, index) => (
+            <List.Item
+              key={index}
+              title={item}
+              right={() => (
+                <RadioButton
+                  value={item}
+                  status={selectedOption === item ? "checked" : "unchecked"}
+                  onPress={() => handleSelect(item)}
+                />
+              )}
+            />
+          ))}
+        </BottomSheetView>
+      </BottomSheet>
+    </GestureHandlerRootView>
   );
 };
 
@@ -123,6 +180,15 @@ const createStyles = () =>
     title: {
       width: "100%",
       marginTop: 20,
+    },
+    bottomSheetContainer: {
+      backgroundColor: "white",
+      padding: 20,
+      margin: 20,
+      borderRadius: 8,
+    },
+    modalText: {
+      marginBottom: 20,
     },
   });
 
