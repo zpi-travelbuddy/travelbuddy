@@ -14,6 +14,7 @@ public class TransferPoint
     public Guid TripDayId { get; set; }
     public TripDay? TripDay { get; set; }
 
+    [NotMapped]
     public Trip? Trip => TripDay?.Trip;
 
     [Required]
@@ -26,10 +27,12 @@ public class TransferPoint
     public TimeOnly EndTime => StartTime.Add(TransferTime);
 
     [Required]
-    public TripPoint? From { get; set; }
+    public Guid? FromTripPointId { get; set; }
+    public TripPoint? FromTripPoint { get; set; }
 
     [Required]
-    public TripPoint? To { get; set; }
+    public Guid? ToTripPointId { get; set; }
+    public TripPoint? ToTripPoint { get; set; }
 
     public TransferMode? Mode { get; set; }
 
