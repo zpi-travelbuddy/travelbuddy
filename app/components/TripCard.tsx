@@ -1,6 +1,7 @@
 import { Dimensions, StyleSheet } from "react-native";
 import React from "react";
 import { Card, useTheme } from "react-native-paper";
+import { useNavigation } from "@react-navigation/native";
 
 interface TripCardProps {
   title: string;
@@ -17,6 +18,7 @@ export const TripCard: React.FC<TripCardProps> = ({
   imageUri,
 }) => {
   const theme = useTheme();
+  const navigation = useNavigation();
   const styles = StyleSheet.create({
     card: {
       width: screenWidth * 0.9,
@@ -28,6 +30,9 @@ export const TripCard: React.FC<TripCardProps> = ({
       overflow: "hidden",
       elevation: 0,
       shadowOpacity: 0,
+      marginTop: 10,
+      marginBottom: 10,
+      marginHorizontal: 20,
     },
     cardCover: {
       borderBottomLeftRadius: 0,
@@ -37,7 +42,12 @@ export const TripCard: React.FC<TripCardProps> = ({
   });
 
   return (
-    <Card mode="outlined" style={styles.card}>
+    <Card
+      mode="outlined"
+      style={styles.card}
+      onPress={() => navigation.navigate("TripDetails")}
+      onLongPress={() => console.log("Karta kliknięta long press!")}
+    >
       <Card.Cover source={{ uri: imageUri }} style={styles.cardCover} />
       <Card.Title title={title} subtitle={subtitle} />
     </Card>
