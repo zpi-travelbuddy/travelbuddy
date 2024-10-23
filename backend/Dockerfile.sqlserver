@@ -1,0 +1,16 @@
+# Use the official Microsoft SQL Server 2022 image
+FROM mcr.microsoft.com/mssql/server:2022-latest
+
+# Set environment variables
+ENV ACCEPT_EULA=Y
+ENV MSSQL_SA_PASSWORD=${MSSQL_SA_PASSWORD}
+
+
+# Copy the init-db.sql script to the container
+COPY init-db.sql /docker-entrypoint-initdb.d/init-db.sql
+
+# Expose the SQL Server port
+EXPOSE 1433
+
+# /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P $MSSQL_SA_PASSWORD -C -i /docker-entrypoint-initdb.d/init-db.sql
+# /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P $MSSQL_SA_PASSWORD -C -Q "SELECT name FROM sys.databases;"
