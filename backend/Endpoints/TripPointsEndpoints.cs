@@ -43,7 +43,7 @@ public static class TripPointsEndpoints
         return TypedResults.NotFound("Not implemented");
     }
 
-    private static async Task<Results<Ok<List<TripPointOverviewDTO>>, NotFound<string>>> GetTripPointsReviewsAsync()
+    private static async Task<Results<Ok<List<TripPointReviewOverviewDTO>>, NotFound<string>>> GetTripPointsReviewsAsync()
     {
         await Task.CompletedTask;
         return TypedResults.NotFound("Not implemented");

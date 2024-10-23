@@ -39,7 +39,7 @@ public static class ConditionProfilesEndpoints
         return TypedResults.NotFound("Not implemented");
     }
 
-    private static async Task<Results<Ok<ConditionProfileOverviewDTO>, NotFound<string>>> GetAvailableConditionProfilesAsync()
+    private static async Task<Results<Ok<List<ConditionProfileOverviewDTO>>, NotFound<string>>> GetAvailableConditionProfilesAsync()
     {
         await Task.CompletedTask;
         return TypedResults.NotFound("Not implemented");

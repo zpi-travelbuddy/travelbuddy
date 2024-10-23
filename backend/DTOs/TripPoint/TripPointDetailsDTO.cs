@@ -30,6 +30,10 @@ public class TripPointDetailsDTO
     public decimal? PredictedCostPerPerson { get; set; }
 
     [Required]
+    [RegularExpression(@"^[A-Z]{3}$", ErrorMessage = $"{nameof(CurrencyCode)} must be a valid 3-letter ISO 4217 code.")]
+    public string? CurrencyCode { get; set; }
+
+    [Required]
     public TimeOnly StartTime { get; set; }
 
     [Required]

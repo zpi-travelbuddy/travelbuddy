@@ -39,7 +39,7 @@ public static class CategoryProfilesEndpoints
         return TypedResults.NotFound("test");
     }
 
-    private static async Task<Results<Ok<CategoryProfileOverviewDTO>, NotFound<string>>> GetAvailableCategoryProfilesAsync()
+    private static async Task<Results<Ok<List<CategoryProfileOverviewDTO>>, NotFound<string>>> GetAvailableCategoryProfilesAsync()
     {
         await Task.CompletedTask;
         return TypedResults.NotFound("Not implemented");
@@ -63,7 +63,7 @@ public static class CategoryProfilesEndpoints
         return TypedResults.NotFound("Not implemented");
     }
 
-    private static async Task<Results<Created<CategoryProfileRequestDTO>, BadRequest<string>>> CreateCategoryProfileAsync(CategoryProfileDetailsDTO categoryProfile)
+    private static async Task<Results<Created<CategoryProfileDetailsDTO>, BadRequest<string>>> CreateCategoryProfileAsync(CategoryProfileRequestDTO categoryProfile)
     {
         await Task.CompletedTask;
         return TypedResults.BadRequest("Not implemented");
