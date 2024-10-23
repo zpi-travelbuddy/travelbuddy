@@ -21,6 +21,7 @@ export const TripCard: React.FC<TripCardProps> = ({
     card: {
       width: screenWidth * 0.9,
       height: screenHeight * 0.25,
+      backgroundColor: theme.colors.background,
       borderColor: theme.colors.outlineVariant,
       borderWidth: 1,
       borderRadius: 20,
