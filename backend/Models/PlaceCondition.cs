@@ -17,4 +17,6 @@ public class PlaceCondition
     public PlaceCondition? SuperCondition { get; set; }
 
     public List<PlaceCondition>? SubConditions { get; set; }
+    public List<ConditionProfile>? ConditionProfiles { get; internal set; }
+    public List<ProviderPlace>? ProviderPlaces { get; internal set; }
 }

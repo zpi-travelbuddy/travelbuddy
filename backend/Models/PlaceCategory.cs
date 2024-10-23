@@ -19,4 +19,6 @@ public class PlaceCategory
     public PlaceCategory? SuperCategory { get; set; }
 
     public List<PlaceCategory>? SubCategories { get; set; }
+    public List<CategoryProfile>? CategoryProfiles { get; set; }
+    public List<ProviderPlace>? ProviderPlaces { get; internal set; }
 }
