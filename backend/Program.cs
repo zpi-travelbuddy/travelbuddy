@@ -1,6 +1,7 @@
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Identity.Web;
+using TravelBuddyAPI.Endpoints;
+
 namespace TravelBuddyAPI
 {
     public class Program
@@ -45,6 +46,15 @@ namespace TravelBuddyAPI
             app.UseAuthentication();
 
             app.UseAuthorization();
+            
+            // Mapping endpoints
+            app.MapTripsEndpoints();
+            app.MapCategoryProfilesEndpoints();
+            app.MapConditionProfilesEndpoints();
+            app.MapTransferPointsEndpoints();
+            app.MapTripPointsEndpoints();
+            app.MapPlacesEndpoints();
+            app.MapFavouriteProfilesEndpoints();
 
             app.Run();
         }

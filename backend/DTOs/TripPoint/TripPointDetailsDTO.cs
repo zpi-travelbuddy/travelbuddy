@@ -1,10 +1,15 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using TravelBuddyAPI.DTOs.Place;
+using TravelBuddyAPI.DTOs.PlaceCategory;
+using TravelBuddyAPI.DTOs.TripPointReview;
 using TravelBuddyAPI.Enums;
 
-namespace TravelBuddyAPI.Models;
+namespace TravelBuddyAPI.DTOs.TripPoint;
 
-public class TripPoint{
+[NotMapped]
+public class TripPointDetailsDTO
+{
     [Required]
     [Key]
     public Guid Id { get; set; }
@@ -16,16 +21,17 @@ public class TripPoint{
 
     [Required]
     public Guid TripDayId { get; set; }
-    public TripDay? TripDay { get; set; }
-
-    public Trip? Trip => TripDay?.Trip; 
 
     [Required]
     [Range(0, double.MaxValue, ErrorMessage = $"{nameof(PredictedCost)} must be a positive number.")]
     public decimal PredictedCost { get; set; }
 
-    [NotMapped]
-    public decimal? PredictedCostPerPerson => Trip is null ? null : Math.Round(PredictedCost / Trip.NumberOfTravelers, 2);
+    [Range(0, double.MaxValue, ErrorMessage = $"{nameof(PredictedCostPerPerson)} must be a positive number.")]
+    public decimal? PredictedCostPerPerson { get; set; }
+
+    [Required]
+    [RegularExpression(@"^[A-Z]{3}$", ErrorMessage = $"{nameof(CurrencyCode)} must be a valid 3-letter ISO 4217 code.")]
+    public string? CurrencyCode { get; set; }
 
     [Required]
     public TimeOnly StartTime { get; set; }
@@ -41,11 +47,10 @@ public class TripPoint{
 
     [Required]
     public Guid PlaceId { get; set; }
-    public Place? Place { get; set; }
+    public PlaceOverviewDTO? Place { get; set; }
 
-    public TripPointReview? Review { get; set; }
+    public TripPointReviewDetailsDTO? Review { get; set; }
 
-    public TransferPoint? TransferIn { get; set; }
+    public PlaceCategoryDTO? Category { get; set; }
 
-    public TransferPoint? TransferOut { get; set; }
 }

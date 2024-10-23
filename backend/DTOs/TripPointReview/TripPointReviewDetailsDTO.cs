@@ -1,37 +1,28 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using TravelBuddyAPI.Enums;
 
-namespace TravelBuddyAPI.Models;
+namespace TravelBuddyAPI.DTOs.TripPointReview;
 
-public class TripPointReview
+[NotMapped]
+public class TripPointReviewDetailsDTO
 {
     [Required]
     [Key]
     public Guid Id { get; set; }
 
     [Required]
-    public string? UserId { get; set; }
-
-    [Required]
     public Guid TripPointId { get; set; }
-    public TripPoint? TripPoint { get; set; }
 
     [RegularExpression(@"^[A-Z]{3}$", ErrorMessage = $"{nameof(CurrencyCode)} must be a valid 3-letter ISO 4217 code.")]
     public string? CurrencyCode { get; set; }
 
-    public Trip? Trip => TripPoint?.Trip;
-
     [Required]
     public Guid PlaceId { get; set; }
-    public Place? Place { get; set; }
 
     [Range(0, double.MaxValue, ErrorMessage = $"{nameof(ActualCost)} must be a positive number.")]
     public decimal? ActualCost { get; set; }
 
-    [NotMapped]
-    public decimal? ActualCostPerPerson => ActualCost.HasValue && Trip is not null ? Math.Round(ActualCost.Value / Trip.NumberOfTravelers, 2) : null;
-
+    public decimal? ActualCostPerPerson { get; set; }
     public TimeSpan? ActualTimeSpent { get; set; }
 
     [Range(0, 5)]

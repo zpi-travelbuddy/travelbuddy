@@ -2,7 +2,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace TravelBuddyAPI.Models;
 
-public class PlaceCondition{
+public class PlaceCondition
+{
     [Required]
     [Key]
     public Guid Id { get; set; }
@@ -13,7 +14,7 @@ public class PlaceCondition{
     public string? Description { get; set; }
 
     public Guid? SuperConditionId { get; set; }
-    public  PlaceCondition? SuperCondition { get; set; }
+    public PlaceCondition? SuperCondition { get; set; }
 
     public List<PlaceCondition>? SubConditions { get; set; }
 }

@@ -3,8 +3,9 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace TravelBuddyAPI.Models;
 
-public class PlaceCategory{
-    
+public class PlaceCategory
+{
+
     [Required]
     [Key]
     public Guid Id { get; set; }
@@ -15,7 +16,7 @@ public class PlaceCategory{
     public string? Description { get; set; }
 
     public Guid? SuperCategoryId { get; set; }
-    public  PlaceCategory? SuperCategory { get; set; }
+    public PlaceCategory? SuperCategory { get; set; }
 
     public List<PlaceCategory>? SubCategories { get; set; }
 }
