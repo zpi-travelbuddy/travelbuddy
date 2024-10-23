@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Web;
+using TravelBuddyAPI.Data;
 using TravelBuddyAPI.Endpoints;
 
 namespace TravelBuddyAPI
@@ -25,11 +27,18 @@ namespace TravelBuddyAPI
             {
                 DotNetEnv.Env.Load();
                 builder.Configuration["CLIENT_SECRET"] = DotNetEnv.Env.GetString("CLIENT_SECRET");
+                builder.Configuration["MSSQL_SA_PASSWORD"] = DotNetEnv.Env.GetString("MSSQL_SA_PASSWORD");
             }
 
             builder.Services.Configure<MicrosoftIdentityOptions>(options =>
             {
                 options.ClientSecret = builder.Configuration["CLIENT_SECRET"];
+            });
+
+            builder.Services.AddDbContext<TravelBuddyDbContext>(options =>
+            {
+                options.UseSqlServer(builder.Configuration.GetConnectionString("TravelBuddyDb")?.Replace("{MSSQL_SA_PASSWORD}", builder.Configuration["MSSQL_SA_PASSWORD"]));
+                
             });
 
             var app = builder.Build();
