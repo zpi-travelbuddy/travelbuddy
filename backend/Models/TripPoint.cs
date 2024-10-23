@@ -18,6 +18,7 @@ public class TripPoint{
     public Guid TripDayId { get; set; }
     public TripDay? TripDay { get; set; }
 
+    [NotMapped]
     public Trip? Trip => TripDay?.Trip; 
 
     [Required]
@@ -37,6 +38,7 @@ public class TripPoint{
 
     public TimeOnly ClosingTime { get; set; }
 
+    [Required]
     public TripPointStatus Status { get; set; }
 
     [Required]
@@ -44,8 +46,4 @@ public class TripPoint{
     public Place? Place { get; set; }
 
     public TripPointReview? Review { get; set; }
-
-    public TransferPoint? TransferIn { get; set; }
-
-    public TransferPoint? TransferOut { get; set; }
 }
