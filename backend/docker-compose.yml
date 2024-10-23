@@ -17,7 +17,7 @@ services:
       - MSSQL_SA_PASSWORD=${MSSQL_SA_PASSWORD}
 
 
-  dotnetapp:
+  travelbuddyapi:
     build: 
       context: .
       dockerfile: Dockerfile.api
