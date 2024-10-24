@@ -5,7 +5,6 @@ using Microsoft.Identity.Web;
 using TravelBuddyAPI.Data;
 using Microsoft.OpenApi.Models;
 using TravelBuddyAPI.Endpoints;
-using Microsoft.Extensions.Options;
 
 namespace TravelBuddyAPI
 {
