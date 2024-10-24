@@ -3,8 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Web;
 using TravelBuddyAPI.Data;
 using TravelBuddyAPI.Endpoints;
-
-using TravelBuddyAPI.Endpoints;
 using Microsoft.Extensions.Options;
 
 namespace TravelBuddyAPI

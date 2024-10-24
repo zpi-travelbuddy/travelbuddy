@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.Mvc.Razor;
-
 namespace TravelBuddyAPI.Interfaces;
 
 public interface INBPService

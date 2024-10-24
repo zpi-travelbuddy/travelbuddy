@@ -2,6 +2,7 @@ using TravelBuddyAPI.Interfaces;
 using RestSharp;
 using Newtonsoft.Json;
 using System.Diagnostics;
+using Microsoft.CSharp.RuntimeBinder;
 
 namespace TravelBuddyAPI.Services;
 
@@ -28,12 +29,21 @@ public class NBPClient : INBPService
         }
 
         var jsonResponse = JsonConvert.DeserializeObject<dynamic>(response.Content!);
-        if (jsonResponse == null || jsonResponse!.rates == null || jsonResponse!.rates.Count == 0)
+
+        if (jsonResponse?.rates?.Count == 0)
         {
-            return null;
+            throw new HttpRequestException($"Error rate is null or 0: {response.Content}");
         }
 
-        return (decimal?)jsonResponse!.rates[0].mid;
+        try
+        {
+            return (decimal?)jsonResponse!.rates[0].mid;
+        }
+        catch (RuntimeBinderException e)
+        {
+            Debug.WriteLine(e.Message);
+            throw;
+        }
     }
     
 
