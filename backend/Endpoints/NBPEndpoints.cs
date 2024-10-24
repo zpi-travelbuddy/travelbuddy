@@ -16,13 +16,12 @@ public static class NBPEndpoints
         return app;
     }
 
-    private static async Task<IResult> Rate(NBPClient client, string currencyCode, DateTime? date = null)
+    private static async Task<IResult> Rate(NBPClient client, string currencyCode, DateOnly? date = null)
     {
         try
         {
-            var dateOnly = date.HasValue ? DateOnly.FromDateTime(date.Value) : (DateOnly?)null;
-            var response = await client.GetRateAsync(currencyCode, dateOnly);
-            return Results.Content(response, "application/json");
+            var response = await client.GetRateAsync(currencyCode, date);
+            return Results.Content(response?.ToString(), "application/json");
         }
         catch (HttpRequestException ex)
         {
