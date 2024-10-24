@@ -4,33 +4,33 @@ namespace TravelBuddyAPI.Endpoints;
 
 public static class GeoapifyEndpoints // TODO potentially refactor for using categories and conditions models
 {
-    // public static WebApplication MapGeoapifyEndpoints(this WebApplication app)
-    // {
-    //     var group = app.MapGroup("/geoapify");
+    public static WebApplication MapGeoapifyEndpoints(this WebApplication app)
+    {
+        var group = app.MapGroup("/geoapify");
 
-    //     group.MapGet("/autocomplete", AddressAutocomplete).RequireAuthorization();
-    //     group.MapGet("/details", Details);
-    //     group.MapGet("/isoline", Isoline);
-    //     group.MapGet("/nearbyPlaces/circle", NearbyPlacesByCircle);
-    //     group.MapGet("/nearbyPlaces/rectangle", NearbyPlacesByRectangle);
-    //     group.MapGet("/nearbyPlaces/geometry", NearbyPlacesByGeometry);
-    //     group.MapGet("/routeTime", RouteTime);
+        group.MapGet("/autocomplete", AddressAutocomplete).RequireAuthorization();
+        // group.MapGet("/details", Details);
+        // group.MapGet("/isoline", Isoline);
+        // group.MapGet("/nearbyPlaces/circle", NearbyPlacesByCircle);
+        // group.MapGet("/nearbyPlaces/rectangle", NearbyPlacesByRectangle);
+        // group.MapGet("/nearbyPlaces/geometry", NearbyPlacesByGeometry);
+        // group.MapGet("/routeTime", RouteTime);
 
-    //     return app;
-    // }
+        return app;
+    }
 
-    // private static async Task<IResult> AddressAutocomplete(GeoapifyClient client, string text, string? type = null, string? lang = null, string? filter = null, string? bias = null, string format = "json")
-    // {
-    //     try
-    //     {
-    //         var response = await client.GetAddressAutocompleteAsync(text, type, lang, filter, bias, format);
-    //         return Results.Ok(response);
-    //     }
-    //     catch (HttpRequestException ex)
-    //     {
-    //         return Results.BadRequest(ex.Message);
-    //     }
-    // }
+    private static async Task<IResult> AddressAutocomplete(GeoapifyClient client, string text, string? type = null, string? lang = null, string? filter = null, string? bias = null, string format = "json")
+    {
+        try
+        {
+            var response = await client.GetAddressAutocompleteAsync(text, type, lang, filter, bias, format);
+            return Results.Ok(response);
+        }
+        catch (HttpRequestException ex)
+        {
+            return Results.BadRequest(ex.Message);
+        }
+    }
 
     // private static async Task<IResult> Details(string id, GeoapifyClient client)
     // {
