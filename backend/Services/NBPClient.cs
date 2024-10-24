@@ -23,12 +23,12 @@ public class NBPClient : INBPService
         var request = new RestRequest(endpoint, Method.Get);
 
         var response = await _client.ExecuteAsync(request);
-        if (!response.IsSuccessful)
+        if (!response.IsSuccessful || response.Content is null)
         {
             throw new HttpRequestException($"Error retrieving rate: {response.Content}");
         }
 
-        var jsonResponse = JsonConvert.DeserializeObject<dynamic>(response.Content!);
+        var jsonResponse = JsonConvert.DeserializeObject<dynamic>(response.Content);
 
         try
         {
@@ -38,7 +38,7 @@ public class NBPClient : INBPService
                 throw new HttpRequestException($"Error rate is null or 0: {response.Content}");
             }
 
-            return (decimal?)jsonResponse!.rates[0].mid;
+            return (decimal?)jsonResponse?.rates[0].mid;
         }
         catch (RuntimeBinderException e)
         {
