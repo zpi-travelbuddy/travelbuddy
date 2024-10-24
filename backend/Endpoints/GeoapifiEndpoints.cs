@@ -24,7 +24,7 @@ public static class GeoapifyEndpoints
         try
         {
             var response = await client.GetAddressAutocompleteAsync(text, type, lang, filter, bias, format);
-            return Results.Content(response, "application/json");
+            return Results.Ok(response);
         }
         catch (HttpRequestException ex)
         {
@@ -37,7 +37,7 @@ public static class GeoapifyEndpoints
         try
         {
             var response = await client.GetPlaceDetailsAsync(id);
-            return Results.Content(response, "application/json");
+            return Results.Ok(response);
         }
         catch (HttpRequestException ex)
         {
@@ -49,8 +49,8 @@ public static class GeoapifyEndpoints
     {
         try
         {
-            var response = await client.GetIsolineAsync((latitude, longitude), range, mode, traffic, units, type, routeType);
-            return Results.Content(response, "application/json");
+            var isoline_id = await client.GetIsolineAsync((latitude, longitude), range, mode, traffic, units, type, routeType);
+            return Results.Ok(new {id = isoline_id});
         }
         catch (HttpRequestException ex)
         {
@@ -66,7 +66,7 @@ public static class GeoapifyEndpoints
         try
         {
             var response = await client.GetNearbyPlacesAsync((latitude, longitude), radius, categoriesList, conditionsList, limit, offset);
-            return Results.Content(response, "application/json");
+            return Results.Ok(response);
         }
         catch (HttpRequestException ex)
         {
@@ -82,7 +82,7 @@ public static class GeoapifyEndpoints
         try
         {
             var response = await client.GetNearbyPlacesAsync((startLatitude, startLongitude), (endLatitude, endLongitude), categoriesList, conditionsList, limit, offset);
-            return Results.Content(response, "application/json");
+            return Results.Ok(response);
         }
         catch (HttpRequestException ex)
         {
@@ -98,7 +98,7 @@ public static class GeoapifyEndpoints
         try
         {
             var response = await client.GetNearbyPlacesAsync(geometryId, categoriesList, conditionsList, limit, offset);
-            return Results.Content(response, "application/json");
+            return Results.Ok(response);
         }
         catch (HttpRequestException ex)
         {
@@ -111,7 +111,7 @@ public static class GeoapifyEndpoints
         try
         {
             var response = await client.GetRouteTimeAsync((startLatitude, startLongitude), (endLatitude, endLongitude), mode, traffic, units);
-            return Results.Content(response, "application/json");
+            return Results.Ok(new {time = response});
         }
         catch (HttpRequestException ex)
         {
