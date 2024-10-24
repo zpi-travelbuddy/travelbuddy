@@ -30,13 +30,14 @@ public class NBPClient : INBPService
 
         var jsonResponse = JsonConvert.DeserializeObject<dynamic>(response.Content!);
 
-        if (jsonResponse?.rates?.Count == 0)
-        {
-            throw new HttpRequestException($"Error rate is null or 0: {response.Content}");
-        }
-
         try
         {
+
+            if (jsonResponse?.rates?.Count is null || jsonResponse?.rates?.Count == 0)
+            {
+                throw new HttpRequestException($"Error rate is null or 0: {response.Content}");
+            }
+
             return (decimal?)jsonResponse!.rates[0].mid;
         }
         catch (RuntimeBinderException e)
