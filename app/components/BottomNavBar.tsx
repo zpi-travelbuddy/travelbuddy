@@ -1,4 +1,5 @@
 //@ts-nocheck
+import { StyleSheet } from "react-native";
 import { BottomNavigation, Icon } from "react-native-paper";
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 
@@ -22,46 +23,55 @@ const iconSources = {
   settings: SETTINGS_ICON,
 };
 
-export const BottomNavBar = (props: BottomTabBarProps) => (
-  <BottomNavigation.Bar
-    navigationState={props.state}
-    style={{
-      backgroundColor: props.theme.colors.surfaceContainer,
-    }}
-    activeColor={props.theme.colors.onSurface}
-    inactiveColor={props.theme.colors.onSurfaceVariant}
-    onTabPress={({ route, preventDefault }) => {
-      const event = props.navigation.emit({
-        type: "tabPress",
-        target: route.key,
-        canPreventDefault: true,
-      });
+export const BottomNavBar = (props: BottomTabBarProps) => {
+  const styles = makeStyles(props.theme);
 
-      if (!event.defaultPrevented) {
-        props.navigation.navigate(route.name, route.params);
-      }
-    }}
-    onTabLongPress={({ route }) => {
-      props.navigation.emit({
-        type: "tabLongPress",
-        target: route.key,
-      });
-    }}
-    renderIcon={({ route, focused, color }) => {
-      const source = iconSources[route.name] || DEFAULT_ICON;
+  return (
+    <BottomNavigation.Bar
+      navigationState={props.state}
+      style={styles.bar}
+      activeColor={props.theme.colors.onSurface}
+      inactiveColor={props.theme.colors.onSurfaceVariant}
+      onTabPress={({ route, preventDefault }) => {
+        const event = props.navigation.emit({
+          type: "tabPress",
+          target: route.key,
+          canPreventDefault: true,
+        });
 
-      return <Icon source={source} color={color} size={ICON_SIZE} />;
-    }}
-    getLabelText={({ route }) => {
-      const { options } = props.descriptors[route.key];
-      const label =
-        options.tabBarLabel !== undefined
-          ? options.tabBarLabel
-          : options.title !== undefined
-            ? options.title
-            : route.title;
+        if (!event.defaultPrevented) {
+          props.navigation.navigate(route.name, route.params);
+        }
+      }}
+      onTabLongPress={({ route }) => {
+        props.navigation.emit({
+          type: "tabLongPress",
+          target: route.key,
+        });
+      }}
+      renderIcon={({ route, focused, color }) => {
+        const source = iconSources[route.name] || DEFAULT_ICON;
 
-      return label;
-    }}
-  />
-);
+        return <Icon source={source} color={color} size={ICON_SIZE} />;
+      }}
+      getLabelText={({ route }) => {
+        const { options } = props.descriptors[route.key];
+        const label =
+          options.tabBarLabel !== undefined
+            ? options.tabBarLabel
+            : options.title !== undefined
+              ? options.title
+              : route.title;
+
+        return label;
+      }}
+    />
+  );
+};
+
+const makeStyles = (theme: MD3ThemeExtended) =>
+  StyleSheet.create({
+    bar: {
+      backgroundColor: theme.colors.surfaceContainer,
+    },
+  });
