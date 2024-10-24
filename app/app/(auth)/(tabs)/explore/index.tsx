@@ -1,12 +1,24 @@
 import { useEffect, useState } from "react";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, FlatList } from "react-native";
 import { Text, useTheme } from "react-native-paper";
 import { Searchbar } from "react-native-paper";
+import { PlaceCard } from "@/components/explore/PlaceCard";
 import { MD3ThemeExtended } from "@/constants/Themes";
+
+// TODO: Match interface to actual data
+interface Place {
+  id: string;
+  title: string;
+  subtitle: string;
+}
+
+const renderPlace = ({ item }: { item: Place }) => (
+  <PlaceCard title={item.title} subtitle={item.subtitle} />
+);
 
 export default function Explore() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [places, setPlaces] = useState([]);
+  const [places, setPlaces] = useState<Place[]>([]);
 
   const theme = useTheme() as MD3ThemeExtended;
   const styles = makeStyles(theme);
@@ -19,13 +31,17 @@ export default function Explore() {
         placeholder="Wyszukaj atrakcję"
         style={styles.searchbar}
       />
-      {places.length > 0 ? (
-        "test"
-      ) : (
-        <Text style={styles.text} variant="bodyLarge">
-          Użyj wyszukiwania aby przeglądać dostępne atrakcje
-        </Text>
-      )}
+      <FlatList
+        data={places}
+        renderItem={renderPlace}
+        keyExtractor={(item) => item.id}
+        ListEmptyComponent={() => (
+          <Text style={styles.text} variant="bodyLarge">
+            Użyj wyszukiwania aby przeglądać dostępne atrakcje
+          </Text>
+        )}
+        ItemSeparatorComponent={() => <View style={styles.separator} />}
+      />
     </View>
   );
 }
@@ -35,16 +51,19 @@ const makeStyles = (theme: MD3ThemeExtended) =>
     container: {
       flex: 1,
       flexDirection: "column",
-      alignItems: "center",
+      alignItems: "stretch",
       paddingHorizontal: 20,
+      paddingBottom: 20,
       backgroundColor: theme.colors.background,
     },
     searchbar: {
-      alignSelf: "stretch",
       backgroundColor: theme.colors.surfaceContainerHigh,
       marginVertical: 20,
     },
     text: {
       textAlign: "center",
+    },
+    separator: {
+      height: 10,
     },
   });

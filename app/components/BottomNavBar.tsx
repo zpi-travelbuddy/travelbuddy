@@ -2,6 +2,7 @@
 import { StyleSheet } from "react-native";
 import { BottomNavigation, Icon } from "react-native-paper";
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
+import { MD3ThemeExtended } from "@/constants/Themes";
 
 // Icon size
 const ICON_SIZE = 24;
