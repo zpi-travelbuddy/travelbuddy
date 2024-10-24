@@ -27,13 +27,18 @@ public class PlaceCategory
 
     private static string? GetFullName(PlaceCategory category)
     {
-        if (category.SuperCategoryId is null || category.SuperCategory is null)
+        if (category.SuperCategoryId == null)
         {
             return category.Name;
         }
-        else
+
+        if (category.SuperCategory == null)
         {
-            return GetFullName(category.SuperCategory) + "." + category.Name;
+            return null;
         }
+
+        var superCategoryFullName = GetFullName(category.SuperCategory);
+        return superCategoryFullName is null ? null : $"{superCategoryFullName}.{category.Name}";
     }
+
 }
