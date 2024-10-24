@@ -27,7 +27,7 @@ public class PlaceCategory
 
     private static string? GetFullName(PlaceCategory category)
     {
-        if (category.SuperCategoryId is null)
+        if (category.SuperCategoryId is null || category.SuperCategory is null)
         {
             return category.Name;
         }
