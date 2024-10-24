@@ -15,24 +15,18 @@ namespace TravelBuddyAPI
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"));
-
 
             builder.Services.Configure<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme, options =>
             {
                 options.TokenValidationParameters.ValidateIssuer = true;
                 options.TokenValidationParameters.ValidAudience = builder.Configuration["AzureAd:ClientId"];
             });
+
             builder.Services.AddAuthorization();
 
-            // Register NBPClient as a service
             builder.Services.AddScoped<Services.NBPClient>();
-
-            builder.Services.AddEndpointsApiExplorer();
-
-            // Register GeoapifyClient as a service
             builder.Services.AddScoped<Services.GeoapifyClient>();
 
             builder.Services.AddEndpointsApiExplorer();
@@ -84,7 +78,7 @@ namespace TravelBuddyAPI
             builder.Services.AddDbContext<TravelBuddyDbContext>(options =>
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("TravelBuddyDb")?.Replace("{MSSQL_SA_PASSWORD}", builder.Configuration["MSSQL_SA_PASSWORD"]));
-                
+
             });
 
             var app = builder.Build();
@@ -101,7 +95,7 @@ namespace TravelBuddyAPI
             app.UseAuthentication();
 
             app.UseAuthorization();
-            
+
             // Mapping endpoints
             app.MapTripsEndpoints();
             app.MapCategoryProfilesEndpoints();
@@ -115,24 +109,13 @@ namespace TravelBuddyAPI
             if (app.Environment.IsDevelopment())
             {
                 app.MapGeoapifyEndpoints();
+                app.MapNBPEndpoints();
             }
 
             // Set the culture to US
             var cultureInfo = new System.Globalization.CultureInfo("en-US");
             System.Globalization.CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
             System.Globalization.CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
-
-            // Development enpoints
-            if (app.Environment.IsDevelopment())
-            {
-                app.MapNBPEndpoints();
-            }
-
-             // Set the culture to US
-            var cultureInfo = new System.Globalization.CultureInfo("en-US");
-            System.Globalization.CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
-            System.Globalization.CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
-
 
             app.Run();
         }
