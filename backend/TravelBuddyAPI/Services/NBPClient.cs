@@ -59,4 +59,44 @@ public class NBPClient : INBPService
 
         return response.Content;
     }
+    public async Task<decimal?> GetClosestRateAsync(string currencyCode, DateOnly date, int maxRetries = 2)
+    {
+        try
+        {
+            decimal? rate = await GetRateAsync(currencyCode, date);
+            return rate;
+        }
+        catch (HttpRequestException)
+        {
+            Debug.WriteLine($"Error retrieving rate for {currencyCode} on {date}");
+        }
+
+        for (int i = 1; i <= maxRetries; i++)
+        {
+            try
+            {
+                if (date.AddDays(i) > DateOnly.FromDateTime(DateTime.Now))
+                {
+                    decimal? rate = await GetRateAsync(currencyCode, date.AddDays(i));
+                    return rate;
+                }
+            }
+            catch (HttpRequestException ex)
+            {
+                Debug.WriteLine($"Error retrieving rate for {currencyCode} on {date}: {ex.Message}");
+            }
+
+            try
+            {
+                decimal? rate = await GetRateAsync(currencyCode, date.AddDays(-i));
+                return rate;
+            }
+            catch (HttpRequestException ex)
+            {
+                Debug.WriteLine($"Error retrieving rate for {currencyCode} on {date}: {ex.Message}");
+            }
+        }
+
+        throw new HttpRequestException($"Error: Unable to retrieve rate for {currencyCode} on or around {date} after {maxRetries} retries.");
+    }
 }

@@ -12,6 +12,7 @@ public static class NBPEndpoints
 
         group.MapGet("/rate", Rate);
         group.MapGet("/currency", Currency);
+        group.MapGet("/closestrate", GetClosestRate);
 
         return app;
     }
@@ -21,6 +22,19 @@ public static class NBPEndpoints
         try
         {
             var response = await client.GetRateAsync(currencyCode, date);
+            return Results.Content(response?.ToString(), "application/json");
+        }
+        catch (HttpRequestException ex)
+        {
+            return Results.BadRequest(ex.Message);
+        }
+    }
+
+        private static async Task<IResult> GetClosestRate(NBPClient client, string currencyCode, DateOnly date, int maxRetries = 2)
+    {
+        try
+        {
+            var response = await client.GetClosestRateAsync(currencyCode, date, maxRetries);
             return Results.Content(response?.ToString(), "application/json");
         }
         catch (HttpRequestException ex)
