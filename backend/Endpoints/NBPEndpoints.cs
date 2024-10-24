@@ -1,5 +1,5 @@
 using System.Text.Json;
-using TravelBuddy.DTOs.Currency;
+using TravelBuddyAPI.DTOs.Currency;
 using TravelBuddyAPI.Services;
 
 namespace TravelBuddyAPI.Endpoints;
