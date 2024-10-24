@@ -107,7 +107,7 @@ namespace TravelBuddyAPI
             // Development enpoints
             if (app.Environment.IsDevelopment())
             {
-                app.MapGeoapifyEndpoints();
+                // app.MapGeoapifyEndpoints(); // TODO potentially refactor for using categories and conditions models
                 app.MapNBPEndpoints();
             }
 
