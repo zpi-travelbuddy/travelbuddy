@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Web;
 using TravelBuddyAPI.Data;
 using TravelBuddyAPI.Endpoints;
+using Microsoft.Extensions.Options;
 
 namespace TravelBuddyAPI
 {
@@ -16,7 +17,18 @@ namespace TravelBuddyAPI
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"));
 
+
+            builder.Services.Configure<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme, options =>
+            {
+                options.TokenValidationParameters.ValidateIssuer = true;
+                options.TokenValidationParameters.ValidAudience = builder.Configuration["AzureAd:ClientId"];
+            });
             builder.Services.AddAuthorization();
+
+            // Register NBPClient as a service
+            builder.Services.AddScoped<Services.NBPClient>();
+
+            builder.Services.AddEndpointsApiExplorer();
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
@@ -64,6 +76,18 @@ namespace TravelBuddyAPI
             app.MapTripPointsEndpoints();
             app.MapPlacesEndpoints();
             app.MapFavouriteProfilesEndpoints();
+
+            // Development enpoints
+            if (app.Environment.IsDevelopment())
+            {
+                app.MapNBPEndpoints();
+            }
+
+             // Set the culture to US
+            var cultureInfo = new System.Globalization.CultureInfo("en-US");
+            System.Globalization.CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
+            System.Globalization.CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
+
 
             app.Run();
         }
