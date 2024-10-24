@@ -71,5 +71,21 @@ namespace TravelBuddyAPI.Tests.Models
             // Assert
             Assert.Equal("RootCategory.SuperCategory.Category1", fullName);
         }
+
+        [Fact]
+        public void GetFullName_SuperCategoryIdNotNullButSuperCategoryNull_ReturnsNull()
+        {
+            // Arrange
+            var category = new PlaceCategory
+            {
+                Name = "Category1",
+                SuperCategoryId = Guid.NewGuid()
+            };
+
+            // Act
+            var fullName = category.FullName;
+            // Assert
+            Assert.Null(fullName);
+        }
     }
 }
