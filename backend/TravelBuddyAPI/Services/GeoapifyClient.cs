@@ -5,18 +5,19 @@ using TravelBuddyAPI.Models;
 using Microsoft.CSharp.RuntimeBinder;
 using System.Diagnostics;
 using System.Data.Entity;
+using TravelBuddyAPI.Data;
 
 namespace TravelBuddyAPI.Services;
 
 public class GeoapifyClient : IGeoapifyService
 {
-    private readonly RestClient _client;
-    private readonly DbContext _dataContext; // TODO replace with service for caching categories and conditions
+    private readonly IRestClient _client;
+    private readonly TravelBuddyDbContext _dataContext; // TODO replace with service for caching categories and conditions
     private readonly string _apiKey;
 
-    public GeoapifyClient(IConfiguration configuration, DbContext dataContext)
+    public GeoapifyClient(IConfiguration configuration, TravelBuddyDbContext dataContext, IRestClient client)
     {
-        _client = new RestClient("https://api.geoapify.com/");
+        _client = client;
         _dataContext = dataContext;
         _apiKey = configuration["GEOAPIFY_KEY"] ?? throw new ArgumentNullException($"{nameof(_apiKey)} is not set in the configuration");
     }
@@ -263,7 +264,7 @@ public class GeoapifyClient : IGeoapifyService
         }
     }
 
-    private static List<ProviderPlace>? ParseFeatureCollection(dynamic jsonResponse, List<PlaceCategory>? categories = null, List<PlaceCondition>? conditions = null)
+    public static List<ProviderPlace>? ParseFeatureCollection(dynamic jsonResponse, List<PlaceCategory>? categories = null, List<PlaceCondition>? conditions = null)
     {
         return ((IEnumerable<dynamic>?)jsonResponse?.features)?
             .Select(f => f.properties)
