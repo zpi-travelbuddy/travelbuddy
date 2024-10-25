@@ -1,5 +1,5 @@
-import SettingsView from "@/views/SettingsView";
+import { Redirect } from "expo-router";
 
-export default function Index() {
-  return <SettingsView />;
+export default function Root() {
+  return <Redirect href="/trips" />;
 }
