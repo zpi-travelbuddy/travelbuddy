@@ -1,3 +1,4 @@
+import AppErrorView from "@/views/AppErrorView";
 import { View } from "react-native";
 import { Text } from "react-native-paper";
 import { useTheme } from "react-native-paper";
@@ -14,7 +15,7 @@ export default function Explore() {
         backgroundColor: theme.colors.background,
       }}
     >
-      <Text>Trips</Text>
+      <Text>Explore</Text>
     </View>
   );
 }
