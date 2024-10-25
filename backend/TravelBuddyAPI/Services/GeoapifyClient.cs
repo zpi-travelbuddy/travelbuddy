@@ -6,6 +6,7 @@ using Microsoft.CSharp.RuntimeBinder;
 using System.Diagnostics;
 using System.Data.Entity;
 using TravelBuddyAPI.Data;
+using TravelBuddyAPI.Enums;
 
 namespace TravelBuddyAPI.Services;
 
@@ -22,12 +23,12 @@ public class GeoapifyClient : IGeoapifyService
         _apiKey = configuration["GEOAPIFY_KEY"] ?? throw new ArgumentNullException($"{nameof(_apiKey)} is not set in the configuration");
     }
 
-    public async Task<List<ProviderPlace>?> GetAddressAutocompleteAsync(string text, string? type = null, string? lang = null, string? filter = null, string? bias = null, string format = "json")
+    public async Task<List<ProviderPlace>?> GetAddressAutocompleteAsync(string text, AddressLevel? type = null, string? lang = null, string? filter = null, string? bias = null, string format = "json")
     {
         var request = new RestRequest("v1/geocode/autocomplete", Method.Get);
         request.AddParameter("text", text);
         request.AddParameter("apiKey", _apiKey);
-        if (type != null) request.AddParameter("type", type);
+        if (type != null) request.AddParameter("type", type.ToString());
         if (lang != null) request.AddParameter("lang", lang);
         if (filter != null) request.AddParameter("filter", filter);
         if (bias != null) request.AddParameter("bias", bias);
@@ -65,17 +66,17 @@ public class GeoapifyClient : IGeoapifyService
         }
     }
 
-    public async Task<string?> GetIsolineAsync((double latitude, double longitude) start, int range, string mode, string traffic = "approximated", string units = "metric", string type = "distance", string routeType = "balanced")
+    public async Task<string?> GetIsolineAsync((double latitude, double longitude) start, int range, TransferMode mode, TrafficType traffic = TrafficType.approximated, Units units = Units.metric, IsolineType type = IsolineType.distance, TransferType routeType = TransferType.balanced)
     {
         var request = new RestRequest("v1/isoline", Method.Get);
         request.AddParameter("lat", start.latitude);
         request.AddParameter("lon", start.longitude);
         request.AddParameter("range", range);
-        request.AddParameter("mode", mode);
-        request.AddParameter("traffic", traffic);
-        request.AddParameter("units", units);
-        request.AddParameter("type", type);
-        request.AddParameter("route_type", routeType);
+        request.AddParameter("mode", mode.ToString());
+        request.AddParameter("traffic", traffic.ToString());
+        request.AddParameter("units", units.ToString());
+        request.AddParameter("type", type.ToString());
+        request.AddParameter("route_type", routeType.ToString());
         request.AddParameter("apiKey", _apiKey);
 
         var response = await _client.ExecuteAsync(request);
@@ -222,17 +223,17 @@ public class GeoapifyClient : IGeoapifyService
         }
     }
 
-    public async Task<TimeSpan?> GetRouteTimeAsync((double latitude, double longitude) start, (double latitude, double longitude) end, string mode, string traffic = "approximated", string units = "metric")
+    public async Task<TimeSpan?> GetRouteTimeAsync((double latitude, double longitude) start, (double latitude, double longitude) end, TransferMode mode, TrafficType traffic = TrafficType.approximated, Units units = Units.metric)
     {
         var request = new RestRequest("v1/routematrix", Method.Post);
         request.AddHeader("Content-Type", "application/json");
         var body = new
         {
-            mode,
+            mode = mode.ToString(),
             sources = new[] { new { location = new double[] { start.longitude, start.latitude } } },
             targets = new[] { new { location = new double[] { end.longitude, end.latitude } } },
-            traffic,
-            units
+            traffic = traffic.ToString(),
+            units = units.ToString(),
         };
         request.AddJsonBody(body);
         request.AddQueryParameter("apiKey", _apiKey);

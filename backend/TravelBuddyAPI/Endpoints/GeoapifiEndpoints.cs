@@ -1,3 +1,4 @@
+using TravelBuddyAPI.Enums;
 using TravelBuddyAPI.Services;
 
 namespace TravelBuddyAPI.Endpoints;
@@ -8,7 +9,7 @@ public static class GeoapifyEndpoints // TODO potentially refactor for using cat
     {
         var group = app.MapGroup("/geoapify");
 
-        group.MapGet("/autocomplete", AddressAutocomplete).RequireAuthorization();
+        group.MapGet("/autocomplete", AddressAutocomplete);
         // group.MapGet("/details", Details);
         // group.MapGet("/isoline", Isoline);
         // group.MapGet("/nearbyPlaces/circle", NearbyPlacesByCircle);
@@ -19,7 +20,7 @@ public static class GeoapifyEndpoints // TODO potentially refactor for using cat
         return app;
     }
 
-    private static async Task<IResult> AddressAutocomplete(GeoapifyClient client, string text, string? type = null, string? lang = null, string? filter = null, string? bias = null, string format = "json")
+    private static async Task<IResult> AddressAutocomplete(GeoapifyClient client, string text, AddressLevel? type = null, string? lang = null, string? filter = null, string? bias = null, string format = "json")
     {
         try
         {

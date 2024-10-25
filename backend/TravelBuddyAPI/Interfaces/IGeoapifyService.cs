@@ -1,4 +1,5 @@
 using TravelBuddyAPI.Models;
+using TravelBuddyAPI.Enums;
 
 namespace TravelBuddyAPI.Interfaces;
 
@@ -53,7 +54,7 @@ public interface IGeoapifyService
     /// <param name="type">Optional type of isoline. Default is "distance".</param>
     /// <param name="routeType">Optional route type. Default is "balanced".</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains the geometryId of the isoline.</returns>
-    public Task<string?> GetIsolineAsync((double latitude, double longitude) start, int range, string mode, string traffic = "approximated", string units = "metric", string type = "distance", string routeType = "balanced");
+    public Task<string?> GetIsolineAsync((double latitude, double longitude) start, int range, TransferMode mode, TrafficType traffic = TrafficType.approximated, Units units = Units.metric, IsolineType type = IsolineType.distance, TransferType routeType = TransferType.balanced);
 
     /// <summary>
     /// Retrieves the details of a place based on its ID.
@@ -72,7 +73,7 @@ public interface IGeoapifyService
     /// <param name="bias">Optional bias for the results.</param>
     /// <param name="format">Optional format of the results. Default is "json".</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains a list of places.</returns>
-    public Task<List<ProviderPlace>?> GetAddressAutocompleteAsync(string text, string? type = null, string? lang = null, string? filter = null, string? bias = null, string format = "json");
+    public Task<List<ProviderPlace>?> GetAddressAutocompleteAsync(string text, AddressLevel? type = null, string? lang = null, string? filter = null, string? bias = null, string format = "json");
 
     /// <summary>
     /// Retrieves the estimated route time between two locations.
@@ -83,5 +84,5 @@ public interface IGeoapifyService
     /// <param name="traffic">Optional traffic condition. Default is "approximated".</param>
     /// <param name="units">Optional units for the time. Default is "metric".</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains the estimated route time.</returns>
-    public Task<TimeSpan?> GetRouteTimeAsync((double latitude, double longitude) start, (double latitude, double longitude) end, string mode, string traffic = "approximated", string units = "metric");
+    public Task<TimeSpan?> GetRouteTimeAsync((double latitude, double longitude) start, (double latitude, double longitude) end, TransferMode mode, TrafficType traffic = TrafficType.approximated, Units units = Units.metric);
 }
