@@ -12,12 +12,14 @@ import {
   RadioButton,
   useTheme,
   MD3Theme,
+  PaperProvider,
 } from "react-native-paper";
 
 const windowWidth = Dimensions.get("window").width;
 
 const SettingsView = () => {
-  const styles = createStyles(useTheme());
+  const theme = useTheme();
+  const styles = createStyles(theme);
   const [isSwitchOn, setIsSwitchOn] = useState(false);
 
   const sheetRef = useRef<BottomSheet>(null);
@@ -183,6 +185,7 @@ const createStyles = (theme: MD3Theme) =>
       paddingTop: 0,
       alignItems: "center",
       justifyContent: "flex-start",
+      backgroundColor: theme.colors.background,
     },
     content: {
       flex: 1,
@@ -201,9 +204,7 @@ const createStyles = (theme: MD3Theme) =>
     rightText: {
       alignSelf: "center",
     },
-    divider: {
-      backgroundColor: "#000000",
-    },
+
     switch: { marginRight: -10 },
     logOutButton: {
       marginVertical: 30,
@@ -216,7 +217,6 @@ const createStyles = (theme: MD3Theme) =>
     },
     bottomSheetContainer: {
       padding: 30,
-      backgroundColor: theme.colors.elevation.level1,
       borderTopLeftRadius: 40,
       borderTopRightRadius: 40,
     },

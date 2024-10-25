@@ -1,5 +1,5 @@
 import React from "react";
-import { Divider, List } from "react-native-paper";
+import { Divider, List, MD3Theme, useTheme } from "react-native-paper";
 import { StyleSheet } from "react-native";
 import { BLACK } from "@/constants/Colors";
 
@@ -14,7 +14,7 @@ const SettingListItem = ({
   rightComponent,
   onPress,
 }: SettingListItemProps) => {
-  const styles = createStyles();
+  const styles = createStyles(useTheme());
   return (
     <>
       <List.Item title={title} right={rightComponent} onPress={onPress} />
@@ -23,10 +23,10 @@ const SettingListItem = ({
   );
 };
 
-const createStyles = () =>
+const createStyles = (theme: MD3Theme) =>
   StyleSheet.create({
     divider: {
-      backgroundColor: BLACK,
+      backgroundColor: theme.colors.onSurface,
     },
   });
 
