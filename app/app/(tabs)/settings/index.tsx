@@ -6,5 +6,14 @@ import { useTheme } from "react-native-paper";
 export default function Explore() {
   const theme = useTheme();
 
-  return <AppErrorView />;
-}
+  return (
+    <View
+      style={{
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: theme.colors.background,
+      }}
+    >
+      <Text>Settings</Text>
+    </View>
