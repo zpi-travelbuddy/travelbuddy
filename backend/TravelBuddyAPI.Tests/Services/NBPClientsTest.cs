@@ -17,26 +17,33 @@ namespace TravelBuddyAPI.Tests.Services
         {
             // Arrange
             string currencyCode = "USD";
-            var today = DateTime.Now;
+            var date = new DateOnly(2024, 10, 24);
 
             // Act
-            if (today.DayOfWeek == DayOfWeek.Saturday || today.DayOfWeek == DayOfWeek.Sunday)
-            {
-                var exception = await Assert.ThrowsAsync<HttpRequestException>(() => _nbpClient.GetRateAsync(currencyCode));
+            var rate = await _nbpClient.GetRateAsync(currencyCode,date);
 
-                // Assert
-                Assert.NotNull(exception);
-                Assert.IsType<HttpRequestException>(exception);
-            }
-            else
-            {
-                var rate = await _nbpClient.GetRateAsync(currencyCode);
-
-                // Assert
-                Assert.NotNull(rate);
-                Assert.True(rate > 0);
-            }
+            // Assert
+            Assert.NotNull(rate);
+            Assert.True(rate > 0);
         }
+
+
+        [Fact]
+        public async Task GetRateAsync_ValidCurrencyCode_ThrowsHttpRequestException()
+        {
+            // Arrange
+            string currencyCode = "USD";
+            var date = new DateOnly(2024, 10, 19);
+
+            // Act
+            var exception = await Assert.ThrowsAsync<HttpRequestException>(() => _nbpClient.GetRateAsync(currencyCode, date));
+
+            // Assert
+            Assert.NotNull(exception);
+            Assert.IsType<HttpRequestException>(exception);
+           
+        }
+
 
         [Fact]
         public async Task GetRateAsync_InvalidCurrencyCode_ThrowsHttpRequestException()
@@ -75,18 +82,18 @@ namespace TravelBuddyAPI.Tests.Services
         }
 
         [Fact]
-        public async Task GetClosestRateAsync_InvalidCurrencyCode_ThrowsHttpRequestException()
+        public async Task GetClosestRateAsync_CurrencyCode_ReturnsRate()
         {
             // Arrange
-            string currencyCode = "INVALID";
-            DateOnly date = DateOnly.FromDateTime(DateTime.Now);
+            string currencyCode = "USD";
+            DateOnly date = new DateOnly(2024, 10, 19);
 
             // Act
-            var exception = await Record.ExceptionAsync(() => _nbpClient.GetClosestRateAsync(currencyCode, date));
-
+            var rate = await _nbpClient.GetClosestRateAsync(currencyCode, date);
+            
             // Assert
-            Assert.NotNull(exception);
-            Assert.IsType<HttpRequestException>(exception);
+            Assert.NotNull(rate);
+            Assert.True(rate > 0);
         }
     }
 }
