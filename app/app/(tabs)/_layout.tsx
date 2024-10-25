@@ -7,7 +7,10 @@ export default function TabLayout() {
   const theme = useTheme();
 
   return (
-    <Tabs tabBar={(props) => <BottomNavBar {...props} theme={theme} />}>
+    <Tabs
+      screenOptions={{ headerShown: false }}
+      tabBar={(props) => <BottomNavBar {...props} theme={theme} />}
+    >
       <Tabs.Screen
         name="trips"
         options={{
