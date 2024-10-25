@@ -8,7 +8,7 @@ import {
 } from "@expo-google-fonts/manrope";
 import { useEffect } from "react";
 import { useColorScheme } from "react-native";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import * as SplashScreen from "expo-splash-screen";
 
 SplashScreen.preventAutoHideAsync();
@@ -43,8 +43,8 @@ export default function RootLayout() {
 
   return (
     <PaperProvider theme={theme}>
-      <Stack>
-        <Stack.Screen name="index" />
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="(tabs)" />
       </Stack>
     </PaperProvider>
   );

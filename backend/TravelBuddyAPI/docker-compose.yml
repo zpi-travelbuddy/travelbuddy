@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  sqlserver:
+    build:
+      context: .
+      dockerfile: Dockerfile.sqlserver
+    container_name: sql-server-container
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserverdata:/var/opt/mssql
+    networks:
+      - travelbuddynetwork
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=${MSSQL_SA_PASSWORD}
+
+
+  travelbuddyapi:
+    build: 
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: travel-buddy-api-container
+    environment:
+      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
+      - GEOAPIFY_KEY=${GEOAPIFY_KEY}
+      - CLIENT_SECRET=${CLIENT_SECRET}
+      - MSSQL_SA_PASSWORD=${MSSQL_SA_PASSWORD}
+    ports:
+      - "8080:8080"
+    depends_on:
+      - sqlserver
+    networks:
+      - travelbuddynetwork
+
+networks:
+  travelbuddynetwork:
+    driver: bridge
+
+volumes:
+  sqlserverdata:
