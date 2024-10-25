@@ -4,6 +4,9 @@ import {
 } from "react-native-paper";
 import { MD3Colors } from "react-native-paper/lib/typescript/types";
 
+export const BLACK = "#000000";
+export const WHITE = "#FFFFFF";
+
 export const Colors = {
   light: {
     ...DefaultTheme.colors,
