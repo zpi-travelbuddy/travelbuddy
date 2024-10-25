@@ -1,4 +1,4 @@
-import { Stack } from "expo-router";
+import { Slot } from "expo-router";
 import { PaperProvider } from "react-native-paper";
 import { Themes } from "@/constants/Themes";
 import {
@@ -10,6 +10,7 @@ import { useEffect } from "react";
 import { useColorScheme } from "react-native";
 import { useMemo } from "react";
 import * as SplashScreen from "expo-splash-screen";
+import { AuthProvider } from "./ctx";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -42,10 +43,10 @@ export default function RootLayout() {
   }
 
   return (
-    <PaperProvider theme={theme}>
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="(tabs)" />
-      </Stack>
-    </PaperProvider>
+    <AuthProvider>
+      <PaperProvider theme={theme}>
+        <Slot />
+      </PaperProvider>
+    </AuthProvider>
   );
 }
