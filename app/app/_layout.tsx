@@ -65,6 +65,6 @@ const makeStyles = (theme: any) =>
       backgroundColor: theme.colors.background,
     },
     statusBar: {
-      backgroundColor: "transparent",
+      backgroundColor: theme.colors.background,
     },
   });
