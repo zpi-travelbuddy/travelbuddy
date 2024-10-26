@@ -66,7 +66,6 @@ export const Colors = {
       level2: "#E9EFF0", // surfaceContainer
       level3: "#E3E9EA", // surfaceContainerHigh
       level4: "#DEE3E5", // surfaceContainerHighest
-      level5: "#DEE3E5", // surfaceContainerHighest
     },
   } as MD3Colors,
   lightHighContrast: {
@@ -127,7 +126,6 @@ export const Colors = {
       level2: "#E9EFF0", // surfaceContainer
       level3: "#E3E9EA", // surfaceContainerHigh
       level4: "#DEE3E5", // surfaceContainerHighest
-      level5: "#DEE3E5", // surfaceContainerHighest
     },
   } as MD3Colors,
   dark: {
@@ -188,7 +186,6 @@ export const Colors = {
       level2: "#1B2122", // surfaceContainer
       level3: "#252B2C", // surfaceContainerHigh
       level4: "#303637", // surfaceContainerHighest
-      level5: "#303637", // surfaceContainerHighest
     },
   } as MD3Colors,
   darkHighContrast: {
@@ -249,7 +246,6 @@ export const Colors = {
       level2: "#1B2122", // surfaceContainer
       level3: "#252B2C", // surfaceContainerHigh
       level4: "#303637", // surfaceContainerHighest
-      level5: "#303637", // surfaceContainerHighest
     },
   } as MD3Colors,
 };

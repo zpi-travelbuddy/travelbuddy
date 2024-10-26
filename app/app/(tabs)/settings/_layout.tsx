@@ -1,6 +1,5 @@
 import { Stack } from "expo-router";
 import { AppBar } from "@/components/AppBar";
-import SelectCurrencyView from "@/views/SelectCurrencyView";
 
 export default function StackLayout() {
   return (

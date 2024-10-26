@@ -1,5 +1,5 @@
 import { Dimensions, StyleSheet, View } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { MD3Theme, TextInput, useTheme } from "react-native-paper";
 import { formatCurrency, formatMoney } from "@/utils/CurrencyUtils";
 
@@ -7,7 +7,7 @@ const { width } = Dimensions.get("window");
 
 const CurrencyValueInput = () => {
   const theme = useTheme();
-  const styles = createStyles(theme);
+  const styles = useMemo(() => createStyles(theme), [theme]);
 
   const [amount, setAmount] = useState("");
   const [budget, setBudget] = useState<number | undefined>(undefined);
@@ -15,6 +15,12 @@ const CurrencyValueInput = () => {
 
   const handleBudgetChange = (value: string) => {
     setAmount(value);
+  };
+
+  const handleBudgetEndEditing = () => {
+    const numericValue = formatMoney(amount);
+    setBudget(numericValue);
+    setAmount(formatCurrency(numericValue));
   };
 
   return (
@@ -25,11 +31,7 @@ const CurrencyValueInput = () => {
         label="Budżet"
         value={amount}
         onChangeText={handleBudgetChange}
-        onEndEditing={() => {
-          const numericValue = formatMoney(amount);
-          setBudget(numericValue);
-          setAmount(formatCurrency(numericValue));
-        }}
+        onEndEditing={handleBudgetEndEditing}
         keyboardType="numeric"
       />
 
@@ -59,9 +61,11 @@ const createStyles = (theme: MD3Theme) =>
     budgetInput: {
       flex: 0.65,
       marginLeft: 0.05 * width,
+      backgroundColor: theme.colors.surface,
     },
     currencyInput: {
       flex: 0.3,
       marginRight: 0.05 * width,
+      backgroundColor: theme.colors.surface,
     },
   });

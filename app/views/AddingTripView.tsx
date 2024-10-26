@@ -1,54 +1,127 @@
-import { StyleSheet, View, Image, Dimensions, ScrollView } from "react-native";
-import React, { useMemo, useState } from "react";
-import { useTheme, MD3Theme, TextInput } from "react-native-paper";
+import {
+  StyleSheet,
+  View,
+  Image,
+  Dimensions,
+  ScrollView,
+  FlatList,
+  TouchableOpacity,
+} from "react-native";
+import React, { useCallback, useMemo, useState } from "react";
+import { useTheme, MD3Theme, TextInput, Text } from "react-native-paper";
 import { DatePickerModal } from "react-native-paper-dates";
 import { registerTranslation } from "react-native-paper-dates";
-import { formatDate } from "@/utils/DateUtils";
+import { formatDateRange } from "@/utils/DateUtils";
 import CurrencyValueInput from "@/components/CurrencyValueInput";
+import CustomModal from "@/components/CustomModal";
+import { RenderItem } from "@/components/RenderItem";
+import ActionButtons from "@/components/ActionButtons";
 
 const { height, width } = Dimensions.get("window");
 
 registerTranslation("pl", {
-  save: "Save",
-  selectSingle: "Select date",
-  selectMultiple: "Select dates",
-  selectRange: "Select period",
+  save: "Zapisz",
+  selectSingle: "Wybierz datę",
+  selectMultiple: "Wybierz daty",
+  selectRange: "Wybierz zakres",
   notAccordingToDateFormat: (inputFormat) =>
-    `Date format must be ${inputFormat}`,
-  mustBeHigherThan: (date) => `Must be later then ${date}`,
-  mustBeLowerThan: (date) => `Must be earlier then ${date}`,
+    `Data wymaga formatu: ${inputFormat}`,
+  mustBeHigherThan: (date) => `Musi być później niż ${date}`,
+  mustBeLowerThan: (date) => `Musi być wcześniej niż ${date}`,
   mustBeBetween: (startDate, endDate) =>
-    `Must be between ${startDate} - ${endDate}`,
-  dateIsDisabled: "Day is not allowed",
-  previous: "Previous",
-  next: "Next",
-  typeInDate: "Type in date",
-  pickDateFromCalendar: "Pick date from calendar",
-  close: "Close",
+    `Musi być pomiędzy ${startDate} - ${endDate}`,
+  dateIsDisabled: "Dzień nie jest dozwolony",
+  previous: "Poprzedni",
+  next: "Następny",
+  typeInDate: "Wpisz datę",
+  pickDateFromCalendar: "Wybierz datę z kalendarza",
+  close: "Zamknij",
   hour: "",
   minute: "",
 });
 
 const AddingTripView = () => {
-  type DateRange = {
+  interface DateRange {
     startDate: Date | undefined;
     endDate: Date | undefined;
-  };
+  }
+
+  interface Profile {
+    id: string;
+    name: string;
+  }
+
+  type ProfileType = "Preference" | "Convenience";
 
   const theme = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   const [tripName, setTripName] = useState("");
   const [destination, setDestination] = useState("");
+  const [isOpen, setOpen] = React.useState<boolean>(false);
+  const [dateRangeText, setDateRangeText] = React.useState<string>("");
+  const [numberOfPeople, setNumberOfPeople] = React.useState<string>("");
+  const [visible, setVisible] = React.useState(false);
 
   const [range, setRange] = React.useState<DateRange>({
     startDate: undefined,
     endDate: undefined,
   });
-  const [isOpen, setOpen] = React.useState<boolean>(false);
-  const [dateRangeText, setDateRangeText] = React.useState<string>("");
 
-  const [numberOfPeople, setNumberOfPeople] = React.useState<string>("");
+  const [selectedPreferenceProfile, setSelectedPreferencesProfile] =
+    useState<Profile>({
+      id: "1",
+      name: "Profile1",
+    });
+
+  const [selectedConvenienceProfile, setSelectedConvenienceProfile] =
+    useState<Profile>({
+      id: "11",
+      name: "Profile11",
+    });
+
+  const [preferenceProfiles, setPreferenceProfiles] = useState<Profile[]>([
+    { id: "1", name: "Profile1" },
+    { id: "2", name: "Profile2" },
+  ]);
+
+  const [convenienceProfiles, setConvenienceProfiles] = useState<Profile[]>([
+    { id: "11", name: "Profile11" },
+    { id: "22", name: "Profile22" },
+  ]);
+
+  const renderProfileContent = useCallback(
+    (item: { id: string; name: string }) => item.name,
+    [],
+  );
+
+  const renderPreferenceProfile = ({ item }: { item: Profile }) => (
+    <RenderItem
+      item={item}
+      isSelected={selectedPreferenceProfile.id === item.id}
+      onSelect={setSelectedPreferencesProfile}
+      renderContent={renderProfileContent}
+    />
+  );
+
+  const renderConvenienceProfile = ({ item }: { item: Profile }) => (
+    <RenderItem
+      item={item}
+      isSelected={selectedConvenienceProfile.id === item.id}
+      onSelect={setSelectedConvenienceProfile}
+      renderContent={renderProfileContent}
+    />
+  );
+
+  const [selectedProfileType, setSelectedProfileType] =
+    useState<ProfileType>("Preference");
+
+  const showModal = (type: ProfileType) => {
+    setSelectedProfileType(type);
+    setVisible(true);
+  };
+
+  const hideModal = () => setVisible(false);
 
   const onDismiss = React.useCallback(() => {
     setOpen(false);
@@ -64,9 +137,7 @@ const AddingTripView = () => {
     }) => {
       setOpen(false);
       setRange({ startDate, endDate });
-      if (startDate?.toISOString() !== endDate?.toISOString())
-        setDateRangeText(formatDate(startDate) + " - " + formatDate(endDate));
-      else setDateRangeText(formatDate(startDate) + "");
+      setDateRangeText(formatDateRange(startDate, endDate));
     },
     [],
   );
@@ -92,7 +163,7 @@ const AddingTripView = () => {
           label="Nazwa"
           value={tripName}
           placeholder={tripName}
-          onChangeText={(tripName) => setTripName(tripName)}
+          onChangeText={setTripName}
         ></TextInput>
 
         <TextInput
@@ -108,8 +179,8 @@ const AddingTripView = () => {
           mode="range"
           visible={isOpen}
           onDismiss={onDismiss}
-          startDate={range.startDate ?? undefined}
-          endDate={range.endDate ?? undefined}
+          startDate={range.startDate}
+          endDate={range.endDate}
           onConfirm={onConfirm}
           locale="pl"
           validRange={{
@@ -123,7 +194,7 @@ const AddingTripView = () => {
           label="Cel wycieczki"
           value={destination}
           placeholder={destination}
-          onChangeText={(destination) => setDestination(destination)}
+          onChangeText={setDestination}
         ></TextInput>
 
         <TextInput
@@ -136,7 +207,58 @@ const AddingTripView = () => {
         ></TextInput>
 
         <CurrencyValueInput />
+
+        <TouchableOpacity
+          onPress={() => showModal("Preference")}
+          style={styles.textInput}
+        >
+          <TextInput
+            mode="outlined"
+            label="Profil preferencji"
+            style={{ backgroundColor: theme.colors.surface }}
+            value={selectedPreferenceProfile.name}
+            editable={false}
+            left={<TextInput.Icon icon="account" />}
+          />
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={() => showModal("Convenience")}
+          style={styles.textInput}
+        >
+          <TextInput
+            mode="outlined"
+            label="Profil udogodnień"
+            style={{ backgroundColor: theme.colors.surface }}
+            value={selectedConvenienceProfile.name}
+            editable={false}
+            left={<TextInput.Icon icon="account" />}
+          />
+        </TouchableOpacity>
+
+        <CustomModal visible={visible} onDismiss={hideModal}>
+          <FlatList
+            data={
+              selectedProfileType === "Preference"
+                ? preferenceProfiles
+                : convenienceProfiles
+            }
+            renderItem={
+              selectedProfileType === "Preference"
+                ? renderPreferenceProfile
+                : renderConvenienceProfile
+            }
+            keyExtractor={(item) => item.id}
+            ItemSeparatorComponent={() => <View />}
+            ListEmptyComponent={<Text>Brak dostępnych profili</Text>}
+          />
+        </CustomModal>
       </View>
+
+      <ActionButtons
+        onCancel={() => console.log("Anulowanie")}
+        onSave={() => console.log("Zapisywanie")}
+      />
     </ScrollView>
   );
 };
@@ -153,7 +275,6 @@ const createStyles = (theme: MD3Theme) =>
     container: {
       flex: 1,
       alignItems: "center",
-
       paddingBottom: 20,
       backgroundColor: theme.colors.surface,
     },
@@ -166,5 +287,22 @@ const createStyles = (theme: MD3Theme) =>
       width: "90%",
       height: 50,
       marginVertical: 10,
+      backgroundColor: theme.colors.surface,
+    },
+    modal: {
+      backgroundColor: theme.colors.surface,
+      marginHorizontal: "10%",
+      padding: 20,
+      borderRadius: 10,
+      alignSelf: "center",
+    },
+    modalContent: {
+      fontSize: 16,
+      textAlign: "center",
+    },
+    modalText: {
+      fontSize: 16,
+      textAlign: "center",
+      marginBottom: 20,
     },
   });

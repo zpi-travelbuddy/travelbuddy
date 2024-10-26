@@ -1,16 +1,12 @@
-import { FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
-import React, { useEffect, useState } from "react";
-import {
-  MD3Theme,
-  RadioButton,
-  Searchbar,
-  useTheme,
-  Text,
-} from "react-native-paper";
+import { FlatList, StyleSheet, View } from "react-native";
+import React, { useMemo, useState } from "react";
+import { MD3Theme, Searchbar, useTheme, Text } from "react-native-paper";
+import { RenderItem } from "@/components/RenderItem";
+import ActionButtons from "@/components/ActionButtons";
 
 interface Currency {
   name: string;
-  code: string;
+  id: string;
 }
 
 const SelectCurrencyView = () => {
@@ -20,49 +16,74 @@ const SelectCurrencyView = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCurrency, setSelectedCurrency] = useState<Currency>({
     name: "Polski złoty",
-    code: "PLN",
+    id: "PLN",
   });
-  const [currencies, setCurrencies] = useState<Currency[]>([]);
+  const [currencies, setCurrencies] = useState<Currency[]>([
+    { name: "Polski złoty", id: "PLN" },
+    { name: "Euro", id: "EUR" },
+    { name: "Dolar amerykański", id: "USD" },
+    { name: "Funt szterling", id: "GBP" },
+    { name: "Dolar kanadyjski", id: "CAD" },
+    { name: "Dolar australijski", id: "AUD" },
+    { name: "Frank szwajcarski", id: "CHF" },
+    { name: "Yen japoński", id: "JPY" },
+    { name: "Won południowokoreański", id: "KRW" },
+    { name: "Dolar nowozelandzki", id: "NZD" },
+    { name: "Rubel rosyjski", id: "RUB" },
+    { name: "Korona czeska", id: "CZK" },
+    { name: "Hrywna ukraińska", id: "UAH" },
+    { name: "Leu rumuński", id: "RON" },
+    { name: "Korona szwedzka", id: "SEK" },
+    { name: "Korona duńska", id: "DKK" },
+    { name: "Dolar singapurski", id: "SGD" },
+    { name: "Baht tajski", id: "THB" },
+    { name: "Rial saudyjski", id: "SAR" },
+    { name: "Peso meksykańskie", id: "MXN" },
+  ]);
+
+  const filteredCurrencies = useMemo(() => {
+    return currencies
+      .filter((currency) =>
+        currency.name.toLowerCase().includes(searchQuery.toLowerCase()),
+      )
+      .sort((a, b) => a.id.localeCompare(b.id));
+  }, [searchQuery, currencies]);
+
+  const renderCurrencyContent = (item: Currency) => `[${item.id}] ${item.name}`;
 
   const renderCurrency = ({ item }: { item: Currency }) => (
-    <TouchableOpacity
-      style={styles.card}
-      onPress={() => setSelectedCurrency(item)}
-    >
-      <View style={styles.currencyContainer}>
-        <Text style={styles.currencyText}>
-          [{item.code}] {item.name}
-        </Text>
-        <RadioButton
-          value={item.code}
-          status={selectedCurrency.code === item.code ? "checked" : "unchecked"}
-          onPress={() => setSelectedCurrency(item)}
-        />
-      </View>
-    </TouchableOpacity>
+    <RenderItem
+      item={item}
+      isSelected={selectedCurrency.id === item.id}
+      onSelect={setSelectedCurrency}
+      renderContent={renderCurrencyContent}
+    />
   );
-
-  useEffect(() => {
-    setCurrencies([
-      { name: "Polski złoty", code: "PLN" },
-      { name: "Euro", code: "EUR" },
-      { name: "Dolar amerykański", code: "USD" },
-    ]);
-  }, []);
 
   return (
     <View style={styles.container}>
-      <Searchbar
-        value={searchQuery}
-        onChangeText={setSearchQuery}
-        placeholder="Wyszukaj walutę"
-        style={styles.searchbar}
-      />
       <FlatList
-        data={currencies}
+        style={styles.scrollView}
+        contentContainerStyle={styles.container}
+        data={filteredCurrencies}
         renderItem={renderCurrency}
-        keyExtractor={(item) => item.code}
-        ItemSeparatorComponent={() => <View style={styles.separator} />}
+        keyExtractor={(item) => item.id}
+        ListHeaderComponent={
+          <Searchbar
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            placeholder="Wyszukaj walutę"
+            style={styles.searchbar}
+          />
+        }
+        ListEmptyComponent={
+          <Text style={styles.emptyMessage}> Nie znaleziono walut</Text>
+        }
+      />
+
+      <ActionButtons
+        onCancel={() => console.log("Anulowanie")}
+        onSave={() => console.log("Zapisywanie")}
       />
     </View>
   );
@@ -72,37 +93,26 @@ export default SelectCurrencyView;
 
 const createStyles = (theme: MD3Theme) =>
   StyleSheet.create({
-    container: {
+    scrollView: {
       flex: 1,
-      flexDirection: "column",
-      alignItems: "stretch",
       paddingHorizontal: 20,
       paddingBottom: 20,
       backgroundColor: theme.colors.background,
     },
+    container: {
+      flexGrow: 1,
+      flexDirection: "column",
+      alignItems: "stretch",
+      paddingBottom: 20,
+      backgroundColor: theme.colors.background,
+    },
     searchbar: {
-      backgroundColor: theme.colors.elevation.level2,
+      backgroundColor: theme.colors.elevation.level3,
       marginVertical: 20,
     },
-    text: {
-      ...theme.fonts,
+    emptyMessage: {
       textAlign: "center",
-    },
-    separator: {},
-    currencyItem: {
-      paddingVertical: 8,
-    },
-    currencyText: {
-      fontSize: 16,
-    },
-    card: {
-      padding: 15,
-      backgroundColor: theme.colors.surface,
-      elevation: 3,
-    },
-    currencyContainer: {
-      flexDirection: "row",
-      justifyContent: "space-between",
-      alignItems: "center",
+      marginTop: 20,
+      color: theme.colors.onSurface, // Użyj koloru tekstu z motywu
     },
   });
