@@ -1,11 +1,5 @@
-import { createContext, useContext, useEffect, useState } from "react";
-
-interface AuthProps {
-  authState?: { token: string | null; authenticated: boolean | null };
-  onRegister?: (email: string, password: string) => Promise<any>;
-  onLogin?: (email: string, password: string) => Promise<any>;
-  onLogout?: () => Promise<any>;
-}
+import { createContext, useContext, useState } from "react";
+import { AuthProps, AuthState, Credentials } from "@/types/auth";
 
 const AuthContext = createContext<AuthProps>({});
 
@@ -14,19 +8,16 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }: any) => {
-  const [authState, setAuthState] = useState<{
-    token: string | null;
-    authenticated: boolean | null;
-  }>({
+  const [authState, setAuthState] = useState<AuthState>({
     token: null,
     authenticated: null,
   });
 
   // TODO: Write onRegister logic
-  const onRegister = async (email: string, password: string) => {};
+  const onRegister = async (credentials: Credentials) => {};
 
   // TODO: Write onLogin logic
-  const onLogin = async (email: string, password: string) => {
+  const onLogin = async (credentials: Credentials) => {
     setAuthState({
       token: "PLACEHOLDER_TOKEN",
       authenticated: true,

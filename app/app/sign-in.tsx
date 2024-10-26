@@ -17,9 +17,10 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { EmailTextInput } from "@/components/auth/EmailTextInput";
 import { PasswordTextInput } from "@/components/auth/PasswordTextInput";
 import { validateEmail } from "@/utils/validations";
+import { Credentials, AuthErrors } from "@/types/auth";
 
 // It would be good if we could calculate this value dynamically, but I had some issues with that
-const BOTTOM_VIEW_HEIGHT = 34;
+const BOTTOM_VIEW_HEIGHT = 54;
 
 export default function SignIn() {
   const { onLogin } = useAuth();
@@ -29,14 +30,11 @@ export default function SignIn() {
 
   const styles = makeStyles(theme);
 
-  const [credentials, setCredentials] = useState<{
-    email: string;
-    password: string;
-  }>({
+  const [credentials, setCredentials] = useState<Credentials>({
     email: "",
     password: "",
   });
-  const [errors, setErrors] = useState<{ email: string; password: string }>({
+  const [errors, setErrors] = useState<AuthErrors>({
     email: "",
     password: "",
   });
@@ -75,7 +73,7 @@ export default function SignIn() {
 
   const login = async () => {
     if (!validateForm()) return;
-    await onLogin!(credentials.email, credentials.password);
+    await onLogin!(credentials);
     router.replace("/");
   };
 
@@ -160,7 +158,7 @@ const makeStyles = (theme: any) =>
     },
     forgotPassword: {
       marginHorizontal: 40,
-      marginBottom: 90,
+      marginBottom: 70,
       textAlign: "right",
       fontFamily: "Manrope_700Bold",
     },
@@ -173,6 +171,6 @@ const makeStyles = (theme: any) =>
     },
     signUp: {
       alignSelf: "center",
-      marginBottom: 10,
+      marginBottom: 30,
     },
   });
