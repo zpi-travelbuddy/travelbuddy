@@ -59,6 +59,15 @@ export const Colors = {
     surfaceContainer: "#E9EFF0",
     surfaceContainerHigh: "#E3E9EA",
     surfaceContainerHighest: "#DEE3E5",
+    elevation: {
+      ...DefaultTheme.colors.elevation,
+      level0: "#FFFFFF",
+      level1: "#EFF5F6", // surfaceContainerLow
+      level2: "#E9EFF0", // surfaceContainer
+      level3: "#E3E9EA", // surfaceContainerHigh
+      level4: "#DEE3E5", // surfaceContainerHighest
+      level5: "#DEE3E5", // surfaceContainerHighest
+    },
   } as MD3Colors,
   lightHighContrast: {
     ...DefaultTheme.colors,
@@ -111,6 +120,15 @@ export const Colors = {
     surfaceContainer: "#E9EFF0",
     surfaceContainerHigh: "#E3E9EA",
     surfaceContainerHighest: "#DEE3E5",
+    elevation: {
+      ...DefaultTheme.colors.elevation,
+      level0: "#FFFFFF",
+      level1: "#EFF5F6", // surfaceContainerLow
+      level2: "#E9EFF0", // surfaceContainer
+      level3: "#E3E9EA", // surfaceContainerHigh
+      level4: "#DEE3E5", // surfaceContainerHighest
+      level5: "#DEE3E5", // surfaceContainerHighest
+    },
   } as MD3Colors,
   dark: {
     ...DarkTheme.colors,
@@ -163,6 +181,15 @@ export const Colors = {
     surfaceContainer: "#1B2122",
     surfaceContainerHigh: "#252B2C",
     surfaceContainerHighest: "#303637",
+    elevation: {
+      ...DarkTheme.colors.elevation,
+      level0: "#090F10",
+      level1: "#171D1E", // surfaceContainerLow
+      level2: "#1B2122", // surfaceContainer
+      level3: "#252B2C", // surfaceContainerHigh
+      level4: "#303637", // surfaceContainerHighest
+      level5: "#303637", // surfaceContainerHighest
+    },
   } as MD3Colors,
   darkHighContrast: {
     ...DarkTheme.colors,
@@ -215,5 +242,14 @@ export const Colors = {
     surfaceContainer: "#1B2122",
     surfaceContainerHigh: "#252B2C",
     surfaceContainerHighest: "#303637",
+    elevation: {
+      ...DarkTheme.colors.elevation,
+      level0: "#090F10",
+      level1: "#171D1E", // surfaceContainerLow
+      level2: "#1B2122", // surfaceContainer
+      level3: "#252B2C", // surfaceContainerHigh
+      level4: "#303637", // surfaceContainerHighest
+      level5: "#303637", // surfaceContainerHighest
+    },
   } as MD3Colors,
 };

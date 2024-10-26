@@ -1,5 +1,6 @@
 import SettingsView from "@/views/SettingsView";
 import { View } from "react-native";
+import { ScrollView } from "react-native-gesture-handler";
 import { PaperProvider, Text } from "react-native-paper";
 import { useTheme } from "react-native-paper";
 

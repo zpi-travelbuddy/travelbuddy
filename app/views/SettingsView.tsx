@@ -1,7 +1,7 @@
 import SettingListItem from "@/components/SettingListItem";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 import React, { useCallback, useMemo, useRef, useState } from "react";
-import { Dimensions, StyleSheet, View } from "react-native";
+import { Dimensions, ScrollView, StyleSheet, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import {
   Title,
@@ -59,87 +59,89 @@ const SettingsView = () => {
 
   return (
     <GestureHandlerRootView style={styles.container}>
-      <View style={styles.content}>
-        <Title style={styles.title}>Wygląd</Title>
-        <SettingListItem
-          title="Czcionka"
-          rightComponent={() => <Text style={styles.rightText}>średnia</Text>}
-          onPress={() => {
-            console.log("Czcionka kliknięta");
-            openBottomSheet(fontTitle, fontItems);
-          }}
-        />
-        <SettingListItem
-          title="Motyw"
-          rightComponent={() => <Text style={styles.rightText}>jasny</Text>}
-          onPress={() => {
-            console.log("Motyw kliknięty");
-            openBottomSheet(themeTitle, themeItems);
-          }}
-        />
-        <SettingListItem
-          title="Wysoki kontrast"
-          rightComponent={() => (
-            <Switch
-              style={styles.switch}
-              value={isSwitchOn}
-              onValueChange={toggleSwitch}
-            />
-          )}
-          onPress={() => {
-            console.log("Wysoki kontrast kliknięty");
-            setIsSwitchOn(!isSwitchOn);
-          }}
-        />
+      <ScrollView contentContainerStyle={styles.scrollView}>
+        <View style={styles.content}>
+          <Title style={styles.title}>Wygląd</Title>
+          <SettingListItem
+            title="Czcionka"
+            rightComponent={() => <Text style={styles.rightText}>średnia</Text>}
+            onPress={() => {
+              console.log("Czcionka kliknięta");
+              openBottomSheet(fontTitle, fontItems);
+            }}
+          />
+          <SettingListItem
+            title="Motyw"
+            rightComponent={() => <Text style={styles.rightText}>jasny</Text>}
+            onPress={() => {
+              console.log("Motyw kliknięty");
+              openBottomSheet(themeTitle, themeItems);
+            }}
+          />
+          <SettingListItem
+            title="Wysoki kontrast"
+            rightComponent={() => (
+              <Switch
+                style={styles.switch}
+                value={isSwitchOn}
+                onValueChange={toggleSwitch}
+              />
+            )}
+            onPress={() => {
+              console.log("Wysoki kontrast kliknięty");
+              setIsSwitchOn(!isSwitchOn);
+            }}
+          />
 
-        <Title style={styles.title}>Moje Statystyki</Title>
-        <SettingListItem
-          title="Oceny atrakcji"
-          rightComponent={() => <List.Icon icon="chevron-right" />}
-          onPress={() => {
-            console.log("Oceny atrakcji kliknięte");
-          }}
-        />
-        <SettingListItem
-          title="Wydatki"
-          rightComponent={() => <List.Icon icon="chevron-right" />}
-          onPress={() => {
-            console.log("Wydatki kliknięte");
-          }}
-        />
-        <SettingListItem
-          title="Statystyki wycieczek"
-          rightComponent={() => <List.Icon icon="chevron-right" />}
-          onPress={() => {
-            console.log("Statystyki wycieczek kliknięte");
-          }}
-        />
+          <Title style={styles.title}>Moje Statystyki</Title>
+          <SettingListItem
+            title="Oceny atrakcji"
+            rightComponent={() => <List.Icon icon="chevron-right" />}
+            onPress={() => {
+              console.log("Oceny atrakcji kliknięte");
+            }}
+          />
+          <SettingListItem
+            title="Wydatki"
+            rightComponent={() => <List.Icon icon="chevron-right" />}
+            onPress={() => {
+              console.log("Wydatki kliknięte");
+            }}
+          />
+          <SettingListItem
+            title="Statystyki wycieczek"
+            rightComponent={() => <List.Icon icon="chevron-right" />}
+            onPress={() => {
+              console.log("Statystyki wycieczek kliknięte");
+            }}
+          />
 
-        <Title style={styles.title}>Preferencje i statystyki</Title>
-        <SettingListItem
-          title="Profile preferencji"
-          rightComponent={() => <List.Icon icon="chevron-right" />}
-          onPress={() => {
-            console.log("Profile preferencji kliknięte");
-          }}
-        />
-        <SettingListItem
-          title="Profile udogodnień"
-          rightComponent={() => <List.Icon icon="chevron-right" />}
-          onPress={() => {
-            console.log("Profile udogodnień kliknięte");
-          }}
-        />
-      </View>
+          <Title style={styles.title}>Preferencje i statystyki</Title>
+          <SettingListItem
+            title="Profile preferencji"
+            rightComponent={() => <List.Icon icon="chevron-right" />}
+            onPress={() => {
+              console.log("Profile preferencji kliknięte");
+            }}
+          />
+          <SettingListItem
+            title="Profile udogodnień"
+            rightComponent={() => <List.Icon icon="chevron-right" />}
+            onPress={() => {
+              console.log("Profile udogodnień kliknięte");
+            }}
+          />
+        </View>
 
-      <Button
-        mode="contained"
-        style={styles.logOutButton}
-        icon="logout"
-        onPress={() => console.log("Wylogowanie")}
-      >
-        Wyloguj się
-      </Button>
+        <Button
+          mode="contained"
+          style={styles.logOutButton}
+          icon="logout"
+          onPress={() => console.log("Wylogowanie")}
+        >
+          Wyloguj się
+        </Button>
+      </ScrollView>
 
       <BottomSheet
         ref={sheetRef}
@@ -183,13 +185,15 @@ const createStyles = (theme: MD3Theme) =>
       flex: 1,
       padding: 16,
       paddingTop: 0,
-      alignItems: "center",
       justifyContent: "flex-start",
-      backgroundColor: theme.colors.background,
+      backgroundColor: theme.colors.surface,
     },
     content: {
       flex: 1,
       width: "100%",
+    },
+    scrollView: {
+      alignItems: "center",
     },
     bottomSheetTitle: {
       ...theme.fonts.titleMedium,
@@ -219,6 +223,7 @@ const createStyles = (theme: MD3Theme) =>
       padding: 30,
       borderTopLeftRadius: 40,
       borderTopRightRadius: 40,
+      backgroundColor: theme.colors.elevation.level1,
     },
     modalText: {
       marginBottom: 20,
