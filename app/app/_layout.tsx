@@ -4,10 +4,11 @@ import { Themes } from "@/constants/Themes";
 import {
   Manrope_400Regular,
   Manrope_500Medium,
+  Manrope_700Bold,
   useFonts,
 } from "@expo-google-fonts/manrope";
 import { useEffect } from "react";
-import { useColorScheme } from "react-native";
+import { useColorScheme, View, StyleSheet, StatusBar } from "react-native";
 import { useMemo } from "react";
 import * as SplashScreen from "expo-splash-screen";
 import { AuthProvider } from "./ctx";
@@ -20,6 +21,7 @@ export default function RootLayout() {
   const [loaded, error] = useFonts({
     Manrope_400Regular,
     Manrope_500Medium,
+    Manrope_700Bold,
   });
 
   const theme = useMemo(() => {
@@ -42,11 +44,27 @@ export default function RootLayout() {
     return null;
   }
 
+  const styles = makeStyles(theme);
+
   return (
     <AuthProvider>
       <PaperProvider theme={theme}>
-        <Slot />
+        <StatusBar />
+        <View style={styles.container}>
+          <Slot />
+        </View>
       </PaperProvider>
     </AuthProvider>
   );
 }
+
+const makeStyles = (theme: any) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: theme.colors.background,
+    },
+    statusBar: {
+      backgroundColor: "transparent",
+    },
+  });

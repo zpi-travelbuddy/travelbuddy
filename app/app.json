@@ -18,7 +18,8 @@
     },
     "android": {
       "package": "com.zpitravelbuddy.travelbuddy",
-      "userInterfaceStyle": "automatic"
+      "userInterfaceStyle": "automatic",
+      "softwareKeyboardLayoutMode": "pan"
     },
     "web": {
       "bundler": "metro",
