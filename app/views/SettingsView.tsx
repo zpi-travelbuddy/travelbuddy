@@ -12,7 +12,6 @@ import {
   RadioButton,
   useTheme,
   MD3Theme,
-  PaperProvider,
 } from "react-native-paper";
 
 const windowWidth = Dimensions.get("window").width;
@@ -24,8 +23,6 @@ const SettingsView = () => {
 
   const sheetRef = useRef<BottomSheet>(null);
   const [isOpen, setIsOpen] = useState(false);
-
-  const snapPoints = useMemo(() => ["30%", "70%", "100%"], []);
 
   const handleSnapPress = useCallback((index: number) => {
     sheetRef.current?.snapToIndex(index);
@@ -41,6 +38,16 @@ const SettingsView = () => {
 
   const [bottomSheetTitle, setBottomSheetTitle] = useState(fontTitle);
   const [bottomSheetItems, setBottomSheetItems] = useState(fontItems);
+
+  const itemHeight = 50;
+  const titleHeight = 60;
+  const paddingHeight = 32;
+
+  const snapPoints = useMemo(() => {
+    const bottomSheetHeight =
+      titleHeight + paddingHeight + bottomSheetItems.length * itemHeight;
+    return [bottomSheetHeight];
+  }, [bottomSheetItems.length]);
 
   const [selectedOption, setSelectedOption] = useState<string>("");
 
@@ -154,6 +161,7 @@ const SettingsView = () => {
         backgroundComponent={({ style }) => (
           <View style={[style, styles.bottomSheetContainer]} />
         )}
+        containerStyle={{ zIndex: 3 }}
       >
         <BottomSheetView>
           <View style={styles.titleContainer}>
@@ -175,6 +183,8 @@ const SettingsView = () => {
           ))}
         </BottomSheetView>
       </BottomSheet>
+
+      {isOpen && <View style={styles.scrim} />}
     </GestureHandlerRootView>
   );
 };
@@ -227,6 +237,11 @@ const createStyles = (theme: MD3Theme) =>
     },
     modalText: {
       marginBottom: 20,
+    },
+    scrim: {
+      ...StyleSheet.absoluteFillObject,
+      backgroundColor: "rgba(0, 0, 0, 0.5)", // półprzezroczysty czarny
+      zIndex: 1,
     },
   });
 
