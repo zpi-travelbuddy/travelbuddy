@@ -1,7 +1,12 @@
-import { TextInput } from "react-native-paper";
-import { StyleProp, TextStyle, Platform, View } from "react-native";
+import { TextInput, useTheme } from "react-native-paper";
+import {
+  StyleProp,
+  TextStyle,
+  Platform,
+  GestureResponderEvent,
+  StyleSheet,
+} from "react-native";
 import { useState } from "react";
-import { GestureResponderEvent } from "react-native";
 
 export function PasswordTextInput({
   style,
@@ -15,9 +20,10 @@ export function PasswordTextInput({
   error?: boolean | undefined;
 }) {
   const [hidePassword, setHidePassword] = useState(true);
+  const theme = useTheme();
+  const innerStyle = makeStyles(theme);
 
   const switchPasswordVisibility = (e: GestureResponderEvent) => {
-    e.stopPropagation();
     setHidePassword((prev) => !prev);
   };
 
@@ -33,12 +39,20 @@ export function PasswordTextInput({
       right={
         <TextInput.Icon
           icon={hidePassword ? "eye" : "eye-off"}
+          style={innerStyle.icon}
           forceTextInputFocus={false}
           onPress={switchPasswordVisibility}
-          onLongPress={(e: GestureResponderEvent) => e.stopPropagation()}
         />
       }
       secureTextEntry={Platform.OS !== "ios" && hidePassword}
     />
   );
 }
+
+// TODO: Change later any to theme type
+const makeStyles = (theme: any) =>
+  StyleSheet.create({
+    icon: {
+      backgroundColor: theme.colors.surface,
+    },
+  });

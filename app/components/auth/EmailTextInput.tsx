@@ -1,5 +1,5 @@
-import { TextInput } from "react-native-paper";
-import { StyleProp, TextStyle } from "react-native";
+import { TextInput, useTheme } from "react-native-paper";
+import { StyleProp, TextStyle, StyleSheet } from "react-native";
 
 export function EmailTextInput({
   style,
@@ -12,6 +12,9 @@ export function EmailTextInput({
   onChangeText: (((text: string) => void) & Function) | undefined;
   error: boolean | undefined;
 }) {
+  const theme = useTheme();
+  const innerStyle = makeStyles(theme);
+
   return (
     <TextInput
       style={style}
@@ -22,7 +25,15 @@ export function EmailTextInput({
       placeholder="Email"
       keyboardType="email-address"
       inputMode="email"
-      left={<TextInput.Icon icon="at" />}
+      left={<TextInput.Icon style={innerStyle.icon} icon="at" />}
     />
   );
 }
+
+// TODO: Change later any to theme type
+const makeStyles = (theme: any) =>
+  StyleSheet.create({
+    icon: {
+      backgroundColor: theme.colors.surface,
+    },
+  });
