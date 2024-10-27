@@ -6,6 +6,7 @@ using TravelBuddyAPI.Data;
 using Microsoft.OpenApi.Models;
 using TravelBuddyAPI.Endpoints;
 using RestSharp;
+using TravelBuddyAPI.Interfaces;
 
 namespace TravelBuddyAPI
 {
@@ -26,10 +27,13 @@ namespace TravelBuddyAPI
 
             builder.Services.AddAuthorization();
 
+            builder.Services.AddMemoryCache();
+
             builder.Services.AddScoped<Services.NBPClient>();
             builder.Services.AddScoped<Services.GeoapifyClient>();
             builder.Services.AddScoped<IRestClient>(sp => 
                 new RestClient(builder.Configuration["GeoapifyBaseUrl"] ?? ""));
+            builder.Services.AddScoped<ITravelBuddyDbCache, Services.TravelBuddyDbCache>();
 
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(options =>
