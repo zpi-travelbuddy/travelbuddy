@@ -6,5 +6,5 @@ public interface ITravelBuddyDbCache
 {
     Task<List<PlaceCategory>?> GetCategoriesAsync();
 
-    Task<List<PlaceCondition>?> GetPlaceConditionsAsync();
+    Task<List<PlaceCondition>?> GetConditionsAsync();
 }

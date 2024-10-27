@@ -1,8 +1,8 @@
-using System.Data.Entity;
 using Microsoft.Extensions.Caching.Memory;
 using TravelBuddyAPI.Data;
 using TravelBuddyAPI.Interfaces;
 using TravelBuddyAPI.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace TravelBuddyAPI.Services;
 
@@ -35,7 +35,7 @@ public class TravelBuddyDbCache : ITravelBuddyDbCache
         return categories;
     }
 
-    public async Task<List<PlaceCondition>?> GetPlaceConditionsAsync()
+    public async Task<List<PlaceCondition>?> GetConditionsAsync()
     {
         string cacheKey = "conditions";
 

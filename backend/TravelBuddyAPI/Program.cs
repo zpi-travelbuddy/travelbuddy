@@ -7,6 +7,7 @@ using Microsoft.OpenApi.Models;
 using TravelBuddyAPI.Endpoints;
 using RestSharp;
 using TravelBuddyAPI.Interfaces;
+using TravelBuddyAPI.Services;
 
 namespace TravelBuddyAPI
 {
@@ -31,7 +32,7 @@ namespace TravelBuddyAPI
 
             builder.Services.AddScoped<INBPService, Services.NBPClient>();
             builder.Services.AddScoped<IGeoapifyService, Services.GeoapifyClient>();
-            builder.Services.AddScoped<IRestClient>(sp => 
+            builder.Services.AddScoped<IRestClient>(sp =>
                 new RestClient(builder.Configuration["GeoapifyBaseUrl"] ?? ""));
             builder.Services.AddScoped<ITravelBuddyDbCache, Services.TravelBuddyDbCache>();
 
@@ -114,7 +115,7 @@ namespace TravelBuddyAPI
             // Development enpoints
             if (app.Environment.IsDevelopment())
             {
-                app.MapGeoapifyEndpoints(); // TODO potentially refactor for using categories and conditions models
+                app.MapGeoapifyEndpoints();
                 app.MapNBPEndpoints();
             }
 
@@ -126,4 +127,5 @@ namespace TravelBuddyAPI
             app.Run();
         }
     }
+
 }
