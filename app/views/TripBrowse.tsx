@@ -1,72 +1,63 @@
-import { SafeAreaView, StyleSheet, TextInput, View } from "react-native";
+import { SafeAreaView, ScrollView, StyleSheet, View } from "react-native";
 import React, { useState } from "react";
 import { TripCard } from "@/components/TripCard";
-// import { TripTabs } from "@/components/TripTabs";
-import { useTheme, FAB } from "react-native-paper";
-import { ScrollView } from "react-native";
+import { useTheme, FAB, Searchbar, SegmentedButtons } from "react-native-paper";
+import { FlatList } from "react-native";
 
 const TripBrowse = () => {
   const theme = useTheme();
   const [searchQuery, setSearchQuery] = useState("");
 
-  const trips = [
+  type Trip = {
+    title: string;
+    subtitle: string;
+    imageUri: string;
+    isArchived: boolean;
+  };
+
+  const actualTrips = [
     {
       title: "Wycieczka do Milicza",
-      subtitle: "10.06.2024 - 15.06.2024",
+      subtitle: "10.06.2025 - 15.06.2025",
       imageUri: "https://picsum.photos/888",
+      isArchived: false,
     },
     {
       title: "Wycieczka do Wrocławia",
-      subtitle: "20.06.2024 - 25.06.2024",
+      subtitle: "20.06.2025 - 25.06.2025",
       imageUri: "https://picsum.photos/889",
+      isArchived: false,
     },
+    {
+      title: "Wycieczka do Moszczanki",
+      subtitle: "20.01.2026 - 25.01.2026",
+      imageUri: "https://picsum.photos/887",
+      isArchived: false,
+    },
+  ];
+
+  const archivedTrips = [
     {
       title: "Wycieczka do Krakowa",
       subtitle: "15.07.2024 - 20.07.2024",
       imageUri: "https://picsum.photos/890",
+      isArchived: true,
     },
     {
       title: "Wycieczka do Zakopanego",
       subtitle: "01.08.2024 - 07.08.2024",
       imageUri: "https://picsum.photos/891",
+      isArchived: true,
     },
   ];
+
+  const [trips, setTrips] = useState<Trip[]>(actualTrips);
 
   const filteredTrips = trips.filter((trip) =>
     trip.title.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   const styles = StyleSheet.create({
-    inputView: {
-      width: "100%",
-      alignItems: "center",
-      padding: 5,
-      borderRadius: 20,
-    },
-    safeArea: {
-      flex: 1,
-      justifyContent: "center",
-      alignItems: "center",
-      backgroundColor: theme.colors.surface,
-    },
-    scrollContainer: {
-      flexGrow: 1,
-      alignItems: "center",
-    },
-    input: {
-      height: 40,
-      width: "90%",
-      backgroundColor: theme.colors.elevation.level2,
-      borderRadius: 8,
-      marginVertical: 10,
-      marginLeft: 10,
-      marginHorizontal: 10,
-      padding: 10,
-      borderTopLeftRadius: 20,
-      borderTopRightRadius: 20,
-      borderBottomLeftRadius: 20,
-      borderBottomRightRadius: 20,
-    },
     fab: {
       position: "absolute",
       margin: 16,
@@ -74,28 +65,98 @@ const TripBrowse = () => {
       bottom: 0,
       backgroundColor: theme.colors.primary,
     },
+    searchbar: {
+      backgroundColor: theme.colors.elevation.level3,
+      margin: 20,
+      marginTop: 0,
+    },
+    flatListContent: {
+      flexGrow: 1,
+      flexDirection: "column",
+      alignItems: "stretch",
+      paddingBottom: 20,
+    },
+    container: {
+      flex: 1,
+    },
+    segmentedButtons: {
+      elevation: 0,
+      marginBottom: 20,
+      backgroundColor: theme.colors.surface,
+    },
   });
 
+  const renderItem = ({ item }: { item: Trip }) => (
+    <TripCard
+      title={item.title}
+      subtitle={item.subtitle}
+      imageUri={item.imageUri}
+      isArchived={item.isArchived}
+    />
+  );
+
+  const [value, setValue] = React.useState("actual");
+
+  const handleValueChange = (newValue: string) => {
+    setValue(newValue);
+    switch (newValue) {
+      case "actual":
+        setTrips(actualTrips);
+        break;
+      case "archive":
+        setTrips(archivedTrips);
+        break;
+      default:
+        break;
+    }
+  };
+
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.inputView}>
-        <TextInput
-          style={styles.input}
-          placeholder="Wyszukaj wycieczki..."
-          value={searchQuery}
-          onChangeText={(text) => setSearchQuery(text)}
-        />
-      </View>
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        {filteredTrips.map((trip, index) => (
-          <TripCard
-            key={index}
-            title={trip.title}
-            subtitle={trip.subtitle}
-            imageUri={trip.imageUri}
+    <View style={styles.container}>
+      <SegmentedButtons
+        value={value}
+        onValueChange={handleValueChange}
+        style={styles.segmentedButtons}
+        theme={{
+          ...theme,
+          roundness: 0,
+        }}
+        buttons={[
+          {
+            value: "actual",
+            label: "Aktualne",
+            style: {
+              borderWidth: 0,
+              borderBottomWidth: 1,
+              borderColor: theme.colors.elevation.level3,
+            },
+          },
+          {
+            value: "archive",
+            label: "Archiwum",
+            style: {
+              borderWidth: 0,
+              borderBottomWidth: 1,
+              borderColor: theme.colors.elevation.level3,
+            },
+          },
+        ]}
+      />
+      <FlatList
+        data={filteredTrips}
+        renderItem={renderItem}
+        keyExtractor={(item, index) => index.toString()}
+        contentContainerStyle={styles.flatListContent}
+        showsVerticalScrollIndicator={false}
+        ListHeaderComponent={
+          <Searchbar
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            placeholder="Wyszukaj wycieczkę"
+            style={styles.searchbar}
           />
-        ))}
-      </ScrollView>
+        }
+      />
       <FAB
         style={styles.fab}
         icon="plus"
@@ -105,7 +166,7 @@ const TripBrowse = () => {
           console.log("FAB Clicked");
         }}
       />
-    </SafeAreaView>
+    </View>
   );
 };
 
