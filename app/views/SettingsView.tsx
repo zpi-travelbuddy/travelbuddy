@@ -1,7 +1,13 @@
 import SettingListItem from "@/components/SettingListItem";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 import React, { useCallback, useMemo, useRef, useState } from "react";
-import { Dimensions, ScrollView, StyleSheet, View } from "react-native";
+import {
+  Dimensions,
+  ScrollView,
+  StyleSheet,
+  TouchableWithoutFeedback,
+  View,
+} from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import {
   Title,
@@ -15,6 +21,8 @@ import {
 } from "react-native-paper";
 
 const windowWidth = Dimensions.get("window").width;
+const windowHeight = Dimensions.get("window").height;
+const CLOSE_THRESHOLD = windowHeight * 0.05;
 
 const SettingsView = () => {
   const theme = useTheme();
@@ -53,8 +61,7 @@ const SettingsView = () => {
 
   const handleSelect = (item: string) => {
     setSelectedOption(item);
-    sheetRef.current?.close();
-    setIsOpen(false);
+    closeBottomSheet();
   };
 
   const openBottomSheet = (title: string, items: string[]) => {
@@ -63,6 +70,22 @@ const SettingsView = () => {
     handleSnapPress(1);
     setIsOpen(true);
   };
+
+  const closeBottomSheet = () => {
+    sheetRef.current?.close();
+    setIsOpen(false);
+  };
+
+  const handleSheetAnimate = useCallback(
+    (fromIndex: number, toIndex: number) => {
+      if (toIndex === -1) closeBottomSheet();
+      const currentHeight = snapPoints[toIndex];
+      if (currentHeight < CLOSE_THRESHOLD) {
+        closeBottomSheet();
+      }
+    },
+    [snapPoints],
+  );
 
   return (
     <GestureHandlerRootView style={styles.container}>
@@ -155,6 +178,7 @@ const SettingsView = () => {
         index={-1}
         snapPoints={snapPoints}
         enablePanDownToClose={true}
+        onAnimate={handleSheetAnimate}
         onClose={() => {
           sheetRef.current?.close();
         }}
@@ -184,7 +208,11 @@ const SettingsView = () => {
         </BottomSheetView>
       </BottomSheet>
 
-      {isOpen && <View style={styles.scrim} />}
+      {isOpen && (
+        <TouchableWithoutFeedback onPress={closeBottomSheet}>
+          <View style={styles.scrim} />
+        </TouchableWithoutFeedback>
+      )}
     </GestureHandlerRootView>
   );
 };
