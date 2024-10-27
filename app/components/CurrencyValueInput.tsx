@@ -1,7 +1,11 @@
 import { Dimensions, StyleSheet, View } from "react-native";
 import React, { useMemo, useState } from "react";
 import { MD3Theme, TextInput, useTheme } from "react-native-paper";
-import { formatCurrency, formatMoney } from "@/utils/CurrencyUtils";
+import {
+  formatMoneyToString,
+  formatMoneyToNumber,
+} from "@/utils/CurrencyUtils";
+import ClickableInput from "./ClickableInput";
 
 const { width } = Dimensions.get("window");
 
@@ -18,9 +22,9 @@ const CurrencyValueInput = () => {
   };
 
   const handleBudgetEndEditing = () => {
-    const numericValue = formatMoney(amount);
+    const numericValue = formatMoneyToNumber(amount);
     setBudget(numericValue);
-    setAmount(formatCurrency(numericValue));
+    setAmount(formatMoneyToString(numericValue));
   };
 
   return (
@@ -35,13 +39,13 @@ const CurrencyValueInput = () => {
         keyboardType="numeric"
       />
 
-      <TextInput
-        mode="outlined"
-        style={styles.currencyInput}
+      <ClickableInput
         label="Waluta"
         value={currency}
-        onChangeText={setCurrency}
         onPress={() => console.log("Navigate to currency select")}
+        touchableStyle={styles.currencyTouchable}
+        inputStyle={styles.currencyInput}
+        left={<View />}
       />
     </View>
   );
@@ -56,16 +60,21 @@ const createStyles = (theme: MD3Theme) =>
       alignItems: "center",
       justifyContent: "space-between",
       width: "100%",
-      marginVertical: 10,
+      marginTop: 10,
     },
     budgetInput: {
       flex: 0.65,
       marginLeft: 0.05 * width,
       backgroundColor: theme.colors.surface,
+      marginBottom: 12,
     },
-    currencyInput: {
+    currencyTouchable: {
       flex: 0.3,
       marginRight: 0.05 * width,
+    },
+    currencyInput: {
       backgroundColor: theme.colors.surface,
+      height: 50,
+      marginTop: -10,
     },
   });

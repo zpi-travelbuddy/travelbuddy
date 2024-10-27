@@ -1,4 +1,4 @@
-export function formatCurrency(amount: number | undefined): string {
+export function formatMoneyToString(amount: number | undefined): string {
   if (amount === undefined || isNaN(amount)) return "";
   return amount
     .toFixed(2)
@@ -6,7 +6,7 @@ export function formatCurrency(amount: number | undefined): string {
     .replace(/\B(?=(\d{3})+(?!\d))/g, " ");
 }
 
-export function formatMoney(value: string): number {
+export function formatMoneyToNumber(value: string): number {
   const numericValue = value
     .replace(/,/g, ".")
     .replace(/[^0-9.,]/g, "")

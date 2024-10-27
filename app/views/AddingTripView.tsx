@@ -5,17 +5,16 @@ import {
   Dimensions,
   ScrollView,
   FlatList,
-  TouchableOpacity,
 } from "react-native";
 import React, { useCallback, useMemo, useState } from "react";
 import { useTheme, MD3Theme, TextInput, Text } from "react-native-paper";
-import { DatePickerModal } from "react-native-paper-dates";
-import { registerTranslation } from "react-native-paper-dates";
+import { DatePickerModal, registerTranslation } from "react-native-paper-dates";
 import { formatDateRange } from "@/utils/DateUtils";
 import CurrencyValueInput from "@/components/CurrencyValueInput";
 import CustomModal from "@/components/CustomModal";
 import { RenderItem } from "@/components/RenderItem";
 import ActionButtons from "@/components/ActionButtons";
+import ClickableInput from "@/components/ClickableInput";
 
 const { height, width } = Dimensions.get("window");
 
@@ -166,14 +165,12 @@ const AddingTripView = () => {
           onChangeText={setTripName}
         ></TextInput>
 
-        <TextInput
-          mode="outlined"
-          style={styles.textInput}
+        <ClickableInput
           label="Termin wycieczki"
           value={dateRangeText}
-          left={<TextInput.Icon icon="calendar" />}
           onPress={() => setOpen(true)}
-        ></TextInput>
+          icon="calendar"
+        />
 
         <DatePickerModal
           mode="range"
@@ -208,33 +205,17 @@ const AddingTripView = () => {
 
         <CurrencyValueInput />
 
-        <TouchableOpacity
+        <ClickableInput
+          label="Profil preferencji"
+          value={selectedPreferenceProfile.name}
           onPress={() => showModal("Preference")}
-          style={styles.textInput}
-        >
-          <TextInput
-            mode="outlined"
-            label="Profil preferencji"
-            style={{ backgroundColor: theme.colors.surface }}
-            value={selectedPreferenceProfile.name}
-            editable={false}
-            left={<TextInput.Icon icon="account" />}
-          />
-        </TouchableOpacity>
+        />
 
-        <TouchableOpacity
+        <ClickableInput
+          label="Profil udogodnień"
+          value={selectedConvenienceProfile.name}
           onPress={() => showModal("Convenience")}
-          style={styles.textInput}
-        >
-          <TextInput
-            mode="outlined"
-            label="Profil udogodnień"
-            style={{ backgroundColor: theme.colors.surface }}
-            value={selectedConvenienceProfile.name}
-            editable={false}
-            left={<TextInput.Icon icon="account" />}
-          />
-        </TouchableOpacity>
+        />
 
         <CustomModal visible={visible} onDismiss={hideModal}>
           <FlatList

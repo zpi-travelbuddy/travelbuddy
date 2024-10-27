@@ -11,7 +11,7 @@ export function formatDateRange(
   startDate: Date | undefined,
   endDate: Date | undefined,
 ): string {
-  if (startDate?.getDate() === endDate?.getDate())
+  if (startDate?.getDate() !== endDate?.getDate())
     return formatDate(startDate) + " - " + formatDate(endDate);
   return formatDate(startDate);
 }
