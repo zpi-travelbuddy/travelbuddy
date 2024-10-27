@@ -1,5 +1,5 @@
 using TravelBuddyAPI.Enums;
-using TravelBuddyAPI.Services;
+using TravelBuddyAPI.Interfaces;
 
 namespace TravelBuddyAPI.Endpoints;
 
@@ -20,7 +20,7 @@ public static class GeoapifyEndpoints // TODO potentially refactor for using cat
         return app;
     }
 
-    private static async Task<IResult> AddressAutocomplete(GeoapifyClient client, string text, AddressLevel? type = null, string? lang = null, string? filter = null, string? bias = null, string format = "json")
+    private static async Task<IResult> AddressAutocomplete(IGeoapifyService client, string text, AddressLevel? type = null, string? lang = null, string? filter = null, string? bias = null, string format = "json")
     {
         try
         {
@@ -33,7 +33,7 @@ public static class GeoapifyEndpoints // TODO potentially refactor for using cat
         }
     }
 
-    // private static async Task<IResult> Details(string id, GeoapifyClient client)
+    // private static async Task<IResult> Details(string id, IGeoapifyService client)
     // {
     //     try
     //     {
@@ -46,7 +46,7 @@ public static class GeoapifyEndpoints // TODO potentially refactor for using cat
     //     }
     // }
 
-    // private static async Task<IResult> Isoline(GeoapifyClient client, double latitude, double longitude, int range, string mode, string traffic = "approximated", string units = "metric", string type = "distance", string routeType = "balanced")
+    // private static async Task<IResult> Isoline(IGeoapifyService client, double latitude, double longitude, int range, string mode, string traffic = "approximated", string units = "metric", string type = "distance", string routeType = "balanced")
     // {
     //     try
     //     {
@@ -59,7 +59,7 @@ public static class GeoapifyEndpoints // TODO potentially refactor for using cat
     //     }
     // }
 
-    // private static async Task<IResult> NearbyPlacesByCircle(GeoapifyClient client, double latitude, double longitude, double radius, string categories, string? conditions = null, int? limit = null, int? offset = null)
+    // private static async Task<IResult> NearbyPlacesByCircle(IGeoapifyService client, double latitude, double longitude, double radius, string categories, string? conditions = null, int? limit = null, int? offset = null)
     // {
     //     var categoriesList = categories.Trim().Split(',').ToList();
     //     var conditionsList = conditions?.Trim().Split(',').ToList();
@@ -75,7 +75,7 @@ public static class GeoapifyEndpoints // TODO potentially refactor for using cat
     //     }
     // }
 
-    // private static async Task<IResult> NearbyPlacesByRectangle(GeoapifyClient client, double startLatitude, double startLongitude, double endLatitude, double endLongitude, string categories, string? conditions = null, int? limit = null, int? offset = null)
+    // private static async Task<IResult> NearbyPlacesByRectangle(IGeoapifyService client, double startLatitude, double startLongitude, double endLatitude, double endLongitude, string categories, string? conditions = null, int? limit = null, int? offset = null)
     // {
     //     var categoriesList = categories.Trim().Split(',').ToList();
     //     var conditionsList = conditions?.Trim().Split(',').ToList();
@@ -91,7 +91,7 @@ public static class GeoapifyEndpoints // TODO potentially refactor for using cat
     //     }
     // }
 
-    // private static async Task<IResult> NearbyPlacesByGeometry(GeoapifyClient client, string geometryId, string categories, string? conditions = null, int? limit = null, int? offset = null)
+    // private static async Task<IResult> NearbyPlacesByGeometry(IGeoapifyService client, string geometryId, string categories, string? conditions = null, int? limit = null, int? offset = null)
     // {
     //     var categoriesList = categories.Trim().Split(',').ToList();
     //     var conditionsList = conditions?.Trim().Split(',').ToList();
@@ -107,7 +107,7 @@ public static class GeoapifyEndpoints // TODO potentially refactor for using cat
     //     }
     // }
 
-    // private static async Task<IResult> RouteTime(GeoapifyClient client, double startLatitude, double startLongitude, double endLatitude, double endLongitude, string mode, string traffic = "approximated", string units = "metric")
+    // private static async Task<IResult> RouteTime(IGeoapifyService client, double startLatitude, double startLongitude, double endLatitude, double endLongitude, string mode, string traffic = "approximated", string units = "metric")
     // {
     //     try
     //     {

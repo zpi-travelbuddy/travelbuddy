@@ -29,8 +29,8 @@ namespace TravelBuddyAPI
 
             builder.Services.AddMemoryCache();
 
-            builder.Services.AddScoped<Services.NBPClient>();
-            builder.Services.AddScoped<Services.GeoapifyClient>();
+            builder.Services.AddScoped<INBPService, Services.NBPClient>();
+            builder.Services.AddScoped<IGeoapifyService, Services.GeoapifyClient>();
             builder.Services.AddScoped<IRestClient>(sp => 
                 new RestClient(builder.Configuration["GeoapifyBaseUrl"] ?? ""));
             builder.Services.AddScoped<ITravelBuddyDbCache, Services.TravelBuddyDbCache>();
