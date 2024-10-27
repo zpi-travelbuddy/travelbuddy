@@ -6,12 +6,12 @@ public static class ModelBuilderExtension
 {
     public static void Seed(this ModelBuilder modelBuilder)
     {
-        Guid lastGuid;
 
+        //CATEGORIES
         var placeCategories = new Dictionary<String, PlaceCategory>
         {
             {"activity", new PlaceCategory { Id = Guid.NewGuid(), Name = "activity" }},
-            {"commercial", new PlaceCategory { Id = lastGuid = Guid.NewGuid(), Name = "commercial" }},
+            {"commercial", new PlaceCategory { Id = Guid.NewGuid(), Name = "commercial" }},
                 {"gift_and_souvenir", new PlaceCategory { Id = Guid.NewGuid(), Name = "gift_and_souvenir"}},
                 {"art", new PlaceCategory { Id = Guid.NewGuid(), Name = "art" }},
             {"entertainment", new PlaceCategory { Id = Guid.NewGuid(), Name = "entertainment" }},
@@ -417,6 +417,66 @@ public static class ModelBuilderExtension
 
         modelBuilder.Entity<PlaceCategory>().HasData(placeCategories.Values.ToList<PlaceCategory>());
 
-        
+
+        //CONDITIONS
+        var placeConditions = new Dictionary<String, PlaceCondition>
+        {
+
+            {"internet_access", new PlaceCondition { Id = Guid.NewGuid(), Name = "internet_access" }},
+                {"free", new PlaceCondition { Id = Guid.NewGuid(), Name = "free" }},
+                {"for_customers", new PlaceCondition { Id = Guid.NewGuid(), Name = "for_customers" }},
+            {"wheelchair", new PlaceCondition { Id = Guid.NewGuid(), Name = "wheelchair" }},
+                {"yes_wheelchair", new PlaceCondition { Id = Guid.NewGuid(), Name = "yes" }},
+                {"limited_wheelchair", new PlaceCondition { Id = Guid.NewGuid(), Name = "limited" }},
+            {"dogs", new PlaceCondition { Id = Guid.NewGuid(), Name = "dogs" }},
+                {"yes_dogs", new PlaceCondition { Id = Guid.NewGuid(), Name = "yes" }},
+                {"leashed_dogs", new PlaceCondition { Id = Guid.NewGuid(), Name = "leashed" }},
+            {"no-dogs", new PlaceCondition { Id = Guid.NewGuid(), Name = "no-dogs" }},
+            {"access", new PlaceCondition { Id = Guid.NewGuid(), Name = "access" }},
+                {"yes_access", new PlaceCondition { Id = Guid.NewGuid(), Name = "yes" }},
+                {"not_specified_access", new PlaceCondition { Id = Guid.NewGuid(), Name = "not_specified" }},
+            {"access_limited", new PlaceCondition { Id = Guid.NewGuid(), Name = "access_limited" }},
+                {"customers", new PlaceCondition { Id = Guid.NewGuid(), Name = "customers" }},
+            {"fee", new PlaceCondition { Id = Guid.NewGuid(), Name = "fee" }},
+            {"no_fee", new PlaceCondition { Id = Guid.NewGuid(), Name = "no_fee" }},
+                {"no", new PlaceCondition { Id = Guid.NewGuid(), Name = "no" }},
+                {"not_specified_no_fee", new PlaceCondition { Id = Guid.NewGuid(), Name = "not_specified" }},
+            {"named", new PlaceCondition { Id = Guid.NewGuid(), Name = "named" }},
+            {"vegetarian", new PlaceCondition { Id = Guid.NewGuid(), Name = "vegetarian" }},
+                {"only_vegetarian", new PlaceCondition { Id = Guid.NewGuid(), Name = "only" }},
+            {"vegan", new PlaceCondition { Id = Guid.NewGuid(), Name = "vegan" }},
+                {"only_vegan", new PlaceCondition { Id = Guid.NewGuid(), Name = "only" }},
+            {"halal", new PlaceCondition { Id = Guid.NewGuid(), Name = "halal" }},
+                {"only_halal", new PlaceCondition { Id = Guid.NewGuid(), Name = "only" }},
+            {"kosher", new PlaceCondition { Id = Guid.NewGuid(), Name = "kosher" }},
+                {"only_kosher", new PlaceCondition { Id = Guid.NewGuid(), Name = "only" }},
+            {"organic", new PlaceCondition { Id = Guid.NewGuid(), Name = "organic" }},
+                {"only_organic", new PlaceCondition { Id = Guid.NewGuid(), Name = "only" }},
+            {"gluten_free", new PlaceCondition { Id = Guid.NewGuid(), Name = "gluten_free" }},
+            {"sugar_free", new PlaceCondition { Id = Guid.NewGuid(), Name = "sugar_free" }},
+            {"egg_free", new PlaceCondition { Id = Guid.NewGuid(), Name = "egg_free" }},
+            {"soy_free", new PlaceCondition { Id = Guid.NewGuid(), Name = "soy_free" }}
+        };
+
+            placeConditions["free"].SuperConditionId = placeConditions["internet_access"].Id;
+            placeConditions["for_customers"].SuperConditionId = placeConditions["internet_access"].Id;
+            placeConditions["yes_wheelchair"].SuperConditionId = placeConditions["wheelchair"].Id;
+            placeConditions["limited_wheelchair"].SuperConditionId = placeConditions["wheelchair"].Id;
+            placeConditions["yes_dogs"].SuperConditionId = placeConditions["dogs"].Id;
+            placeConditions["leashed_dogs"].SuperConditionId = placeConditions["dogs"].Id;
+            placeConditions["yes_access"].SuperConditionId = placeConditions["access"].Id;
+            placeConditions["not_specified_access"].SuperConditionId = placeConditions["access"].Id;
+            placeConditions["customers"].SuperConditionId = placeConditions["access_limited"].Id;
+            placeConditions["no"].SuperConditionId = placeConditions["no_fee"].Id;
+            placeConditions["not_specified_no_fee"].SuperConditionId = placeConditions["no_fee"].Id;
+            placeConditions["only_vegetarian"].SuperConditionId = placeConditions["vegetarian"].Id;
+            placeConditions["only_vegan"].SuperConditionId = placeConditions["vegan"].Id;
+            placeConditions["only_halal"].SuperConditionId = placeConditions["halal"].Id;
+            placeConditions["only_kosher"].SuperConditionId = placeConditions["kosher"].Id;
+            placeConditions["only_organic"].SuperConditionId = placeConditions["organic"].Id;
+
+
+
+        modelBuilder.Entity<PlaceCondition>().HasData(placeConditions.Values.ToList<PlaceCondition>());
     }
 }
