@@ -68,20 +68,20 @@ const TripBrowse = () => {
     searchbar: {
       backgroundColor: theme.colors.elevation.level3,
       margin: 20,
-      marginTop: 0,
     },
     flatListContent: {
       flexGrow: 1,
+      backgroundColor: theme.colors.elevation.level1,
       flexDirection: "column",
       alignItems: "stretch",
       paddingBottom: 20,
     },
     container: {
       flex: 1,
+      backgroundColor: theme.colors.elevation.level1,
     },
     segmentedButtons: {
       elevation: 0,
-      marginBottom: 20,
       backgroundColor: theme.colors.surface,
     },
   });
