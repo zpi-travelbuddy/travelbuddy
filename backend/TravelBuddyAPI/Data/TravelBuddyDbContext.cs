@@ -104,6 +104,7 @@ public class TravelBuddyDbContext(DbContextOptions<TravelBuddyDbContext> options
                     j.ToTable("ProviderPlacePlaceCondition");
                 }
             );
-
+        
+        modelBuilder.Seed();
     }
 }
