@@ -155,6 +155,7 @@ const makeStyles = (theme: any) =>
     inputText: {
       marginHorizontal: 40,
       height: 56,
+      lineHeight: 20,
     },
     forgotPassword: {
       marginHorizontal: 40,
