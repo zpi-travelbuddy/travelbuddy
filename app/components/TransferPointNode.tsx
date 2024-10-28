@@ -12,6 +12,7 @@ import {
 } from "@/constants/Icons";
 
 const VERTICAL_LINE_HEIGHT = 20;
+const ICON_SIZE = 40;
 
 // Defined in case the icon name is different than type name
 const TRANSFER_TYPE_MAP: {
@@ -23,43 +24,36 @@ const TRANSFER_TYPE_MAP: {
   manual: MANUAL_ICON,
 };
 
-const ICON_SIZE = 40;
+interface TransferPointNodeProps {
+  transferPoint?: TransferPoint;
+  onPress?: () => void;
+  onPressEmpty?: () => void;
+}
 
 export const TransferPointNode = ({
   transferPoint,
   onPress,
   onPressEmpty,
-}: {
-  transferPoint?: TransferPoint;
-  onPress?: () => void;
-  onPressEmpty?: () => void;
-}) => {
+}: TransferPointNodeProps) => {
   // change any to MD3ThemeExtended later
   const theme = useTheme() as any;
   const style = createStyles(theme);
 
   const { type, duration } = transferPoint || {};
 
+  const icon = type ? TRANSFER_TYPE_MAP[type] : EMPTY_ICON;
+  const handlePress = type ? onPress : onPressEmpty;
+
   return (
     <View style={style.wrapper}>
       <DashedVerticalLine height={VERTICAL_LINE_HEIGHT} />
-      {type ? (
-        <IconButton
-          icon={TRANSFER_TYPE_MAP[type]}
-          size={ICON_SIZE}
-          style={style.iconButton}
-          iconColor={theme.colors.onSurface}
-          onPress={onPress}
-        />
-      ) : (
-        <IconButton
-          icon={EMPTY_ICON}
-          size={ICON_SIZE}
-          style={style.iconButton}
-          iconColor={theme.colors.onSurface}
-          onPress={onPressEmpty}
-        />
-      )}
+      <IconButton
+        icon={icon}
+        size={ICON_SIZE}
+        style={style.iconButton}
+        iconColor={theme.colors.onSurface}
+        onPress={handlePress}
+      />
       <DashedVerticalLine height={VERTICAL_LINE_HEIGHT} />
       {duration ? (
         <Text numberOfLines={1} style={style.durationText}>
@@ -87,6 +81,5 @@ const createStyles = (theme: any) =>
       transform: [{ translateY: -10 }],
       left: "100%",
       height: 20,
-      transformOrigin: "right",
     },
   });

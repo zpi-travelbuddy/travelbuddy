@@ -5,15 +5,17 @@ import { formatTimeRange } from "@/utils/TimeUtils";
 
 const { height, width } = Dimensions.get("window");
 
+interface TripPointCardProps {
+  tripPoint: TripPoint;
+  onPress?: () => void;
+  onLongPress?: () => void;
+}
+
 export const TripPointCard = ({
   tripPoint,
   onPress,
   onLongPress,
-}: {
-  tripPoint: TripPoint;
-  onPress?: () => void;
-  onLongPress?: () => void;
-}) => {
+}: TripPointCardProps) => {
   const theme = useTheme();
   const style = createStyles(theme);
 
