@@ -122,7 +122,7 @@ public class GeoapifyClient : IGeoapifyService
 
         try
         {
-            return ParseFeatureCollection(jsonResponse);
+            return ParseFeatureCollection(jsonResponse, categories?.ToList(), conditions?.ToList());
         }
         catch (RuntimeBinderException e)
         {
@@ -152,7 +152,7 @@ public class GeoapifyClient : IGeoapifyService
 
         try
         {
-            return ParseFeatureCollection(jsonResponse);
+            return ParseFeatureCollection(jsonResponse, categories?.ToList(), conditions?.ToList());
         }
         catch (RuntimeBinderException e)
         {
@@ -182,7 +182,7 @@ public class GeoapifyClient : IGeoapifyService
 
         try
         {
-            return ParseFeatureCollection(jsonResponse);
+            return ParseFeatureCollection(jsonResponse, categories?.ToList(), conditions?.ToList());
         }
         catch (RuntimeBinderException e)
         {
