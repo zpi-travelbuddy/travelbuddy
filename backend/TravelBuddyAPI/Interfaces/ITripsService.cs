@@ -1,11 +1,12 @@
 using TravelBuddyAPI.DTOs.Trip;
+using TravelBuddyAPI.DTOs.TripDay;
 using TravelBuddyAPI.Models;
 
 namespace TravelBuddyAPI.Interfaces;
 
 /// <summary>
 /// Interface for managing trips.
-/// </summary>
+/// </summ/// ary>
 public interface ITripsService
 {
     /// <summary>
@@ -79,4 +80,12 @@ public interface ITripsService
     /// <param name="currencyCode">The currency code for the statistics.</param>
     /// <returns>The trip statistics.</returns>
     Task<TripStatisticsDTO> GetTripStatisticsAsync(string userId, int year, int? month, string currencyCode);
+
+    /// <summary>
+    /// Retrieves the details of a specific trip day.
+    /// </summary>
+    /// <param name="userId">The ID of the user.</param>
+    /// <param name="tripDayId">The ID of the trip day.</param>
+    /// <returns>The trip day details.</returns>
+    Task<TripDayDetailsDTO> GetTripDayDetailsAsync(string userId, Guid tripDayId);
 }
