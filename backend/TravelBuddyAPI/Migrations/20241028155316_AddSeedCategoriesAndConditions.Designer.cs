@@ -12,8 +12,8 @@ using TravelBuddyAPI.Data;
 namespace TravelBuddyAPI.Migrations
 {
     [DbContext(typeof(TravelBuddyDbContext))]
-    [Migration("20241027200010_AddSeedCategories")]
-    partial class AddSeedCategories
+    [Migration("20241028155316_AddSeedCategoriesAndConditions")]
+    partial class AddSeedCategoriesAndConditions
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -214,1228 +214,1228 @@ namespace TravelBuddyAPI.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("94ea9840-42f1-409a-a96a-af1d8e1ea046"),
+                            Id = new Guid("70cf0a05-7551-4db8-85c6-e34739e858c1"),
                             Name = "activity"
                         },
                         new
                         {
-                            Id = new Guid("1f619997-bb26-4d70-b8f4-71c85a59ea84"),
+                            Id = new Guid("ba101896-5756-4d3f-a41d-cd9e9af87337"),
                             Name = "commercial"
                         },
                         new
                         {
-                            Id = new Guid("85bce41e-3a0f-4932-a7f3-dd955ac9a546"),
+                            Id = new Guid("867660a2-4412-43f5-96d3-786c58afdd2c"),
                             Name = "gift_and_souvenir",
-                            SuperCategoryId = new Guid("1f619997-bb26-4d70-b8f4-71c85a59ea84")
+                            SuperCategoryId = new Guid("ba101896-5756-4d3f-a41d-cd9e9af87337")
                         },
                         new
                         {
-                            Id = new Guid("83b82d2b-4a74-4290-a125-48331af23def"),
+                            Id = new Guid("ece5390d-4b3c-400f-8bf4-1605c9f55cfe"),
                             Name = "art",
-                            SuperCategoryId = new Guid("1f619997-bb26-4d70-b8f4-71c85a59ea84")
+                            SuperCategoryId = new Guid("ba101896-5756-4d3f-a41d-cd9e9af87337")
                         },
                         new
                         {
-                            Id = new Guid("50d525b2-7257-423d-bf17-6f23e30ef505"),
+                            Id = new Guid("2cccac70-772e-4bbb-be9e-c13f238b5a43"),
                             Name = "entertainment"
                         },
                         new
                         {
-                            Id = new Guid("fc5e7a94-b28a-4b80-be6e-bb291db2c2be"),
+                            Id = new Guid("1fce512a-6bb3-429f-bbe6-15c57d0cb089"),
                             Name = "culture",
-                            SuperCategoryId = new Guid("50d525b2-7257-423d-bf17-6f23e30ef505")
+                            SuperCategoryId = new Guid("2cccac70-772e-4bbb-be9e-c13f238b5a43")
                         },
                         new
                         {
-                            Id = new Guid("07204987-e493-4ca8-a2af-c85577e9d803"),
+                            Id = new Guid("342b21d9-e602-4642-8195-e2d1e561b060"),
                             Name = "theatre",
-                            SuperCategoryId = new Guid("fc5e7a94-b28a-4b80-be6e-bb291db2c2be")
+                            SuperCategoryId = new Guid("1fce512a-6bb3-429f-bbe6-15c57d0cb089")
                         },
                         new
                         {
-                            Id = new Guid("2c9ab1fe-3219-49f3-9766-98380d533420"),
+                            Id = new Guid("eb9aef30-7fd8-4b17-bc8c-82e4ec5c33fa"),
                             Name = "arts_centre",
-                            SuperCategoryId = new Guid("fc5e7a94-b28a-4b80-be6e-bb291db2c2be")
+                            SuperCategoryId = new Guid("1fce512a-6bb3-429f-bbe6-15c57d0cb089")
                         },
                         new
                         {
-                            Id = new Guid("be1cd74d-e5ad-4217-8746-89a370d35d4d"),
+                            Id = new Guid("d2204bb3-328d-4111-b96d-1007af48ee07"),
                             Name = "gallery",
-                            SuperCategoryId = new Guid("fc5e7a94-b28a-4b80-be6e-bb291db2c2be")
+                            SuperCategoryId = new Guid("1fce512a-6bb3-429f-bbe6-15c57d0cb089")
                         },
                         new
                         {
-                            Id = new Guid("7df35c9b-82e1-4c5f-8a86-73f177baeef7"),
+                            Id = new Guid("da77a095-cbbd-4c98-a902-0f84055f4584"),
                             Name = "zoo",
-                            SuperCategoryId = new Guid("fc5e7a94-b28a-4b80-be6e-bb291db2c2be")
+                            SuperCategoryId = new Guid("2cccac70-772e-4bbb-be9e-c13f238b5a43")
                         },
                         new
                         {
-                            Id = new Guid("7757d12d-4668-447c-8d98-0f1ea0dfa661"),
+                            Id = new Guid("4219abf1-e5d4-47ba-9119-40cc60e3e589"),
                             Name = "aquarium",
-                            SuperCategoryId = new Guid("fc5e7a94-b28a-4b80-be6e-bb291db2c2be")
+                            SuperCategoryId = new Guid("2cccac70-772e-4bbb-be9e-c13f238b5a43")
                         },
                         new
                         {
-                            Id = new Guid("3ada3c14-8d6f-4dc7-b300-b6487818411e"),
+                            Id = new Guid("c0ad70a5-81d5-4bb2-9267-d0d69d561df8"),
                             Name = "planetarium",
-                            SuperCategoryId = new Guid("fc5e7a94-b28a-4b80-be6e-bb291db2c2be")
+                            SuperCategoryId = new Guid("2cccac70-772e-4bbb-be9e-c13f238b5a43")
                         },
                         new
                         {
-                            Id = new Guid("679d67fa-c576-41a0-9f1e-bb268d2db18a"),
+                            Id = new Guid("911848ba-669e-4f16-bd13-73d530a2a423"),
                             Name = "museum",
-                            SuperCategoryId = new Guid("fc5e7a94-b28a-4b80-be6e-bb291db2c2be")
+                            SuperCategoryId = new Guid("2cccac70-772e-4bbb-be9e-c13f238b5a43")
                         },
                         new
                         {
-                            Id = new Guid("ae943cb5-3eab-437f-95e9-902946e04f86"),
+                            Id = new Guid("23bf6eb3-ce6d-4347-b5c2-3ec4013fc651"),
                             Name = "heritage"
                         },
                         new
                         {
-                            Id = new Guid("81e2c8be-8ef6-44d3-94ed-fdc603872f9d"),
+                            Id = new Guid("2b4b017b-1c69-4537-9532-2badf1f5ddab"),
                             Name = "unesco",
-                            SuperCategoryId = new Guid("ae943cb5-3eab-437f-95e9-902946e04f86")
+                            SuperCategoryId = new Guid("23bf6eb3-ce6d-4347-b5c2-3ec4013fc651")
                         },
                         new
                         {
-                            Id = new Guid("aff892c9-1f4d-4907-adfc-82d9b586eb9b"),
+                            Id = new Guid("d2ee336b-f36a-46cf-8cb6-895d975e8e1e"),
                             Name = "leisure"
                         },
                         new
                         {
-                            Id = new Guid("edbe8bd4-f9d3-4351-9842-9fcdae479af2"),
+                            Id = new Guid("0c4cf218-a479-4146-ba19-7fe2e733015c"),
                             Name = "park",
-                            SuperCategoryId = new Guid("aff892c9-1f4d-4907-adfc-82d9b586eb9b")
+                            SuperCategoryId = new Guid("d2ee336b-f36a-46cf-8cb6-895d975e8e1e")
                         },
                         new
                         {
-                            Id = new Guid("9d3a797f-7022-4077-a3dc-1da4bdd1f5ee"),
+                            Id = new Guid("826e60b5-eb23-453e-b4a9-91d9fd3dd802"),
                             Name = "garden",
-                            SuperCategoryId = new Guid("edbe8bd4-f9d3-4351-9842-9fcdae479af2")
+                            SuperCategoryId = new Guid("0c4cf218-a479-4146-ba19-7fe2e733015c")
                         },
                         new
                         {
-                            Id = new Guid("edfe77a9-ffc5-4880-9766-4ab86f198145"),
+                            Id = new Guid("e3021d9a-477d-417c-95e2-07629932ab34"),
                             Name = "nature_reserve",
-                            SuperCategoryId = new Guid("edbe8bd4-f9d3-4351-9842-9fcdae479af2")
+                            SuperCategoryId = new Guid("0c4cf218-a479-4146-ba19-7fe2e733015c")
                         },
                         new
                         {
-                            Id = new Guid("a677234a-e831-4b48-af4a-9073ff565420"),
+                            Id = new Guid("c30d8cc9-d9d5-4e2a-bf47-3388012c1dac"),
                             Name = "natural"
                         },
                         new
                         {
-                            Id = new Guid("e0557d16-35da-4daf-99cc-c05b1181f368"),
+                            Id = new Guid("46f3cd85-ef35-423c-a1dc-0adabdac1d3f"),
                             Name = "forest",
-                            SuperCategoryId = new Guid("a677234a-e831-4b48-af4a-9073ff565420")
+                            SuperCategoryId = new Guid("c30d8cc9-d9d5-4e2a-bf47-3388012c1dac")
                         },
                         new
                         {
-                            Id = new Guid("73107ab5-d42e-415a-9fa1-0d89b831f8db"),
+                            Id = new Guid("e3af44b4-3deb-44e7-b440-3f749830e369"),
                             Name = "water",
-                            SuperCategoryId = new Guid("a677234a-e831-4b48-af4a-9073ff565420")
+                            SuperCategoryId = new Guid("c30d8cc9-d9d5-4e2a-bf47-3388012c1dac")
                         },
                         new
                         {
-                            Id = new Guid("dfc8f262-6555-4bc8-b649-16aaf9b9a0a3"),
+                            Id = new Guid("4f921a2d-b60a-43e5-b169-6a777b19cf25"),
                             Name = "spring",
-                            SuperCategoryId = new Guid("73107ab5-d42e-415a-9fa1-0d89b831f8db")
+                            SuperCategoryId = new Guid("e3af44b4-3deb-44e7-b440-3f749830e369")
                         },
                         new
                         {
-                            Id = new Guid("7f8fac04-41c5-486e-9818-7c2be6b16782"),
+                            Id = new Guid("19569a3a-186c-429f-b89d-69a5590bec01"),
                             Name = "reef",
-                            SuperCategoryId = new Guid("73107ab5-d42e-415a-9fa1-0d89b831f8db")
+                            SuperCategoryId = new Guid("e3af44b4-3deb-44e7-b440-3f749830e369")
                         },
                         new
                         {
-                            Id = new Guid("a872a7f0-e259-491f-b462-95c46c54b6a5"),
+                            Id = new Guid("c94cd57f-bbae-46a5-a9c0-0a9303e2bff1"),
                             Name = "hot_spring",
-                            SuperCategoryId = new Guid("73107ab5-d42e-415a-9fa1-0d89b831f8db")
+                            SuperCategoryId = new Guid("e3af44b4-3deb-44e7-b440-3f749830e369")
                         },
                         new
                         {
-                            Id = new Guid("2be81c6d-ecdd-4175-a306-f1b0c4bb0df8"),
+                            Id = new Guid("f8380d95-a91d-48b6-83b6-3ba44263ec74"),
                             Name = "geyser",
-                            SuperCategoryId = new Guid("73107ab5-d42e-415a-9fa1-0d89b831f8db")
+                            SuperCategoryId = new Guid("e3af44b4-3deb-44e7-b440-3f749830e369")
                         },
                         new
                         {
-                            Id = new Guid("e4a33244-6d6e-4f92-a978-f2cba4329053"),
+                            Id = new Guid("fc41381a-c233-4dae-b6d6-953705f68056"),
                             Name = "sea",
-                            SuperCategoryId = new Guid("73107ab5-d42e-415a-9fa1-0d89b831f8db")
+                            SuperCategoryId = new Guid("e3af44b4-3deb-44e7-b440-3f749830e369")
                         },
                         new
                         {
-                            Id = new Guid("862fa57e-d7a5-4d84-ab62-859c6a65a47b"),
+                            Id = new Guid("263d3b27-4698-416c-8511-0c427a3a089e"),
                             Name = "mountain",
-                            SuperCategoryId = new Guid("a677234a-e831-4b48-af4a-9073ff565420")
+                            SuperCategoryId = new Guid("c30d8cc9-d9d5-4e2a-bf47-3388012c1dac")
                         },
                         new
                         {
-                            Id = new Guid("72edb0ca-62f5-4159-be0c-ad61ae455dfa"),
+                            Id = new Guid("f09a1436-7b88-4ae2-a1ae-325db8c2175f"),
                             Name = "peak",
-                            SuperCategoryId = new Guid("862fa57e-d7a5-4d84-ab62-859c6a65a47b")
+                            SuperCategoryId = new Guid("263d3b27-4698-416c-8511-0c427a3a089e")
                         },
                         new
                         {
-                            Id = new Guid("43e75e3f-cb7d-42dc-b463-44a9f4e51a94"),
+                            Id = new Guid("1512b76b-80d0-423c-9957-513d3a8c19bc"),
                             Name = "glacier",
-                            SuperCategoryId = new Guid("862fa57e-d7a5-4d84-ab62-859c6a65a47b")
+                            SuperCategoryId = new Guid("263d3b27-4698-416c-8511-0c427a3a089e")
                         },
                         new
                         {
-                            Id = new Guid("b0b0f020-0e21-4dea-a14b-9524758468f6"),
+                            Id = new Guid("e1ee5856-62a9-42df-9881-f15829ce3b13"),
                             Name = "cliff",
-                            SuperCategoryId = new Guid("862fa57e-d7a5-4d84-ab62-859c6a65a47b")
+                            SuperCategoryId = new Guid("263d3b27-4698-416c-8511-0c427a3a089e")
                         },
                         new
                         {
-                            Id = new Guid("3333c733-7511-491b-ac9d-0692ab79423f"),
+                            Id = new Guid("fa8fcb5c-2afa-4679-9e25-bd69fc92b458"),
                             Name = "rock",
-                            SuperCategoryId = new Guid("862fa57e-d7a5-4d84-ab62-859c6a65a47b")
+                            SuperCategoryId = new Guid("263d3b27-4698-416c-8511-0c427a3a089e")
                         },
                         new
                         {
-                            Id = new Guid("69fabd17-6d6e-45b3-a02f-f7a24a2f70fa"),
+                            Id = new Guid("5e9936f2-c677-4e22-b170-3363b45e33f3"),
                             Name = "cave_entrance",
-                            SuperCategoryId = new Guid("862fa57e-d7a5-4d84-ab62-859c6a65a47b")
+                            SuperCategoryId = new Guid("263d3b27-4698-416c-8511-0c427a3a089e")
                         },
                         new
                         {
-                            Id = new Guid("255789cc-7865-4147-a94e-3030025917cd"),
+                            Id = new Guid("f8377a70-cad7-4a02-b85c-c95a33e6d4ed"),
                             Name = "sand",
-                            SuperCategoryId = new Guid("a677234a-e831-4b48-af4a-9073ff565420")
+                            SuperCategoryId = new Guid("c30d8cc9-d9d5-4e2a-bf47-3388012c1dac")
                         },
                         new
                         {
-                            Id = new Guid("108a0a5c-3914-4d55-805e-1f7878c21a42"),
+                            Id = new Guid("166e0c42-40b9-4110-b4c1-b0291e9722ac"),
                             Name = "dune",
-                            SuperCategoryId = new Guid("255789cc-7865-4147-a94e-3030025917cd")
+                            SuperCategoryId = new Guid("f8377a70-cad7-4a02-b85c-c95a33e6d4ed")
                         },
                         new
                         {
-                            Id = new Guid("f970a859-6456-4a7d-8709-4aa45919324d"),
+                            Id = new Guid("e48cad10-4d1b-4cc6-add4-885feef50159"),
                             Name = "national park"
                         },
                         new
                         {
-                            Id = new Guid("5d3ea522-b691-45e8-9ff4-37c73a9ffc53"),
+                            Id = new Guid("e7b88b3f-9fb8-4d63-a532-481015ca3650"),
                             Name = "tourism"
                         },
                         new
                         {
-                            Id = new Guid("f2babf82-10ae-4705-bbe9-dc8fd1352d6f"),
+                            Id = new Guid("e6f1f837-27b6-4d0a-88ec-e66131967d58"),
                             Name = "attraction",
-                            SuperCategoryId = new Guid("5d3ea522-b691-45e8-9ff4-37c73a9ffc53")
+                            SuperCategoryId = new Guid("e7b88b3f-9fb8-4d63-a532-481015ca3650")
                         },
                         new
                         {
-                            Id = new Guid("221b438a-a014-4c77-b98c-74a942ef3617"),
+                            Id = new Guid("f293998b-cc9a-41f4-a344-9a715ed2496a"),
                             Name = "artwork",
-                            SuperCategoryId = new Guid("f2babf82-10ae-4705-bbe9-dc8fd1352d6f")
+                            SuperCategoryId = new Guid("e6f1f837-27b6-4d0a-88ec-e66131967d58")
                         },
                         new
                         {
-                            Id = new Guid("8c597641-01cd-40d8-bf35-4907ac96b864"),
+                            Id = new Guid("275c01fd-b622-4c78-ab09-992743334bc9"),
                             Name = "viewpoint",
-                            SuperCategoryId = new Guid("f2babf82-10ae-4705-bbe9-dc8fd1352d6f")
+                            SuperCategoryId = new Guid("e6f1f837-27b6-4d0a-88ec-e66131967d58")
                         },
                         new
                         {
-                            Id = new Guid("d91f7045-8f95-4529-8544-fb87ec4ec4dc"),
+                            Id = new Guid("0242a9a4-f6a4-460b-8b9f-7381630a488a"),
                             Name = "fountain",
-                            SuperCategoryId = new Guid("f2babf82-10ae-4705-bbe9-dc8fd1352d6f")
+                            SuperCategoryId = new Guid("e6f1f837-27b6-4d0a-88ec-e66131967d58")
                         },
                         new
                         {
-                            Id = new Guid("ac9f2de9-32de-4e0a-bc35-ed07ccb531ae"),
+                            Id = new Guid("7d880617-b3bf-4aa2-8f00-8094f58ce915"),
                             Name = "clock",
-                            SuperCategoryId = new Guid("f2babf82-10ae-4705-bbe9-dc8fd1352d6f")
+                            SuperCategoryId = new Guid("e6f1f837-27b6-4d0a-88ec-e66131967d58")
                         },
                         new
                         {
-                            Id = new Guid("be2f2cec-711b-4f70-84a4-d372725137b6"),
+                            Id = new Guid("86856aaf-a1df-47c2-9b6e-cd37147519dd"),
                             Name = "sights",
-                            SuperCategoryId = new Guid("5d3ea522-b691-45e8-9ff4-37c73a9ffc53")
+                            SuperCategoryId = new Guid("e7b88b3f-9fb8-4d63-a532-481015ca3650")
                         },
                         new
                         {
-                            Id = new Guid("e9a49597-cabe-48fd-94aa-64946a4eb2e8"),
+                            Id = new Guid("23c97439-cc36-4f6b-895c-d5f12a103d70"),
                             Name = "place_of_worship",
-                            SuperCategoryId = new Guid("be2f2cec-711b-4f70-84a4-d372725137b6")
+                            SuperCategoryId = new Guid("86856aaf-a1df-47c2-9b6e-cd37147519dd")
                         },
                         new
                         {
-                            Id = new Guid("d1265aa9-654b-4c55-9ead-be4659331b6b"),
+                            Id = new Guid("be3bf689-94fd-4c0a-bb47-d1de87d89a07"),
                             Name = "church",
-                            SuperCategoryId = new Guid("e9a49597-cabe-48fd-94aa-64946a4eb2e8")
+                            SuperCategoryId = new Guid("23c97439-cc36-4f6b-895c-d5f12a103d70")
                         },
                         new
                         {
-                            Id = new Guid("44e01ea6-0970-42cf-bd46-8138c5f62914"),
+                            Id = new Guid("386f317e-1a52-45ec-9a4a-0f472b08141a"),
                             Name = "chapel",
-                            SuperCategoryId = new Guid("e9a49597-cabe-48fd-94aa-64946a4eb2e8")
+                            SuperCategoryId = new Guid("23c97439-cc36-4f6b-895c-d5f12a103d70")
                         },
                         new
                         {
-                            Id = new Guid("2c38fe85-ec09-4fe1-bd3a-c76424853bc9"),
+                            Id = new Guid("540a2e9b-e07b-40e0-9987-fc45ad6a18ba"),
                             Name = "cathedral",
-                            SuperCategoryId = new Guid("e9a49597-cabe-48fd-94aa-64946a4eb2e8")
+                            SuperCategoryId = new Guid("23c97439-cc36-4f6b-895c-d5f12a103d70")
                         },
                         new
                         {
-                            Id = new Guid("341b1e46-77df-4f42-bb04-224166b7b220"),
+                            Id = new Guid("b4604a21-6ecd-42c4-9785-e12fc1b13621"),
                             Name = "synagogue",
-                            SuperCategoryId = new Guid("e9a49597-cabe-48fd-94aa-64946a4eb2e8")
+                            SuperCategoryId = new Guid("23c97439-cc36-4f6b-895c-d5f12a103d70")
                         },
                         new
                         {
-                            Id = new Guid("5eaa7942-6358-432f-97de-86efbf895976"),
+                            Id = new Guid("7cd7677c-9513-47e8-b4e3-7d9ced79a963"),
                             Name = "temple",
-                            SuperCategoryId = new Guid("e9a49597-cabe-48fd-94aa-64946a4eb2e8")
+                            SuperCategoryId = new Guid("23c97439-cc36-4f6b-895c-d5f12a103d70")
                         },
                         new
                         {
-                            Id = new Guid("ff22efaf-2d48-4732-88a2-427d8b4dcb2f"),
+                            Id = new Guid("5c31d925-a0ba-443c-b5f5-2739bd9ca793"),
                             Name = "mosque",
-                            SuperCategoryId = new Guid("e9a49597-cabe-48fd-94aa-64946a4eb2e8")
+                            SuperCategoryId = new Guid("23c97439-cc36-4f6b-895c-d5f12a103d70")
                         },
                         new
                         {
-                            Id = new Guid("0fb5e9bf-a3e6-4bfc-8cee-7c72f42079e5"),
+                            Id = new Guid("0b68a417-7786-4d21-8942-16b20ab4e7ec"),
                             Name = "shrine",
-                            SuperCategoryId = new Guid("e9a49597-cabe-48fd-94aa-64946a4eb2e8")
+                            SuperCategoryId = new Guid("23c97439-cc36-4f6b-895c-d5f12a103d70")
                         },
                         new
                         {
-                            Id = new Guid("b8f8d579-36cb-4239-b49b-e4618e73e9bb"),
+                            Id = new Guid("14f62702-e753-43a9-a1f0-26d0515d5216"),
                             Name = "monastery",
-                            SuperCategoryId = new Guid("be2f2cec-711b-4f70-84a4-d372725137b6")
+                            SuperCategoryId = new Guid("86856aaf-a1df-47c2-9b6e-cd37147519dd")
                         },
                         new
                         {
-                            Id = new Guid("66ed3bb3-6013-4fa2-92e0-4c57beece7b3"),
+                            Id = new Guid("3ca0c6c6-1ed9-498d-b46a-93c832c508c7"),
                             Name = "city_hall",
-                            SuperCategoryId = new Guid("be2f2cec-711b-4f70-84a4-d372725137b6")
+                            SuperCategoryId = new Guid("86856aaf-a1df-47c2-9b6e-cd37147519dd")
                         },
                         new
                         {
-                            Id = new Guid("3bed7122-7fbc-4b53-9906-625b8612c404"),
+                            Id = new Guid("86cc0a1c-c3e1-4c63-8749-684f2b82b79e"),
                             Name = "lighthouse",
-                            SuperCategoryId = new Guid("be2f2cec-711b-4f70-84a4-d372725137b6")
+                            SuperCategoryId = new Guid("86856aaf-a1df-47c2-9b6e-cd37147519dd")
                         },
                         new
                         {
-                            Id = new Guid("1f78c5ce-5931-480c-94c5-282db21c432d"),
+                            Id = new Guid("78bb5b49-51f2-41be-ae60-2936a104f754"),
                             Name = "windmill",
-                            SuperCategoryId = new Guid("be2f2cec-711b-4f70-84a4-d372725137b6")
+                            SuperCategoryId = new Guid("86856aaf-a1df-47c2-9b6e-cd37147519dd")
                         },
                         new
                         {
-                            Id = new Guid("613978b5-9deb-42a5-bbf6-52c64a916cdc"),
+                            Id = new Guid("d90f69f4-a046-46cd-ad00-8823e53e98e1"),
                             Name = "tower",
-                            SuperCategoryId = new Guid("be2f2cec-711b-4f70-84a4-d372725137b6")
+                            SuperCategoryId = new Guid("86856aaf-a1df-47c2-9b6e-cd37147519dd")
                         },
                         new
                         {
-                            Id = new Guid("d3c8a192-8e81-4fd0-8562-da777f93cf2a"),
+                            Id = new Guid("8d5f8d4d-3f5e-42cd-b74d-9f7ff3f4f0a2"),
                             Name = "battlefield",
-                            SuperCategoryId = new Guid("be2f2cec-711b-4f70-84a4-d372725137b6")
+                            SuperCategoryId = new Guid("86856aaf-a1df-47c2-9b6e-cd37147519dd")
                         },
                         new
                         {
-                            Id = new Guid("aa171b9d-0bcb-42a7-bdd7-9935ac8dc2c6"),
+                            Id = new Guid("fb2f8254-2e4a-4a86-adca-775bb0177e32"),
                             Name = "fort",
-                            SuperCategoryId = new Guid("be2f2cec-711b-4f70-84a4-d372725137b6")
+                            SuperCategoryId = new Guid("86856aaf-a1df-47c2-9b6e-cd37147519dd")
                         },
                         new
                         {
-                            Id = new Guid("6c17376f-13de-4b98-9233-5ac52c9e9e79"),
+                            Id = new Guid("c12cfd12-8a1b-49ce-8adb-eaaa16a1a020"),
                             Name = "castle",
-                            SuperCategoryId = new Guid("be2f2cec-711b-4f70-84a4-d372725137b6")
+                            SuperCategoryId = new Guid("86856aaf-a1df-47c2-9b6e-cd37147519dd")
                         },
                         new
                         {
-                            Id = new Guid("fc831e44-4eae-423d-a788-7b6e3701f1dc"),
+                            Id = new Guid("2524a761-a2f1-4864-b637-5604b8fc82c2"),
                             Name = "ruines",
-                            SuperCategoryId = new Guid("be2f2cec-711b-4f70-84a4-d372725137b6")
+                            SuperCategoryId = new Guid("86856aaf-a1df-47c2-9b6e-cd37147519dd")
                         },
                         new
                         {
-                            Id = new Guid("f1030a81-5078-4de3-9aad-983d6f228800"),
+                            Id = new Guid("0c77ea70-f680-4377-84af-289549c7694d"),
                             Name = "archaeological_site",
-                            SuperCategoryId = new Guid("be2f2cec-711b-4f70-84a4-d372725137b6")
+                            SuperCategoryId = new Guid("86856aaf-a1df-47c2-9b6e-cd37147519dd")
                         },
                         new
                         {
-                            Id = new Guid("c6340cfe-4c29-4c61-a1bc-ea8eacf05b28"),
+                            Id = new Guid("c8961b28-6a7f-473e-b23b-c26c6fa7c965"),
                             Name = "city_gate",
-                            SuperCategoryId = new Guid("be2f2cec-711b-4f70-84a4-d372725137b6")
+                            SuperCategoryId = new Guid("86856aaf-a1df-47c2-9b6e-cd37147519dd")
                         },
                         new
                         {
-                            Id = new Guid("c9596f17-97fd-4816-be2d-89c93a075469"),
+                            Id = new Guid("0a49a365-8128-40f6-b386-556e2d3f0821"),
                             Name = "bridge",
-                            SuperCategoryId = new Guid("be2f2cec-711b-4f70-84a4-d372725137b6")
+                            SuperCategoryId = new Guid("86856aaf-a1df-47c2-9b6e-cd37147519dd")
                         },
                         new
                         {
-                            Id = new Guid("d70f0006-d283-4732-aeba-298b58db0992"),
+                            Id = new Guid("74b59c6f-6402-4f16-adde-564f9de9edac"),
                             Name = "memorial",
-                            SuperCategoryId = new Guid("be2f2cec-711b-4f70-84a4-d372725137b6")
+                            SuperCategoryId = new Guid("86856aaf-a1df-47c2-9b6e-cd37147519dd")
                         },
                         new
                         {
-                            Id = new Guid("76fd1561-b25e-433d-bf6b-86a974d5e503"),
+                            Id = new Guid("d9982a6d-263c-4125-977a-90a76a4cd010"),
                             Name = "aircraft",
-                            SuperCategoryId = new Guid("d70f0006-d283-4732-aeba-298b58db0992")
+                            SuperCategoryId = new Guid("74b59c6f-6402-4f16-adde-564f9de9edac")
                         },
                         new
                         {
-                            Id = new Guid("8064178d-119e-43ba-951f-4f338a1d4eb3"),
+                            Id = new Guid("fd9b00d3-1a00-4123-9a37-8b0e8989c559"),
                             Name = "locomotive",
-                            SuperCategoryId = new Guid("d70f0006-d283-4732-aeba-298b58db0992")
+                            SuperCategoryId = new Guid("74b59c6f-6402-4f16-adde-564f9de9edac")
                         },
                         new
                         {
-                            Id = new Guid("2e517b88-2335-442b-b83c-0be676385844"),
+                            Id = new Guid("d0b04279-b835-419f-ab62-3a7e4e663d9e"),
                             Name = "railway_car",
-                            SuperCategoryId = new Guid("d70f0006-d283-4732-aeba-298b58db0992")
+                            SuperCategoryId = new Guid("74b59c6f-6402-4f16-adde-564f9de9edac")
                         },
                         new
                         {
-                            Id = new Guid("59b64cb1-5b96-4bb8-b8c7-9eff08212b16"),
+                            Id = new Guid("e4e8b46f-f267-4c9b-9e9e-1ebbad64eaf6"),
                             Name = "ship",
-                            SuperCategoryId = new Guid("d70f0006-d283-4732-aeba-298b58db0992")
+                            SuperCategoryId = new Guid("74b59c6f-6402-4f16-adde-564f9de9edac")
                         },
                         new
                         {
-                            Id = new Guid("a50b5377-a1b0-4690-bb37-88c1104f4c57"),
+                            Id = new Guid("2a4d5a70-913f-46d1-9cbd-7eefb4e75a11"),
                             Name = "tank",
-                            SuperCategoryId = new Guid("d70f0006-d283-4732-aeba-298b58db0992")
+                            SuperCategoryId = new Guid("74b59c6f-6402-4f16-adde-564f9de9edac")
                         },
                         new
                         {
-                            Id = new Guid("62245ac9-c190-41b1-82a6-77d671ba6cf3"),
+                            Id = new Guid("8c61029b-ed79-419c-a2a3-9c9a2a9fa4e4"),
                             Name = "tomb",
-                            SuperCategoryId = new Guid("d70f0006-d283-4732-aeba-298b58db0992")
+                            SuperCategoryId = new Guid("74b59c6f-6402-4f16-adde-564f9de9edac")
                         },
                         new
                         {
-                            Id = new Guid("73a17b85-69cd-4d72-b0eb-6e73bbddf56f"),
+                            Id = new Guid("73387b38-0fed-4685-a301-8cc88127bcd8"),
                             Name = "monument",
-                            SuperCategoryId = new Guid("d70f0006-d283-4732-aeba-298b58db0992")
+                            SuperCategoryId = new Guid("74b59c6f-6402-4f16-adde-564f9de9edac")
                         },
                         new
                         {
-                            Id = new Guid("cd8f782f-8056-4ec2-88b2-17fe71c4160c"),
+                            Id = new Guid("36a04e95-cde1-40ab-b8d6-0d9d942810ce"),
                             Name = "wayside_cross",
-                            SuperCategoryId = new Guid("d70f0006-d283-4732-aeba-298b58db0992")
+                            SuperCategoryId = new Guid("74b59c6f-6402-4f16-adde-564f9de9edac")
                         },
                         new
                         {
-                            Id = new Guid("845adddb-833e-4557-b2c5-1acac1f1aea7"),
+                            Id = new Guid("990d786e-349f-4a1f-99c7-8693f2dfcb67"),
                             Name = "boundary_stone",
-                            SuperCategoryId = new Guid("d70f0006-d283-4732-aeba-298b58db0992")
+                            SuperCategoryId = new Guid("74b59c6f-6402-4f16-adde-564f9de9edac")
                         },
                         new
                         {
-                            Id = new Guid("90c995cb-5d73-456d-8241-f3995aaff5f8"),
+                            Id = new Guid("5df0fe5b-f245-4b44-86e4-437ba42a9cb7"),
                             Name = "pillory",
-                            SuperCategoryId = new Guid("d70f0006-d283-4732-aeba-298b58db0992")
+                            SuperCategoryId = new Guid("74b59c6f-6402-4f16-adde-564f9de9edac")
                         },
                         new
                         {
-                            Id = new Guid("e2c85b0a-d6ed-438b-9031-6e21ae6c0e50"),
+                            Id = new Guid("fb35dde5-6a43-4d13-8444-e6259e4113f6"),
                             Name = "milestone",
-                            SuperCategoryId = new Guid("d70f0006-d283-4732-aeba-298b58db0992")
+                            SuperCategoryId = new Guid("74b59c6f-6402-4f16-adde-564f9de9edac")
                         },
                         new
                         {
-                            Id = new Guid("37ada763-6d71-42b4-b71d-d15ab908ca95"),
+                            Id = new Guid("cff33750-d418-4195-9a90-75bb7217f84a"),
                             Name = "religion"
                         },
                         new
                         {
-                            Id = new Guid("c2d026f2-0095-4cb4-b04b-f36b0934c71b"),
+                            Id = new Guid("e6f3bdee-a671-4222-bce8-d21214dec7b0"),
                             Name = "place_of_worship",
-                            SuperCategoryId = new Guid("37ada763-6d71-42b4-b71d-d15ab908ca95")
+                            SuperCategoryId = new Guid("cff33750-d418-4195-9a90-75bb7217f84a")
                         },
                         new
                         {
-                            Id = new Guid("0134c89a-fa97-4fb6-a79d-e838244d82a1"),
+                            Id = new Guid("ba392485-9e63-4965-a9c1-fae8e79dd239"),
                             Name = "buddhism",
-                            SuperCategoryId = new Guid("c2d026f2-0095-4cb4-b04b-f36b0934c71b")
+                            SuperCategoryId = new Guid("e6f3bdee-a671-4222-bce8-d21214dec7b0")
                         },
                         new
                         {
-                            Id = new Guid("a1281b08-f34c-4a8b-9dd6-d1ce3c1aba87"),
+                            Id = new Guid("f35d974b-a4b4-4662-8afc-9407b4bfec6d"),
                             Name = "christianity",
-                            SuperCategoryId = new Guid("c2d026f2-0095-4cb4-b04b-f36b0934c71b")
+                            SuperCategoryId = new Guid("e6f3bdee-a671-4222-bce8-d21214dec7b0")
                         },
                         new
                         {
-                            Id = new Guid("338ebd22-e46b-4551-8c1f-8e5b638b156a"),
+                            Id = new Guid("a080d558-938d-4433-a88d-bd264c17d9bb"),
                             Name = "hinduism",
-                            SuperCategoryId = new Guid("c2d026f2-0095-4cb4-b04b-f36b0934c71b")
+                            SuperCategoryId = new Guid("e6f3bdee-a671-4222-bce8-d21214dec7b0")
                         },
                         new
                         {
-                            Id = new Guid("c0e127fc-6b7c-4a75-a296-d3d02d5d2a26"),
+                            Id = new Guid("fc382fa5-9707-448e-b3c7-202d0d5f7344"),
                             Name = "islam",
-                            SuperCategoryId = new Guid("c2d026f2-0095-4cb4-b04b-f36b0934c71b")
+                            SuperCategoryId = new Guid("e6f3bdee-a671-4222-bce8-d21214dec7b0")
                         },
                         new
                         {
-                            Id = new Guid("98662281-30b2-47e6-85e2-f25abe1380ff"),
+                            Id = new Guid("3caefd09-7c97-4b24-a1f1-ce28cb579e24"),
                             Name = "judaism",
-                            SuperCategoryId = new Guid("c2d026f2-0095-4cb4-b04b-f36b0934c71b")
+                            SuperCategoryId = new Guid("e6f3bdee-a671-4222-bce8-d21214dec7b0")
                         },
                         new
                         {
-                            Id = new Guid("dcb15137-9ace-4673-a780-80aaa2df5832"),
+                            Id = new Guid("586ca75c-b80f-4367-9a41-d5d63696e237"),
                             Name = "shinto",
-                            SuperCategoryId = new Guid("c2d026f2-0095-4cb4-b04b-f36b0934c71b")
+                            SuperCategoryId = new Guid("e6f3bdee-a671-4222-bce8-d21214dec7b0")
                         },
                         new
                         {
-                            Id = new Guid("b31e9a4c-6847-4855-9912-b62154d07306"),
+                            Id = new Guid("0cb8d358-5058-412c-8f85-45ffcaf884b4"),
                             Name = "sikhism",
-                            SuperCategoryId = new Guid("c2d026f2-0095-4cb4-b04b-f36b0934c71b")
+                            SuperCategoryId = new Guid("e6f3bdee-a671-4222-bce8-d21214dec7b0")
                         },
                         new
                         {
-                            Id = new Guid("6d900c44-be6e-490d-846f-5d381d60587a"),
+                            Id = new Guid("41843917-ac17-4e2e-ab99-094df9bea8d1"),
                             Name = "multifaith",
-                            SuperCategoryId = new Guid("c2d026f2-0095-4cb4-b04b-f36b0934c71b")
+                            SuperCategoryId = new Guid("e6f3bdee-a671-4222-bce8-d21214dec7b0")
                         },
                         new
                         {
-                            Id = new Guid("e5ac8a92-4dc9-40f9-9e9e-69a1f9132813"),
+                            Id = new Guid("19894eb7-39d1-47e3-8454-0c4d68527a5b"),
                             Name = "sport"
                         },
                         new
                         {
-                            Id = new Guid("4c6a2f45-6d27-4fc6-bbb5-3a874d2c7e50"),
+                            Id = new Guid("13af932b-325e-4b4f-838c-8703a32e2c13"),
                             Name = "stadium",
-                            SuperCategoryId = new Guid("e5ac8a92-4dc9-40f9-9e9e-69a1f9132813")
+                            SuperCategoryId = new Guid("19894eb7-39d1-47e3-8454-0c4d68527a5b")
                         },
                         new
                         {
-                            Id = new Guid("44ae9bb2-9b39-4b01-a1d4-171e8ef5310d"),
+                            Id = new Guid("7c7e3e33-04f0-4b60-8d61-f00f31b940b4"),
                             Name = "catering"
                         },
                         new
                         {
-                            Id = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b"),
+                            Id = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2"),
                             Name = "restaurant",
-                            SuperCategoryId = new Guid("44ae9bb2-9b39-4b01-a1d4-171e8ef5310d")
+                            SuperCategoryId = new Guid("7c7e3e33-04f0-4b60-8d61-f00f31b940b4")
                         },
                         new
                         {
-                            Id = new Guid("478c1aa1-cca0-4db5-8362-1d9e0a5a4ded"),
+                            Id = new Guid("d2c95f89-46b7-4a84-8791-c7d5209bc07e"),
                             Name = "pizza",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("2b502ef2-d2b5-4e70-91f8-ed9e01551906"),
+                            Id = new Guid("72c5edaf-2b93-4305-b4ce-c0ea15b6b96a"),
                             Name = "burger",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("9314bb32-fd00-4c2d-9644-4713707a63bf"),
+                            Id = new Guid("80fdd2d8-c8e5-428a-9285-1f2d186e1235"),
                             Name = "regional",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("aa415c79-43b0-411a-92a8-7251d90aa1ae"),
+                            Id = new Guid("4f6048b6-9f57-4bc3-aaf4-61cfeec0596d"),
                             Name = "italian",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("52c1979e-d41c-474f-bf05-840342c68a09"),
+                            Id = new Guid("5c5d6f73-8615-4081-9e8d-68e41313175d"),
                             Name = "chinese",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("3fb58ea6-2c32-45a0-81b7-ff41dd9db02b"),
+                            Id = new Guid("420a8b0a-7205-460c-b51c-ff35a6adfe81"),
                             Name = "sandwich",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("7733fc47-720a-4413-81a9-b19f46ebc431"),
+                            Id = new Guid("295647f6-c87d-4991-b74b-84cdc16f00b1"),
                             Name = "chicken",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("d0fb6e2c-7a60-48f8-b3c0-f3f72ead71b0"),
+                            Id = new Guid("7382dbe1-e579-488a-bb24-99b3f61565a7"),
                             Name = "mexican",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("67553f73-0d89-4be1-a8f9-df7d5d4f8aaa"),
+                            Id = new Guid("8c23360f-3f79-49e9-9d5a-53592a82e603"),
                             Name = "japanese",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("a09e770d-b9d8-4315-9f16-df4affc47e11"),
+                            Id = new Guid("d8f87762-098b-44fb-8026-55d16dbca4c5"),
                             Name = "american",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("24e9bbd4-bbe6-4e52-887f-9d06e5aedb80"),
+                            Id = new Guid("ace796ce-b625-4dbd-bfca-d265cd5c1dca"),
                             Name = "kebab",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("d0f4b85a-14ab-4096-81ae-2e96eefb5c8d"),
+                            Id = new Guid("de666230-48fd-4f70-96d9-dd4216b0ca08"),
                             Name = "indian",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("78c5e283-eaff-4b6c-85a1-eb39483e6a88"),
+                            Id = new Guid("5475fdb7-04cf-494f-9b1e-e63724a358a1"),
                             Name = "asian",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("fc567aa6-ef6a-4068-bbec-8a25dbe5dad0"),
+                            Id = new Guid("74f37c5e-9d36-47c3-9577-75b92117a510"),
                             Name = "sushi",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("f5439db8-777f-45f1-84c3-d33a8493ebb7"),
+                            Id = new Guid("f870fcda-59c6-42d0-9f5c-564ba8f37089"),
                             Name = "french",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("39e8b4b1-b565-4166-9891-32c10848de5d"),
+                            Id = new Guid("48720064-31f4-40af-b933-1f299abff3a0"),
                             Name = "german",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("ca3815e4-98ce-4f65-91ae-9321b9076d45"),
+                            Id = new Guid("c80b0c61-b325-49ba-80da-79804e9268c3"),
                             Name = "thai",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("58c652c0-d9bf-42f0-ae90-fc9385cac9e0"),
+                            Id = new Guid("e24b99b0-3c07-4840-856e-15af5ad284bb"),
                             Name = "greek",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("c74c3d4d-e0a7-46ba-846f-eb2fdfe8a5e4"),
+                            Id = new Guid("237e36ee-2383-428c-af84-1aa1d4a4b4ba"),
                             Name = "seafood",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("0a59baba-4b3f-4477-adcb-3ccce2ca78c0"),
+                            Id = new Guid("2d4533f6-4619-4614-9cac-bc3b59d20b41"),
                             Name = "fish_and_chips",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("5ee6c510-5f75-4206-9785-a43cf80f2ced"),
+                            Id = new Guid("0a043370-1930-45df-b8a9-ba55aff75e15"),
                             Name = "steak_house",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("55c27b64-a302-414a-9639-4e087b38e9ad"),
+                            Id = new Guid("b5ebbb17-90d3-4382-a522-6ccd750fc2c8"),
                             Name = "international",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("f8029ad5-11be-4d4e-bc79-7cb91d92117d"),
+                            Id = new Guid("ae4e6e5b-8762-459b-83a9-94ede3f84490"),
                             Name = "tex-mex",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("7c0612f1-77e5-48ba-8d0d-8f0a8eb95fb6"),
+                            Id = new Guid("90587334-2f49-46d7-ad1f-a17b08b9e8fc"),
                             Name = "vietnamese",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("2f57877a-fdb8-4390-8a12-5797063e7d12"),
+                            Id = new Guid("bc33fddd-b588-447b-94b7-2398e7d77464"),
                             Name = "turkish",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("83bc4435-682e-42f2-ba68-21e8a1cfbac4"),
+                            Id = new Guid("489ee6c7-a1e3-45ac-8b7b-f12b6fc03381"),
                             Name = "korean",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("5884be5d-095a-4e05-8c6b-e7a6e12d6e7d"),
+                            Id = new Guid("bc1672d9-8509-450e-9db4-a0e0288602ac"),
                             Name = "noodle",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("18b5a408-6b98-4b2c-bc61-f1a0f013d610"),
+                            Id = new Guid("70c92d6d-f15d-479d-b7d8-893bb29abef3"),
                             Name = "barbecue",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("3150195e-0bf3-46f8-93f1-f59730b0b2df"),
+                            Id = new Guid("ab880187-71fb-47a5-a688-8c5c02ffe4b3"),
                             Name = "spanish",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("38b5661a-87f9-4266-9133-fce656daee39"),
+                            Id = new Guid("fc297e49-af1b-4e27-a373-3bb7e30944c5"),
                             Name = "fish",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("36dc1fd2-5763-4871-b6cd-7a5571f8da46"),
+                            Id = new Guid("64589e75-3f31-4677-861e-fe911493126e"),
                             Name = "ramen",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("04b2797c-98d3-48d5-9e83-27876d6e8082"),
+                            Id = new Guid("5d240ddc-5da9-4d5a-88be-ae8b4b86d2b5"),
                             Name = "mediterranean",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("5a4f0d3f-5460-4395-8871-9318497239e0"),
+                            Id = new Guid("c43e5c4a-ed3b-4782-a254-ca8d5b72036f"),
                             Name = "friture",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("d1e71b32-ca8a-4a4d-9150-2dad15758c2c"),
+                            Id = new Guid("56d68ab3-72cb-4274-ab57-fefd70bbe906"),
                             Name = "beef_bowl",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("df077e8c-8e27-4fda-9a52-78b6ec6841df"),
+                            Id = new Guid("dd668b12-e192-4a00-b411-03cdacffd487"),
                             Name = "lebanese",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("d51845f8-fdb1-47fc-be80-f6805388394a"),
+                            Id = new Guid("28f6cc58-d932-4e2f-9811-20113e82a706"),
                             Name = "wings",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("15c9df60-6759-419d-9e7e-4bbc97c9a4ec"),
+                            Id = new Guid("f0db1f9c-5bef-4508-84da-5679df64a28e"),
                             Name = "georgian",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("d47e7404-9fe0-4606-bb14-e36f237491be"),
+                            Id = new Guid("deb51665-dc23-4d69-bcf3-4c0c7c49f356"),
                             Name = "tapas",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("34a698de-3153-4517-aeb5-0f191c4d192f"),
+                            Id = new Guid("43faa45f-8ed1-4e0c-9935-2c48bb73f544"),
                             Name = "indonesian",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("a88c9701-5a3d-4ab6-82ef-45c3c4d23f3b"),
+                            Id = new Guid("3514d0b1-3562-43af-8e4a-7933055c0814"),
                             Name = "arab",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("e27de157-8058-4e70-a46b-3cdc395b0c3d"),
+                            Id = new Guid("1e248786-a560-425e-8bed-429432e8b1c2"),
                             Name = "portuguese",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("f502eb06-faa1-43f5-b129-a2a1c1e8fd3c"),
+                            Id = new Guid("33f8ebd2-ae7c-4609-aa69-51ca6d8b8a7b"),
                             Name = "russian",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("176b6f99-0c4d-4a90-8209-30b2d99b2582"),
+                            Id = new Guid("9a73f761-720f-4a90-8d1c-8394eb4c2500"),
                             Name = "filipino",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("be8f4fac-997f-442b-adc6-588bb0f65cec"),
+                            Id = new Guid("519f8c83-427b-439b-b013-dcdefec6184d"),
                             Name = "african",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("d96b47ad-221c-462a-a338-8c59ee51c29a"),
+                            Id = new Guid("a000ab54-1e77-47a7-ae64-2e92719995bb"),
                             Name = "malaysian",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("b18c3961-e693-46b1-afd4-abe1165df5fb"),
+                            Id = new Guid("86f5c081-7d34-4b46-818b-6b6a3c59ac98"),
                             Name = "caribbean",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("a637efd9-77c2-40ec-b722-f881c57b5c4e"),
+                            Id = new Guid("38ffa513-bd22-421c-bc2e-1662e33f061f"),
                             Name = "peruvian",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("e9301c26-009f-468b-ba35-f6adb5b7abeb"),
+                            Id = new Guid("6fc2c003-fa3b-48f2-a2ba-07bc99469ec2"),
                             Name = "bavarian",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("1bd7ba72-3bbb-4e5a-94c3-a757d9cdad1c"),
+                            Id = new Guid("11295290-a0fc-422a-849a-9144d83efe1d"),
                             Name = "brazilian",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("34ac375e-cb14-4b0c-a199-75ed47b024a2"),
+                            Id = new Guid("22cf2ed0-607b-43b4-9e65-d582b3a738f7"),
                             Name = "curry",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("744f3064-67a1-4076-ad52-ed37c3067a14"),
+                            Id = new Guid("609844df-4cf9-468c-b33d-4114de4a7e1a"),
                             Name = "dumpling",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("fad6daad-d50d-4e65-bc04-a53760ba82f9"),
+                            Id = new Guid("25c27c48-3508-4970-ac72-40df53d4f107"),
                             Name = "persian",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("bf51391f-d062-424a-bac7-5f1b363c3aa7"),
+                            Id = new Guid("59e232aa-ddc7-426a-8cb5-d926bc60b4dc"),
                             Name = "argentinian",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("154f69c2-543d-4da6-83ab-f3f24417dbaa"),
+                            Id = new Guid("44d97e4a-36c5-4c3e-a2e8-bfe8aaeb1084"),
                             Name = "oriental",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("1fb98de8-9412-4a92-8145-df169fc2d795"),
+                            Id = new Guid("36dabfa7-bbad-4be5-8052-a53ac86c45e3"),
                             Name = "balkan",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("48c5f7e5-b1f9-417b-92bd-ccc4e08df2b3"),
+                            Id = new Guid("05311622-0b49-4909-abab-53782cee7020"),
                             Name = "moroccan",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("664fcf23-2f72-4823-ac78-c240a849ef94"),
+                            Id = new Guid("9a43ce83-86f0-4a1d-8cae-939787e73143"),
                             Name = "pita",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("6808dc1c-ce05-42ce-97e3-759938269868"),
+                            Id = new Guid("26757f01-6ef5-43b3-94c9-4f4cd62be2af"),
                             Name = "ethiopian",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("01492857-9bf5-4647-88f3-cb328aeab625"),
+                            Id = new Guid("93b89419-4c6f-4369-9c98-539f59db19a3"),
                             Name = "taiwanese",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("76f676ea-b8be-4751-85cf-b81e1c41a8f6"),
+                            Id = new Guid("2bdd3fe2-3c09-4ebe-bb04-905bd4632f48"),
                             Name = "latin_american",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("de135fba-48ca-4573-9da1-d81ff2ff146a"),
+                            Id = new Guid("128899c4-6a65-45d0-80fa-cd7f8833c64d"),
                             Name = "hawaiian",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("01965132-ad88-43d0-bb9e-83978c3cd6ea"),
+                            Id = new Guid("49c4f75e-2d3d-427f-a6a0-9b018b86d690"),
                             Name = "irish",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("70e30db7-f59e-4359-a50e-27aaafa51bc8"),
+                            Id = new Guid("0c97c2fd-7943-4cb2-a25f-e87f67db5245"),
                             Name = "austrian",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("c4d7a3be-c868-46af-92e7-bd643c793fe6"),
+                            Id = new Guid("695c54cd-422b-475a-916e-885816a39123"),
                             Name = "croatian",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("1ee03c7b-88bb-4a5b-9736-b84f987c9eef"),
+                            Id = new Guid("0e6e9a12-e017-470f-b047-d24d4ef7787f"),
                             Name = "danish",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("6a6dfa55-441b-4ee4-9ab8-76297bbd94eb"),
+                            Id = new Guid("8840e541-eae9-477c-a486-737d81935fd5"),
                             Name = "tacos",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("5f03a8b5-6e05-47a1-a3f0-3f5bfcffda24"),
+                            Id = new Guid("a2885e35-a86d-4261-be97-97898656e826"),
                             Name = "bolivian",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("d528ea66-1d80-43b7-9312-9880dd43b10d"),
+                            Id = new Guid("d97914c9-3cc0-4eb4-9ee5-6531191d3dc7"),
                             Name = "hungarian",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("57191d08-0fc7-4439-ac1c-111bc82aae4a"),
+                            Id = new Guid("a4098b34-2dac-49cf-967a-508bbc9ad8be"),
                             Name = "western",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("cc5839c7-2b35-47ee-97d2-88fa60e47f71"),
+                            Id = new Guid("1d14f5a5-052e-492f-865c-49360b9d39c0"),
                             Name = "european",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("17aedf7c-59ce-4dfc-8b0c-b37e91d4d5ad"),
+                            Id = new Guid("aa3e610f-7e2d-4da2-82bc-08cd71bbe453"),
                             Name = "jamaican",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("a3b34375-8a9e-47ed-8c92-a9c5debab5dd"),
+                            Id = new Guid("018311e7-13a7-4180-89f5-56faea449584"),
                             Name = "cuban",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("21156570-a0c4-409d-a202-46874a5f1323"),
+                            Id = new Guid("c535144a-9275-40ec-84bc-470eccac336e"),
                             Name = "soup",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("31c99bbf-cff4-4862-bdf6-58a3b50d442f"),
+                            Id = new Guid("1876868c-0f72-4429-bde6-47de749bf084"),
                             Name = "uzbek",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("fef454cf-30ff-4da8-bc90-8f93b2269859"),
+                            Id = new Guid("a2b2d8d8-13de-40bc-815b-ae2db2300560"),
                             Name = "nepalese",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("d2625afd-edbe-4584-be00-d484ecc9e152"),
+                            Id = new Guid("1a857a02-f360-4076-871d-9b123bb7c076"),
                             Name = "czech",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("7a4e37e9-8b67-46b7-afeb-eab2d5bac68d"),
+                            Id = new Guid("297702de-f16f-4c73-b90f-d4bcf5937c75"),
                             Name = "syrian",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("0c87eaf6-41f8-4586-9a45-d5a8d2c86d83"),
+                            Id = new Guid("b479bb2e-f4eb-4afd-ae9e-0d315eb6fc6b"),
                             Name = "afghan",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("627033d7-043f-4b27-af25-96b701161a3e"),
+                            Id = new Guid("8253c22a-a79e-493c-b703-7ee50b9df94c"),
                             Name = "malay",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("80fad29c-4822-4edb-a508-d910c4cd8a85"),
+                            Id = new Guid("ab41ee21-1027-4004-a750-d3da1c60e4ce"),
                             Name = "chili",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("82d91aca-dec4-4845-9ef2-84779edf8372"),
+                            Id = new Guid("5013b198-e2a6-4e6f-8f3b-c256fab6015e"),
                             Name = "belgian",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("994bfc7d-861e-48e6-b89a-16112a62d00a"),
+                            Id = new Guid("1e718cc9-3214-45d7-bf32-a1b3c6dcb653"),
                             Name = "ukrainian",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("3e67ddee-f322-4b9f-8404-1cba381b7fdb"),
+                            Id = new Guid("e3d79396-834f-4606-82ea-4c9ae9c4a5ce"),
                             Name = "swedish",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("e0b72283-8871-44ed-aa73-a70664449959"),
+                            Id = new Guid("400b820f-e9be-4a1f-902c-db3cd90cb5ad"),
                             Name = "pakistani",
-                            SuperCategoryId = new Guid("5c402109-1864-4cf6-8175-0c21e171d83b")
+                            SuperCategoryId = new Guid("6aff0066-ba17-452b-ad00-cf462e5bb1f2")
                         },
                         new
                         {
-                            Id = new Guid("eac891b8-3cbd-40f8-86e8-59c1299c51c8"),
+                            Id = new Guid("bad5faf9-9b94-4e1e-b283-f8bf9653bc63"),
                             Name = "fast_food",
-                            SuperCategoryId = new Guid("44ae9bb2-9b39-4b01-a1d4-171e8ef5310d")
+                            SuperCategoryId = new Guid("7c7e3e33-04f0-4b60-8d61-f00f31b940b4")
                         },
                         new
                         {
-                            Id = new Guid("b1e6d3f1-d30b-4f65-9c7d-e4b2b3ed623a"),
+                            Id = new Guid("fd6786b5-22d2-4949-ba8d-3894e3a7f622"),
                             Name = "pizza",
-                            SuperCategoryId = new Guid("eac891b8-3cbd-40f8-86e8-59c1299c51c8")
+                            SuperCategoryId = new Guid("bad5faf9-9b94-4e1e-b283-f8bf9653bc63")
                         },
                         new
                         {
-                            Id = new Guid("c72fc9ff-b71a-4f21-80a2-32ee7b0195a2"),
+                            Id = new Guid("d42fc76a-c266-497b-8903-c0790ca51719"),
                             Name = "burger",
-                            SuperCategoryId = new Guid("eac891b8-3cbd-40f8-86e8-59c1299c51c8")
+                            SuperCategoryId = new Guid("bad5faf9-9b94-4e1e-b283-f8bf9653bc63")
                         },
                         new
                         {
-                            Id = new Guid("f37567d5-f181-4083-b178-1fb7ca5b2e21"),
+                            Id = new Guid("28116905-1807-480a-8b4a-99d47683d92c"),
                             Name = "sandwich",
-                            SuperCategoryId = new Guid("eac891b8-3cbd-40f8-86e8-59c1299c51c8")
+                            SuperCategoryId = new Guid("bad5faf9-9b94-4e1e-b283-f8bf9653bc63")
                         },
                         new
                         {
-                            Id = new Guid("e2c7d00d-4bc6-4554-a4a2-34a9745ebe4f"),
+                            Id = new Guid("9b6544d2-2657-4a63-8bd5-af3c006a9ecb"),
                             Name = "kebab",
-                            SuperCategoryId = new Guid("eac891b8-3cbd-40f8-86e8-59c1299c51c8")
+                            SuperCategoryId = new Guid("bad5faf9-9b94-4e1e-b283-f8bf9653bc63")
                         },
                         new
                         {
-                            Id = new Guid("7b0f127a-3ab1-4d58-8f6b-354dc3b9b5be"),
+                            Id = new Guid("58ceb6b4-0bcc-4d7f-912e-b1e079913376"),
                             Name = "fish_and_chips",
-                            SuperCategoryId = new Guid("eac891b8-3cbd-40f8-86e8-59c1299c51c8")
+                            SuperCategoryId = new Guid("bad5faf9-9b94-4e1e-b283-f8bf9653bc63")
                         },
                         new
                         {
-                            Id = new Guid("deb69bcc-14f5-4589-a84a-e4887d68ed91"),
+                            Id = new Guid("0fe81f4b-7fe2-4f02-bf39-807fc2bb2083"),
                             Name = "noodle",
-                            SuperCategoryId = new Guid("eac891b8-3cbd-40f8-86e8-59c1299c51c8")
+                            SuperCategoryId = new Guid("bad5faf9-9b94-4e1e-b283-f8bf9653bc63")
                         },
                         new
                         {
-                            Id = new Guid("379045df-32a0-40e4-9ac8-fda190d14930"),
+                            Id = new Guid("a915cec4-ecab-46e8-8859-22a7aa9ca79c"),
                             Name = "ramen",
-                            SuperCategoryId = new Guid("eac891b8-3cbd-40f8-86e8-59c1299c51c8")
+                            SuperCategoryId = new Guid("bad5faf9-9b94-4e1e-b283-f8bf9653bc63")
                         },
                         new
                         {
-                            Id = new Guid("31beb57e-9b08-452a-b1b6-508e2cfb73da"),
+                            Id = new Guid("928ef710-3c21-495c-ab21-7f6f1b8f05c0"),
                             Name = "wings",
-                            SuperCategoryId = new Guid("eac891b8-3cbd-40f8-86e8-59c1299c51c8")
+                            SuperCategoryId = new Guid("bad5faf9-9b94-4e1e-b283-f8bf9653bc63")
                         },
                         new
                         {
-                            Id = new Guid("7623b5e1-cdc5-4577-8483-358efbc6a7d0"),
+                            Id = new Guid("042f5d80-aaa2-4e2a-914c-e0cf77aa13d7"),
                             Name = "tapas",
-                            SuperCategoryId = new Guid("eac891b8-3cbd-40f8-86e8-59c1299c51c8")
+                            SuperCategoryId = new Guid("bad5faf9-9b94-4e1e-b283-f8bf9653bc63")
                         },
                         new
                         {
-                            Id = new Guid("10ab0c5e-401e-415b-bec7-5f2c548e805c"),
+                            Id = new Guid("183e070a-3f14-4efe-b2c9-a5e72cf7d921"),
                             Name = "pita",
-                            SuperCategoryId = new Guid("eac891b8-3cbd-40f8-86e8-59c1299c51c8")
+                            SuperCategoryId = new Guid("bad5faf9-9b94-4e1e-b283-f8bf9653bc63")
                         },
                         new
                         {
-                            Id = new Guid("e94497e5-de3b-42c0-96b0-0425abae537c"),
+                            Id = new Guid("2a1b4eca-ffc8-49aa-b535-aa8c7ccc1651"),
                             Name = "tacos",
-                            SuperCategoryId = new Guid("eac891b8-3cbd-40f8-86e8-59c1299c51c8")
+                            SuperCategoryId = new Guid("bad5faf9-9b94-4e1e-b283-f8bf9653bc63")
                         },
                         new
                         {
-                            Id = new Guid("e54b5e74-5312-4fd9-adeb-e6c4053155cf"),
+                            Id = new Guid("ef96a6cb-8e60-4c10-8ab3-4094be941864"),
                             Name = "soup",
-                            SuperCategoryId = new Guid("eac891b8-3cbd-40f8-86e8-59c1299c51c8")
+                            SuperCategoryId = new Guid("bad5faf9-9b94-4e1e-b283-f8bf9653bc63")
                         },
                         new
                         {
-                            Id = new Guid("d0621799-22bf-423a-8e32-859936f1f20b"),
+                            Id = new Guid("1cc956fc-dc46-408f-afe4-d09ce730dfd6"),
                             Name = "salad",
-                            SuperCategoryId = new Guid("eac891b8-3cbd-40f8-86e8-59c1299c51c8")
+                            SuperCategoryId = new Guid("bad5faf9-9b94-4e1e-b283-f8bf9653bc63")
                         },
                         new
                         {
-                            Id = new Guid("7d33c475-ff94-4c2a-bf2b-07bf0aaf9741"),
+                            Id = new Guid("dc881fda-1d75-438a-90d5-1a3cef2bc3b6"),
                             Name = "hot_dog",
-                            SuperCategoryId = new Guid("eac891b8-3cbd-40f8-86e8-59c1299c51c8")
+                            SuperCategoryId = new Guid("bad5faf9-9b94-4e1e-b283-f8bf9653bc63")
                         },
                         new
                         {
-                            Id = new Guid("41f1d867-abb2-4f11-b8e0-ca553e7fd34b"),
+                            Id = new Guid("90c079f7-e693-4132-8aa3-b09b535280fd"),
                             Name = "cafe",
-                            SuperCategoryId = new Guid("44ae9bb2-9b39-4b01-a1d4-171e8ef5310d")
+                            SuperCategoryId = new Guid("7c7e3e33-04f0-4b60-8d61-f00f31b940b4")
                         },
                         new
                         {
-                            Id = new Guid("66f73c76-d0bd-4fd5-85f3-0dce8195ac35"),
+                            Id = new Guid("1cb730f7-bb45-4b0e-bfed-d1817b92330a"),
                             Name = "waffle",
-                            SuperCategoryId = new Guid("41f1d867-abb2-4f11-b8e0-ca553e7fd34b")
+                            SuperCategoryId = new Guid("90c079f7-e693-4132-8aa3-b09b535280fd")
                         },
                         new
                         {
-                            Id = new Guid("205d252f-9893-4a62-b30e-fd1c951b4dee"),
+                            Id = new Guid("34457d77-0d7d-4880-88c3-8ff3560d58f5"),
                             Name = "ice_cream",
-                            SuperCategoryId = new Guid("41f1d867-abb2-4f11-b8e0-ca553e7fd34b")
+                            SuperCategoryId = new Guid("90c079f7-e693-4132-8aa3-b09b535280fd")
                         },
                         new
                         {
-                            Id = new Guid("1d6b7d33-74c4-4c4d-8e9e-2bc6bc0ac89d"),
+                            Id = new Guid("14aeba22-87f3-4078-bcb6-ee3edfb39504"),
                             Name = "coffee_shop",
-                            SuperCategoryId = new Guid("41f1d867-abb2-4f11-b8e0-ca553e7fd34b")
+                            SuperCategoryId = new Guid("90c079f7-e693-4132-8aa3-b09b535280fd")
                         },
                         new
                         {
-                            Id = new Guid("d9ce9e1f-8aad-459d-b539-1e1cc3ad2508"),
+                            Id = new Guid("08c0e83b-a687-40d1-bcd1-da6add618ee7"),
                             Name = "donut",
-                            SuperCategoryId = new Guid("41f1d867-abb2-4f11-b8e0-ca553e7fd34b")
+                            SuperCategoryId = new Guid("90c079f7-e693-4132-8aa3-b09b535280fd")
                         },
                         new
                         {
-                            Id = new Guid("62db9f90-e62b-48f0-851e-b541ae86cda4"),
+                            Id = new Guid("9ae1a758-252d-4207-895c-296228c40321"),
                             Name = "crepe",
-                            SuperCategoryId = new Guid("41f1d867-abb2-4f11-b8e0-ca553e7fd34b")
+                            SuperCategoryId = new Guid("90c079f7-e693-4132-8aa3-b09b535280fd")
                         },
                         new
                         {
-                            Id = new Guid("21ea2fd4-e9b6-4e03-a986-6f10e12a1d3f"),
+                            Id = new Guid("f22efdf9-9578-4f2b-a2e5-ff2ee53bcc77"),
                             Name = "bubble_tea",
-                            SuperCategoryId = new Guid("41f1d867-abb2-4f11-b8e0-ca553e7fd34b")
+                            SuperCategoryId = new Guid("90c079f7-e693-4132-8aa3-b09b535280fd")
                         },
                         new
                         {
-                            Id = new Guid("f178c605-8b30-4d68-a82b-e025c533249f"),
+                            Id = new Guid("c666059a-b6cb-477a-b34d-b59b8f6841f0"),
                             Name = "cake",
-                            SuperCategoryId = new Guid("41f1d867-abb2-4f11-b8e0-ca553e7fd34b")
+                            SuperCategoryId = new Guid("90c079f7-e693-4132-8aa3-b09b535280fd")
                         },
                         new
                         {
-                            Id = new Guid("b6fb41db-c2f6-4aa7-9467-57ee543892bc"),
+                            Id = new Guid("32de0c74-f5a8-406b-b486-744c93ba47ad"),
                             Name = "frozen_yogurt",
-                            SuperCategoryId = new Guid("41f1d867-abb2-4f11-b8e0-ca553e7fd34b")
+                            SuperCategoryId = new Guid("90c079f7-e693-4132-8aa3-b09b535280fd")
                         },
                         new
                         {
-                            Id = new Guid("4f98cc5c-142a-4905-95b3-5c25dfd9b969"),
+                            Id = new Guid("3053aa66-f7bd-4133-8688-a729550cdfbb"),
                             Name = "dessert",
-                            SuperCategoryId = new Guid("41f1d867-abb2-4f11-b8e0-ca553e7fd34b")
+                            SuperCategoryId = new Guid("90c079f7-e693-4132-8aa3-b09b535280fd")
                         },
                         new
                         {
-                            Id = new Guid("29b3ba52-8135-4594-90f9-4ee616c61caa"),
+                            Id = new Guid("80c96aac-a430-43f3-a9f6-b83b80e50e0d"),
                             Name = "coffee",
-                            SuperCategoryId = new Guid("41f1d867-abb2-4f11-b8e0-ca553e7fd34b")
+                            SuperCategoryId = new Guid("90c079f7-e693-4132-8aa3-b09b535280fd")
                         },
                         new
                         {
-                            Id = new Guid("f896c779-002c-46e2-895e-e90ee622b6d7"),
+                            Id = new Guid("ece27c65-a936-4524-ad12-5fef5344b0fa"),
                             Name = "tea",
-                            SuperCategoryId = new Guid("41f1d867-abb2-4f11-b8e0-ca553e7fd34b")
+                            SuperCategoryId = new Guid("90c079f7-e693-4132-8aa3-b09b535280fd")
                         },
                         new
                         {
-                            Id = new Guid("cc4f6b81-4aae-48a2-b840-6246bc4696de"),
+                            Id = new Guid("aa9f130d-ee43-404c-b322-ac7a3f03a4e7"),
                             Name = "food_court",
-                            SuperCategoryId = new Guid("44ae9bb2-9b39-4b01-a1d4-171e8ef5310d")
+                            SuperCategoryId = new Guid("7c7e3e33-04f0-4b60-8d61-f00f31b940b4")
                         },
                         new
                         {
-                            Id = new Guid("2c028ffc-8ac3-4472-a3c5-433e68711005"),
+                            Id = new Guid("2b9ab4a7-0cf5-41d8-8fca-fa70b9039397"),
                             Name = "bar",
-                            SuperCategoryId = new Guid("44ae9bb2-9b39-4b01-a1d4-171e8ef5310d")
+                            SuperCategoryId = new Guid("7c7e3e33-04f0-4b60-8d61-f00f31b940b4")
                         },
                         new
                         {
-                            Id = new Guid("96a8704a-0691-4f66-a8f7-25a7d329eaa5"),
+                            Id = new Guid("844267c5-09d8-47c3-b5c5-d9bdbf901452"),
                             Name = "pub",
-                            SuperCategoryId = new Guid("44ae9bb2-9b39-4b01-a1d4-171e8ef5310d")
+                            SuperCategoryId = new Guid("7c7e3e33-04f0-4b60-8d61-f00f31b940b4")
                         },
                         new
                         {
-                            Id = new Guid("76ddb4f3-d62f-483b-ac92-5b7d041bab33"),
+                            Id = new Guid("f4fc246f-7134-498c-96c1-5a98c099e70d"),
                             Name = "ice_cream",
-                            SuperCategoryId = new Guid("44ae9bb2-9b39-4b01-a1d4-171e8ef5310d")
+                            SuperCategoryId = new Guid("7c7e3e33-04f0-4b60-8d61-f00f31b940b4")
                         },
                         new
                         {
-                            Id = new Guid("748f8fbe-5a79-4664-b736-ed3aa80fc765"),
+                            Id = new Guid("d08fa497-6b2d-40a3-87ed-bb38ee0fea0a"),
                             Name = "biergarten",
-                            SuperCategoryId = new Guid("44ae9bb2-9b39-4b01-a1d4-171e8ef5310d")
+                            SuperCategoryId = new Guid("7c7e3e33-04f0-4b60-8d61-f00f31b940b4")
                         },
                         new
                         {
-                            Id = new Guid("d45f70c2-b04c-45bc-936e-6d1b444a3bb5"),
+                            Id = new Guid("3d9816a9-9766-4541-b51e-7d2fd08bdee8"),
                             Name = "taproom",
-                            SuperCategoryId = new Guid("44ae9bb2-9b39-4b01-a1d4-171e8ef5310d")
+                            SuperCategoryId = new Guid("7c7e3e33-04f0-4b60-8d61-f00f31b940b4")
                         });
                 });
 
@@ -1460,6 +1460,206 @@ namespace TravelBuddyAPI.Migrations
                     b.HasIndex("SuperConditionId");
 
                     b.ToTable("PlaceConditions");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("d9d76027-4d00-4d84-8a4b-acd90d64e678"),
+                            Name = "internet_access"
+                        },
+                        new
+                        {
+                            Id = new Guid("2eac092e-50d1-4b36-91d9-010467a17851"),
+                            Name = "free",
+                            SuperConditionId = new Guid("d9d76027-4d00-4d84-8a4b-acd90d64e678")
+                        },
+                        new
+                        {
+                            Id = new Guid("900576b0-a1fd-4d09-a44d-dd26a588f3a7"),
+                            Name = "for_customers",
+                            SuperConditionId = new Guid("d9d76027-4d00-4d84-8a4b-acd90d64e678")
+                        },
+                        new
+                        {
+                            Id = new Guid("8d4b5068-3606-4ff4-97a7-cd492f22ec44"),
+                            Name = "wheelchair"
+                        },
+                        new
+                        {
+                            Id = new Guid("e6725786-59d5-4b30-98f1-ab4a3cf698f0"),
+                            Name = "yes",
+                            SuperConditionId = new Guid("8d4b5068-3606-4ff4-97a7-cd492f22ec44")
+                        },
+                        new
+                        {
+                            Id = new Guid("00c14653-bf53-4f7f-8ba2-37669349acdf"),
+                            Name = "limited",
+                            SuperConditionId = new Guid("8d4b5068-3606-4ff4-97a7-cd492f22ec44")
+                        },
+                        new
+                        {
+                            Id = new Guid("d75b8d60-d903-4d9b-8332-1e7cd9a1f75f"),
+                            Name = "dogs"
+                        },
+                        new
+                        {
+                            Id = new Guid("0b34be59-0e52-44c5-913a-4d19e93d892d"),
+                            Name = "yes",
+                            SuperConditionId = new Guid("d75b8d60-d903-4d9b-8332-1e7cd9a1f75f")
+                        },
+                        new
+                        {
+                            Id = new Guid("db2a8f4c-0983-4f60-a70b-286ee830f114"),
+                            Name = "leashed",
+                            SuperConditionId = new Guid("d75b8d60-d903-4d9b-8332-1e7cd9a1f75f")
+                        },
+                        new
+                        {
+                            Id = new Guid("9884911b-2b07-4f32-b011-08814a6ffbc4"),
+                            Name = "no-dogs"
+                        },
+                        new
+                        {
+                            Id = new Guid("01a6fe1e-cb4a-446a-9ec3-d4d6837c0586"),
+                            Name = "access"
+                        },
+                        new
+                        {
+                            Id = new Guid("1bebe484-1eb6-4b3b-bbbf-c81fb17bea09"),
+                            Description = "Places that are available for public",
+                            Name = "yes",
+                            SuperConditionId = new Guid("01a6fe1e-cb4a-446a-9ec3-d4d6837c0586")
+                        },
+                        new
+                        {
+                            Id = new Guid("dfe55c11-9a8a-4340-8c62-aabb6c8e5cd5"),
+                            Name = "not_specified",
+                            SuperConditionId = new Guid("01a6fe1e-cb4a-446a-9ec3-d4d6837c0586")
+                        },
+                        new
+                        {
+                            Id = new Guid("1004f21a-3b58-432e-a1fc-59985a9c62ba"),
+                            Name = "access_limited"
+                        },
+                        new
+                        {
+                            Id = new Guid("5ef2acf6-3025-434e-8b18-c81bdfade9be"),
+                            Name = "customers",
+                            SuperConditionId = new Guid("1004f21a-3b58-432e-a1fc-59985a9c62ba")
+                        },
+                        new
+                        {
+                            Id = new Guid("8ba56bb8-73c3-4fb3-8f24-930194488412"),
+                            Name = "fee"
+                        },
+                        new
+                        {
+                            Id = new Guid("8871d628-3998-4a54-b0ef-73447a083791"),
+                            Description = "There is no fee or it's not specified",
+                            Name = "no_fee"
+                        },
+                        new
+                        {
+                            Id = new Guid("138fcc37-b542-4003-aff2-4494a3016b2a"),
+                            Name = "no",
+                            SuperConditionId = new Guid("8871d628-3998-4a54-b0ef-73447a083791")
+                        },
+                        new
+                        {
+                            Id = new Guid("7969af05-ac3e-4799-adbe-7503930c5a04"),
+                            Name = "not_specified",
+                            SuperConditionId = new Guid("8871d628-3998-4a54-b0ef-73447a083791")
+                        },
+                        new
+                        {
+                            Id = new Guid("d7af5444-92ba-487d-abdd-c3b369daa724"),
+                            Description = "Name property defined for the place",
+                            Name = "named"
+                        },
+                        new
+                        {
+                            Id = new Guid("ea12ed58-5ea6-4b17-bac5-384d5522a1d5"),
+                            Description = "Places where you can buy or eat vegetarian food",
+                            Name = "vegetarian"
+                        },
+                        new
+                        {
+                            Id = new Guid("9c9b18c1-95f6-4843-852f-a6fc8c7fd609"),
+                            Name = "only",
+                            SuperConditionId = new Guid("ea12ed58-5ea6-4b17-bac5-384d5522a1d5")
+                        },
+                        new
+                        {
+                            Id = new Guid("6ebeb7d5-cc6d-4f54-80be-d97cab2f4ded"),
+                            Description = "Places where you can buy or eat vegan food",
+                            Name = "vegan"
+                        },
+                        new
+                        {
+                            Id = new Guid("4eae57f5-9412-4265-96a2-d506a6a7ee83"),
+                            Name = "only",
+                            SuperConditionId = new Guid("6ebeb7d5-cc6d-4f54-80be-d97cab2f4ded")
+                        },
+                        new
+                        {
+                            Id = new Guid("70f095c3-7e25-481f-af3b-8e155fc2bff0"),
+                            Description = "Places where you can buy or eat halal food",
+                            Name = "halal"
+                        },
+                        new
+                        {
+                            Id = new Guid("3a43d93c-7cce-4d70-be89-919cf498a089"),
+                            Name = "only",
+                            SuperConditionId = new Guid("70f095c3-7e25-481f-af3b-8e155fc2bff0")
+                        },
+                        new
+                        {
+                            Id = new Guid("19a8f25d-f8ff-4c79-a33d-8c3d111bb176"),
+                            Description = "Places where you can buy or eat kosher food",
+                            Name = "kosher"
+                        },
+                        new
+                        {
+                            Id = new Guid("ed7f9e38-ed50-4565-a198-5a3623d144bf"),
+                            Name = "only",
+                            SuperConditionId = new Guid("19a8f25d-f8ff-4c79-a33d-8c3d111bb176")
+                        },
+                        new
+                        {
+                            Id = new Guid("61127822-5617-4d1c-9c31-0b7f4796a8f9"),
+                            Description = "Places where you can buy or eat organic food",
+                            Name = "organic"
+                        },
+                        new
+                        {
+                            Id = new Guid("db42388f-6ca1-4f12-8696-da521608565a"),
+                            Name = "only",
+                            SuperConditionId = new Guid("61127822-5617-4d1c-9c31-0b7f4796a8f9")
+                        },
+                        new
+                        {
+                            Id = new Guid("21b64080-c3bd-4b4d-95b5-8674b0b8d9cf"),
+                            Description = "Places where you can buy or eat gluten free food",
+                            Name = "gluten_free"
+                        },
+                        new
+                        {
+                            Id = new Guid("a45e4586-0377-417f-9dcf-b4b7210cebcc"),
+                            Description = "Places where you can buy or eat sugar free food",
+                            Name = "sugar_free"
+                        },
+                        new
+                        {
+                            Id = new Guid("cc583591-783e-45dc-b6c4-09ad83eb7ec7"),
+                            Description = "Places where you can buy or eat egg free food",
+                            Name = "egg_free"
+                        },
+                        new
+                        {
+                            Id = new Guid("5a74f465-9782-4c21-a83f-3e2a68e3c342"),
+                            Description = "Places where you can buy or eat soy free food",
+                            Name = "soy_free"
+                        });
                 });
 
             modelBuilder.Entity("TravelBuddyAPI.Models.TransferPoint", b =>
