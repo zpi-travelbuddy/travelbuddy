@@ -19,10 +19,10 @@ public static class ModelBuilderExtension
                     {"theatre", new PlaceCategory { Id = Guid.NewGuid(), Name = "theatre" }},
                     {"arts_centre", new PlaceCategory { Id = Guid.NewGuid(), Name = "arts_centre" }},
                     {"gallery", new PlaceCategory { Id = Guid.NewGuid(), Name = "gallery" }},
-                    {"zoo", new PlaceCategory { Id = Guid.NewGuid(), Name = "zoo" }},
-                    {"aquarium", new PlaceCategory { Id = Guid.NewGuid(), Name = "aquarium" }},
-                    {"planetarium", new PlaceCategory { Id = Guid.NewGuid(), Name = "planetarium" }},
-                    {"museum", new PlaceCategory { Id = Guid.NewGuid(), Name = "museum" }},
+                {"zoo", new PlaceCategory { Id = Guid.NewGuid(), Name = "zoo" }},
+                {"aquarium", new PlaceCategory { Id = Guid.NewGuid(), Name = "aquarium" }},
+                {"planetarium", new PlaceCategory { Id = Guid.NewGuid(), Name = "planetarium" }},
+                {"museum", new PlaceCategory { Id = Guid.NewGuid(), Name = "museum" }},
             {"heritage", new PlaceCategory { Id = Guid.NewGuid(), Name = "heritage" }},
                 {"unesco", new PlaceCategory { Id = Guid.NewGuid(), Name = "unesco" }},
             {"leisure", new PlaceCategory { Id = Guid.NewGuid(), Name = "leisure" }},
@@ -224,10 +224,10 @@ public static class ModelBuilderExtension
             placeCategories["theatre"].SuperCategoryId = placeCategories["culture"].Id;
             placeCategories["arts_centre"].SuperCategoryId = placeCategories["culture"].Id;
             placeCategories["gallery"].SuperCategoryId = placeCategories["culture"].Id;
-            placeCategories["zoo"].SuperCategoryId = placeCategories["culture"].Id;
-            placeCategories["aquarium"].SuperCategoryId = placeCategories["culture"].Id;
-            placeCategories["planetarium"].SuperCategoryId = placeCategories["culture"].Id;
-            placeCategories["museum"].SuperCategoryId = placeCategories["culture"].Id;
+        placeCategories["zoo"].SuperCategoryId = placeCategories["entertainment"].Id;
+        placeCategories["aquarium"].SuperCategoryId = placeCategories["entertainment"].Id;
+        placeCategories["planetarium"].SuperCategoryId = placeCategories["entertainment"].Id;
+        placeCategories["museum"].SuperCategoryId = placeCategories["entertainment"].Id;
         placeCategories["unesco"].SuperCategoryId = placeCategories["heritage"].Id;
         placeCategories["park"].SuperCategoryId = placeCategories["leisure"].Id;
             placeCategories["garden"].SuperCategoryId = placeCategories["park"].Id;
