@@ -3,20 +3,17 @@ import { StyleSheet } from "react-native";
 import { BottomNavigation, Icon } from "react-native-paper";
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import { MD3ThemeExtended } from "@/constants/Themes";
+import {
+  DEFAULT_NAV_BAR_ICON,
+  TRIPS_ICON,
+  EXPLORE_ICON,
+  SETTINGS_ICON,
+} from "@/constants/Icons";
 
 // Icon size
 const ICON_SIZE = 24;
 
-// Default icon
-const DEFAULT_ICON = "help";
-
 // MODIFY SOURCES AND MAPPING IF NEW TAB IS ADDED
-
-// Icon sources
-const TRIPS_ICON = "car";
-const EXPLORE_ICON = "compass-outline";
-const SETTINGS_ICON = "cog";
-
 // Icon sources mapping
 const iconSources = {
   trips: TRIPS_ICON,
