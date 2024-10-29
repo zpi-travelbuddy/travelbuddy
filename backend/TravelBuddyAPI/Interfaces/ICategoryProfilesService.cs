@@ -43,5 +43,5 @@ public interface ICategoryProfilesService
     /// </summary>
     /// <param name="userId">The ID of the user whose profiles to retrieve.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains an overview of the user's category profiles.</returns>
-    Task<CategoryProfileOverviewDTO> GetUserCategoryProfilesAsync(string userId);
+    Task<List<CategoryProfileOverviewDTO>> GetUserCategoryProfilesAsync(string userId);
 }

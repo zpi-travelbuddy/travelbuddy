@@ -45,5 +45,5 @@ public interface IConditionProfilesService
     /// </summary>
     /// <param name="userId">The ID of the user.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains an overview of the user's condition profiles.</returns>
-    Task<ConditionProfileOverviewDTO> GetUserConditionProfilesAsync(string userId);
+    Task<List<ConditionProfileOverviewDTO>> GetUserConditionProfilesAsync(string userId);
 }
