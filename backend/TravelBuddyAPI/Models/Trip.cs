@@ -45,6 +45,9 @@ public class Trip
     public string? CurrencyCode { get; set; }
 
     [Required]
+    public decimal ExchangeRate { get; set; }
+
+    [Required]
     public Guid CategoryProfileId { get; set; }
     public CategoryProfile? CategoryProfile { get; set; }
 
