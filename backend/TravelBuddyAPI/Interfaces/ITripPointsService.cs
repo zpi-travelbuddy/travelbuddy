@@ -57,7 +57,7 @@ public interface ITripPointsService
     /// <param name="tripPointId">The ID of the trip point to review.</param>
     /// <param name="tripPointReview">The details of the trip point review.</param>
     /// <returns>A task that represents the asynchronous operation. The task result indicates whether the review was successful.</returns>
-    Task<bool> ReviewTripPointAsync(string userId, Guid tripPointId, TripPointReviewRequestDTO tripPointReview);
+    Task<TripPointReviewDetailsDTO> ReviewTripPointAsync(string userId, Guid tripPointId, TripPointReviewRequestDTO tripPointReview);
     
     /// <summary>
     /// Retrieves the details of a specific trip point review.
