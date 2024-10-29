@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "scripts": {
     "start": "expo start --go",
+    "start:mock": "cross-env NODE_ENV=mock expo start --go",
     "start:dev": "expo start --dev-client",
     "android": "expo start --android --go",
     "android:dev": "expo start --android --dev-client",
@@ -14,7 +15,8 @@
     "build:prod": "eas build --platform android --profile production --local",
     "lint": "eslint .",
     "lint-fix": "eslint --fix .",
-    "prettier": "prettier --write ."
+    "prettier": "prettier --write .",
+    "mocks": "mocks-server"
   },
   "jest": {
     "preset": "jest-expo"
@@ -51,11 +53,13 @@
   "devDependencies": {
     "@babel/core": "^7.20.0",
     "@eslint/js": "^8.0.0",
+    "@mocks-server/main": "^4.1.0",
     "@types/jest": "^29.5.12",
     "@types/react": "~18.2.45",
     "@types/react-test-renderer": "^18.0.7",
     "@typescript-eslint/eslint-plugin": "^8.8.0",
     "@typescript-eslint/parser": "^8.8.0",
+    "cross-env": "^7.0.3",
     "eslint": "^8.0.0",
     "eslint-config-prettier": "^8.0.0",
     "eslint-plugin-prettier": "^5.0.0",

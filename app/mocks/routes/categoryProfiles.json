@@ -1,0 +1,195 @@
+[
+  {
+    "id": "create-category-profile",
+    "method": "POST",
+    "url": "/categoryProfiles",
+    "variants": [
+      {
+        "id": "success",
+        "type": "json",
+        "options": {
+          "status": 201,
+          "body": [
+            {
+              "name": "Profil do wspinaczki",
+              "categories": []
+            }
+          ]
+        }
+      },
+      {
+        "id": "error",
+        "type": "json",
+        "options": {
+          "status": 400,
+          "body": {
+            "message": "Invalid request"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "get-category-profiles",
+    "method": "GET",
+    "url": "/categoryProfiles",
+    "variants": [
+      {
+        "id": "success",
+        "type": "json",
+        "options": {
+          "status": 200,
+          "body": [
+            {
+              "id": "1",
+              "name": "Profil do wspinaczki"
+            },
+            {
+              "id": "2",
+              "name": "Restauracje i bary"
+            },
+            {
+              "id": "3",
+              "name": "Profil do zakupów"
+            }
+          ]
+        }
+      },
+      {
+        "id": "error",
+        "type": "json",
+        "options": {
+          "status": 404,
+          "body": {
+            "message": "Not Found"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "edit-category-profile",
+    "method": "PUT",
+    "url": "/categoryProfiles/:id",
+    "variants": [
+      {
+        "id": "success",
+        "type": "json",
+        "options": {
+          "status": 202,
+          "body": {
+            "message": "Accepted"
+          }
+        }
+      },
+      {
+        "id": "error",
+        "type": "json",
+        "options": {
+          "status": 404,
+          "body": {
+            "message": "Not Found"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "delete-category-profile",
+    "method": "DELETE",
+    "url": "/categoryProfiles/:id",
+    "variants": [
+      {
+        "id": "success",
+        "type": "json",
+        "options": {
+          "status": 204,
+          "body": {
+            "message": "No Content"
+          }
+        }
+      },
+      {
+        "id": "error",
+        "type": "json",
+        "options": {
+          "status": 404,
+          "body": {
+            "message": "Not Found"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "get-categories",
+    "method": "GET",
+    "url": "/categoryProfiles/categories",
+    "variants": [
+      {
+        "id": "success",
+        "type": "json",
+        "options": {
+          "status": 200,
+          "body": [
+            {
+              "id": "1",
+              "name": "Sklepy"
+            },
+            {
+              "id": "2",
+              "name": "Restauracje"
+            },
+            {
+              "id": "3",
+              "name": "Muzea"
+            }
+          ]
+        }
+      },
+      {
+        "id": "error",
+        "type": "json",
+        "options": {
+          "status": 404,
+          "body": {
+            "message": "Not Found"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "get-category-profile",
+    "method": "GET",
+    "url": "/categoryProfiles/:id",
+    "variants": [
+      {
+        "id": "success",
+        "type": "json",
+        "options": {
+          "status": 200,
+          "body": {
+            "name": "Profil do wspinaczki",
+            "categories": [
+              {
+                "id": "4",
+                "name": "Góry"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "id": "error",
+        "type": "json",
+        "options": {
+          "status": 404,
+          "body": {
+            "message": "Not Found"
+          }
+        }
+      }
+    ]
+  }
+]
