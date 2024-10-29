@@ -1,5 +1,5 @@
 import { Dimensions, StyleSheet } from "react-native";
-import React, { useCallback } from "react";
+import React from "react";
 import { Card, MD3Theme, Text, useTheme } from "react-native-paper";
 
 interface TripCardProps {
@@ -7,9 +7,11 @@ interface TripCardProps {
   subtitle: string;
   imageUri: string;
   isArchived: boolean;
+  onPress?: () => void;
+  onLongPress?: () => void;
 }
 
-const { width, height } = Dimensions.get("window");
+const { width } = Dimensions.get("window");
 const CARD_WIDTH = width * 0.85;
 const CARD_ASPECT_RATIO = 4 / 3;
 const CARD_HEIGHT = CARD_WIDTH / CARD_ASPECT_RATIO + 10;
@@ -19,21 +21,25 @@ export const TripCard: React.FC<TripCardProps> = ({
   subtitle,
   imageUri,
   isArchived,
+  onPress,
+  onLongPress,
 }) => {
   const theme = useTheme();
   const styles = createStyles(theme);
 
   const handlePress = () => {
+    if (onPress) onPress();
     console.log("Go to details!");
   };
 
   const handleLongPress = () => {
+    if (onLongPress) onLongPress();
     console.log("Go to trip settings!");
   };
 
   return (
     <Card
-      mode="contained"
+      mode="outlined"
       style={styles.card}
       onPress={handlePress}
       onLongPress={handleLongPress}
@@ -64,22 +70,19 @@ const createStyles = (theme: MD3Theme) =>
       width: "100%",
     },
     title: {
+      marginTop: 10,
       ...theme.fonts.titleMedium,
     },
     subtitle: {
       ...theme.fonts.default,
     },
     textContent: {
-      marginTop: 10,
-      height: "30%",
+      height: "35%",
     },
     card: {
       width: CARD_WIDTH,
       height: CARD_HEIGHT,
       alignSelf: "center",
       marginVertical: 10,
-      borderWidth: 1,
-      borderColor: theme.colors.outlineVariant,
-      backgroundColor: theme.colors.surfaceVariant,
     },
   });

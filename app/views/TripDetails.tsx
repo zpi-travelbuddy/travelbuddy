@@ -1,10 +1,12 @@
-import { Text, View } from "react-native";
-import React from "react";
+import { View, Text } from "react-native";
+import { useRouter } from "expo-router";
 
 const TripDetails = () => {
+  const router = useRouter();
+
   return (
     <View>
-      <Text>TripDetails</Text>
+      <Text>Details for Trip ID</Text>
     </View>
   );
 };

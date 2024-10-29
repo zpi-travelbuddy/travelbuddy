@@ -2,7 +2,7 @@ import * as React from "react";
 import { BottomNavigation, useTheme } from "react-native-paper";
 import { View, Text, StyleSheet } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import TripBrowse from "@/views/TripBrowse";
+import TripBrowse from "@/views/TripBrowseView";
 
 const TripRoute = () => <TripBrowse />;
 

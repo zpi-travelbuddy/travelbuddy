@@ -1,4 +1,4 @@
-import TripBrowse from "@/views/TripBrowse";
+import TripBrowse from "@/views/TripBrowseView";
 import { View } from "react-native";
 import { Text, useTheme } from "react-native-paper";
 
