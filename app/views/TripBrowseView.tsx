@@ -12,6 +12,8 @@ import {
 import { FlatList } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import ActionMenuBottomSheet from "@/components/ActionMenu/ActionMenuBottomSheet";
+import CustomModal from "@/components/CustomModal";
+import ActionTextButtons from "@/components/ActionTextButtons";
 
 const TripBrowseView = () => {
   const theme = useTheme();
@@ -70,11 +72,17 @@ const TripBrowseView = () => {
 
   const [trips, setTrips] = useState<Trip[]>(actualTrips);
   const [isVisible, setIsVisible] = useState<boolean>(false);
+  const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [selectedTrip, setSelectedTrip] = useState<Trip | null>(null);
 
   const filteredTrips = trips.filter((trip) =>
     trip.title.toLowerCase().includes(searchQuery.toLowerCase()),
   );
+
+  const handlePress = (trip: Trip) => {
+    setIsVisible(false);
+    router.push(`/trips/details/${trip.id}`);
+  };
 
   const handleLongPress = (trip: Trip) => {
     setSelectedTrip(trip);
@@ -82,14 +90,28 @@ const TripBrowseView = () => {
 
   const onCloseBottomSheet = () => {
     setIsVisible(false);
+    if (!isModalVisible) setSelectedTrip(null);
+  };
+
+  const showModal = () => {
+    setIsModalVisible(true);
+  };
+
+  const hideModal = () => {
+    setIsModalVisible(false);
     setSelectedTrip(null);
+  };
+
+  const deleteTrip = (trip: Trip | null) => {
+    console.log(`Usuwanie wycieczki: ${trip?.title}`);
+    hideModal();
   };
 
   useEffect(() => {
     if (selectedTrip) {
       setIsVisible(true);
     }
-  }, [selectedTrip]); // Zależność od selectedTrip
+  }, [selectedTrip]);
 
   const renderItem = ({ item }: { item: Trip }) => (
     <TripCard
@@ -97,6 +119,7 @@ const TripBrowseView = () => {
       subtitle={item.subtitle}
       imageUri={item.imageUri}
       isArchived={item.isArchived}
+      onPress={() => handlePress(item)}
       onLongPress={() => {
         handleLongPress(item);
       }}
@@ -107,16 +130,7 @@ const TripBrowseView = () => {
 
   const handleValueChange = (newValue: string) => {
     setValue(newValue);
-    switch (newValue) {
-      case "actual":
-        setTrips(actualTrips);
-        break;
-      case "archive":
-        setTrips(archivedTrips);
-        break;
-      default:
-        break;
-    }
+    setTrips(newValue === "actual" ? actualTrips : archivedTrips);
   };
 
   const getActionsForSelectedTrip = useMemo(() => {
@@ -128,28 +142,27 @@ const TripBrowseView = () => {
         onPress: () => {
           console.log(`Nawiguj do szczegółów`);
           setIsVisible(false);
-          router.push({
-            pathname: `/`,
-            params: { id: selectedTrip.id },
-          });
+          router.push(`/trips/details/${selectedTrip.id}`);
         },
-      } as Action,
+      },
       {
         label: "Edytuj szczegóły wycieczki",
         icon: "edit",
         onPress: () => {
           console.log(`Edytuj`);
           setIsVisible(false);
+          router.push(`/trips/edit/${selectedTrip.id}`);
         },
-      } as Action,
+      },
       {
         label: "Usuń wycieczkę",
         icon: "delete",
         onPress: () => {
           console.log(`Usuń`);
           setIsVisible(false);
+          showModal();
         },
-      } as Action,
+      },
     ];
   }, [selectedTrip]);
 
@@ -168,20 +181,12 @@ const TripBrowseView = () => {
             {
               value: "actual",
               label: "Aktualne",
-              style: {
-                borderWidth: 0,
-                borderBottomWidth: 1,
-                borderColor: theme.colors.elevation.level3,
-              },
+              style: styles.segmentedButton,
             },
             {
               value: "archive",
               label: "Archiwum",
-              style: {
-                borderWidth: 0,
-                borderBottomWidth: 1,
-                borderColor: theme.colors.elevation.level3,
-              },
+              style: styles.segmentedButton,
             },
           ]}
         />
@@ -205,14 +210,29 @@ const TripBrowseView = () => {
           icon="plus"
           color={theme.colors.onPrimary}
           label="Dodaj"
-          onPress={() => {
-            console.log("FAB Clicked");
-          }}
+          onPress={() => router.push(`/trips/add`)}
         />
+        <CustomModal visible={isModalVisible} onDismiss={hideModal}>
+          <View>
+            <Text style={styles.modalTitleText}>
+              Czy na pewno chcesz usunąć ten punkt?
+            </Text>
+            <View style={styles.modalContent}>
+              <Text style={styles.boldText}>{selectedTrip?.title}</Text>
+              <Text style={styles.modalSubtitle}>{selectedTrip?.subtitle}</Text>
+            </View>
+            <ActionTextButtons
+              onCancel={hideModal}
+              onConfirm={() => deleteTrip(selectedTrip)}
+            />
+          </View>
+        </CustomModal>
       </View>
 
       <ActionMenuBottomSheet
-        headerComponent={() => <Text style={styles.text}>Wybierz opcję</Text>}
+        headerComponent={() => (
+          <Text style={styles.bottomSheetText}>Wybierz opcję</Text>
+        )}
         actions={getActionsForSelectedTrip}
         isVisible={isVisible}
         onClose={() => onCloseBottomSheet()}
@@ -225,12 +245,17 @@ export default TripBrowseView;
 
 const createStyles = (theme: MD3Theme) =>
   StyleSheet.create({
-    fab: {
-      position: "absolute",
-      margin: 16,
-      right: 0,
-      bottom: 0,
-      backgroundColor: theme.colors.primary,
+    container: {
+      flex: 1,
+    },
+    segmentedButtons: {
+      elevation: 0,
+      backgroundColor: theme.colors.surface,
+    },
+    segmentedButton: {
+      borderWidth: 0,
+      borderBottomWidth: 1,
+      borderColor: theme.colors.elevation.level3,
     },
     searchbar: {
       backgroundColor: theme.colors.elevation.level3,
@@ -239,18 +264,30 @@ const createStyles = (theme: MD3Theme) =>
     flatListContent: {
       flexGrow: 1,
       backgroundColor: theme.colors.background,
-      flexDirection: "column",
-      alignItems: "stretch",
       paddingBottom: 20,
     },
-    container: {
-      flex: 1,
+    fab: {
+      position: "absolute",
+      margin: 16,
+      right: 0,
+      bottom: 0,
+      backgroundColor: theme.colors.primary,
     },
-    segmentedButtons: {
-      elevation: 0,
-      backgroundColor: theme.colors.surface,
+    modalTitleText: {
+      ...theme.fonts.titleLarge,
+      color: theme.colors.onBackground,
     },
-    text: {
+    modalContent: {
+      marginVertical: 20,
+    },
+    boldText: {
+      fontWeight: "bold",
+      color: theme.colors.onBackground,
+    },
+    modalSubtitle: {
+      color: theme.colors.onBackground,
+    },
+    bottomSheetText: {
       marginBottom: 10,
       marginTop: -10,
       color: theme.colors.onBackground,

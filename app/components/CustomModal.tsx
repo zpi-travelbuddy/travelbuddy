@@ -21,6 +21,7 @@ const CustomModal: React.FC<CustomModalProps> = ({
   return (
     <Portal>
       <Modal
+        theme={theme}
         visible={visible}
         onDismiss={onDismiss}
         contentContainerStyle={styles.modalContainer}
