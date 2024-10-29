@@ -20,8 +20,8 @@ public interface ITransferPointsService
     /// </summary>
     /// <param name="userId">The ID of the user editing the transfer point.</param>
     /// <param name="transferPoint">The transfer point data to be edited.</param>
-    /// <returns>A task that represents the asynchronous operation. The task result contains the edited transfer point.</returns>
-    Task<TransferPointDTO> EditTransferPointAsync(string userId, TransferPointDTO transferPoint);
+    /// <returns>A task that represents the asynchronous operation. The task result indicates whether the edit was successful.</returns>
+    Task<bool> EditTransferPointAsync(string userId, TransferPointDTO transferPoint);
 
     /// <summary>
     /// Deletes a transfer point.
