@@ -15,6 +15,9 @@ public class TripPoint{
     public string? Comment { get; set; }
 
     [Required]
+    public decimal ExchangeRate { get; set; }
+
+    [Required]
     public Guid TripDayId { get; set; }
     public TripDay? TripDay { get; set; }
 

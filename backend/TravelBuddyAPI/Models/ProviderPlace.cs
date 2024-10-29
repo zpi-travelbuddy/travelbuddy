@@ -12,6 +12,8 @@ public class ProviderPlace : Place
 
     public List<PlaceCategory>? Categories { get; set; }
 
+    public string? OpenningHours { get; set; }
+
     [NotMapped]
     public decimal? AverageCostPerPerson
     {
