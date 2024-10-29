@@ -1,0 +1,191 @@
+[
+  {
+    "id": "create-condition-profile",
+    "method": "POST",
+    "url": "/conditionProfiles",
+    "variants": [
+      {
+        "id": "success",
+        "type": "json",
+        "options": {
+          "status": 201,
+          "body": [
+            {
+              "name": "Podróż z psem",
+              "conditions": []
+            }
+          ]
+        }
+      },
+      {
+        "id": "error",
+        "type": "json",
+        "options": {
+          "status": 400,
+          "body": {
+            "message": "Invalid request"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "get-condition-profiles",
+    "method": "GET",
+    "url": "/conditionProfiles",
+    "variants": [
+      {
+        "id": "success",
+        "type": "json",
+        "options": {
+          "status": 200,
+          "body": [
+            {
+              "id": "1",
+              "name": "Podróż z psem"
+            },
+            {
+              "id": "2",
+              "name": "Podróż z osobą niepełnosprawną"
+            }
+          ]
+        }
+      },
+      {
+        "id": "error",
+        "type": "json",
+        "options": {
+          "status": 404,
+          "body": {
+            "message": "Not Found"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "edit-condition-profile",
+    "method": "PUT",
+    "url": "/conditionProfiles/:id",
+    "variants": [
+      {
+        "id": "success",
+        "type": "json",
+        "options": {
+          "status": 202,
+          "body": {
+            "message": "Accepted"
+          }
+        }
+      },
+      {
+        "id": "error",
+        "type": "json",
+        "options": {
+          "status": 404,
+          "body": {
+            "message": "Not Found"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "delete-condition-profile",
+    "method": "DELETE",
+    "url": "/conditionProfiles/:id",
+    "variants": [
+      {
+        "id": "success",
+        "type": "json",
+        "options": {
+          "status": 204,
+          "body": {
+            "message": "No Content"
+          }
+        }
+      },
+      {
+        "id": "error",
+        "type": "json",
+        "options": {
+          "status": 404,
+          "body": {
+            "message": "Not Found"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "get-conditions",
+    "method": "GET",
+    "url": "/conditionProfiles/conditions",
+    "variants": [
+      {
+        "id": "success",
+        "type": "json",
+        "options": {
+          "status": 200,
+          "body": [
+            {
+              "id": "1",
+              "name": "Przyjazne zwierzętom"
+            },
+            {
+              "id": "2",
+              "name": "Dostępne dla wózków inwalidzkich"
+            },
+            {
+              "id": "3",
+              "name": "Dla wegetarian"
+            }
+          ]
+        }
+      },
+      {
+        "id": "error",
+        "type": "json",
+        "options": {
+          "status": 404,
+          "body": {
+            "message": "Not Found"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "get-condition-profile",
+    "method": "GET",
+    "url": "/conditionProfiles/:id",
+    "variants": [
+      {
+        "id": "success",
+        "type": "json",
+        "options": {
+          "status": 200,
+          "body": {
+            "name": "Podróż z psem",
+            "conditions": [
+              {
+                "id": "1",
+                "name": "Przyjazne zwierzętom"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "id": "error",
+        "type": "json",
+        "options": {
+          "status": 404,
+          "body": {
+            "message": "Not Found"
+          }
+        }
+      }
+    ]
+  }
+]

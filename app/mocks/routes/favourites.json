@@ -1,0 +1,140 @@
+[
+  {
+    "id": "add-favourite-category-profile",
+    "url": "/favourites/categoryProfile/:id",
+    "method": "POST",
+    "variants": [
+      {
+        "id": "success",
+        "type": "json",
+        "options": {
+          "status": 201,
+          "body": {
+            "categoryProfileId": "1",
+            "conditionProfileId": "1"
+          }
+        }
+      },
+      {
+        "id": "error",
+        "type": "json",
+        "options": {
+          "status": 400,
+          "body": {
+            "message": "Invalid request"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "remove-favourite-category-profile",
+    "url": "/favourites/categoryProfile/:id",
+    "method": "DELETE",
+    "variants": [
+      {
+        "id": "success",
+        "type": "json",
+        "options": {
+          "status": 204,
+          "body": {
+            "message": "No Content"
+          }
+        }
+      },
+      {
+        "id": "error",
+        "type": "json",
+        "options": {
+          "status": 404,
+          "body": {
+            "message": "Not Found"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "add-favourite-condition-profile",
+    "url": "/favourites/conditionProfile/:id",
+    "method": "POST",
+    "variants": [
+      {
+        "id": "success",
+        "type": "json",
+        "options": {
+          "status": 201,
+          "body": {
+            "categoryProfileId": "1",
+            "conditionProfileId": "1"
+          }
+        }
+      },
+      {
+        "id": "error",
+        "type": "json",
+        "options": {
+          "status": 400,
+          "body": {
+            "message": "Invalid request"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "remove-favourite-condition-profile",
+    "url": "/favourites/conditionProfile/:id",
+    "method": "DELETE",
+    "variants": [
+      {
+        "id": "success",
+        "type": "json",
+        "options": {
+          "status": 204,
+          "body": {
+            "message": "No Content"
+          }
+        }
+      },
+      {
+        "id": "error",
+        "type": "json",
+        "options": {
+          "status": 404,
+          "body": {
+            "message": "Not Found"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "get-favourites",
+    "url": "/favourites",
+    "method": "GET",
+    "variants": [
+      {
+        "id": "success",
+        "type": "json",
+        "options": {
+          "status": 201,
+          "body": {
+            "categoryProfileId": "1",
+            "conditionProfileId": "1"
+          }
+        }
+      },
+      {
+        "id": "error",
+        "type": "json",
+        "options": {
+          "status": 404,
+          "body": {
+            "message": "Not Found"
+          }
+        }
+      }
+    ]
+  }
+]

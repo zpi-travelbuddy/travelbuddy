@@ -1,0 +1,257 @@
+[
+  {
+    "id": "create-trip-point",
+    "method": "POST",
+    "url": "/tripPoints",
+    "variants": [
+      {
+        "id": "success",
+        "type": "json",
+        "options": {
+          "status": 201,
+          "body": {
+            "name": "Zwiedzanie Wieży Eiffla",
+            "comment": "Będzie wysoko",
+            "tripDayId": "1",
+            "place": {
+              "providerId": "1",
+              "categoryId": "1",
+              "name": "Wieża Eiffla",
+              "country": "Francja",
+              "city": "Paryż",
+              "street": "Champ de Mars",
+              "houseNumber": "5b",
+              "latitude": 48.85837009999999,
+              "longitude": 2.2944813
+            },
+            "predictedCost": 0,
+            "startTime": "10:00",
+            "endTime": "12:00"
+          }
+        }
+      },
+      {
+        "id": "error",
+        "type": "json",
+        "options": {
+          "status": 400,
+          "body": {
+            "message": "Invalid request"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "edit-trip-point",
+    "method": "PUT",
+    "url": "/tripPoints/:id",
+    "variants": [
+      {
+        "id": "success",
+        "type": "json",
+        "options": {
+          "status": 202,
+          "body": {
+            "message": "Accepted"
+          }
+        }
+      },
+      {
+        "id": "error",
+        "type": "json",
+        "options": {
+          "status": 404,
+          "body": {
+            "message": "Not Found"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "delete-trip-point",
+    "method": "DELETE",
+    "url": "/tripPoints/:id",
+    "variants": [
+      {
+        "id": "success",
+        "type": "json",
+        "options": {
+          "status": 204,
+          "body": {}
+        }
+      },
+      {
+        "id": "error",
+        "type": "json",
+        "options": {
+          "status": 404,
+          "body": {
+            "message": "Not Found"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "get-trip-point",
+    "method": "GET",
+    "url": "/tripPoints/:id",
+    "variants": [
+      {
+        "id": "success",
+        "type": "json",
+        "options": {
+          "status": 200,
+          "body": {
+            "id": "1",
+            "name": "Zwiedzanie Wieży Eiffla",
+            "comment": "Będzie wysoko",
+            "tripDayId": "1",
+            "predictedCost": 0,
+            "predictedCostPerPerson": 0,
+            "currencyCode": "EUR",
+            "startTime": "10:00",
+            "endTime": "12:00",
+            "openingTime": "09:00",
+            "closingTime": "21:00",
+            "status": 0,
+            "placeId": "2",
+            "place": {
+              "id": "2",
+              "providerId": "2",
+              "name": "Wieża Eiffla",
+              "country": "Francja",
+              "city": "Paryż"
+            },
+            "review": {
+              "id": "1",
+              "tripPointId": "1",
+              "currencyCode": "PLN",
+              "placeId": "2",
+              "actualCost": 10,
+              "actualCostPerPerson": 10,
+              "actualTimeSpent": "10",
+              "rating": 5
+            },
+            "category": {
+              "id": "1",
+              "name": "Zabytki"
+            }
+          }
+        }
+      },
+      {
+        "id": "error",
+        "type": "json",
+        "options": {
+          "status": 404,
+          "body": {
+            "message": "Not Found"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "post-trip-point-review",
+    "method": "POST",
+    "url": "/tripPoints/submitReview",
+    "variants": [
+      {
+        "id": "success",
+        "type": "json",
+        "options": {
+          "status": 201,
+          "body": {
+            "tripPointId": "1",
+            "placeId": "2",
+            "actualCost": 10,
+            "currencyCode": "PLN",
+            "actualTimeSpent": "10",
+            "rating": 5
+          }
+        }
+      },
+      {
+        "id": "error",
+        "type": "json",
+        "options": {
+          "status": 400,
+          "body": {
+            "message": "Invalid request"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "get-trip-point-reviews",
+    "method": "GET",
+    "url": "/tripPoints/reviews",
+    "variants": [
+      {
+        "id": "success",
+        "type": "json",
+        "options": {
+          "status": 200,
+          "body": [
+            {
+              "tripPointId": "1",
+              "placeId": "2",
+              "placeName": "Wieża Eiffla",
+              "rating": 5
+            },
+            {
+              "tripPointId": "123",
+              "placeId": "2",
+              "placeName": "Wieża Eiffla",
+              "rating": 2
+            }
+          ]
+        }
+      },
+      {
+        "id": "error",
+        "type": "json",
+        "options": {
+          "status": 404,
+          "body": {
+            "message": "Not Found"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "get-trip-point-supercategories",
+    "method": "GET",
+    "url": "/tripPoints/supercategories",
+    "variants": [
+      {
+        "id": "success",
+        "type": "json",
+        "options": {
+          "status": 200,
+          "body": [
+            {
+              "id": "1",
+              "name": "Zabytki"
+            }
+          ]
+        }
+      },
+      {
+        "id": "error",
+        "type": "json",
+        "options": {
+          "status": 404,
+          "body": {
+            "message": "Not Found"
+          }
+        }
+      }
+    ]
+  }
+]
