@@ -50,6 +50,7 @@ public static class TripPointsEndpoints
     }
 
     private static async Task<Results<Created<TripPointDetailsDTO>, BadRequest<string>>> ReviewTripPointAsync(TripPointReviewRequestDTO tripPointReview)
+
     {
         await Task.CompletedTask;
         return TypedResults.BadRequest("Not implemented");
@@ -74,6 +75,7 @@ public static class TripPointsEndpoints
     }
 
     private static async Task<Results<Created<TripPointDetailsDTO>, BadRequest<string>>> CreateTripPointAsync(TripPointRequestDTO tripPoint)
+
     {
         await Task.CompletedTask;
         return TypedResults.BadRequest("Not implemented");

@@ -6,7 +6,7 @@ using TravelBuddyAPI.DTOs.PlaceCondition;
 
 namespace TravelBuddyAPI.Endpoints;
 
-public static class ConditionProfilesEndpoints
+public static class ConditionProfilesEndpoints // TODO rename parameters names
 {
     public static WebApplication MapConditionProfilesEndpoints(this WebApplication app)
     {

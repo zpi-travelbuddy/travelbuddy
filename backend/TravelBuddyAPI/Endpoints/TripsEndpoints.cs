@@ -116,6 +116,7 @@ public static class TripsEndpoints
     }
 
     private static async Task<Results<Created<TripDetailsDTO>, BadRequest<string>>> CreateTripAsync(TripRequestDTO trip)
+
     {
         await Task.CompletedTask;
         return TypedResults.BadRequest("Not implemented");
