@@ -6,7 +6,7 @@ namespace TravelBuddyAPI.Interfaces;
 
 /// <summary>
 /// Interface for managing trips.
-/// </summ/// ary>
+/// </summary>
 public interface ITripsService
 {
     /// <summary>
