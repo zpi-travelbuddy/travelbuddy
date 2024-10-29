@@ -29,7 +29,7 @@ public static class FavouriteProfilesEndpoints
         return app;
     }
     
-    private static async Task<Results<Created<FavouriteProfilesDTO>, NotFound<string>>> GetFavouriteProfilesAsync()
+    private static async Task<Results<Ok<FavouriteProfilesDTO>, NotFound<string>>> GetFavouriteProfilesAsync()
     {
         await Task.CompletedTask;
         return TypedResults.NotFound("Not implemented");

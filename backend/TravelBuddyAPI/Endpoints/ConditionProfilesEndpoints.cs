@@ -57,13 +57,13 @@ public static class ConditionProfilesEndpoints
         return TypedResults.NotFound("Not implemented");
     }
 
-    private static async Task<Results<Accepted<string>, NotFound<string>>> EditConditionProfileAsync(Guid id, ConditionProfileRequestDTO categoryProfile)
+    private static async Task<Results<Accepted<string>, NotFound<string>>> EditConditionProfileAsync(Guid id, ConditionProfileRequestDTO conditionProfile)
     {
         await Task.CompletedTask;
         return TypedResults.NotFound("Not implemented");
     }
 
-    private static async Task<Results<Created<ConditionProfileRequestDTO>, BadRequest<string>>> CreateConditionProfileAsync(ConditionProfileRequestDTO categoryProfile)
+    private static async Task<Results<Created<ConditionProfileDetailsDTO>, BadRequest<string>>> CreateConditionProfileAsync(ConditionProfileRequestDTO conditionProfile)
     {
         await Task.CompletedTask;
         return TypedResults.BadRequest("Not implemented");
