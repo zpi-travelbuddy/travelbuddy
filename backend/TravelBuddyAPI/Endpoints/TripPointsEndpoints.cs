@@ -49,7 +49,8 @@ public static class TripPointsEndpoints
         return TypedResults.NotFound("Not implemented");
     }
 
-    private static async Task<Results<Created<TripPointReviewRequestDTO>, BadRequest<string>>> ReviewTripPointAsync(TripPointReviewRequestDTO tripPointReview) // TODO change return type to Created<TripPointReviewDetailsDTO>
+    private static async Task<Results<Created<TripPointDetailsDTO>, BadRequest<string>>> ReviewTripPointAsync(TripPointReviewRequestDTO tripPointReview)
+
     {
         await Task.CompletedTask;
         return TypedResults.BadRequest("Not implemented");
@@ -73,7 +74,8 @@ public static class TripPointsEndpoints
         return TypedResults.NotFound("Not implemented");
     }
 
-    private static async Task<Results<Created<TripPointRequestDTO>, BadRequest<string>>> CreateTripPointAsync(TripPointRequestDTO tripPoint) // TODO change return type to Created<TripPointDetailsDTO>
+    private static async Task<Results<Created<TripPointDetailsDTO>, BadRequest<string>>> CreateTripPointAsync(TripPointRequestDTO tripPoint)
+
     {
         await Task.CompletedTask;
         return TypedResults.BadRequest("Not implemented");
