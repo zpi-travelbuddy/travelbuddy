@@ -9,7 +9,10 @@ interface TripCardProps {
   isArchived: boolean;
 }
 
-const { width } = Dimensions.get("window");
+const { width, height } = Dimensions.get("window");
+const CARD_WIDTH = width * 0.85;
+const CARD_ASPECT_RATIO = 4 / 3;
+const CARD_HEIGHT = CARD_WIDTH / CARD_ASPECT_RATIO + 10;
 
 export const TripCard: React.FC<TripCardProps> = ({
   title,
@@ -51,6 +54,8 @@ const createStyles = (theme: MD3Theme) =>
   StyleSheet.create({
     image: {
       width: "100%",
+      height: "70%",
+      resizeMode: "cover",
       borderBottomLeftRadius: 0,
       borderBottomRightRadius: 0,
     },
@@ -65,12 +70,12 @@ const createStyles = (theme: MD3Theme) =>
       ...theme.fonts.default,
     },
     textContent: {
-      marginVertical: 10,
-      width: width * 0.85,
+      marginTop: 10,
+      height: "30%",
     },
     card: {
-      width: width * 0.85,
-      height: 265,
+      width: CARD_WIDTH,
+      height: CARD_HEIGHT,
       alignSelf: "center",
       marginVertical: 10,
       borderWidth: 1,
