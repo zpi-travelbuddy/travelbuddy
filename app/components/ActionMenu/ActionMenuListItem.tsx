@@ -13,10 +13,7 @@ const ActionMenuListItem: React.FC<Props> = ({ onPress, label, icon }) => {
   const theme = useTheme();
 
   const isDeleteAction = icon === "delete";
-  const textColor = isDeleteAction
-    ? theme.colors.error
-    : theme.colors.onSurface;
-  const iconColor = isDeleteAction
+  const contentColor = isDeleteAction
     ? theme.colors.error
     : theme.colors.onSurface;
 
@@ -24,8 +21,8 @@ const ActionMenuListItem: React.FC<Props> = ({ onPress, label, icon }) => {
     <>
       <Divider />
       <TouchableOpacity style={styles.container} onPress={onPress}>
-        <Icon name={icon} size={20} color={iconColor} />
-        <Text style={[styles.label, { color: textColor }]}>{label}</Text>
+        <Icon name={icon} size={20} color={contentColor} />
+        <Text style={[styles.label, { color: contentColor }]}>{label}</Text>
       </TouchableOpacity>
     </>
   );
