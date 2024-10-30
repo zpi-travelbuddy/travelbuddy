@@ -9,8 +9,8 @@ const tripPoints: TripPoint[] = [
   {
     id: "1",
     name: "Muzeum",
-    fromTime: "10:00",
-    toTime: "11:00",
+    fromTime: "13:00",
+    toTime: "14:00",
   },
   {
     id: "2",
@@ -76,6 +76,12 @@ const TripDayView = () => {
     return map;
   }, [transferPoints]);
 
+  const sortedTripPoints = useMemo(() => {
+    return [...tripPoints].sort((a, b) => {
+      return a.fromTime.localeCompare(b.fromTime);
+    });
+  }, [tripPoints]);
+
   const renderTransferPoint = (tripPointId: string, index: number) => {
     if (index === tripPoints.length - 1) {
       return null;
@@ -102,7 +108,7 @@ const TripDayView = () => {
         contentContainerStyle={style.containerContent}
       >
         <View style={{ height: 40 }} />
-        {tripPoints.map((tripPoint, index) => (
+        {sortedTripPoints.map((tripPoint, index) => (
           <Fragment key={tripPoint.id}>
             <TripPointCard
               onPress={handleTripPointPress}
