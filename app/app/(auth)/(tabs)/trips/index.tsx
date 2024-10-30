@@ -1,9 +1,8 @@
-import { useEffect } from "react";
+import AppErrorView from "@/views/AppErrorView";
 import { View } from "react-native";
-import { Text } from "react-native-paper";
-import { useTheme } from "react-native-paper";
+import { Text, useTheme } from "react-native-paper";
 
-export default function Explore() {
+export default function Trips() {
   const theme = useTheme();
 
   return (

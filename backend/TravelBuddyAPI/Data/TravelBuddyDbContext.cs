@@ -2,8 +2,16 @@ using Microsoft.EntityFrameworkCore;
 using TravelBuddyAPI.Models;
 namespace TravelBuddyAPI.Data;
 
-public class TravelBuddyDbContext(DbContextOptions<TravelBuddyDbContext> options) : DbContext(options){
-    
+public class TravelBuddyDbContext : DbContext{
+
+    public TravelBuddyDbContext() : base()
+    {
+    }
+
+    public TravelBuddyDbContext(DbContextOptions<TravelBuddyDbContext> options) : base(options)
+    {
+    }
+
     public DbSet<CategoryProfile> CategoryProfiles { get; set; }
     public DbSet<ConditionProfile> ConditionProfiles { get; set; }
     public DbSet<Place> Places { get; set; }
@@ -17,6 +25,8 @@ public class TravelBuddyDbContext(DbContextOptions<TravelBuddyDbContext> options
     public DbSet<TripDay> TripDays { get; set; }
     public DbSet<TripPoint> TripPoints { get; set; }
     public DbSet<TripPointReview> TripPointReviews { get; set; }
+
+    
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -104,6 +114,7 @@ public class TravelBuddyDbContext(DbContextOptions<TravelBuddyDbContext> options
                     j.ToTable("ProviderPlacePlaceCondition");
                 }
             );
-
+        
+        modelBuilder.Seed();
     }
 }

@@ -1,6 +1,6 @@
 using System.Text.Json;
 using TravelBuddyAPI.DTOs.Currency;
-using TravelBuddyAPI.Services;
+using TravelBuddyAPI.Interfaces;
 
 namespace TravelBuddyAPI.Endpoints;
 
@@ -17,7 +17,7 @@ public static class NBPEndpoints
         return app;
     }
 
-    private static async Task<IResult> Rate(NBPClient client, string currencyCode, DateOnly? date = null)
+    private static async Task<IResult> Rate(INBPService client, string currencyCode, DateOnly? date = null)
     {
         try
         {
@@ -30,7 +30,7 @@ public static class NBPEndpoints
         }
     }
 
-        private static async Task<IResult> GetClosestRate(NBPClient client, string currencyCode, DateOnly date, int maxRetries = 2)
+        private static async Task<IResult> GetClosestRate(INBPService client, string currencyCode, DateOnly date, int maxRetries = 2)
     {
         try
         {
@@ -43,7 +43,7 @@ public static class NBPEndpoints
         }
     }
 
-    private static async Task<IResult> Currency(NBPClient client)
+    private static async Task<IResult> Currency(INBPService client)
     {
         try
         {

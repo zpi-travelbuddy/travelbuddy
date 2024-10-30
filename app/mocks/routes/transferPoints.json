@@ -1,0 +1,91 @@
+[
+  {
+    "id": "create-transfer-point",
+    "method": "POST",
+    "url": "/transferPoints",
+    "variants": [
+      {
+        "id": "success",
+        "type": "json",
+        "options": {
+          "status": 201,
+          "body": [
+            {
+              "tripDayId": "1",
+              "transferTime": "432",
+              "startTime": "12:40",
+              "mode": 0,
+              "type": 0,
+              "fromTripPointId": "1",
+              "toTripPointId": "2"
+            }
+          ]
+        }
+      },
+      {
+        "id": "error",
+        "type": "json",
+        "options": {
+          "status": 400,
+          "body": {
+            "message": "Invalid request"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "edit-transfer-point",
+    "method": "PUT",
+    "url": "/transferPoints/:id",
+    "variants": [
+      {
+        "id": "success",
+        "type": "json",
+        "options": {
+          "status": 202,
+          "body": {
+            "message": "Accepted"
+          }
+        }
+      },
+      {
+        "id": "error",
+        "type": "json",
+        "options": {
+          "status": 404,
+          "body": {
+            "message": "Not Found"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "delete-transfer-point",
+    "method": "DELETE",
+    "url": "/transferPoints/:id",
+    "variants": [
+      {
+        "id": "success",
+        "type": "json",
+        "options": {
+          "status": 204,
+          "body": {
+            "message": "No Content"
+          }
+        }
+      },
+      {
+        "id": "error",
+        "type": "json",
+        "options": {
+          "status": 404,
+          "body": {
+            "message": "Not Found"
+          }
+        }
+      }
+    ]
+  }
+]
