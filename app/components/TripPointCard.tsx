@@ -1,7 +1,7 @@
 import { TripPoint } from "@/types/data";
 import { StyleSheet, Dimensions } from "react-native";
 import { Card, useTheme } from "react-native-paper";
-import { formatTimeRange } from "@/utils/TimeUtils";
+import { formatTimeRange } from "@/utils/DateUtils";
 
 const { height, width } = Dimensions.get("window");
 
