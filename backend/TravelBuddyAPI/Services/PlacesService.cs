@@ -1,5 +1,8 @@
+using System.ComponentModel.DataAnnotations;
 using TravelBuddyAPI.Data;
 using TravelBuddyAPI.DTOs.Place;
+using TravelBuddyAPI.DTOs.PlaceCategory;
+using TravelBuddyAPI.DTOs.PlaceCondition;
 using TravelBuddyAPI.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using TravelBuddyAPI.Models;
@@ -12,9 +15,43 @@ public class PlacesService(TravelBuddyDbContext dbContext, IGeoapifyService geoa
     private readonly IGeoapifyService _geoapifyService = geoapifyService;
     private readonly ITravelBuddyDbCache _dbCache = dbCache;
 
-    public Task<bool> AddPlaceAsync(PlaceRequestDTO place)
+    public async Task<PlaceDetailsDTO> AddPlaceAsync(PlaceRequestDTO place) // TODO Add categories, conditions, supercategory; // TODO add different method for more details
     {
-        throw new NotImplementedException();
+        Place newPlace = place.ProviderId is not null
+            ? new ProviderPlace()
+            {
+                ProviderId = place.ProviderId,
+            }
+            : new CustomPlace();
+
+        newPlace.Id = Guid.NewGuid();
+        newPlace.Name = place.Name;
+        newPlace.Country = place.Country;
+        newPlace.City = place.City;
+        newPlace.Street = place.Street;
+        newPlace.HouseNumber = place.HouseNumber;
+        newPlace.Latitude = place.Latitude;
+        newPlace.Longitude = place.Longitude;
+
+        var categories = await _dbCache.GetCategoriesAsync();
+
+        if (newPlace is ProviderPlace providerPlace)
+        {
+
+        }
+        else if (newPlace is CustomPlace customPlace)
+        {
+            customPlace.PlaceCategory = categories?.FirstOrDefault(c => c.Id == place.CategoryId);
+
+        }
+
+        var validationContext = new ValidationContext(newPlace);
+        Validator.ValidateObject(newPlace, validationContext, validateAllProperties: true);
+
+        await _dbContext.Places.AddAsync(newPlace);
+        await _dbContext.SaveChangesAsync();
+
+        return await GetPlaceDetailsAsync(newPlace.Id);
     }
 
     public Task<bool> DeletePlaceAsync(Guid id)
@@ -77,8 +114,56 @@ public class PlacesService(TravelBuddyDbContext dbContext, IGeoapifyService geoa
             }).ToList() ?? [];
     }
 
-    public Task<PlaceDetailsDTO> GetPlaceDetailsAsync(Guid id)
+    public async Task<PlaceDetailsDTO> GetPlaceDetailsAsync(Guid id)
     {
-        throw new NotImplementedException();
+        var place = await _dbContext.Places
+            .Where(p => p.Id == id)
+            .FirstOrDefaultAsync();
+
+        PlaceDetailsDTO placeDetails = new()
+        {
+            Id = place.Id,
+            Name = place.Name,
+            Country = place.Country,
+            City = place.City,
+            Street = place.Street,
+            HouseNumber = place.HouseNumber,
+            Latitude = place.Latitude,
+            Longitude = place.Longitude,
+        };
+
+        if (place is ProviderPlace) // TODO Add AverageCostPerPerson, AverageTimeSpent, AverageRating
+        {
+            ProviderPlace providerPlace = await _dbContext.Places
+                .OfType<ProviderPlace>()
+                .Include(p => p.Categories)
+                .Include(p => p.Conditions)
+                .Where(p => p.Id == place.Id)
+                .FirstOrDefaultAsync();
+
+            placeDetails.ProviderId = providerPlace.ProviderId;
+            placeDetails.Categories = providerPlace?.Categories?
+                .Select(c => new PlaceCategoryDTO
+                {
+                    Id = c.Id,
+                    Name = c.Name,
+                }).ToList();
+            placeDetails.Conditions = providerPlace?.Conditions?
+                .Select(c => new PlaceConditionDTO
+                {
+                    Id = c.Id,
+                    Name = c.Name,
+                }).ToList();
+        }
+        else if (place is CustomPlace customPlace && customPlace.PlaceCategory is not null)
+        {
+            placeDetails.SuperCategory = new PlaceCategoryDTO
+            {
+                Id = customPlace.PlaceCategory.Id,
+                Name = customPlace.PlaceCategory.Name,
+            };
+        }
+
+        return placeDetails;
     }
 }
