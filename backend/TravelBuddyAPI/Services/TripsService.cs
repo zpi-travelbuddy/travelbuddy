@@ -83,8 +83,8 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
         Guid? id = await _dbContext.Places
             .OfType<ProviderPlace>()
             .Where(p => providerId.Equals(p.ProviderId))
-            .Select(p => p.Id)
-            .FirstAsync();
+            .Select(p => (Guid?)p.Id)
+            .FirstOrDefaultAsync();
 
         return id;
     }

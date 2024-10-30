@@ -118,8 +118,8 @@ public class PlacesService(TravelBuddyDbContext dbContext, IGeoapifyService geoa
     {
         var place = await _dbContext.Places
             .Where(p => p.Id == id)
-            .FirstOrDefaultAsync();
-
+            .FirstAsync();
+        
         PlaceDetailsDTO placeDetails = new()
         {
             Id = place.Id,
@@ -139,7 +139,7 @@ public class PlacesService(TravelBuddyDbContext dbContext, IGeoapifyService geoa
                 .Include(p => p.Categories)
                 .Include(p => p.Conditions)
                 .Where(p => p.Id == place.Id)
-                .FirstOrDefaultAsync();
+                .FirstAsync();
 
             placeDetails.ProviderId = providerPlace.ProviderId;
             placeDetails.Categories = providerPlace?.Categories?
