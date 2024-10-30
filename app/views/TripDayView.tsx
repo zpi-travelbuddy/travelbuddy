@@ -3,7 +3,7 @@ import { TripPointCard } from "@/components/TripPointCard";
 import { TransferPointNode } from "@/components/TransferPointNode";
 import { TripPoint, TransferPoint } from "@/types/data";
 import { useTheme, FAB } from "react-native-paper";
-import { Fragment } from "react";
+import { Fragment, useMemo } from "react";
 
 const tripPoints: TripPoint[] = [
   {
@@ -68,14 +68,20 @@ const TripDayView = () => {
     console.log("Empty transfer point pressed");
   };
 
+  const transferPointMap = useMemo(() => {
+    const map = new Map();
+    transferPoints.forEach((point) => {
+      map.set(point.fromTripPointId, point);
+    });
+    return map;
+  }, [transferPoints]);
+
   const renderTransferPoint = (tripPointId: string, index: number) => {
     if (index === tripPoints.length - 1) {
       return null;
     }
 
-    const transferPoint = transferPoints.find(
-      (transferPoint) => transferPoint.fromTripPointId === tripPointId,
-    );
+    const transferPoint = transferPointMap.get(tripPointId);
 
     if (!transferPoint) {
       return <TransferPointNode onPressEmpty={handleEmptyTransferPointPress} />;
