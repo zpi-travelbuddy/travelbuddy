@@ -6,9 +6,8 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
 } from "react-native";
-import { useAuth } from "./ctx";
 import { router, Link } from "expo-router";
-import { useTheme, Text, Button } from "react-native-paper";
+import { useTheme, Text, Button, Portal, Dialog } from "react-native-paper";
 import Animated, {
   useAnimatedKeyboard,
   useAnimatedStyle,
@@ -18,13 +17,14 @@ import { EmailTextInput } from "@/components/auth/EmailTextInput";
 import { PasswordTextInput } from "@/components/auth/PasswordTextInput";
 import { validateField } from "@/utils/validations";
 import { Credentials, AuthErrors } from "@/types/auth";
+import { useAuth } from "./ctx";
 import { MD3ThemeExtended } from "@/constants/Themes";
 
 // It would be good if we could calculate this value dynamically, but I had some issues with that
 const BOTTOM_VIEW_HEIGHT = 54;
 
 export default function SignIn() {
-  const { onLogin } = useAuth();
+  const { onRegister } = useAuth();
   const insets = useSafeAreaInsets();
   const keyboard = useAnimatedKeyboard();
 
@@ -39,6 +39,7 @@ export default function SignIn() {
     email: "",
     password: "",
   });
+  const [showDialog, setShowDialog] = useState(false);
 
   const animatedStyles = useAnimatedStyle(() => {
     return {
@@ -57,6 +58,11 @@ export default function SignIn() {
     }));
   };
 
+  const handleDismissDialog = () => {
+    setShowDialog(false);
+    router.navigate("/confirmation");
+  };
+
   const validateForm = () => {
     const emailError = validateField("email", credentials.email);
     const passwordError = validateField("password", credentials.password);
@@ -64,10 +70,11 @@ export default function SignIn() {
     return !emailError && !passwordError;
   };
 
-  const login = async () => {
+  const signup = async () => {
     if (!validateForm()) return;
-    await onLogin!(credentials);
-    router.replace("/");
+    await onRegister!(credentials);
+    Keyboard.dismiss();
+    setShowDialog(true);
   };
 
   return (
@@ -76,7 +83,7 @@ export default function SignIn() {
         <View style={styles.innerContainer}>
           <Animated.View style={[animatedStyles]}>
             <Text style={styles.headline} variant="headlineLarge">
-              Logowanie
+              Rejestracja
             </Text>
             <EmailTextInput
               value={credentials.email}
@@ -93,25 +100,38 @@ export default function SignIn() {
               style={styles.inputText}
             />
             <Text style={styles.textError}>{errors.password || " "}</Text>
-            <Text style={styles.forgotPassword} variant="labelLarge">
-              Nie pamiętam hasła
-            </Text>
             <Button
               style={styles.button}
               labelStyle={styles.buttonLabel}
               mode="contained"
-              onPress={login}
+              onPress={signup}
               contentStyle={styles.buttonContent}
             >
-              Zaloguj
+              Zarejestruj
             </Button>
           </Animated.View>
-          <Text style={styles.signUp} variant="bodyLarge">
-            Nie posiadasz konta?{" "}
-            <Link href="/sign-up" style={styles.textBold}>
-              Zarejestruj się
+          <Text style={styles.signIn} variant="bodyLarge">
+            Posiadasz już konto?{" "}
+            <Link href="/sign-in" style={styles.textBold}>
+              Zaloguj się
             </Link>
           </Text>
+          <Portal>
+            <Dialog visible={showDialog} onDismiss={handleDismissDialog}>
+              <Dialog.Icon icon="check-circle-outline" />
+              <Dialog.Title style={styles.dialogTitle}>
+                Dziękujemy za rejestrację
+              </Dialog.Title>
+              <Dialog.Content>
+                <Text variant="bodyLarge" style={styles.dialogContent}>
+                  Wysłaliśmy wiadomość z kodem potwierdzającym założenie konta
+                </Text>
+              </Dialog.Content>
+              <Dialog.Actions>
+                <Button onPress={handleDismissDialog}>Dalej</Button>
+              </Dialog.Actions>
+            </Dialog>
+          </Portal>
         </View>
       </TouchableWithoutFeedback>
     </SafeAreaView>
@@ -137,6 +157,7 @@ const makeStyles = (theme: MD3ThemeExtended) =>
       alignSelf: "stretch",
       marginHorizontal: 40,
       marginBottom: 30,
+      marginTop: 90,
     },
     buttonLabel: {
       fontSize: 16,
@@ -162,8 +183,14 @@ const makeStyles = (theme: MD3ThemeExtended) =>
       marginHorizontal: 40,
       color: theme.colors.error,
     },
-    signUp: {
+    signIn: {
       alignSelf: "center",
       marginBottom: 30,
+    },
+    dialogTitle: {
+      textAlign: "center",
+    },
+    dialogContent: {
+      textAlign: "center",
     },
   });
