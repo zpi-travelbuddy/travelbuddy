@@ -1,0 +1,107 @@
+[
+  {
+    "id": "get-place",
+    "url": "/places/:id",
+    "method": "GET",
+    "variants": [
+      {
+        "id": "success",
+        "type": "json",
+        "options": {
+          "status": 200,
+          "body": {
+            "id": "1",
+            "providerId": "1",
+            "name": "Wieża Eiffla",
+            "country": "Francja",
+            "city": "Paryż",
+            "street": "Champs de Mars",
+            "houseNumber": "",
+            "latitude": 2131.32,
+            "longitude": 123.12,
+            "averageCostPerPerson": 123.12,
+            "averageTimeSpent": 49.42,
+            "averageRating": 4.5,
+            "conditions": [
+              {
+                "id": "1",
+                "name": "Przyjazne zwierzętom"
+              }
+            ],
+            "categories": [
+              {
+                "id": "1",
+                "name": "Wysokie budowle"
+              },
+              {
+                "id": "2",
+                "name": "Zabytki"
+              }
+            ],
+            "superCategory": {
+              "id": "1",
+              "name": "Super Category 1"
+            }
+          }
+        }
+      },
+      {
+        "id": "error",
+        "type": "json",
+        "options": {
+          "status": 404,
+          "body": {
+            "message": "Not Found"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "autocomplete-places",
+    "url": "/places/autocomplete",
+    "method": "GET",
+    "variants": [
+      {
+        "id": "success",
+        "type": "json",
+        "options": {
+          "status": 200,
+          "body": [
+            {
+              "id": "1",
+              "providerId": "1",
+              "name": "Wieża Eiffla",
+              "country": "Country 1",
+              "city": "City 1"
+            },
+            {
+              "id": "2",
+              "providerId": "2",
+              "name": "Wieża Ciśnień we Wrocławiu",
+              "country": "Polska",
+              "city": "Wrocław"
+            },
+            {
+              "id": "3",
+              "providerId": "3",
+              "name": "Most Golden Gate",
+              "country": "Stany Zjednoczone",
+              "city": "San Francisco"
+            }
+          ]
+        }
+      },
+      {
+        "id": "error",
+        "type": "json",
+        "options": {
+          "status": 404,
+          "body": {
+            "message": "Not Found"
+          }
+        }
+      }
+    ]
+  }
+]

@@ -27,6 +27,8 @@ public class TripPointReview
     public Guid PlaceId { get; set; }
     public Place? Place { get; set; }
 
+    public decimal? ExchangeRate { get; set; }
+
     [Range(0, double.MaxValue, ErrorMessage = $"{nameof(ActualCost)} must be a positive number.")]
     public decimal? ActualCost { get; set; }
 

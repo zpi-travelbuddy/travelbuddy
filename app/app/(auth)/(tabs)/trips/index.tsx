@@ -1,9 +1,7 @@
-import { useEffect } from "react";
 import { View } from "react-native";
-import { Text } from "react-native-paper";
-import { useTheme } from "react-native-paper";
+import { Text, useTheme } from "react-native-paper";
 
-export default function Explore() {
+export default function Trips() {
   const theme = useTheme();
 
   return (
@@ -15,7 +13,7 @@ export default function Explore() {
         backgroundColor: theme.colors.background,
       }}
     >
-      <Text>Explore</Text>
+      <Text>Trips</Text>
     </View>
   );
 }

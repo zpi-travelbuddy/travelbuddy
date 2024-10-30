@@ -10,7 +10,7 @@ public class TransferPointDTO
     [Required]
     public Guid TripDayId { get; set; }
 
-    public TimeSpan? TransferTime { get; set; }
+    public int? Seconds { get; set; }
 
     [Required]
     public TimeOnly StartTime { get; set; }

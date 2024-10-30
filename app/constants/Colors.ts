@@ -4,6 +4,14 @@ import {
 } from "react-native-paper";
 import { MD3Colors } from "react-native-paper/lib/typescript/types";
 
+export const BLACK = "#000000";
+export const WHITE = "#FFFFFF";
+export const BACKDROP = "rgba(0, 0, 0, 0.32)";
+
+export interface MD3ColorsExtended extends MD3Colors {
+  surfaceContainerHigh: string;
+}
+
 export const Colors = {
   light: {
     ...DefaultTheme.colors,
@@ -56,7 +64,16 @@ export const Colors = {
     surfaceContainer: "#E9EFF0",
     surfaceContainerHigh: "#E3E9EA",
     surfaceContainerHighest: "#DEE3E5",
-  } as MD3Colors,
+    elevation: {
+      ...DefaultTheme.colors.elevation,
+      level0: "#FFFFFF", // surfaceContainerLowest
+      level1: "#EFF5F6", // surfaceContainerLow
+      level2: "#E9EFF0", // surfaceContainer
+      level3: "#E3E9EA", // surfaceContainerHigh
+      level4: "#DEE3E5", // surfaceContainerHighest
+    },
+    backdrop: "rgba(0, 0, 0, 0.32)",
+  } as MD3ColorsExtended,
   lightHighContrast: {
     ...DefaultTheme.colors,
     primary: "#002819",
@@ -108,7 +125,16 @@ export const Colors = {
     surfaceContainer: "#E9EFF0",
     surfaceContainerHigh: "#E3E9EA",
     surfaceContainerHighest: "#DEE3E5",
-  } as MD3Colors,
+    elevation: {
+      ...DefaultTheme.colors.elevation,
+      level0: "#FFFFFF", // surfaceContainerLowest
+      level1: "#EFF5F6", // surfaceContainerLow
+      level2: "#E9EFF0", // surfaceContainer
+      level3: "#E3E9EA", // surfaceContainerHigh
+      level4: "#DEE3E5", // surfaceContainerHighest
+    },
+    backdrop: "rgba(0, 0, 0, 0.32)",
+  } as MD3ColorsExtended,
   dark: {
     ...DarkTheme.colors,
     primary: "#8ED5B1",
@@ -160,7 +186,16 @@ export const Colors = {
     surfaceContainer: "#1B2122",
     surfaceContainerHigh: "#252B2C",
     surfaceContainerHighest: "#303637",
-  } as MD3Colors,
+    elevation: {
+      ...DarkTheme.colors.elevation,
+      level0: "#090F10", // surfaceContainerLowest
+      level1: "#171D1E", // surfaceContainerLow
+      level2: "#1B2122", // surfaceContainer
+      level3: "#252B2C", // surfaceContainerHigh
+      level4: "#303637", // surfaceContainerHighest
+    },
+    backdrop: "rgba(0, 0, 0, 0.32)",
+  } as MD3ColorsExtended,
   darkHighContrast: {
     ...DarkTheme.colors,
     primary: "#EEFFF2",
@@ -212,5 +247,14 @@ export const Colors = {
     surfaceContainer: "#1B2122",
     surfaceContainerHigh: "#252B2C",
     surfaceContainerHighest: "#303637",
-  } as MD3Colors,
+    elevation: {
+      ...DarkTheme.colors.elevation,
+      level0: "#090F10", // surfaceContainerLowest
+      level1: "#171D1E", // surfaceContainerLow
+      level2: "#1B2122", // surfaceContainer
+      level3: "#252B2C", // surfaceContainerHigh
+      level4: "#303637", // surfaceContainerHighest
+    },
+    backdrop: "rgba(0, 0, 0, 0.32)",
+  } as MD3ColorsExtended,
 };

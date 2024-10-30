@@ -4,8 +4,6 @@ using Newtonsoft.Json;
 using TravelBuddyAPI.Models;
 using Microsoft.CSharp.RuntimeBinder;
 using System.Diagnostics;
-using System.Data.Entity;
-using TravelBuddyAPI.Data;
 using TravelBuddyAPI.Enums;
 
 namespace TravelBuddyAPI.Services;
@@ -13,13 +11,13 @@ namespace TravelBuddyAPI.Services;
 public class GeoapifyClient : IGeoapifyService
 {
     private readonly IRestClient _client;
-    private readonly TravelBuddyDbContext _dataContext; // TODO replace with service for caching categories and conditions
+    private readonly ITravelBuddyDbCache _dataCache;
     private readonly string _apiKey;
 
-    public GeoapifyClient(IConfiguration configuration, TravelBuddyDbContext dataContext, IRestClient client)
+    public GeoapifyClient(IConfiguration configuration, ITravelBuddyDbCache dataCache, IRestClient client)
     {
         _client = client;
-        _dataContext = dataContext;
+        _dataCache = dataCache;
         _apiKey = configuration["GEOAPIFY_KEY"] ?? throw new ArgumentNullException($"{nameof(_apiKey)} is not set in the configuration");
     }
 
@@ -37,7 +35,7 @@ public class GeoapifyClient : IGeoapifyService
         var response = await _client.ExecuteAsync(request);
         if (!response.IsSuccessful || response.Content is null)
         {
-            throw new HttpRequestException($"Error retrieving autocomplete results: {response.ErrorMessage}");
+            throw new HttpRequestException($"Error retrieving autocomplete results: {response.Content}");
         }
 
         var jsonResponse = JsonConvert.DeserializeObject<dynamic>(response.Content);
@@ -82,7 +80,7 @@ public class GeoapifyClient : IGeoapifyService
         var response = await _client.ExecuteAsync(request);
         if (!response.IsSuccessful || response.Content is null)
         {
-            throw new HttpRequestException($"Error retrieving isoline: {response.ErrorMessage}");
+            throw new HttpRequestException($"Error retrieving isoline: {response.Content}");
         }
 
         var jsonResponse = JsonConvert.DeserializeObject<dynamic>(response.Content);
@@ -108,7 +106,7 @@ public class GeoapifyClient : IGeoapifyService
         var request = new RestRequest("v2/places", Method.Get);
         request.AddParameter("filter", $"circle:{location.longitude},{location.latitude},{radius}");
         if (categories != null) request.AddParameter("categories", string.Join(",", categories.Select(c => c.FullName)));
-        if (conditions != null) request.AddParameter("conditions", string.Join(",", conditions.Select(c => c.FullName)));
+        if (conditions != null && conditions.Any()) request.AddParameter("conditions", string.Join(",", conditions.Select(c => c.FullName)));
         if (limit.HasValue) request.AddParameter("limit", limit.Value);
         if (offset.HasValue) request.AddParameter("offset", offset.Value);
         request.AddParameter("apiKey", _apiKey);
@@ -117,14 +115,14 @@ public class GeoapifyClient : IGeoapifyService
 
         if (!response.IsSuccessful || response.Content is null)
         {
-            throw new HttpRequestException($"Error retrieving autocomplete results: {response.ErrorMessage}");
+            throw new HttpRequestException($"Error retrieving autocomplete results: {response.Content}");
         }
 
         var jsonResponse = JsonConvert.DeserializeObject<dynamic>(response.Content);
 
         try
         {
-            return ParseFeatureCollection(jsonResponse);
+            return ParseFeatureCollection(jsonResponse, categories?.ToList(), conditions?.ToList());
         }
         catch (RuntimeBinderException e)
         {
@@ -138,7 +136,7 @@ public class GeoapifyClient : IGeoapifyService
         var request = new RestRequest("v2/places", Method.Get);
         request.AddParameter("filter", $"rect:{start.longitude},{start.latitude},{end.longitude},{end.latitude}");
         if (categories != null) request.AddParameter("categories", string.Join(",", categories.Select(c => c.FullName)));
-        if (conditions != null) request.AddParameter("conditions", string.Join(",", conditions.Select(c => c.FullName)));
+        if (conditions != null && conditions.Any()) request.AddParameter("conditions", string.Join(",", conditions.Select(c => c.FullName)));
         if (limit.HasValue) request.AddParameter("limit", limit.Value);
         if (offset.HasValue) request.AddParameter("offset", offset.Value);
         request.AddParameter("apiKey", _apiKey);
@@ -147,14 +145,14 @@ public class GeoapifyClient : IGeoapifyService
 
         if (!response.IsSuccessful || response.Content is null)
         {
-            throw new HttpRequestException($"Error retrieving nearby places: {response.ErrorMessage}");
+            throw new HttpRequestException($"Error retrieving nearby places: {response.Content}");
         }
 
         var jsonResponse = JsonConvert.DeserializeObject<dynamic>(response.Content);
 
         try
         {
-            return ParseFeatureCollection(jsonResponse);
+            return ParseFeatureCollection(jsonResponse, categories?.ToList(), conditions?.ToList());
         }
         catch (RuntimeBinderException e)
         {
@@ -168,7 +166,7 @@ public class GeoapifyClient : IGeoapifyService
         var request = new RestRequest($"v2/places", Method.Get);
         request.AddParameter("filter", $"geometry:{geometryId}");
         if (categories != null) request.AddParameter("categories", string.Join(",", categories.Select(c => c.FullName)));
-        if (conditions != null) request.AddParameter("conditions", string.Join(",", conditions.Select(c => c.FullName)));
+        if (conditions != null && conditions.Any()) request.AddParameter("conditions", string.Join(",", conditions.Select(c => c.FullName)));
         if (limit.HasValue) request.AddParameter("limit", limit.Value);
         if (offset.HasValue) request.AddParameter("offset", offset.Value);
         request.AddParameter("apiKey", _apiKey);
@@ -177,14 +175,14 @@ public class GeoapifyClient : IGeoapifyService
 
         if (!response.IsSuccessful || response.Content is null)
         {
-            throw new HttpRequestException($"Error retrieving nearby places: {response.ErrorMessage}");
+            throw new HttpRequestException($"Error retrieving nearby places: {response.Content}");
         }
 
         var jsonResponse = JsonConvert.DeserializeObject<dynamic>(response.Content);
 
         try
         {
-            return ParseFeatureCollection(jsonResponse);
+            return ParseFeatureCollection(jsonResponse, categories?.ToList(), conditions?.ToList());
         }
         catch (RuntimeBinderException e)
         {
@@ -203,16 +201,15 @@ public class GeoapifyClient : IGeoapifyService
 
         if (!response.IsSuccessful || response.Content is null)
         {
-            throw new HttpRequestException($"Error retrieving route time: {response.ErrorMessage}");
+            throw new HttpRequestException($"Error retrieving route time: {response.Content}");
         }
 
         var jsonResponse = JsonConvert.DeserializeObject<dynamic>(response.Content);
 
         try
         {
-            // TODO add caching
-            var categories = await _dataContext.Set<PlaceCategory>().ToListAsync(); // TODO add including supercategories
-            var conditions = await _dataContext.Set<PlaceCondition>().ToListAsync(); // TODO add including superconditions
+            var categories = await _dataCache.GetCategoriesAsync();
+            var conditions = await _dataCache.GetConditionsAsync();
 
             return ParseFeatureCollection(jsonResponse, categories, conditions)?[0];
         }
@@ -242,7 +239,7 @@ public class GeoapifyClient : IGeoapifyService
 
         if (!response.IsSuccessful || response.Content is null)
         {
-            throw new HttpRequestException($"Error retrieving route time: {response.ErrorMessage}");
+            throw new HttpRequestException($"Error retrieving route time: {response.Content}");
         }
 
         var jsonResponse = JsonConvert.DeserializeObject<dynamic>(response.Content);

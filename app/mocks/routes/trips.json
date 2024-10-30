@@ -1,0 +1,548 @@
+[
+  {
+    "id": "create-trip",
+    "method": "POST",
+    "url": "/trips",
+    "variants": [
+      {
+        "id": "success",
+        "type": "json",
+        "options": {
+          "status": 201,
+          "body": {
+            "name": "Wycieczka do Włoch",
+            "numberOfTravelers": 2,
+            "startDate": "2024-04-05",
+            "endDate": "2024-04-10",
+            "destinationPlace": {
+              "providerId": "1",
+              "categoryId": "1",
+              "name": "Warszawa",
+              "country": "Polska",
+              "city": "Warszawa",
+              "street": "",
+              "houseNumber": "4",
+              "latitude": 52.22977,
+              "longitude": 21.01178
+            },
+            "budget": 1000,
+            "currency": "PLN",
+            "categoryProfileId": "1",
+            "conditionProfileId": "1"
+          }
+        }
+      },
+      {
+        "id": "error",
+        "type": "json",
+        "options": {
+          "status": 400,
+          "body": {
+            "message": "Bad Request"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "edit-trip",
+    "method": "PUT",
+    "url": "/trips/:id",
+    "variants": [
+      {
+        "id": "success",
+        "type": "json",
+        "options": {
+          "status": 202,
+          "body": {
+            "message": "Accepted"
+          }
+        }
+      },
+      {
+        "id": "error",
+        "type": "json",
+        "options": {
+          "status": 404,
+          "body": {
+            "message": "Not Found"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "delete-trip",
+    "method": "DELETE",
+    "url": "/trips/:id",
+    "variants": [
+      {
+        "id": "success",
+        "type": "json",
+        "options": {
+          "status": 204,
+          "body": {
+            "message": "No Content"
+          }
+        }
+      },
+      {
+        "id": "error",
+        "type": "json",
+        "options": {
+          "status": 404,
+          "body": {
+            "message": "Not Found"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "get-trip",
+    "method": "GET",
+    "url": "/trips/:id",
+    "variants": [
+      {
+        "id": "success",
+        "type": "json",
+        "options": {
+          "status": 200,
+          "body": {
+            "id": "1",
+            "name": "Wycieczka do Włoch",
+            "numberOfTravelers": 2,
+            "startDate": "2024-10-18",
+            "endDate": "2024-10-28",
+            "destinationId": "1",
+            "budget": 1000,
+            "currencyCode": "PLN",
+            "categoryProfileId": "1",
+            "conditionProfileId": "1",
+            "tripDays": [
+              {
+                "id": "1",
+                "tripId": "1",
+                "date": "2024-10-28"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "id": "error",
+        "type": "json",
+        "options": {
+          "status": 404,
+          "body": {
+            "message": "Not Found"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "get-trip-summary",
+    "method": "GET",
+    "url": "/trips/summary/:id",
+    "variants": [
+      {
+        "id": "success",
+        "type": "json",
+        "options": {
+          "status": 200,
+          "body": {
+            "currencyCode": "PLN",
+            "tripDays": [
+              {
+                "date": "2024-10-28",
+                "tripPoints": [
+                  {
+                    "name": "Śniadanie w hotelu",
+                    "totalSpendings": 100
+                  },
+                  {
+                    "name": "Wizyta w muzeum",
+                    "totalSpendings": 200
+                  }
+                ]
+              },
+              {
+                "date": "2024-10-29",
+                "tripPoints": [
+                  {
+                    "name": "Park rozrywki",
+                    "totalSpendings": 300
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      {
+        "id": "error",
+        "type": "json",
+        "options": {
+          "status": 404,
+          "body": {
+            "message": "Not Found"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "get-current-trips",
+    "method": "GET",
+    "url": "/trips/current",
+    "variants": [
+      {
+        "id": "success",
+        "type": "json",
+        "options": {
+          "status": 200,
+          "body": [
+            {
+              "id": "1",
+              "name": "Wycieczka do Włoch",
+              "startDate": "2024-10-18",
+              "endDate": "2024-10-28"
+            },
+            {
+              "id": "2",
+              "name": "Wyjazd w Tatry",
+              "startDate": "2024-10-18",
+              "endDate": "2024-10-28"
+            }
+          ]
+        }
+      },
+      {
+        "id": "error",
+        "type": "json",
+        "options": {
+          "status": 404,
+          "body": {
+            "message": "Not Found"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "get-past-trips",
+    "method": "GET",
+    "url": "/trips/past",
+    "variants": [
+      {
+        "id": "success",
+        "type": "json",
+        "options": {
+          "status": 200,
+          "body": [
+            {
+              "id": "1",
+              "name": "Stara wycieczka do Francji",
+              "startDate": "2024-10-18",
+              "endDate": "2024-10-28"
+            },
+            {
+              "id": "2",
+              "name": "Wycieczka do Wrocławia",
+              "startDate": "2024-10-18",
+              "endDate": "2024-10-28"
+            }
+          ]
+        }
+      },
+      {
+        "id": "error",
+        "type": "json",
+        "options": {
+          "status": 404,
+          "body": {
+            "message": "Not Found"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "get-past-trips-with-stats",
+    "method": "GET",
+    "url": "/trips/pastWithStatistics",
+    "variants": [
+      {
+        "id": "success",
+        "type": "json",
+        "options": {
+          "status": 200,
+          "body": [
+            {
+              "id": "1",
+              "name": "Wycieczka do Wrocławia",
+              "startDate": "2024-10-18",
+              "endDate": "2024-10-28",
+              "currencyCode": "PLN",
+              "totalSpendings": 1000,
+              "totalSpendingsPerPerson": 500
+            },
+            {
+              "id": "2",
+              "name": "Wycieczka do Włoch",
+              "startDate": "2024-10-18",
+              "endDate": "2024-10-28",
+              "currencyCode": "PLN",
+              "totalSpendings": 2000,
+              "totalSpendingsPerPerson": 1000
+            }
+          ]
+        }
+      },
+      {
+        "id": "error",
+        "type": "json",
+        "options": {
+          "status": 404,
+          "body": {
+            "message": "Not Found"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "autocomplete-destination",
+    "method": "GET",
+    "url": "/trips/autocompleteDestination",
+    "variants": [
+      {
+        "id": "success",
+        "type": "json",
+        "options": {
+          "status": 200,
+          "body": [
+            [
+              {
+                "id": "1",
+                "providerId": "1",
+                "name": "Warszawa",
+                "country": "Polska",
+                "city": "Warszawa"
+              },
+              {
+                "id": "2",
+                "providerId": "2",
+                "name": "Kraków",
+                "country": "Polska",
+                "city": "Kraków"
+              },
+              {
+                "id": "3",
+                "providerId": "3",
+                "name": "Gdańsk",
+                "country": "Polska",
+                "city": "Gdańsk"
+              }
+            ]
+          ]
+        }
+      },
+      {
+        "id": "error",
+        "type": "json",
+        "options": {
+          "status": 404,
+          "body": {
+            "message": "Not Found"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "get-trip-day",
+    "method": "GET",
+    "url": "/trips/tripDay/:id",
+    "variants": [
+      {
+        "id": "success",
+        "type": "json",
+        "options": {
+          "status": 200,
+          "body": {
+            "id": "1",
+            "tripId": "1",
+            "date": "2024-10-28",
+            "transferPoints": [
+              {
+                "tripDayId": "1",
+                "transferTime": "123",
+                "startTime": "14:00",
+                "mode": 0,
+                "type": 0,
+                "fromTripPointId": "1",
+                "toTripPointId": "2"
+              },
+              {
+                "tripDayId": "1",
+                "transferTime": "123",
+                "startTime": "14:00",
+                "mode": 0,
+                "type": 0,
+                "fromTripPointId": "2",
+                "toTripPointId": "3"
+              }
+            ],
+            "tripPoints": [
+              {
+                "name": "Śniadanie w hotelu",
+                "tripDayId": "1",
+                "startTime": "09:00",
+                "endTime": "10:00"
+              },
+              {
+                "name": "Wizyta w muzeum",
+                "tripDayId": "1",
+                "startTime": "10:00",
+                "endTime": "11:00"
+              },
+              {
+                "name": "Obiad w restauracji",
+                "tripDayId": "1",
+                "startTime": "11:00",
+                "endTime": "12:00"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "id": "error",
+        "type": "json",
+        "options": {
+          "status": 404,
+          "body": {
+            "message": "Not Found"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "get-recommendations-for-trip-day",
+    "method": "GET",
+    "url": "/trips/recomendations/:tripDayId",
+    "variants": [
+      {
+        "id": "success",
+        "type": "json",
+        "options": {
+          "status": 200,
+          "body": [
+            {
+              "id": "1",
+              "providerId": "1",
+              "name": "Pałać Kultury i Nauki",
+              "country": "Polska",
+              "city": "Warsaw"
+            },
+            {
+              "id": "2",
+              "providerId": "2",
+              "name": "Zamek Królewski",
+              "country": "Polska",
+              "city": "Warszawa"
+            },
+            {
+              "id": "3",
+              "providerId": "3",
+              "name": "Muzeum Powstania Warszawskiego",
+              "country": "Polska",
+              "city": "Warszawa"
+            }
+          ]
+        }
+      },
+      {
+        "id": "error",
+        "type": "json",
+        "options": {
+          "status": 404,
+          "body": {
+            "message": "Not Found"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "get-trip-stats",
+    "method": "GET",
+    "url": "/trips/statistics",
+    "variants": [
+      {
+        "id": "success",
+        "type": "json",
+        "options": {
+          "status": 200,
+          "body": {
+            "numberOfTrips": 2,
+            "numberOfVisitedPlaces": 3,
+            "totalSpendings": 1000,
+            "currencyCode": "PLN"
+          }
+        }
+      },
+      {
+        "id": "error",
+        "type": "json",
+        "options": {
+          "status": 404,
+          "body": {
+            "message": "Not Found"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "get-available-curriencies",
+    "method": "GET",
+    "url": "/trips/availableCurrencies",
+    "variants": [
+      {
+        "id": "success",
+        "type": "json",
+        "options": {
+          "status": 200,
+          "body": [
+            {
+              "code": "PLN",
+              "name": "złoty polski"
+            },
+            {
+              "code": "USD",
+              "name": "dolar amerykański"
+            },
+            {
+              "code": "EUR",
+              "name": "euro"
+            }
+          ]
+        }
+      },
+      {
+        "id": "error",
+        "type": "json",
+        "options": {
+          "status": 404,
+          "body": {
+            "message": "Not Found"
+          }
+        }
+      }
+    ]
+  }
+]
