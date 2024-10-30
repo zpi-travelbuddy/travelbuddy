@@ -133,7 +133,7 @@ const TripBrowseView = () => {
     setTrips(newValue === "actual" ? actualTrips : archivedTrips);
   };
 
-  const getActionsForSelectedTrip = useMemo(() => {
+  const getActionsForSelectedTrip: Action[] = useMemo(() => {
     if (!selectedTrip) return [];
     return [
       {
@@ -215,7 +215,7 @@ const TripBrowseView = () => {
         <CustomModal visible={isModalVisible} onDismiss={hideModal}>
           <View>
             <Text style={styles.modalTitleText}>
-              Czy na pewno chcesz usunąć ten punkt?
+              Czy na pewno chcesz usunąć tą wycieczkę?
             </Text>
             <View style={styles.modalContent}>
               <Text style={styles.boldText}>{selectedTrip?.title}</Text>
