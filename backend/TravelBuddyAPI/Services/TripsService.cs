@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace TravelBuddyAPI.Services;
 
-public class  TripsService(TravelBuddyDbContext dbContext, INBPService nbpService, IPlacesService placesService, ICategoryProfilesService categoryProfilesService, IConditionProfilesService conditionProfilesService) : ITripsService
+public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService, IPlacesService placesService, ICategoryProfilesService categoryProfilesService, IConditionProfilesService conditionProfilesService) : ITripsService
 {
     private readonly TravelBuddyDbContext _dbContext = dbContext;
     private readonly INBPService _nbpService = nbpService;
@@ -91,25 +91,7 @@ public class  TripsService(TravelBuddyDbContext dbContext, INBPService nbpServic
 
     private async Task<Guid> AddDestinationAsync(PlaceRequestDTO destination)
     {
-        ProviderPlace newDestination = new()
-        {
-            Id = Guid.NewGuid(),
-            ProviderId = destination.ProviderId,
-            Name = destination.Name,
-            Country = destination.Country,
-            City = destination.City,
-            Street = destination.Street,
-            HouseNumber = destination.HouseNumber,
-            Latitude = destination.Latitude,
-            Longitude = destination.Longitude,
-        };
-
-        var validationContext = new ValidationContext(newDestination);
-        Validator.ValidateObject(newDestination, validationContext, validateAllProperties: true);
-
-        await _dbContext.Places.AddAsync(newDestination);
-        await _dbContext.SaveChangesAsync();
-
+        var newDestination = await _placesService.AddPlaceAsync(destination);
         return newDestination.Id;
     }
 
