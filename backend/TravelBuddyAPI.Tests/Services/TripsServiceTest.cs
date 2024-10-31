@@ -41,8 +41,6 @@ public class TripsServiceTest
             Name = "Test Place",
             Country = "Test Country",
             City = "Test City",
-            // Street = "Test Street",
-            // HouseNumber = "123",
             Latitude = 50.0m,
             Longitude = 20.0m,
         };
@@ -55,8 +53,8 @@ public class TripsServiceTest
             Name = "Test Trip",
             DestinationPlace = destination,
             CurrencyCode = "USD",
-            StartDate = DateOnly.Parse("2024-10-30"),
-            EndDate = DateOnly.Parse("2024-11-04"),
+            StartDate = DateOnly.FromDateTime(DateTime.Now),
+            EndDate = DateOnly.FromDateTime(DateTime.Now + TimeSpan.FromDays(7)),
             NumberOfTravelers = 2,
         };
 

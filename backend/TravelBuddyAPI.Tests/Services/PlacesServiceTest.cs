@@ -125,6 +125,17 @@ public class PlacesServiceTest
         };
 
         _mockDbCache.Setup(x => x.GetCategoriesAsync()).ReturnsAsync(new List<PlaceCategory>());
+        _mockGeoapifyService.Setup(x => x.GetPlaceDetailsAsync(It.IsAny<string>())).ReturnsAsync(new ProviderPlace
+        {
+            ProviderId = placeRequest.ProviderId,
+            Name = placeRequest.Name,
+            Country = placeRequest.Country,
+            City = placeRequest.City,
+            Street = placeRequest.Street,
+            HouseNumber = placeRequest.HouseNumber,
+            Latitude = placeRequest.Latitude,
+            Longitude = placeRequest.Longitude,
+        });
 
         // Act
         var result = await _placesService.AddPlaceAsync(placeRequest);
