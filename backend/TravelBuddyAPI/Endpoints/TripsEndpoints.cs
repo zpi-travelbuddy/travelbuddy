@@ -81,10 +81,17 @@ public static class TripsEndpoints
         return TypedResults.NotFound("Not implemented");
     }
 
-    private static async Task<Results<Ok<List<PlaceOverviewDTO>>, NotFound<string>>> GetAutocompleteDestinationsAsync(string query)
+    private static async Task<Results<Ok<List<PlaceOverviewDTO>>, NotFound<string>>> GetAutocompleteDestinationsAsync(string query, IPlacesService placesService)
     {
-        await Task.CompletedTask;
-        return TypedResults.NotFound("Not implemented");
+        var places = await placesService.GetAutocompleteDestinationsAsync(query);
+        
+        if (places.Count != 0)
+        {
+            return TypedResults.Ok(places);
+        }
+        else {
+            return TypedResults.NotFound("No places found");
+        }
     }
 
     private static async Task<Results<NoContent, NotFound<string>>> DeleteTripAsync(Guid id)

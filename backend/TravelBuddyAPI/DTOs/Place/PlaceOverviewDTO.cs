@@ -6,8 +6,7 @@ namespace TravelBuddyAPI.DTOs.Place;
 [NotMapped]
 public class PlaceOverviewDTO
 {
-    [Required]
-    public Guid Id { get; set; }
+    public Guid? Id { get; set; }
 
     public string? ProviderId { get; set; }
     
