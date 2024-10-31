@@ -27,7 +27,8 @@ public class PlacesService(TravelBuddyDbContext dbContext, IGeoapifyService geoa
         try
         {
             var places = await _geoapifyService.GetAddressAutocompleteAsync(query, Enums.AddressLevel.city) ?? [];
-            return await PlacesToOverviewDTOsAsync(places);
+            var results = await PlacesToOverviewDTOsAsync(places);
+            return results.Where(p => p.City != null).ToList();
         }
         catch (HttpRequestException)
         {
