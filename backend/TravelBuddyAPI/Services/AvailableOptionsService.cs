@@ -6,9 +6,9 @@ using TravelBuddyAPI.Interfaces;
 
 namespace TravelBuddyAPI.Services;
 
-public class AvailableOptionsService(TravelBuddyDbCache dbCache, INBPService nbpService) : IAvailableOptionsService
+public class AvailableOptionsService(ITravelBuddyDbCache dbCache, INBPService nbpService) : IAvailableOptionsService
 {
-    private readonly TravelBuddyDbCache _dbCache = dbCache;
+    private readonly ITravelBuddyDbCache _dbCache = dbCache;
     private readonly INBPService _nbpService = nbpService;
 
     public Task<List<PlaceCategoryDTO>> GetAvailableCategoriesAsync()
