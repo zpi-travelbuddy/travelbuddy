@@ -15,34 +15,40 @@ public class PlacesService(TravelBuddyDbContext dbContext, IGeoapifyService geoa
     private readonly IGeoapifyService _geoapifyService = geoapifyService;
     private readonly ITravelBuddyDbCache _dbCache = dbCache;
 
-    public async Task<PlaceDetailsDTO> AddPlaceAsync(PlaceRequestDTO place) // TODO Add categories, conditions, supercategory; // TODO add different method for more details
+    private static class ErrorMessages
+    {
+        public const string IncorrectProviderPlaceId = "Could not find place with the given provider id.";
+    }
+
+    public async Task<PlaceDetailsDTO> AddPlaceAsync(PlaceRequestDTO place)
     {
         Place newPlace = place.ProviderId is not null
             ? new ProviderPlace()
             {
                 ProviderId = place.ProviderId,
             }
-            : new CustomPlace();
+            : new CustomPlace()
+            {
+                Id = Guid.NewGuid(),
+                Name = place.Name,
+                Country = place.Country,
+                City = place.City,
+                Street = place.Street,
+                HouseNumber = place.HouseNumber,
+                Latitude = place.Latitude,
+                Longitude = place.Longitude,
+            };
 
-        newPlace.Id = Guid.NewGuid();
-        newPlace.Name = place.Name;
-        newPlace.Country = place.Country;
-        newPlace.City = place.City;
-        newPlace.Street = place.Street;
-        newPlace.HouseNumber = place.HouseNumber;
-        newPlace.Latitude = place.Latitude;
-        newPlace.Longitude = place.Longitude;
-
-        var categories = await _dbCache.GetCategoriesAsync();
-
-        if (newPlace is ProviderPlace providerPlace)
+        if (newPlace is ProviderPlace providerPlace && providerPlace.ProviderId is not null)
         {
-
+            var placeDetails = await _geoapifyService.GetPlaceDetailsAsync(providerPlace.ProviderId);
+            newPlace = placeDetails ?? throw new ArgumentException(ErrorMessages.IncorrectProviderPlaceId);
+            newPlace.Id = Guid.NewGuid();
         }
         else if (newPlace is CustomPlace customPlace)
         {
+            var categories = await _dbCache.GetCategoriesAsync();
             customPlace.PlaceCategory = categories?.FirstOrDefault(c => c.Id == place.CategoryId);
-
         }
 
         var validationContext = new ValidationContext(newPlace);
@@ -119,7 +125,7 @@ public class PlacesService(TravelBuddyDbContext dbContext, IGeoapifyService geoa
         var place = await _dbContext.Places
             .Where(p => p.Id == id)
             .FirstAsync();
-        
+
         PlaceDetailsDTO placeDetails = new()
         {
             Id = place.Id,
