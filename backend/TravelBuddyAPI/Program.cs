@@ -35,6 +35,7 @@ namespace TravelBuddyAPI
             builder.Services.AddScoped<IRestClient>(sp =>
                 new RestClient(builder.Configuration["GeoapifyBaseUrl"] ?? ""));
             builder.Services.AddScoped<ITravelBuddyDbCache, Services.TravelBuddyDbCache>();
+            builder.Services.AddScoped<ITripsService, TripsService>();
 
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(options =>

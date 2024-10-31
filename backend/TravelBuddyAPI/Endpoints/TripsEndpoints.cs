@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using TravelBuddyAPI.DTOs.TripDay;
 using TravelBuddyAPI.DTOs.Place;
 using TravelBuddyAPI.DTOs.Currency;
+using TravelBuddyAPI.Interfaces;
+using System.Security.Claims;
 
 namespace TravelBuddyAPI.Endpoints;
 
@@ -91,10 +93,15 @@ public static class TripsEndpoints
         return TypedResults.NotFound("Not implemented");
     }
 
-    private static async Task<Results<Ok<TripDetailsDTO>, NotFound<string>>> GetTripDetailsAsync(Guid id)
-    {
-        await Task.CompletedTask;
-        return TypedResults.NotFound("Not implemented");
+    private static async Task<Results<Ok<TripDetailsDTO>, NotFound<string>>> GetTripDetailsAsync(Guid id, ITripsService tripsService, HttpContext httpContext)
+   {
+        try {
+            var userId = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new InvalidOperationException("User not found");
+            var tripDetails = await tripsService.GetTripDetailsAsync(userId, id);
+            return TypedResults.Ok(tripDetails);
+        } catch (InvalidOperationException ex) {
+            return TypedResults.NotFound(ex.Message);
+        }
     }
 
     private static async Task<Results<Ok<List<TripOverviewDTO>>, NotFound<string>>> GetCurrentTripsAsync()
