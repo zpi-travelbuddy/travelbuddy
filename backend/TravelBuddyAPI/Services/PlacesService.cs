@@ -42,8 +42,25 @@ public class PlacesService(TravelBuddyDbContext dbContext, IGeoapifyService geoa
         if (newPlace is ProviderPlace providerPlace && providerPlace.ProviderId is not null)
         {
             var placeDetails = await _geoapifyService.GetPlaceDetailsAsync(providerPlace.ProviderId);
-            newPlace = placeDetails ?? throw new ArgumentException(ErrorMessages.IncorrectProviderPlaceId);
-            newPlace.Id = Guid.NewGuid();
+            _ = placeDetails ?? throw new ArgumentException(ErrorMessages.IncorrectProviderPlaceId);
+            providerPlace.Id = Guid.NewGuid();
+
+            var categories = placeDetails.Categories is not null
+                ? await _dbContext.PlaceCategories
+                    .Where(c => placeDetails.Categories.Select(pc => pc.Name).Contains(c.Name))
+                    .ToListAsync()
+                : [];
+
+            var conditions = placeDetails.Conditions is not null
+                ? await _dbContext.PlaceConditions
+                    .Where(c => placeDetails.Conditions.Select(pc => pc.Name).Contains(c.Name))
+                    .ToListAsync()
+                : [];
+
+            providerPlace = placeDetails;
+            providerPlace.Categories = categories;
+            providerPlace.Conditions = conditions;
+            newPlace = providerPlace;
         }
         else if (newPlace is CustomPlace customPlace)
         {
