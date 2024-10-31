@@ -143,11 +143,16 @@ public static class TripsEndpoints
         return TypedResults.NotFound("Not implemented");
     }
 
-    private static async Task<Results<Created<TripDetailsDTO>, BadRequest<string>>> CreateTripAsync(TripRequestDTO trip)
+    private static async Task<Results<Created<TripDetailsDTO>, BadRequest<string>>> CreateTripAsync(TripRequestDTO trip, ITripsService tripsService, HttpContext httpContext)
 
     {
-        await Task.CompletedTask;
-        return TypedResults.BadRequest("Not implemented");
+        try {
+            var userId = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new InvalidOperationException("User not found");
+            var tripDetails = await tripsService.CreateTripAsync(userId, trip);
+            return TypedResults.Created($"/trips/{tripDetails.Id}", tripDetails);
+        } catch (InvalidOperationException ex) {
+            return TypedResults.BadRequest(ex.Message);
+        }
     }
 
     private static async Task<Results<Ok<TripDayDetailsDTO>, NotFound<string>>> GetTripDayDetailsAsync(Guid id, ITripsService tripsService, HttpContext httpContext)

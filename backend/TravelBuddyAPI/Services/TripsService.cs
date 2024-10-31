@@ -53,15 +53,15 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
             if (trip.StartDate > trip.EndDate) throw new ArgumentException(ErrorMessage.StartDateAfterEndDate);
             if (trip.StartDate < DateOnly.FromDateTime(DateTime.Now)) throw new ArgumentException(ErrorMessage.StartDateInPast);
 
-            _ = await _categoryProfileService.GetCategoryProfileDetailsAsync(userId, trip.CategoryProfileId);
-            _ = await _conditionProfileService.GetConditionProfileDetailsAsync(userId, trip.ConditionProfileId);
+            //_ = await _categoryProfileService.GetCategoryProfileDetailsAsync(userId, trip.CategoryProfileId); // TODO - implement
+            //_ = await _conditionProfileService.GetConditionProfileDetailsAsync(userId, trip.ConditionProfileId); // TODO - implement
 
             exchangeRate = await _nbpService.GetClosestRateAsync(trip?.CurrencyCode ?? string.Empty, DateOnly.FromDateTime(DateTime.Now)) ?? throw new InvalidOperationException(ErrorMessage.RetriveExchangeRate);
 
             _ = trip!.DestinationPlace ?? throw new InvalidOperationException();
             destinationId = await GetDestinationId(trip?.DestinationPlace?.ProviderId ?? string.Empty) ?? await AddDestinationAsync(trip!.DestinationPlace);
         }
-        catch (Exception e) when (e is ArgumentNullException || e is InvalidOperationException || e is ArgumentException)
+        catch (Exception e) when (e is ArgumentNullException || e is InvalidOperationException || e is ArgumentException || e is HttpRequestException)
         {
             throw new InvalidOperationException($"{ErrorMessage.CreateTrip}\n{e.Message}");
         }
@@ -79,7 +79,7 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
             CategoryProfileId = trip.CategoryProfileId,
             ConditionProfileId = trip.ConditionProfileId,
             ExchangeRate = exchangeRate,
-            Budget = trip.Budget / exchangeRate
+            Budget = trip.Budget * exchangeRate
         };
 
         var validationContext = new ValidationContext(newTrip);
