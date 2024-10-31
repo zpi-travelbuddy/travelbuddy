@@ -1,12 +1,14 @@
 import { StyleSheet, Text, View, Image, Dimensions } from "react-native";
 import React from "react";
 import { Button, MD3Theme, Title, useTheme } from "react-native-paper";
+import { useRouter } from "expo-router";
 
-const { height, width } = Dimensions.get("window");
+const { height } = Dimensions.get("window");
 
 const AppErrorView = () => {
   const theme = useTheme();
   const styles = createStyles(theme);
+  const router = useRouter();
 
   const imageSource = theme.dark
     ? require("@/assets/images/ErrorView-dark.png")
@@ -21,15 +23,15 @@ const AppErrorView = () => {
         <Text style={styles.text}>
           Kliknij poniżej, aby wrócić do wycieczek.
         </Text>
+        <Button
+          mode="contained"
+          style={styles.backButton}
+          icon="arrow-left"
+          onPress={() => router.push(`/trips`)}
+        >
+          Powrót
+        </Button>
       </View>
-      <Button
-        mode="contained"
-        style={styles.backButton}
-        icon="arrow-left"
-        onPress={() => console.log("Powrót")}
-      >
-        Powrót
-      </Button>
     </View>
   );
 };
@@ -52,7 +54,8 @@ const createStyles = (theme: MD3Theme) =>
     },
     image: {
       width: "100%",
-      height: height * 0.5,
+      marginTop: height * 0.05,
+      height: height * 0.4,
       bottom: height * 0.1,
     },
     title: {

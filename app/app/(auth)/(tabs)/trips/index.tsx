@@ -14,7 +14,7 @@ export default function Trips() {
         backgroundColor: theme.colors.background,
       }}
     >
-      <Text>Explore</Text>
+      <Text>Trips</Text>
     </View>
   );
 }
