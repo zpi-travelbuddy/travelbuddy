@@ -20,6 +20,14 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
     private readonly ICategoryProfilesService _categoryProfileService = categoryProfilesService;
     private readonly IConditionProfilesService _conditionProfileService = conditionProfilesService;
 
+    public static class ErrorMessage
+    {
+        public const string EmptyRequest = "Request cannot be empty.";
+        public const string StartDateAfterEndDate = "Start date cannot be after end date.";
+        public const string StartDateInPast = "Start date cannot be in the past.";
+        public const string CreateTrip = "An error occurred while creating a trip:";
+        public const string RetriveExchangeRate = "An error occurred while retrieving exchange rate.";
+    }
 
     public static class ErrorMessage
     {
@@ -38,18 +46,24 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
         decimal exchangeRate;
         Guid destinationId;
 
-        try // TODO change exception types
+        try
         {
-            _ = trip ?? throw new Exception(Error.EmptyRequest);
+            _ = trip ?? throw new ArgumentNullException(nameof(trip), ErrorMessage.EmptyRequest);
+
+            if (trip.StartDate > trip.EndDate) throw new ArgumentException(ErrorMessage.StartDateAfterEndDate);
+            if (trip.StartDate < DateOnly.FromDateTime(DateTime.Now)) throw new ArgumentException(ErrorMessage.StartDateInPast);
+
             _ = await _categoryProfileService.GetCategoryProfileDetailsAsync(userId, trip.CategoryProfileId);
             _ = await _conditionProfileService.GetConditionProfileDetailsAsync(userId, trip.ConditionProfileId);
-            exchangeRate = await _nbpService.GetClosestRateAsync(trip?.CurrencyCode ?? string.Empty, DateOnly.FromDateTime(DateTime.Now)) ?? throw new Exception(Error.RetriveExchangeRate);
-            _ = trip!.DestinationPlace ?? throw new Exception();
+
+            exchangeRate = await _nbpService.GetClosestRateAsync(trip?.CurrencyCode ?? string.Empty, DateOnly.FromDateTime(DateTime.Now)) ?? throw new InvalidOperationException(ErrorMessage.RetriveExchangeRate);
+
+            _ = trip!.DestinationPlace ?? throw new InvalidOperationException();
             destinationId = await GetDestinationId(trip?.DestinationPlace?.ProviderId ?? string.Empty) ?? await AddDestinationAsync(trip!.DestinationPlace);
         }
-        catch (Exception e)
+        catch (Exception e) when (e is ArgumentNullException || e is InvalidOperationException || e is ArgumentException)
         {
-            throw new InvalidOperationException($"{Error.CreateTrip}\n{e.Message}");
+            throw new InvalidOperationException($"{ErrorMessage.CreateTrip}\n{e.Message}");
         }
 
         Trip newTrip = new()
