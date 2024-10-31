@@ -170,12 +170,6 @@ const makeStyles = (theme: MD3ThemeExtended) =>
       height: 56,
       lineHeight: 20,
     },
-    forgotPassword: {
-      marginHorizontal: 40,
-      marginBottom: 70,
-      textAlign: "right",
-      fontFamily: "Manrope_700Bold",
-    },
     textBold: {
       fontFamily: "Manrope_700Bold",
     },
