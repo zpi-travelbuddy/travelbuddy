@@ -1,6 +1,6 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import React, { useMemo } from "react";
-import { MD3Theme, useTheme } from "react-native-paper";
+import { MD3Theme, Text, useTheme } from "react-native-paper";
 
 interface TripDetailLabelProps {
   title: string;
@@ -33,5 +33,6 @@ const createStyles = (theme: MD3Theme) =>
     },
     value: {
       ...theme.fonts.titleMedium,
+      width: "60%",
     },
   });

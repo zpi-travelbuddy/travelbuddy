@@ -1,7 +1,8 @@
-import { StyleSheet, View, Image, Dimensions } from "react-native";
+import { StyleSheet, View, Image, Dimensions, ScrollView } from "react-native";
 import React, { useMemo } from "react";
 import TripDetailLabel from "@/components/TripDetailLabel";
 import { FAB, MD3Theme, useTheme } from "react-native-paper";
+import { CALENDAR_ICON } from "@/constants/Icons";
 
 const { height, width } = Dimensions.get("window");
 
@@ -38,22 +39,27 @@ const TripDetailsView = () => {
 
   return (
     <View style={styles.container}>
-      <Image
-        source={{
-          uri: "https://upload.wikimedia.org/wikipedia/commons/1/1a/Big_Ben..JPG",
-        }}
-        style={styles.image}
-        resizeMode="cover"
-      />
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        <Image
+          source={{
+            uri: "https://upload.wikimedia.org/wikipedia/commons/1/1a/Big_Ben..JPG",
+          }}
+          style={styles.image}
+          resizeMode="cover"
+        />
+
+        {Object.entries(trip).map(([key, value]) => (
+          <TripDetailLabel key={key} title={labels[key] || key} value={value} />
+        ))}
+      </ScrollView>
+      
       <FAB
+        color={theme.colors.onPrimary}
         style={styles.fab}
-        icon="calendar"
+        icon={CALENDAR_ICON}
         customSize={width * 0.25}
         onPress={handlePress}
       />
-      {Object.entries(trip).map(([key, value]) => (
-        <TripDetailLabel key={key} title={labels[key] || key} value={value} />
-      ))}
     </View>
   );
 };
@@ -64,18 +70,21 @@ const createStyles = (theme: MD3Theme) =>
   StyleSheet.create({
     container: {
       flex: 1,
+      backgroundColor: theme.colors.background,
+    },
+    scrollContent: {
       alignItems: "center",
+      paddingBottom: 25,
     },
     fab: {
-      position: "absolute",
       backgroundColor: theme.colors.primary,
-      margin: 16,
-      top: 0.25 * height,
-      right: 0.05 * width,
+      position: "absolute",
+      bottom: width * 0.85,
+      right: 16,
       borderRadius: 10000,
     },
     image: {
-      marginVertical: 25,
+      marginBottom: 25,
       width: "100%",
       height: height * 0.2,
     },
