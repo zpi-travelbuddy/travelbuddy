@@ -18,7 +18,7 @@ export const Colors = {
     primary: "#226A4C",
     surfaceTint: "#226A4C",
     onPrimary: "#FFFFFF",
-    primaryContainer: "#AAF2CC",
+    primaryContainer: "#AACCBA",
     onPrimaryContainer: "#002113",
     secondary: "#4D6357",
     onSecondary: "#FFFFFF",

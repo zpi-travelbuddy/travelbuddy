@@ -203,7 +203,7 @@ const AddingTripView = () => {
           keyboardType="numeric"
         ></TextInput>
 
-        <CurrencyValueInput />
+        <CurrencyValueInput label={"Budżet"} />
 
         <ClickableInput
           label="Profil preferencji"
