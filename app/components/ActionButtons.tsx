@@ -2,20 +2,34 @@ import React from "react";
 import { View, StyleSheet } from "react-native";
 import { Button } from "react-native-paper";
 
-interface ActionButtonsProps {
-  onCancel: () => void;
-  onSave: () => void;
-}
-
-const ActionButtons: React.FC<ActionButtonsProps> = ({ onCancel, onSave }) => {
+const ActionButtons: React.FC<ActionButtonsProps> = ({
+  onCancel,
+  cancelButtonLabel,
+  cancelIcon,
+  onConfirm,
+  confirmButtonLabel,
+  confirmIcon,
+}) => {
+  const confirmLabel = confirmButtonLabel || "Zapisz";
+  const cancelLabel = cancelButtonLabel || "Anuluj";
   return (
     <View style={styles.buttonContainer}>
-      <Button mode="outlined" style={styles.button} onPress={onCancel}>
-        Anuluj
+      <Button
+        icon={cancelIcon}
+        mode="outlined"
+        style={styles.button}
+        onPress={onCancel}
+      >
+        {cancelLabel}
       </Button>
 
-      <Button mode="contained" style={styles.button} onPress={onSave}>
-        Zapisz
+      <Button
+        icon={confirmIcon}
+        mode="contained"
+        style={styles.button}
+        onPress={onConfirm}
+      >
+        {confirmLabel}
       </Button>
     </View>
   );

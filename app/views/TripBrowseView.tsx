@@ -14,6 +14,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import ActionMenuBottomSheet from "@/components/ActionMenu/ActionMenuBottomSheet";
 import CustomModal from "@/components/CustomModal";
 import ActionTextButtons from "@/components/ActionTextButtons";
+import { DELETE_ICON, DETAILS_ICON, EDIT_ICON } from "@/constants/Icons";
 
 const TripBrowseView = () => {
   const theme = useTheme();
@@ -138,7 +139,7 @@ const TripBrowseView = () => {
     return [
       {
         label: "Szczegóły wycieczki",
-        icon: "info",
+        icon: DETAILS_ICON,
         onPress: () => {
           console.log(`Nawiguj do szczegółów`);
           setIsVisible(false);
@@ -147,7 +148,7 @@ const TripBrowseView = () => {
       },
       {
         label: "Edytuj szczegóły wycieczki",
-        icon: "edit",
+        icon: EDIT_ICON,
         onPress: () => {
           console.log(`Edytuj`);
           setIsVisible(false);
@@ -156,7 +157,7 @@ const TripBrowseView = () => {
       },
       {
         label: "Usuń wycieczkę",
-        icon: "delete",
+        icon: DELETE_ICON,
         onPress: () => {
           console.log(`Usuń`);
           setIsVisible(false);
@@ -247,6 +248,7 @@ const createStyles = (theme: MD3Theme) =>
   StyleSheet.create({
     container: {
       flex: 1,
+      backgroundColor: theme.colors.background,
     },
     segmentedButtons: {
       elevation: 0,
