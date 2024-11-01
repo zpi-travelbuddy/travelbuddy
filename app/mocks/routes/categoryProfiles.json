@@ -41,15 +41,15 @@
           "status": 200,
           "body": [
             {
-              "id": "1",
+              "id": "123e4567-e89b-12d3-a456-426614174000",
               "name": "Profil do wspinaczki"
             },
             {
-              "id": "2",
+              "id": "123e4567-e89b-12d3-a456-426614174001",
               "name": "Restauracje i bary"
             },
             {
-              "id": "3",
+              "id": "123e4567-e89b-12d3-a456-426614174002",
               "name": "Profil do zakupów"
             }
           ]
@@ -133,15 +133,15 @@
           "status": 200,
           "body": [
             {
-              "id": "1",
+              "id": "123e4567-e89b-12d3-a456-426614174000",
               "name": "Sklepy"
             },
             {
-              "id": "2",
+              "id": "123e4567-e89b-12d3-a456-426614174001",
               "name": "Restauracje"
             },
             {
-              "id": "3",
+              "id": "123e4567-e89b-12d3-a456-426614174002",
               "name": "Muzea"
             }
           ]
@@ -173,7 +173,7 @@
             "name": "Profil do wspinaczki",
             "categories": [
               {
-                "id": "4",
+                "id": "123e4567-e89b-12d3-a456-426614174000",
                 "name": "Góry"
               }
             ]

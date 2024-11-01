@@ -10,25 +10,23 @@
         "options": {
           "status": 201,
           "body": {
+            "id": "123e4567-e89b-12d3-a456-426614174000",
             "name": "Wycieczka do Włoch",
             "numberOfTravelers": 2,
             "startDate": "2024-04-05",
             "endDate": "2024-04-10",
-            "destinationPlace": {
-              "providerId": "1",
-              "categoryId": "1",
-              "name": "Warszawa",
-              "country": "Polska",
-              "city": "Warszawa",
-              "street": "",
-              "houseNumber": "4",
-              "latitude": 52.22977,
-              "longitude": 21.01178
-            },
+            "destinationId": "123e4567-e89b-12d3-a456-426614174000",
             "budget": 1000,
-            "currency": "PLN",
-            "categoryProfileId": "1",
-            "conditionProfileId": "1"
+            "currencyCode": "PLN",
+            "categoryProfileId": "123e4567-e89b-12d3-a456-426614174000",
+            "conditionProfileId": "123e4567-e89b-12d3-a456-426614174000",
+            "tripDays": [
+              {
+                "id": "123e4567-e89b-12d3-a456-426614174000",
+                "tripId": "123e4567-e89b-12d3-a456-426614174000",
+                "date": "2024-04-05"
+              }
+            ]
           }
         }
       },
@@ -109,20 +107,20 @@
         "options": {
           "status": 200,
           "body": {
-            "id": "1",
+            "id": "123e4567-e89b-12d3-a456-426614174000",
             "name": "Wycieczka do Włoch",
             "numberOfTravelers": 2,
             "startDate": "2024-10-18",
             "endDate": "2024-10-28",
-            "destinationId": "1",
+            "destinationId": "123e4567-e89b-12d3-a456-426614174000",
             "budget": 1000,
             "currencyCode": "PLN",
-            "categoryProfileId": "1",
-            "conditionProfileId": "1",
+            "categoryProfileId": "123e4567-e89b-12d3-a456-426614174000",
+            "conditionProfileId": "123e4567-e89b-12d3-a456-426614174000",
             "tripDays": [
               {
-                "id": "1",
-                "tripId": "1",
+                "id": "123e4567-e89b-12d3-a456-426614174000",
+                "tripId": "123e4567-e89b-12d3-a456-426614174000",
                 "date": "2024-10-28"
               }
             ]
@@ -204,13 +202,13 @@
           "status": 200,
           "body": [
             {
-              "id": "1",
+              "id": "123e4567-e89b-12d3-a456-426614174000",
               "name": "Wycieczka do Włoch",
               "startDate": "2024-10-18",
               "endDate": "2024-10-28"
             },
             {
-              "id": "2",
+              "id": "123e4567-e89b-12d3-a456-426614174001",
               "name": "Wyjazd w Tatry",
               "startDate": "2024-10-18",
               "endDate": "2024-10-28"
@@ -242,13 +240,13 @@
           "status": 200,
           "body": [
             {
-              "id": "1",
+              "id": "123e4567-e89b-12d3-a456-426614174000",
               "name": "Stara wycieczka do Francji",
               "startDate": "2024-10-18",
               "endDate": "2024-10-28"
             },
             {
-              "id": "2",
+              "id": "123e4567-e89b-12d3-a456-426614174001",
               "name": "Wycieczka do Wrocławia",
               "startDate": "2024-10-18",
               "endDate": "2024-10-28"
@@ -280,7 +278,7 @@
           "status": 200,
           "body": [
             {
-              "id": "1",
+              "id": "123e4567-e89b-12d3-a456-426614174000",
               "name": "Wycieczka do Wrocławia",
               "startDate": "2024-10-18",
               "endDate": "2024-10-28",
@@ -289,7 +287,7 @@
               "totalSpendingsPerPerson": 500
             },
             {
-              "id": "2",
+              "id": "123e4567-e89b-12d3-a456-426614174001",
               "name": "Wycieczka do Włoch",
               "startDate": "2024-10-18",
               "endDate": "2024-10-28",
@@ -325,22 +323,22 @@
           "body": [
             [
               {
-                "id": "1",
-                "providerId": "1",
+                "id": "123e4567-e89b-12d3-a456-426614174000",
+                "providerId": "123e4567-e89b-12d3-a456-426614174000",
                 "name": "Warszawa",
                 "country": "Polska",
                 "city": "Warszawa"
               },
               {
-                "id": "2",
-                "providerId": "2",
+                "id": "123e4567-e89b-12d3-a456-426614174001",
+                "providerId": "123e4567-e89b-12d3-a456-426614174001",
                 "name": "Kraków",
                 "country": "Polska",
                 "city": "Kraków"
               },
               {
-                "id": "3",
-                "providerId": "3",
+                "id": "123e4567-e89b-12d3-a456-426614174002",
+                "providerId": "123e4567-e89b-12d3-a456-426614174002",
                 "name": "Gdańsk",
                 "country": "Polska",
                 "city": "Gdańsk"
@@ -372,45 +370,45 @@
         "options": {
           "status": 200,
           "body": {
-            "id": "1",
-            "tripId": "1",
+            "id": "123e4567-e89b-12d3-a456-426614174000",
+            "tripId": "123e4567-e89b-12d3-a456-426614174000",
             "date": "2024-10-28",
             "transferPoints": [
               {
-                "tripDayId": "1",
-                "transferTime": "123",
+                "tripDayId": "123e4567-e89b-12d3-a456-426614174000",
+                "seconds": 123,
                 "startTime": "14:00",
                 "mode": 0,
                 "type": 0,
-                "fromTripPointId": "1",
-                "toTripPointId": "2"
+                "fromTripPointId": "123e4567-e89b-12d3-a456-426614174000",
+                "toTripPointId": "123e4567-e89b-12d3-a456-426614174001"
               },
               {
-                "tripDayId": "1",
-                "transferTime": "123",
+                "tripDayId": "123e4567-e89b-12d3-a456-426614174001",
+                "seconds": 123,
                 "startTime": "14:00",
                 "mode": 0,
                 "type": 0,
-                "fromTripPointId": "2",
-                "toTripPointId": "3"
+                "fromTripPointId": "123e4567-e89b-12d3-a456-426614174001",
+                "toTripPointId": "123e4567-e89b-12d3-a456-426614174002"
               }
             ],
             "tripPoints": [
               {
                 "name": "Śniadanie w hotelu",
-                "tripDayId": "1",
+                "tripDayId": "123e4567-e89b-12d3-a456-426614174000",
                 "startTime": "09:00",
                 "endTime": "10:00"
               },
               {
                 "name": "Wizyta w muzeum",
-                "tripDayId": "1",
+                "tripDayId": "123e4567-e89b-12d3-a456-426614174000",
                 "startTime": "10:00",
                 "endTime": "11:00"
               },
               {
                 "name": "Obiad w restauracji",
-                "tripDayId": "1",
+                "tripDayId": "123e4567-e89b-12d3-a456-426614174000",
                 "startTime": "11:00",
                 "endTime": "12:00"
               }
@@ -442,22 +440,22 @@
           "status": 200,
           "body": [
             {
-              "id": "1",
-              "providerId": "1",
+              "id": "123e4567-e89b-12d3-a456-426614174000",
+              "providerId": "123e4567-e89b-12d3-a456-426614174000",
               "name": "Pałać Kultury i Nauki",
               "country": "Polska",
               "city": "Warsaw"
             },
             {
-              "id": "2",
-              "providerId": "2",
+              "id": "123e4567-e89b-12d3-a456-426614174001",
+              "providerId": "123e4567-e89b-12d3-a456-426614174002",
               "name": "Zamek Królewski",
               "country": "Polska",
               "city": "Warszawa"
             },
             {
-              "id": "3",
-              "providerId": "3",
+              "id": "123e4567-e89b-12d3-a456-426614174003",
+              "providerId": "123e4567-e89b-12d3-a456-426614174004",
               "name": "Muzeum Powstania Warszawskiego",
               "country": "Polska",
               "city": "Warszawa"

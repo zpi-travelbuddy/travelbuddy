@@ -10,23 +10,40 @@
         "options": {
           "status": 201,
           "body": {
+            "id": "123e4567-e89b-12d3-a456-426614174000",
             "name": "Zwiedzanie Wieży Eiffla",
             "comment": "Będzie wysoko",
-            "tripDayId": "1",
+            "tripDayId": "123e4567-e89b-12d3-a456-426614174000",
+            "predictedCost": 0,
+            "predictedCostPerPerson": 0,
+            "currencyCode": "EUR",
+            "startTime": "10:00",
+            "endTime": "12:00",
+            "openingTime": "09:00",
+            "closingTime": "21:00",
+            "status": 0,
+            "placeId": "123e4567-e89b-12d3-a456-426614174000",
             "place": {
-              "providerId": "1",
-              "categoryId": "1",
+              "id": "123e4567-e89b-12d3-a456-426614174000",
+              "providerId": "123e4567-e89b-12d3-a456-426614174000",
               "name": "Wieża Eiffla",
               "country": "Francja",
-              "city": "Paryż",
-              "street": "Champ de Mars",
-              "houseNumber": "5b",
-              "latitude": 48.85837009999999,
-              "longitude": 2.2944813
+              "city": "Paryż"
             },
-            "predictedCost": 0,
-            "startTime": "10:00",
-            "endTime": "12:00"
+            "review": {
+              "id": "123e4567-e89b-12d3-a456-426614174000",
+              "tripPointId": "123e4567-e89b-12d3-a456-426614174000",
+              "currencyCode": "PLN",
+              "placeId": "123e4567-e89b-12d3-a456-426614174000",
+              "actualCost": 10,
+              "actualCostPerPerson": 10,
+              "actualTimeSpent": "PT45M",
+              "rating": 5
+            },
+            "category": {
+              "id": "123e4567-e89b-12d3-a456-426614174000",
+              "name": "Zabytki"
+            }
           }
         }
       },
@@ -105,10 +122,10 @@
         "options": {
           "status": 200,
           "body": {
-            "id": "1",
+            "id": "123e4567-e89b-12d3-a456-426614174000",
             "name": "Zwiedzanie Wieży Eiffla",
             "comment": "Będzie wysoko",
-            "tripDayId": "1",
+            "tripDayId": "123e4567-e89b-12d3-a456-426614174000",
             "predictedCost": 0,
             "predictedCostPerPerson": 0,
             "currencyCode": "EUR",
@@ -117,26 +134,26 @@
             "openingTime": "09:00",
             "closingTime": "21:00",
             "status": 0,
-            "placeId": "2",
+            "placeId": "123e4567-e89b-12d3-a456-426614174000",
             "place": {
-              "id": "2",
-              "providerId": "2",
+              "id": "123e4567-e89b-12d3-a456-426614174000",
+              "providerId": "123e4567-e89b-12d3-a456-426614174000",
               "name": "Wieża Eiffla",
               "country": "Francja",
               "city": "Paryż"
             },
             "review": {
-              "id": "1",
-              "tripPointId": "1",
+              "id": "123e4567-e89b-12d3-a456-426614174000",
+              "tripPointId": "123e4567-e89b-12d3-a456-426614174000",
               "currencyCode": "PLN",
-              "placeId": "2",
+              "placeId": "123e4567-e89b-12d3-a456-426614174000",
               "actualCost": 10,
               "actualCostPerPerson": 10,
-              "actualTimeSpent": "10",
+              "actualTimeSpent": "PT45M",
               "rating": 5
             },
             "category": {
-              "id": "1",
+              "id": "123e4567-e89b-12d3-a456-426614174000",
               "name": "Zabytki"
             }
           }
@@ -165,12 +182,40 @@
         "options": {
           "status": 201,
           "body": {
-            "tripPointId": "1",
-            "placeId": "2",
-            "actualCost": 10,
-            "currencyCode": "PLN",
-            "actualTimeSpent": "10",
-            "rating": 5
+            "id": "123e4567-e89b-12d3-a456-426614174000",
+            "name": "Zwiedzanie Wieży Eiffla",
+            "comment": "Będzie wysoko",
+            "tripDayId": "123e4567-e89b-12d3-a456-426614174000",
+            "predictedCost": 0,
+            "predictedCostPerPerson": 0,
+            "currencyCode": "EUR",
+            "startTime": "10:00",
+            "endTime": "12:00",
+            "openingTime": "09:00",
+            "closingTime": "21:00",
+            "status": 0,
+            "placeId": "123e4567-e89b-12d3-a456-426614174000",
+            "place": {
+              "id": "123e4567-e89b-12d3-a456-426614174000",
+              "providerId": "123e4567-e89b-12d3-a456-426614174000",
+              "name": "Wieża Eiffla",
+              "country": "Francja",
+              "city": "Paryż"
+            },
+            "review": {
+              "id": "123e4567-e89b-12d3-a456-426614174000",
+              "tripPointId": "123e4567-e89b-12d3-a456-426614174000",
+              "currencyCode": "PLN",
+              "placeId": "123e4567-e89b-12d3-a456-426614174000",
+              "actualCost": 10,
+              "actualCostPerPerson": 10,
+              "actualTimeSpent": "PT45M",
+              "rating": 5
+            },
+            "category": {
+              "id": "123e4567-e89b-12d3-a456-426614174000",
+              "name": "Zabytki"
+            }
           }
         }
       },
@@ -198,14 +243,14 @@
           "status": 200,
           "body": [
             {
-              "tripPointId": "1",
-              "placeId": "2",
+              "tripPointId": "123e4567-e89b-12d3-a456-426614174000",
+              "placeId": "123e4567-e89b-12d3-a456-426614174000",
               "placeName": "Wieża Eiffla",
               "rating": 5
             },
             {
-              "tripPointId": "123",
-              "placeId": "2",
+              "tripPointId": "123e4567-e89b-12d3-a456-426614174001",
+              "placeId": "123e4567-e89b-12d3-a456-426614174001",
               "placeName": "Wieża Eiffla",
               "rating": 2
             }
@@ -236,7 +281,7 @@
           "status": 200,
           "body": [
             {
-              "id": "1",
+              "id": "123e4567-e89b-12d3-a456-426614174001",
               "name": "Zabytki"
             }
           ]
