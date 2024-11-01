@@ -4,10 +4,7 @@ import { MD3Theme, Searchbar, useTheme, Text } from "react-native-paper";
 import { RenderItem } from "@/components/RenderItem";
 import ActionButtons from "@/components/ActionButtons";
 
-interface Currency {
-  name: string;
-  id: string;
-}
+
 
 const SelectCurrencyView = () => {
   const theme = useTheme();

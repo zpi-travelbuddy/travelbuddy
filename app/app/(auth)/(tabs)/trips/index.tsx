@@ -1,4 +1,4 @@
-import TripDetailsView from "@/views/TripDetailsView";
+import TripDetailsView from "@/views/trips/TripDetailsView";
 import { View } from "react-native";
 import { Text, useTheme } from "react-native-paper";
 

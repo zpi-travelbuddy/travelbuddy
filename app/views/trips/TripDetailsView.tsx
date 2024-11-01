@@ -52,7 +52,7 @@ const TripDetailsView = () => {
           <TripDetailLabel key={key} title={labels[key] || key} value={value} />
         ))}
       </ScrollView>
-      
+
       <FAB
         color={theme.colors.onPrimary}
         style={styles.fab}
