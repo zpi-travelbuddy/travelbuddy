@@ -30,11 +30,19 @@ namespace TravelBuddyAPI
 
             builder.Services.AddMemoryCache();
 
-            builder.Services.AddScoped<INBPService, Services.NBPClient>();
-            builder.Services.AddScoped<IGeoapifyService, Services.GeoapifyClient>();
+            builder.Services.AddScoped<INBPService, NBPClient>();
+            builder.Services.AddScoped<IGeoapifyService, GeoapifyClient>();
             builder.Services.AddScoped<IRestClient>(sp =>
                 new RestClient(builder.Configuration["GeoapifyBaseUrl"] ?? ""));
-            builder.Services.AddScoped<ITravelBuddyDbCache, Services.TravelBuddyDbCache>();
+            builder.Services.AddScoped<ITravelBuddyDbCache, TravelBuddyDbCache>();
+            builder.Services.AddScoped<IPlacesService, PlacesService>();
+            builder.Services.AddScoped<ITripsService, TripsService>();
+            builder.Services.AddScoped<ICategoryProfilesService, CategoryProfilesService>();
+            builder.Services.AddScoped<IConditionProfilesService, ConditionProfilesService>();
+            builder.Services.AddScoped<ITransferPointsService, TransferPointsService>();
+            builder.Services.AddScoped<ITripPointsService, TripPointsService>();
+            builder.Services.AddScoped<IFavouritesService, FavouritesService>();
+            builder.Services.AddScoped<IAvailableOptionsService, AvailableOptionsService>();
 
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(options =>

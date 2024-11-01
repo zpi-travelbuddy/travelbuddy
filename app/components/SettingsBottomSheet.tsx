@@ -17,7 +17,7 @@ import {
 
 interface SettingsBottomSheetProps {
   title: string;
-  items: Record<string, string>; // Zamiana items na słownik
+  items: Record<string, string>;
   selectedItem: string;
   isVisible: boolean;
   onSelect: (item: string) => void;

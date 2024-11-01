@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 using TravelBuddyAPI.DTOs.Place;
+using TravelBuddyAPI.Interfaces;
 
 namespace TravelBuddyAPI.Endpoints;
 
@@ -18,10 +19,18 @@ public static class PlacesEndpoints
         return app;
     }
 
-    private static async Task<Results<Ok<List<PlaceOverviewDTO>>, NotFound<string>>> GetAutocompletePlacesAsync(string query, decimal? latitude, decimal? longitude)
+    private static async Task<Results<Ok<List<PlaceOverviewDTO>>, NotFound<string>>> GetAutocompletePlacesAsync(string query, decimal? latitude, decimal? longitude, IPlacesService placesService)
     {
-        await Task.CompletedTask;
-        return TypedResults.NotFound("Not implemented");
+        var places = await placesService.GetAutocompletePlacesAsync(query, latitude, longitude);
+
+        if (places.Count == 0)
+        {
+            return TypedResults.NotFound("No places found");
+        }
+        else
+        {
+            return TypedResults.Ok(places);
+        }
     }
 
     private static async Task<Results<Ok<PlaceDetailsDTO>, NotFound<string>>> GetPlaceDetailsAsync(Guid id)

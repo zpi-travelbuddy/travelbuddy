@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using TravelBuddyAPI.DTOs.TripDay;
 using TravelBuddyAPI.DTOs.Place;
 using TravelBuddyAPI.DTOs.Currency;
+using TravelBuddyAPI.Interfaces;
+using System.Security.Claims;
 
 namespace TravelBuddyAPI.Endpoints;
 
@@ -79,10 +81,17 @@ public static class TripsEndpoints
         return TypedResults.NotFound("Not implemented");
     }
 
-    private static async Task<Results<Ok<List<PlaceOverviewDTO>>, NotFound<string>>> GetAutocompleteDestinationsAsync(string query)
+    private static async Task<Results<Ok<List<PlaceOverviewDTO>>, NotFound<string>>> GetAutocompleteDestinationsAsync(string query, IPlacesService placesService)
     {
-        await Task.CompletedTask;
-        return TypedResults.NotFound("Not implemented");
+        var places = await placesService.GetAutocompleteDestinationsAsync(query);
+        
+        if (places.Count != 0)
+        {
+            return TypedResults.Ok(places);
+        }
+        else {
+            return TypedResults.NotFound("No places found");
+        }
     }
 
     private static async Task<Results<NoContent, NotFound<string>>> DeleteTripAsync(Guid id)
@@ -97,16 +106,30 @@ public static class TripsEndpoints
         return TypedResults.NotFound("Not implemented");
     }
 
-    private static async Task<Results<Ok<List<TripOverviewDTO>>, NotFound<string>>> GetCurrentTripsAsync()
+    private static async Task<Results<Ok<List<TripOverviewDTO>>, NotFound<string>>> GetCurrentTripsAsync(ITripsService tripsService, HttpContext httpContext)
     {
-        await Task.CompletedTask;
-        return TypedResults.NotFound("Not implemented");
+        try {
+            var userId = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new InvalidOperationException("User not found");
+            var trips = await tripsService.GetCurrentTripsAsync(userId);
+            return trips.Count > 0 ? TypedResults.Ok(trips) : TypedResults.NotFound("No current trips found.");
+        }
+        catch (InvalidOperationException ex)
+        {
+            return TypedResults.NotFound(ex.Message);
+        }
     }
 
-    private static async Task<Results<Ok<List<TripOverviewDTO>>, NotFound<string>>> GetPastTripsAsync()
+    private static async Task<Results<Ok<List<TripOverviewDTO>>, NotFound<string>>> GetPastTripsAsync(ITripsService tripsService, HttpContext httpContext)
     {
-        await Task.CompletedTask;
-        return TypedResults.NotFound("Not implemented");
+        try {
+            var userId = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new InvalidOperationException("User not found");
+            var trips = await tripsService.GetPastTripsAsync(userId);
+            return trips.Count > 0 ? TypedResults.Ok(trips) : TypedResults.NotFound("No past trips found.");
+        }
+        catch (InvalidOperationException ex)
+        {
+            return TypedResults.NotFound(ex.Message);
+        }
     }
 
     private static async Task<Results<Accepted<string>, NotFound<string>>> EditTripAsync(Guid id, TripRequestDTO trip)

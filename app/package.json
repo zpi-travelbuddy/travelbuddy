@@ -3,8 +3,7 @@
   "main": "expo-router/entry",
   "version": "1.0.0",
   "scripts": {
-    "start": "expo start --go",
-    "start:mock": "cross-env NODE_ENV=mock expo start --go",
+    "start": "cross-env NODE_ENV=development expo start --go",
     "start:dev": "expo start --dev-client",
     "android": "expo start --android --go",
     "android:dev": "expo start --android --dev-client",
