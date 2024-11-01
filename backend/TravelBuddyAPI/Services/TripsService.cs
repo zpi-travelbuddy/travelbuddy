@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-using Microsoft.EntityFrameworkCore;
 using TravelBuddyAPI.Data;
 using TravelBuddyAPI.DTOs.Place;
 using TravelBuddyAPI.DTOs.TransferPoint;
