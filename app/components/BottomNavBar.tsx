@@ -1,67 +1,77 @@
 //@ts-nocheck
+import { StyleSheet } from "react-native";
 import { BottomNavigation, Icon } from "react-native-paper";
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
+import { MD3ThemeExtended } from "@/constants/Themes";
+import {
+  DEFAULT_NAV_BAR_ICON,
+  TRIPS_ICON,
+  EXPLORE_ICON,
+  SETTINGS_ICON,
+} from "@/constants/Icons";
 
-// Icon size
 const ICON_SIZE = 24;
 
-// Default icon
-const DEFAULT_ICON = "help";
-
 // MODIFY SOURCES AND MAPPING IF NEW TAB IS ADDED
-
-// Icon sources
-const TRIPS_ICON = "car";
-const EXPLORE_ICON = "compass-outline";
-const SETTINGS_ICON = "cog";
-
-// Icon sources mapping
-const iconSources = {
+const ICON_MAP = {
   trips: TRIPS_ICON,
   explore: EXPLORE_ICON,
   settings: SETTINGS_ICON,
 };
 
-export const BottomNavBar = (props: BottomTabBarProps) => (
-  <BottomNavigation.Bar
-    navigationState={props.state}
-    style={{
-      backgroundColor: props.theme.colors.surfaceContainer,
-    }}
-    activeColor={props.theme.colors.onSurface}
-    inactiveColor={props.theme.colors.onSurfaceVariant}
-    onTabPress={({ route, preventDefault }) => {
-      const event = props.navigation.emit({
-        type: "tabPress",
-        target: route.key,
-        canPreventDefault: true,
-      });
+export const BottomNavBar = ({
+  navigation,
+  state,
+  theme,
+  descriptors,
+}: BottomTabBarProps) => {
+  const styles = makeStyles(theme);
 
-      if (!event.defaultPrevented) {
-        props.navigation.navigate(route.name, route.params);
-      }
-    }}
-    onTabLongPress={({ route }) => {
-      props.navigation.emit({
-        type: "tabLongPress",
-        target: route.key,
-      });
-    }}
-    renderIcon={({ route, focused, color }) => {
-      const source = iconSources[route.name] || DEFAULT_ICON;
+  const handleTabPress = ({ route }: { route: any }) => {
+    const event = navigation.emit({
+      type: "tabPress",
+      target: route.key,
+      canPreventDefault: true,
+    });
+    if (!event.defaultPrevented) {
+      navigation.navigate(route.name, route.params);
+    }
+  };
 
-      return <Icon source={source} color={color} size={ICON_SIZE} />;
-    }}
-    getLabelText={({ route }) => {
-      const { options } = props.descriptors[route.key];
-      const label =
-        options.tabBarLabel !== undefined
-          ? options.tabBarLabel
-          : options.title !== undefined
-            ? options.title
-            : route.title;
+  const handleTabLongPress = ({ route }: { route: any }) => {
+    navigation.emit({
+      type: "tabLongPress",
+      target: route.key,
+    });
+  };
 
-      return label;
-    }}
-  />
-);
+  const renderIcon = ({ route, color }: { route: any; color: string }) => {
+    const iconSource = ICON_MAP[route.name] || DEFAULT_NAV_BAR_ICON;
+    return <Icon source={iconSource} color={color} size={ICON_SIZE} />;
+  };
+
+  const getLabelText = ({ route }: { route: any }) => {
+    const { options } = descriptors[route.key];
+    return options.tabBarLabel ?? options.title ?? route.title;
+  };
+
+  return (
+    <BottomNavigation.Bar
+      navigationState={state}
+      style={styles.bar}
+      activeColor={theme.colors.onSurface}
+      inactiveColor={theme.colors.onSurfaceVariant}
+      onTabPress={handleTabPress}
+      onTabLongPress={handleTabLongPress}
+      renderIcon={renderIcon}
+      getLabelText={getLabelText}
+    />
+  );
+};
+
+const makeStyles = (theme: MD3ThemeExtended) =>
+  StyleSheet.create({
+    bar: {
+      backgroundColor: theme.colors.surfaceContainer,
+    },
+  });

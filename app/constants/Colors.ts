@@ -8,6 +8,10 @@ export const BLACK = "#000000";
 export const WHITE = "#FFFFFF";
 export const BACKDROP = "rgba(0, 0, 0, 0.32)";
 
+export interface MD3ColorsExtended extends MD3Colors {
+  surfaceContainerHigh: string;
+}
+
 export const Colors = {
   light: {
     ...DefaultTheme.colors,
@@ -69,7 +73,7 @@ export const Colors = {
       level4: "#DEE3E5", // surfaceContainerHighest
     },
     backdrop: "rgba(0, 0, 0, 0.32)",
-  } as MD3Colors,
+  } as MD3ColorsExtended,
   lightHighContrast: {
     ...DefaultTheme.colors,
     primary: "#002819",
@@ -130,7 +134,7 @@ export const Colors = {
       level4: "#DEE3E5", // surfaceContainerHighest
     },
     backdrop: "rgba(0, 0, 0, 0.32)",
-  } as MD3Colors,
+  } as MD3ColorsExtended,
   dark: {
     ...DarkTheme.colors,
     primary: "#8ED5B1",
@@ -191,7 +195,7 @@ export const Colors = {
       level4: "#303637", // surfaceContainerHighest
     },
     backdrop: "rgba(0, 0, 0, 0.32)",
-  } as MD3Colors,
+  } as MD3ColorsExtended,
   darkHighContrast: {
     ...DarkTheme.colors,
     primary: "#EEFFF2",
@@ -252,5 +256,5 @@ export const Colors = {
       level4: "#303637", // surfaceContainerHighest
     },
     backdrop: "rgba(0, 0, 0, 0.32)",
-  } as MD3Colors,
+  } as MD3ColorsExtended,
 };

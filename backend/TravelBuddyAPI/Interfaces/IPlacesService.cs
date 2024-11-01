@@ -5,7 +5,7 @@ namespace TravelBuddyAPI.Interfaces;
 /// <summary>
 /// Interface for place-related services.
 /// </summary>
-public interface IPlaceService
+public interface IPlacesService
 {
     /// <summary>
     /// Retrieves a list of destination overviews based on the provided query for autocomplete purposes.

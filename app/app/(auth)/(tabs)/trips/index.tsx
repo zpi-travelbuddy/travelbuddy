@@ -4,6 +4,5 @@ import { Text, useTheme } from "react-native-paper";
 
 export default function Trips() {
   const theme = useTheme();
-
   return <TripBrowse />;
 }
