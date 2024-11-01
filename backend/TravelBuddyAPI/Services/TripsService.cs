@@ -8,7 +8,6 @@ using TravelBuddyAPI.DTOs.TripDay;
 using TravelBuddyAPI.DTOs.TripPoint;
 using TravelBuddyAPI.Interfaces;
 using TravelBuddyAPI.Models;
-using Microsoft.EntityFrameworkCore;
 
 namespace TravelBuddyAPI.Services;
 
