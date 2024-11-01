@@ -2,7 +2,7 @@ import { TransferPoint, TransferType } from "@/types/data";
 import { StyleSheet, View } from "react-native";
 import { useTheme, Text, IconButton } from "react-native-paper";
 import { DashedVerticalLine } from "./DashedVerticalLine";
-import { formatMinutes } from "@/utils/DateUtils";
+import { formatMinutes } from "@/utils/TimeUtils";
 import {
   WALK_ICON,
   BUS_ICON,
