@@ -16,6 +16,7 @@ import SettingsBottomSheet from "@/components/SettingsBottomSheet";
 import TripPointTypePicker from "@/components/TripPointTypePicker";
 import { AttractionTypeLabels, TripPointType } from "@/types/Trip";
 import { CALENDAR_ICON } from "@/constants/Icons";
+import { useAnimatedKeyboard } from "react-native-reanimated";
 
 const { height, width } = Dimensions.get("window");
 
@@ -23,23 +24,25 @@ const AddingTripPointView = () => {
   const theme = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
+  useAnimatedKeyboard();
+
   const [tripPointName, setTripPointName] = useState("");
   const [tripPointAddress, setTripPointAddress] = useState("");
 
-  const [expectedCost, setExpectedCost] = React.useState<number>(0);
-  const [costType, setCostType] = React.useState<string>("perPerson");
+  const [expectedCost, setExpectedCost] = useState<number>(0);
+  const [costType, setCostType] = useState<string>("perPerson");
   const selectedCurrency = "EUR";
-  const [comment, setComment] = React.useState<string>("");
+  const [comment, setComment] = useState<string>("");
   const [tripPointType, setTripPointType] =
-    React.useState<TripPointType>("attraction");
+    useState<TripPointType>("attraction");
   const [startTime, setStartTime] = useState<Date>(roundToNearestQuarterHour());
   const [endTime, setEndTime] = useState<Date>(addHoursToDate(startTime, 1));
 
   const [isStartDatePickerVisible, setIsStartDatePickerVisible] =
-    React.useState<boolean>(false);
+    useState<boolean>(false);
   const [isEndDatePickerVisible, setIsEndDatePickerVisible] =
-    React.useState<boolean>(false);
-  const [isSheetVisible, setIsSheetVisible] = React.useState<boolean>(false);
+    useState<boolean>(false);
+  const [isSheetVisible, setIsSheetVisible] = useState<boolean>(false);
 
   const [dateErrorMessage, setDateErrorMessage] = useState<string | null>(null);
   useEffect(() => {
