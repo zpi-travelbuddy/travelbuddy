@@ -1,112 +1,103 @@
+import React, { useState } from "react";
+import { Dimensions, ScrollView, View } from "react-native";
 import SettingListItem from "@/components/SettingListItem";
-import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import SettingsBottomSheet from "@/components/SettingsBottomSheet";
+import { StyleSheet } from "react-native";
 import {
-  Dimensions,
-  ScrollView,
-  StyleSheet,
-  TouchableWithoutFeedback,
-  View,
-} from "react-native";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-import {
-  Title,
   List,
-  Switch,
-  Button,
-  Text,
-  RadioButton,
-  useTheme,
   MD3Theme,
+  Text,
+  Title,
+  useTheme,
+  Button,
+  Switch,
 } from "react-native-paper";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+
+type ModalOption = "FONT" | "THEME";
 
 const windowWidth = Dimensions.get("window").width;
-const windowHeight = Dimensions.get("window").height;
-const CLOSE_THRESHOLD = windowHeight * 0.05;
 
 const SettingsView = () => {
   const theme = useTheme();
   const styles = createStyles(theme);
+
   const [isSwitchOn, setIsSwitchOn] = useState(false);
 
-  const sheetRef = useRef<BottomSheet>(null);
-  const [isOpen, setIsOpen] = useState(false);
+  const [selectedFont, setSelectedFont] = useState("mała");
+  const [selectedTheme, setSelectedTheme] = useState("ciemny");
 
-  const handleSnapPress = useCallback((index: number) => {
-    sheetRef.current?.snapToIndex(index);
-    setIsOpen(true);
-  }, []);
+  const [isSheetVisible, setIsSheetVisible] = useState(false);
+  const [bottomSheetTitle, setBottomSheetTitle] = useState("");
+  const [bottomSheetItems, setBottomSheetItems] = useState<string[]>([]);
+  const [selectedOptionToModal, setSelectedOptionToModal] =
+    useState<ModalOption>("FONT");
+
+  const [selectedOption, setSelectedOption] = useState("");
+
+  const fontItems = ["mała", "średnia", "duża"];
+  const themeItems = ["jasny", "ciemny"];
+
+  const openBottomSheet = (
+    title: string,
+    items: string[],
+    option: ModalOption,
+    selectedItem: string,
+  ) => {
+    setBottomSheetTitle(title);
+    setBottomSheetItems(items);
+    setSelectedOptionToModal(option);
+    setSelectedOption(selectedItem);
+    setIsSheetVisible(true);
+  };
 
   const toggleSwitch = () => setIsSwitchOn((prev) => !prev);
 
-  const fontItems = ["mała", "średnia", "duża"];
-  const fontTitle = "Wybierz czcionkę";
-  const themeItems = ["jasny", "ciemny"];
-  const themeTitle = "Wybierz motyw";
-
-  const [bottomSheetTitle, setBottomSheetTitle] = useState(fontTitle);
-  const [bottomSheetItems, setBottomSheetItems] = useState(fontItems);
-
-  const itemHeight = 50;
-  const titleHeight = 60;
-  const paddingHeight = 32;
-
-  const snapPoints = useMemo(() => {
-    const bottomSheetHeight =
-      titleHeight + paddingHeight + bottomSheetItems.length * itemHeight;
-    return [bottomSheetHeight];
-  }, [bottomSheetItems.length]);
-
-  const [selectedOption, setSelectedOption] = useState<string>("");
-
-  const handleSelect = (item: string) => {
-    setSelectedOption(item);
-    closeBottomSheet();
+  const handleSelect = (option: string) => {
+    switch (selectedOptionToModal) {
+      case "FONT":
+        setSelectedFont(option);
+        break;
+      case "THEME":
+        setSelectedTheme(option);
+        break;
+      default:
+        break;
+    }
+    setIsSheetVisible(false);
   };
-
-  const openBottomSheet = (title: string, items: string[]) => {
-    setBottomSheetTitle(title);
-    setBottomSheetItems(items);
-    handleSnapPress(1);
-    setIsOpen(true);
-  };
-
-  const closeBottomSheet = () => {
-    sheetRef.current?.close();
-    setIsOpen(false);
-  };
-
-  const handleSheetAnimate = useCallback(
-    (fromIndex: number, toIndex: number) => {
-      if (toIndex === -1) closeBottomSheet();
-      const currentHeight = snapPoints[toIndex];
-      if (currentHeight < CLOSE_THRESHOLD) {
-        closeBottomSheet();
-      }
-    },
-    [snapPoints],
-  );
 
   return (
     <GestureHandlerRootView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollView}>
         <View style={styles.content}>
-          <Title style={styles.title}>Wygląd</Title>
           <SettingListItem
             title="Czcionka"
-            rightComponent={() => <Text style={styles.rightText}>średnia</Text>}
-            onPress={() => {
-              console.log("Czcionka kliknięta");
-              openBottomSheet(fontTitle, fontItems);
-            }}
+            rightComponent={() => (
+              <Text style={styles.rightText}>{selectedFont}</Text>
+            )}
+            onPress={() =>
+              openBottomSheet(
+                "Wybierz czcionkę",
+                fontItems,
+                "FONT",
+                selectedFont,
+              )
+            }
           />
           <SettingListItem
             title="Motyw"
-            rightComponent={() => <Text style={styles.rightText}>jasny</Text>}
-            onPress={() => {
-              console.log("Motyw kliknięty");
-              openBottomSheet(themeTitle, themeItems);
-            }}
+            rightComponent={() => (
+              <Text style={styles.rightText}>{selectedTheme}</Text>
+            )}
+            onPress={() =>
+              openBottomSheet(
+                "Wybierz motyw",
+                themeItems,
+                "THEME",
+                selectedTheme,
+              )
+            }
           />
           <SettingListItem
             title="Wysoki kontrast"
@@ -173,46 +164,14 @@ const SettingsView = () => {
         </Button>
       </ScrollView>
 
-      <BottomSheet
-        ref={sheetRef}
-        index={-1}
-        snapPoints={snapPoints}
-        enablePanDownToClose={true}
-        onAnimate={handleSheetAnimate}
-        onClose={() => {
-          sheetRef.current?.close();
-        }}
-        backgroundComponent={({ style }) => (
-          <View style={[style, styles.bottomSheetContainer]} />
-        )}
-        containerStyle={{ zIndex: 3 }}
-      >
-        <BottomSheetView>
-          <View style={styles.titleContainer}>
-            <Text style={styles.bottomSheetTitle}>{bottomSheetTitle}</Text>
-          </View>
-          {bottomSheetItems.map((item, index) => (
-            <List.Item
-              key={index}
-              title={item}
-              titleStyle={styles.bottomSheetItemTitle}
-              right={() => (
-                <RadioButton
-                  value={item}
-                  status={selectedOption === item ? "checked" : "unchecked"}
-                  onPress={() => handleSelect(item)}
-                />
-              )}
-            />
-          ))}
-        </BottomSheetView>
-      </BottomSheet>
-
-      {isOpen && (
-        <TouchableWithoutFeedback onPress={closeBottomSheet}>
-          <View style={styles.scrim} />
-        </TouchableWithoutFeedback>
-      )}
+      <SettingsBottomSheet
+        title={bottomSheetTitle}
+        items={bottomSheetItems}
+        selectedItem={selectedOption}
+        isVisible={isSheetVisible}
+        onSelect={handleSelect}
+        onClose={() => setIsSheetVisible(false)}
+      />
     </GestureHandlerRootView>
   );
 };
@@ -233,20 +192,9 @@ const createStyles = (theme: MD3Theme) =>
     scrollView: {
       alignItems: "center",
     },
-    bottomSheetTitle: {
-      ...theme.fonts.titleMedium,
-    },
-    bottomSheetItemTitle: {
-      ...theme.fonts.bodyMedium,
-    },
-    titleContainer: {
-      padding: 16,
-      justifyContent: "flex-start",
-    },
     rightText: {
       alignSelf: "center",
     },
-
     switch: { marginRight: -10 },
     logOutButton: {
       marginVertical: 30,
@@ -256,20 +204,6 @@ const createStyles = (theme: MD3Theme) =>
     title: {
       width: "100%",
       marginTop: 20,
-    },
-    bottomSheetContainer: {
-      padding: 30,
-      borderTopLeftRadius: 40,
-      borderTopRightRadius: 40,
-      backgroundColor: theme.colors.elevation.level1,
-    },
-    modalText: {
-      marginBottom: 20,
-    },
-    scrim: {
-      ...StyleSheet.absoluteFillObject,
-      backgroundColor: "rgba(0, 0, 0, 0.5)", // półprzezroczysty czarny
-      zIndex: 1,
     },
   });
 
