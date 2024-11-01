@@ -3,13 +3,18 @@ using TravelBuddyAPI.DTOs.Trip;
 using TravelBuddyAPI.DTOs.TripDay;
 using TravelBuddyAPI.Interfaces;
 using TravelBuddyAPI.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace TravelBuddyAPI.Services;
 
-public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService) : ITripsService
+public class  TripsService(TravelBuddyDbContext dbContext, INBPService nbpService, IPlacesService placesService, ICategoryProfilesService categoryProfilesService, IConditionProfilesService conditionProfilesService) : ITripsService
 {
     private readonly TravelBuddyDbContext _dbContext = dbContext;
     private readonly INBPService _nbpService = nbpService;
+    private readonly IPlacesService _placesService = placesService;
+    private readonly ICategoryProfilesService _categoryProfileService = categoryProfilesService;
+    private readonly IConditionProfilesService _conditionProfileService = conditionProfilesService;
+
 
     public Task<Trip> CreateTripAsync(string userId, TripRequestDTO trip)
     {
@@ -26,14 +31,32 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
         throw new NotImplementedException();
     }
 
-    public Task<List<TripOverviewDTO>> GetCurrentTripsAsync(string userId)
+    public async Task<List<TripOverviewDTO>> GetCurrentTripsAsync(string userId)
     {
-        throw new NotImplementedException();
+        return await _dbContext.Trips
+            .Where(t => t.UserId == userId && t.EndDate >= DateOnly.FromDateTime(DateTime.Now))
+            .Select(t => new TripOverviewDTO
+            {
+                Id = t.Id,
+                Name = t.Name,
+                StartDate = t.StartDate,
+                EndDate = t.EndDate
+            })
+            .ToListAsync();
     }
 
-    public Task<List<TripOverviewDTO>> GetPastTripsAsync(string userId)
+    public async Task<List<TripOverviewDTO>> GetPastTripsAsync(string userId)
     {
-        throw new NotImplementedException();
+        return await _dbContext.Trips
+            .Where(t => t.UserId == userId && t.EndDate < DateOnly.FromDateTime(DateTime.Now))
+            .Select(t => new TripOverviewDTO
+            {
+                Id = t.Id,
+                Name = t.Name,
+                StartDate = t.StartDate,
+                EndDate = t.EndDate
+            })
+            .ToListAsync();
     }
 
     public Task<List<TripOverviewWithStatisticsDTO>> GetPastTripsWithStatisticsAsync(string userId)
