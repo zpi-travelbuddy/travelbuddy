@@ -3,12 +3,17 @@ import React, { useMemo } from "react";
 import TripDetailLabel from "@/components/TripDetailLabel";
 import { FAB, MD3Theme, useTheme } from "react-native-paper";
 import { CALENDAR_ICON } from "@/constants/Icons";
+import { useLocalSearchParams, useRouter } from "expo-router";
 
 const { height, width } = Dimensions.get("window");
 
 const TripDetailsView = () => {
   const theme = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
+        
+  const params = useLocalSearchParams();
+  const { id } = params;
+        
   const trip = {
     tripName: "Wycieczka do Londynu",
     tripDate: "10.06.2024 - 15.06.2024",

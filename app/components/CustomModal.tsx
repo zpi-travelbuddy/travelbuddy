@@ -1,4 +1,3 @@
-import { BACKDROP } from "@/constants/Colors";
 import React from "react";
 import { Dimensions, StyleSheet, View } from "react-native";
 import { Modal, Portal, MD3Theme, useTheme } from "react-native-paper";
@@ -21,6 +20,7 @@ const CustomModal: React.FC<CustomModalProps> = ({
   return (
     <Portal>
       <Modal
+        theme={theme}
         visible={visible}
         onDismiss={onDismiss}
         contentContainerStyle={styles.modalContainer}
