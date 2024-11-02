@@ -144,7 +144,7 @@ public class  TripsService(TravelBuddyDbContext dbContext, INBPService nbpServic
             StartDate = trip.StartDate,
             EndDate = trip.EndDate,
             DestinationId = trip.DestinationId,
-            Budget = trip.Budget,
+            Budget = Math.Round(trip.Budget / trip.ExchangeRate, 2),
             CurrencyCode = trip.CurrencyCode,
             CategoryProfileId = trip.CategoryProfileId,
             ConditionProfileId = trip.ConditionProfileId,
