@@ -26,21 +26,12 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
         public const string StartDateInPast = "Start date cannot be in the past.";
         public const string CreateTrip = "An error occurred while creating a trip:";
         public const string RetriveExchangeRate = "An error occurred while retrieving exchange rate.";
-    }
-
-    public static class ErrorMessage
-    {
-        public const string EmptyRequest = "Request cannot be empty.";
-        public const string StartDateAfterEndDate = "Start date cannot be after end date.";
-        public const string StartDateInPast = "Start date cannot be in the past.";
-        public const string CreateTrip = "An error occurred while creating a trip:";
-        public const string RetriveExchangeRate = "An error occurred while retrieving exchange rate.";
         public const string TripNotFound = "Trip with the specified ID does not exist.";
         public const string TripWithoutDays = "Trip does not have any days.";
         public const string TripDayNotFound = "Trip day with the specified ID does not exist.";
     }
 
-    public Task<TripDetailsDTO> CreateTripAsync(string userId, TripRequestDTO trip)
+    public async Task<TripDetailsDTO> CreateTripAsync(string userId, TripRequestDTO trip)
     {
         decimal exchangeRate;
         Guid destinationId;
