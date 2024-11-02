@@ -20,8 +20,8 @@ public class TransferPointDTO
     public TransferType? Type { get; set; }
 
     [Required]
-    public Guid FromTripPointId { get; set; }
+    public Guid? FromTripPointId { get; set; }
 
     [Required]
-    public Guid ToTripPointId { get; set; }
+    public Guid? ToTripPointId { get; set; }
 }
