@@ -223,8 +223,8 @@ const TripBrowseView = () => {
               <Text style={styles.modalSubtitle}>{selectedTrip?.subtitle}</Text>
             </View>
             <ActionTextButtons
-              onCancel={hideModal}
-              onConfirm={() => deleteTrip(selectedTrip)}
+              onAction1={hideModal}
+              onAction2={() => deleteTrip(selectedTrip)}
             />
           </View>
         </CustomModal>

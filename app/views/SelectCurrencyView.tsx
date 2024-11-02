@@ -82,8 +82,8 @@ const SelectCurrencyView = () => {
       />
 
       <ActionButtons
-        onCancel={() => console.log("Anulowanie")}
-        onConfirm={() => console.log("Zapisywanie")}
+        onAction1={() => console.log("Anulowanie")}
+        onAction2={() => console.log("Zapisywanie")}
       />
     </View>
   );

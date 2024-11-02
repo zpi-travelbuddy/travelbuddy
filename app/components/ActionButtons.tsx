@@ -3,33 +3,33 @@ import { View, StyleSheet } from "react-native";
 import { Button } from "react-native-paper";
 
 const ActionButtons: React.FC<ActionButtonsProps> = ({
-  onCancel,
-  cancelButtonLabel,
-  cancelIcon,
-  onConfirm,
-  confirmButtonLabel,
-  confirmIcon,
+  onAction1,
+  action1ButtonLabel,
+  action1Icon,
+  onAction2,
+  action2ButtonLabel,
+  action2Icon,
 }) => {
-  const confirmLabel = confirmButtonLabel || "Zapisz";
-  const cancelLabel = cancelButtonLabel || "Anuluj";
+  const action1Label = action1ButtonLabel || "Zapisz";
+  const action2Label = action2ButtonLabel || "Anuluj";
   return (
     <View style={styles.buttonContainer}>
       <Button
-        icon={cancelIcon}
+        icon={action1Icon}
         mode="outlined"
         style={styles.button}
-        onPress={onCancel}
+        onPress={onAction1}
       >
-        {cancelLabel}
+        {action1Label}
       </Button>
 
       <Button
-        icon={confirmIcon}
+        icon={action2Icon}
         mode="contained"
         style={styles.button}
-        onPress={onConfirm}
+        onPress={onAction2}
       >
-        {confirmLabel}
+        {action2Label}
       </Button>
     </View>
   );

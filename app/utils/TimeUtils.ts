@@ -25,10 +25,25 @@ export function formatMinutes(minutes: number): string {
   const hours = Math.floor(minutes / 60);
 
   if (hours > 0) {
+    if (minutes % 60 === 0) return `${hours} h`;
     return `${hours} h ${minutes % 60} min`;
   }
 
   return `${minutes} min`;
+}
+
+export function formatMinutesInWords(minutes: number): string {
+  const hours = Math.floor(minutes / 60);
+  const remainingMinutes = minutes % 60;
+  if (hours > 0) {
+    const hoursInWord =
+      hours === 1 ? "godzina" : hours > 4 ? "godzin" : "godziny";
+    return remainingMinutes === 0
+      ? `${hours} ${hoursInWord}`
+      : `Ponad ${hours} ${hoursInWord}`;
+  }
+
+  return `${minutes} minut`;
 }
 
 export function formatTimeRange(startTime: string, endTime: string): string {

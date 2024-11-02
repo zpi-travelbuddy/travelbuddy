@@ -3,28 +3,28 @@ import { View, StyleSheet, Text } from "react-native";
 import { MD3Theme, useTheme } from "react-native-paper";
 
 const ActionTextButtons: React.FC<ActionButtonsProps> = ({
-  onCancel,
-  cancelButtonLabel,
-  onConfirm,
-  confirmButtonLabel,
+  onAction1,
+  action1ButtonLabel,
+  onAction2,
+  action2ButtonLabel,
 }) => {
   const theme: MD3Theme = useTheme();
-  const confirmLabel = confirmButtonLabel || "Usuń";
-  const cancelLabel = cancelButtonLabel || "Anuluj";
-  const confirmLabelColor = confirmButtonLabel
+  const action1Label = action2ButtonLabel || "Usuń";
+  const action2Label = action1ButtonLabel || "Anuluj";
+  const confirmLabelColor = action2ButtonLabel
     ? theme.colors.onBackground
     : theme.colors.error;
   const styles = createStyles(theme);
   return (
     <View style={styles.container}>
-      <Text onPress={onCancel} style={styles.text}>
-        {cancelLabel}
+      <Text onPress={onAction1} style={styles.text}>
+        {action2Label}
       </Text>
       <Text
-        onPress={onConfirm}
+        onPress={onAction2}
         style={{ ...styles.text, color: confirmLabelColor }}
       >
-        {confirmLabel}
+        {action1Label}
       </Text>
     </View>
   );
