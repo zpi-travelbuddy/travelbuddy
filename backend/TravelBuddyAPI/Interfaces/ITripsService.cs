@@ -36,7 +36,7 @@ public interface ITripsService
     /// <param name="userId">The ID of the user.</param>
     /// <param name="trip">The trip details.</param>
     /// <returns>The created trip.</returns>
-    Task<Trip> CreateTripAsync(string userId, TripRequestDTO trip);
+    Task<TripDetailsDTO> CreateTripAsync(string userId, TripRequestDTO trip);
 
     /// <summary>
     /// Retrieves the details of a specific trip.

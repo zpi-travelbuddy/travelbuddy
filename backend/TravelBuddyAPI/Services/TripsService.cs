@@ -1,6 +1,9 @@
 using TravelBuddyAPI.Data;
+using TravelBuddyAPI.DTOs.Place;
+using TravelBuddyAPI.DTOs.TransferPoint;
 using TravelBuddyAPI.DTOs.Trip;
 using TravelBuddyAPI.DTOs.TripDay;
+using TravelBuddyAPI.DTOs.TripPoint;
 using TravelBuddyAPI.Interfaces;
 using TravelBuddyAPI.Models;
 using Microsoft.EntityFrameworkCore;
@@ -16,7 +19,19 @@ public class  TripsService(TravelBuddyDbContext dbContext, INBPService nbpServic
     private readonly IConditionProfilesService _conditionProfileService = conditionProfilesService;
 
 
-    public Task<Trip> CreateTripAsync(string userId, TripRequestDTO trip)
+    public static class ErrorMessage
+    {
+        public const string EmptyRequest = "Request cannot be empty.";
+        public const string StartDateAfterEndDate = "Start date cannot be after end date.";
+        public const string StartDateInPast = "Start date cannot be in the past.";
+        public const string CreateTrip = "An error occurred while creating a trip:";
+        public const string RetriveExchangeRate = "An error occurred while retrieving exchange rate.";
+        public const string TripNotFound = "Trip with the specified ID does not exist.";
+        public const string TripWithoutDays = "Trip does not have any days.";
+        public const string TripDayNotFound = "Trip day with the specified ID does not exist.";
+    }
+
+    public Task<TripDetailsDTO> CreateTripAsync(string userId, TripRequestDTO trip)
     {
         throw new NotImplementedException();
     }
@@ -64,14 +79,85 @@ public class  TripsService(TravelBuddyDbContext dbContext, INBPService nbpServic
         throw new NotImplementedException();
     }
 
-    public Task<TripDayDetailsDTO> GetTripDayDetailsAsync(string userId, Guid tripDayId)
+    public async Task<TripDayDetailsDTO> GetTripDayDetailsAsync(string userId, Guid tripDayId)
     {
-        throw new NotImplementedException();
+        var day = await _dbContext.TripDays
+            .Where(p => p.Id == tripDayId && p.Trip!.UserId == userId)
+            .Include(p => p.Trip)
+            .Include(p => p.TripPoints)
+            .Include(p => p.TransferPoints)
+            .FirstOrDefaultAsync();
+
+        if (day == null || day.Trip == null)
+        {
+            throw new ArgumentException(ErrorMessage.TripDayNotFound);
+        }
+
+        TripDayDetailsDTO dayDetails = new()
+        {
+            Id =day.Id,
+            TripId = day.TripId,
+            Date = day.Date,
+        };
+
+
+        dayDetails.TripPoints = day.TripPoints!.Select(tp => new TripPointOverviewDTO
+        {
+            Name = tp.Name,
+            TripDayId = tp.TripDayId,
+            StartTime = tp.StartTime,
+            EndTime = tp.EndTime
+        }).ToList();
+
+        dayDetails.TransferPoints = day.TransferPoints!.Select(tp => new TransferPointDTO
+        {
+            TripDayId = tp.TripDayId,
+            Seconds = (int?)tp.TransferTime.TotalSeconds,
+            StartTime = tp.StartTime,
+            Mode = tp.Mode,
+            Type = tp.Type,
+            FromTripPointId = tp.FromTripPointId,
+            ToTripPointId = tp.ToTripPointId
+        }).ToList();
+
+        return dayDetails;
+
     }
 
-    public Task<TripDetailsDTO> GetTripDetailsAsync(string userId, Guid tripId)
+    public async Task<TripDetailsDTO> GetTripDetailsAsync(string userId, Guid tripId)
     {
-        throw new NotImplementedException();
+        var trip = await _dbContext.Trips
+            .Where(p => p.Id == tripId && p.UserId == userId)
+            .Include(p => p.TripDays!)
+            .FirstOrDefaultAsync();
+
+        if (trip == null)
+        {
+            throw new ArgumentException(ErrorMessage.TripNotFound);
+        }
+
+        TripDetailsDTO tripDetails = new()
+        {
+            Id = trip.Id,
+            Name = trip.Name,
+            NumberOfTravelers = trip.NumberOfTravelers,
+            StartDate = trip.StartDate,
+            EndDate = trip.EndDate,
+            DestinationId = trip.DestinationId,
+            Budget = Math.Round(trip.Budget / trip.ExchangeRate, 2),
+            CurrencyCode = trip.CurrencyCode,
+            CategoryProfileId = trip.CategoryProfileId,
+            ConditionProfileId = trip.ConditionProfileId,
+        };
+
+        tripDetails.TripDays = trip.TripDays?.Select(td => new TripDayOverviewDTO
+        {
+            Id = td.Id,
+            TripId = td.TripId,
+            Date = td.Date,
+        }).ToList() ?? throw new ArgumentException(ErrorMessage.TripWithoutDays);
+
+        return tripDetails;
     }
 
     public Task<TripStatisticsDTO> GetTripStatisticsAsync(string userId, int year, int? month, string currencyCode)
