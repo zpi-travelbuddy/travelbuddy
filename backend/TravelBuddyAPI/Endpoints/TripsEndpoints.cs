@@ -106,7 +106,7 @@ public static class TripsEndpoints
             var userId = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new InvalidOperationException("User not found");
             var tripDetails = await tripsService.GetTripDetailsAsync(userId, id);
             return TypedResults.Ok(tripDetails);
-        } catch (InvalidOperationException ex) {
+        } catch (ArgumentException ex) {
             return TypedResults.NotFound(ex.Message);
         }
     }
@@ -156,7 +156,7 @@ public static class TripsEndpoints
             var userId = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new InvalidOperationException("User not found");
             var dayDetails = await tripsService.GetTripDayDetailsAsync(userId, id);
             return TypedResults.Ok(dayDetails);
-        } catch (InvalidOperationException ex) {
+        } catch (ArgumentException ex) {
             return TypedResults.NotFound(ex.Message);
         }
     }

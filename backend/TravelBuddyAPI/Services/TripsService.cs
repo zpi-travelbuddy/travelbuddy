@@ -28,6 +28,7 @@ public class  TripsService(TravelBuddyDbContext dbContext, INBPService nbpServic
         public const string RetriveExchangeRate = "An error occurred while retrieving exchange rate.";
         public const string TripNotFound = "Trip with the specified ID does not exist.";
         public const string TripWithoutDays = "Trip does not have any days.";
+        public const string TripDayNotFound = "Trip day with the specified ID does not exist.";
     }
 
     public Task<TripDetailsDTO> CreateTripAsync(string userId, TripRequestDTO trip)
@@ -78,9 +79,49 @@ public class  TripsService(TravelBuddyDbContext dbContext, INBPService nbpServic
         throw new NotImplementedException();
     }
 
-    public Task<TripDayDetailsDTO> GetTripDayDetailsAsync(string userId, Guid tripDayId)
+    public async Task<TripDayDetailsDTO> GetTripDayDetailsAsync(string userId, Guid tripDayId)
     {
-        throw new NotImplementedException();
+        var day = await _dbContext.TripDays
+            .Where(p => p.Id == tripDayId && p.Trip!.UserId == userId)
+            .Include(p => p.Trip)
+            .Include(p => p.TripPoints)
+            .Include(p => p.TransferPoints)
+            .FirstOrDefaultAsync();
+
+        if (day == null || day.Trip == null)
+        {
+            throw new ArgumentException(ErrorMessage.TripDayNotFound);
+        }
+
+        TripDayDetailsDTO dayDetails = new()
+        {
+            Id =day.Id,
+            TripId = day.TripId,
+            Date = day.Date,
+        };
+
+
+        dayDetails.TripPoints = day.TripPoints!.Select(tp => new TripPointOverviewDTO
+        {
+            Name = tp.Name,
+            TripDayId = tp.TripDayId,
+            StartTime = tp.StartTime,
+            EndTime = tp.EndTime
+        }).ToList();
+
+        dayDetails.TransferPoints = day.TransferPoints!.Select(tp => new TransferPointDTO
+        {
+            TripDayId = tp.TripDayId,
+            Seconds = (int?)tp.TransferTime.TotalSeconds,
+            StartTime = tp.StartTime,
+            Mode = tp.Mode,
+            Type = tp.Type,
+            FromTripPointId = tp.FromTripPointId,
+            ToTripPointId = tp.ToTripPointId
+        }).ToList();
+
+        return dayDetails;
+
     }
 
     public async Task<TripDetailsDTO> GetTripDetailsAsync(string userId, Guid tripId)
