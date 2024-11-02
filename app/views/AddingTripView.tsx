@@ -9,7 +9,7 @@ import {
 import React, { useCallback, useMemo, useState } from "react";
 import { useTheme, MD3Theme, TextInput, Text } from "react-native-paper";
 import { DatePickerModal, registerTranslation } from "react-native-paper-dates";
-import { formatDateRange } from "@/utils/DateUtils";
+import { formatDateRange } from "@/utils/TimeUtils";
 import CurrencyValueInput from "@/components/CurrencyValueInput";
 import CustomModal from "@/components/CustomModal";
 import { RenderItem } from "@/components/RenderItem";

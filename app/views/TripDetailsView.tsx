@@ -1,19 +1,22 @@
 import { StyleSheet, View, Image, Dimensions, ScrollView } from "react-native";
-import React, { useMemo } from "react";
+import React, { useMemo, useState, useCallback } from "react";
 import TripDetailLabel from "@/components/TripDetailLabel";
 import { FAB, MD3Theme, useTheme } from "react-native-paper";
 import { CALENDAR_ICON } from "@/constants/Icons";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
+import SingleDatePickerModal from "@/components/SingleDatePickerModal";
+import { CalendarDate } from "react-native-paper-dates/lib/typescript/Date/Calendar";
 
 const { height, width } = Dimensions.get("window");
 
 const TripDetailsView = () => {
   const theme = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
-        
+  const [dateModalVisible, setDateModalVisible] = useState(false);
+
   const params = useLocalSearchParams();
   const { id } = params;
-        
+
   const trip = {
     tripName: "Wycieczka do Londynu",
     tripDate: "10.06.2024 - 15.06.2024",
@@ -25,6 +28,28 @@ const TripDetailsView = () => {
     preferenceProfileName: "Zwiedzanie i jedzenie",
     convenienceProfileName: "Potrzebuję internetu",
   };
+
+  // This will be fetched from the API
+  const startDate = "2024-06-10";
+  const endDate = "2024-06-15";
+
+  const tripDays = [
+    {
+      id: "1",
+      tripId: "1",
+      date: "2024-06-10",
+    },
+    {
+      id: "2",
+      tripId: "1",
+      date: "2024-06-11",
+    },
+    {
+      id: "3",
+      tripId: "1",
+      date: "2024-06-12",
+    },
+  ];
 
   const labels: Record<string, string> = {
     tripName: "Nazwa wycieczki",
@@ -38,9 +63,32 @@ const TripDetailsView = () => {
     convenienceProfileName: "Profil udogodnień",
   };
 
+  const dateToIdMap = useMemo(() => {
+    return new Map(tripDays.map((day) => [day.date, day.id]));
+  }, [tripDays]);
+
   const handlePress = () => {
-    console.log("FAB pressed!");
+    setDateModalVisible(true);
   };
+
+  const handleDismiss = useCallback(() => {
+    setDateModalVisible(false);
+  }, [setDateModalVisible]);
+
+  const handleConfirm = useCallback(
+    ({ date }: { date: CalendarDate }) => {
+      const formattedDate = (date as Date).toISOString().split("T")[0];
+      const tripDayId = dateToIdMap.get(formattedDate);
+      if (tripDayId) {
+        console.log("Redirecting to day with id " + tripDayId);
+        setDateModalVisible(false);
+        router.navigate(`/trips/details/id/day/${tripDayId}`);
+      } else {
+        console.error("Day not found");
+      }
+    },
+    [setDateModalVisible],
+  );
 
   return (
     <View style={styles.container}>
@@ -57,7 +105,13 @@ const TripDetailsView = () => {
           <TripDetailLabel key={key} title={labels[key] || key} value={value} />
         ))}
       </ScrollView>
-      
+      <SingleDatePickerModal
+        visible={dateModalVisible}
+        startDate={startDate}
+        endDate={endDate}
+        onDismiss={handleDismiss}
+        onConfirm={handleConfirm}
+      />
       <FAB
         color={theme.colors.onPrimary}
         style={styles.fab}
