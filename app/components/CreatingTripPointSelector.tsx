@@ -36,10 +36,6 @@ const CreatingTripPointSelector: React.FC<BottomSheetComponentProps> = ({
 
   useAnimatedKeyboard();
 
-  useEffect(() => {
-    console.log(options);
-  }, [options.length, isVisible]);
-
   const handleAnimate = useCallback(
     (fromIndex: number, toIndex: number) => {
       if (toIndex === -1) onClose();
