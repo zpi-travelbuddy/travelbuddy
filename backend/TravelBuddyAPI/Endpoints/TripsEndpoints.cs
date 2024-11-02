@@ -57,10 +57,16 @@ public static class TripsEndpoints
         return app;
     }
 
-    private static async Task<Results<Ok<List<CurrencyDTO>>, NotFound<string>>> GetAvailableCurrenciesAsync() //TODO
+    private static async Task<Results<Ok<List<CurrencyDTO>>, NotFound<string>>> GetAvailableCurrenciesAsync(INBPService nbpService) //TODO after refactor
     {
-        await Task.CompletedTask;
-        return TypedResults.NotFound("Not implemented");
+        throw new NotImplementedException();
+
+        try {
+            var currencies = await nbpService.GetCurrencyAsync();
+            //return TypedResults.Ok(currencies);
+        } catch (InvalidOperationException ex) {
+            return TypedResults.NotFound(ex.Message);
+        }
     }
 
     private static async Task<Results<Ok<TripStatisticsDTO>, NotFound<string>>> GetTripStatisticsAsync(int year, int? month, string currencyCode)
