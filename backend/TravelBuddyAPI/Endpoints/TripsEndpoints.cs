@@ -57,7 +57,7 @@ public static class TripsEndpoints
         return app;
     }
 
-    private static async Task<Results<Ok<List<CurrencyDTO>>, NotFound<string>>> GetAvailableCurrenciesAsync()
+    private static async Task<Results<Ok<List<CurrencyDTO>>, NotFound<string>>> GetAvailableCurrenciesAsync() //TODO
     {
         await Task.CompletedTask;
         return TypedResults.NotFound("Not implemented");
@@ -144,7 +144,6 @@ public static class TripsEndpoints
     }
 
     private static async Task<Results<Created<TripDetailsDTO>, BadRequest<string>>> CreateTripAsync(TripRequestDTO trip, ITripsService tripsService, HttpContext httpContext)
-
     {
         try {
             var userId = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new InvalidOperationException("User not found");

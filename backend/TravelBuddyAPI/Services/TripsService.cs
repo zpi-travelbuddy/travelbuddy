@@ -33,9 +33,6 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
 
     public async Task<TripDetailsDTO> CreateTripAsync(string userId, TripRequestDTO trip)
     {
-        decimal exchangeRate;
-        Guid destinationId;
-
         try
         {
             _ = trip ?? throw new ArgumentNullException(nameof(trip), ErrorMessage.EmptyRequest);
@@ -46,40 +43,40 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
             _ = await _categoryProfileService.GetCategoryProfileDetailsAsync(userId, trip.CategoryProfileId);
             _ = await _conditionProfileService.GetConditionProfileDetailsAsync(userId, trip.ConditionProfileId);
 
-            exchangeRate = await _nbpService.GetClosestRateAsync(trip?.CurrencyCode ?? string.Empty, DateOnly.FromDateTime(DateTime.Now)) ?? throw new InvalidOperationException(ErrorMessage.RetriveExchangeRate);
+            decimal exchangeRate = await _nbpService.GetClosestRateAsync(trip?.CurrencyCode ?? string.Empty, DateOnly.FromDateTime(DateTime.Now)) ?? throw new InvalidOperationException(ErrorMessage.RetriveExchangeRate);
 
             _ = trip!.DestinationPlace ?? throw new InvalidOperationException();
-            destinationId = await GetDestinationId(trip?.DestinationPlace?.ProviderId ?? string.Empty) ?? await AddDestinationAsync(trip!.DestinationPlace);
+            Guid destinationId = await GetDestinationId(trip?.DestinationPlace?.ProviderId ?? string.Empty) ?? await AddDestinationAsync(trip!.DestinationPlace);
+
+            Trip newTrip = new()
+            {
+                Id = Guid.NewGuid(),
+                UserId = userId,
+                Name = trip!.Name, // It cannot be null here
+                NumberOfTravelers = trip.NumberOfTravelers,
+                StartDate = trip.StartDate,
+                EndDate = trip.EndDate,
+                CurrencyCode = trip.CurrencyCode,
+                DestinationId = destinationId,
+                CategoryProfileId = trip.CategoryProfileId,
+                ConditionProfileId = trip.ConditionProfileId,
+                ExchangeRate = exchangeRate,
+                Budget = trip.Budget * exchangeRate
+            };
+
+            var validationContext = new ValidationContext(newTrip);
+            Validator.ValidateObject(newTrip, validationContext, validateAllProperties: true);
+
+            await _dbContext.Trips.AddAsync(newTrip);
+            await _dbContext.SaveChangesAsync();
+            await AddTripDaysAsync(newTrip.Id, newTrip.StartDate, newTrip.EndDate);
+
+            return await GetTripDetailsAsync(userId, newTrip.Id);
         }
-        catch (Exception e) when (e is ArgumentNullException || e is InvalidOperationException || e is ArgumentException || e is HttpRequestException)
+        catch (Exception e) when (e is ArgumentNullException || e is InvalidOperationException || e is ArgumentException || e is HttpRequestException || e is ValidationException)
         {
             throw new InvalidOperationException($"{ErrorMessage.CreateTrip}\n{e.Message}");
         }
-
-        Trip newTrip = new()
-        {
-            Id = Guid.NewGuid(),
-            UserId = userId,
-            Name = trip!.Name, // It cannot be null here
-            NumberOfTravelers = trip.NumberOfTravelers,
-            StartDate = trip.StartDate,
-            EndDate = trip.EndDate,
-            CurrencyCode = trip.CurrencyCode,
-            DestinationId = destinationId,
-            CategoryProfileId = trip.CategoryProfileId,
-            ConditionProfileId = trip.ConditionProfileId,
-            ExchangeRate = exchangeRate,
-            Budget = trip.Budget * exchangeRate
-        };
-
-        var validationContext = new ValidationContext(newTrip);
-        Validator.ValidateObject(newTrip, validationContext, validateAllProperties: true);
-
-        await _dbContext.Trips.AddAsync(newTrip);
-        await _dbContext.SaveChangesAsync();
-        await AddTripDaysAsync(newTrip.Id, newTrip.StartDate, newTrip.EndDate);
-
-        return await GetTripDetailsAsync(userId, newTrip.Id);
     }
 
     private async Task<Guid?> GetDestinationId(string providerId)
@@ -172,7 +169,7 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
 
         TripDayDetailsDTO dayDetails = new()
         {
-            Id =day.Id,
+            Id = day.Id,
             TripId = day.TripId,
             Date = day.Date,
         };
