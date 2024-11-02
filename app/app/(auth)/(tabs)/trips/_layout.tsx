@@ -11,6 +11,10 @@ export default function StackLayout() {
       }}
     >
       <Stack.Screen name="index" options={{ title: "Wycieczki" }} />
+      <Stack.Screen
+        name="details/[id]/index"
+        options={{ title: "Szczegóły wycieczki" }}
+      />
     </Stack>
   );
 }

@@ -1,3 +1,8 @@
+export function stringToDate(date: string): Date {
+  const [year, month, day] = date.split("-").map(Number);
+  return new Date(year, month - 1, day);
+}
+
 export function formatDate(date: Date | undefined): string {
   if (!date) return "";
   const day = String(date.getDate()).padStart(2, "0");
