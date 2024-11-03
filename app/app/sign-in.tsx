@@ -8,7 +8,13 @@ import {
 } from "react-native";
 import { useAuth } from "./ctx";
 import { router, Link } from "expo-router";
-import { useTheme, Text, Button } from "react-native-paper";
+import {
+  useTheme,
+  Text,
+  Button,
+  ActivityIndicator,
+  Modal,
+} from "react-native-paper";
 import Animated, {
   useAnimatedKeyboard,
   useAnimatedStyle,
@@ -17,19 +23,20 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { EmailTextInput } from "@/components/auth/EmailTextInput";
 import { PasswordTextInput } from "@/components/auth/PasswordTextInput";
 import { validateField } from "@/utils/validations";
-import { Credentials, AuthErrors } from "@/types/auth";
+import { Credentials, AuthErrors, FieldType } from "@/types/auth";
 import { MD3ThemeExtended } from "@/constants/Themes";
 
 // It would be good if we could calculate this value dynamically, but I had some issues with that
 const BOTTOM_VIEW_HEIGHT = 54;
 
 export default function SignIn() {
-  const { onLogin } = useAuth();
+  const { signIn } = useAuth();
+
   const insets = useSafeAreaInsets();
   const keyboard = useAnimatedKeyboard();
 
-  const theme = useTheme() as MD3ThemeExtended;
-  const styles = makeStyles(theme);
+  const theme = useTheme();
+  const styles = makeStyles(theme as MD3ThemeExtended);
 
   const [credentials, setCredentials] = useState<Credentials>({
     email: "",
@@ -39,6 +46,7 @@ export default function SignIn() {
     email: "",
     password: "",
   });
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const animatedStyles = useAnimatedStyle(() => {
     return {
@@ -49,7 +57,7 @@ export default function SignIn() {
     };
   });
 
-  const handleInputChange = (field: "email" | "password", value: string) => {
+  const handleInputChange = (field: FieldType, value: string) => {
     setCredentials((prev) => ({ ...prev, [field]: value }));
     setErrors((prev) => ({
       ...prev,
@@ -58,16 +66,37 @@ export default function SignIn() {
   };
 
   const validateForm = () => {
-    const emailError = validateField("email", credentials.email);
-    const passwordError = validateField("password", credentials.password);
+    const emailError = validateField(FieldType.EMAIL, credentials.email);
+    const passwordError = validateField(
+      FieldType.PASSWORD,
+      credentials.password,
+    );
     setErrors({ email: emailError, password: passwordError });
     return !emailError && !passwordError;
   };
 
   const login = async () => {
-    if (!validateForm()) return;
-    await onLogin!(credentials);
-    router.replace("/");
+    Keyboard.dismiss();
+    setIsLoading(true);
+
+    if (validateForm()) {
+      try {
+        await signIn!(credentials);
+        router.replace("/");
+      } catch (error: any) {
+        // TODO: Better error handling
+        if (error.code === "NotAuthorizedException") {
+          setErrors({
+            email: "Nieprawidłowy email lub hasło",
+            password: "Nieprawidłowy email lub hasło",
+          });
+        } else {
+          console.error("Error signing in:", error);
+        }
+      }
+    }
+
+    setIsLoading(false);
   };
 
   return (
@@ -80,7 +109,7 @@ export default function SignIn() {
             </Text>
             <EmailTextInput
               value={credentials.email}
-              onChangeText={(text) => handleInputChange("email", text)}
+              onChangeText={(text) => handleInputChange(FieldType.EMAIL, text)}
               error={!!errors.email}
               style={styles.inputText}
             />
@@ -88,7 +117,9 @@ export default function SignIn() {
             <View style={{ height: 10 }} />
             <PasswordTextInput
               value={credentials.password}
-              onChangeText={(text) => handleInputChange("password", text)}
+              onChangeText={(text) =>
+                handleInputChange(FieldType.PASSWORD, text)
+              }
               error={!!errors.password}
               style={styles.inputText}
             />
@@ -112,6 +143,15 @@ export default function SignIn() {
               Zarejestruj się
             </Link>
           </Text>
+          <Modal
+            visible={isLoading}
+            contentContainerStyle={{
+              alignSelf: "center",
+            }}
+            dismissable={false}
+          >
+            <ActivityIndicator size="large" animating={true} />
+          </Modal>
         </View>
       </TouchableWithoutFeedback>
     </SafeAreaView>

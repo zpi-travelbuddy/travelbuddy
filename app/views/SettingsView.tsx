@@ -13,12 +13,16 @@ import {
   Switch,
 } from "react-native-paper";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { useAuth } from "@/app/ctx";
+import { router } from "expo-router";
 
 type ModalOption = "FONT" | "THEME";
 
 const windowWidth = Dimensions.get("window").width;
 
 const SettingsView = () => {
+  const { signOut } = useAuth();
+
   const theme = useTheme();
   const styles = createStyles(theme);
 
@@ -65,6 +69,11 @@ const SettingsView = () => {
         break;
     }
     setIsSheetVisible(false);
+  };
+
+  const logout = async () => {
+    await signOut!();
+    router.navigate("/");
   };
 
   return (
@@ -158,7 +167,7 @@ const SettingsView = () => {
           mode="contained"
           style={styles.logOutButton}
           icon="logout"
-          onPress={() => console.log("Wylogowanie")}
+          onPress={logout}
         >
           Wyloguj się
         </Button>
