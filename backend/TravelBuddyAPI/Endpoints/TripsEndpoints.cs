@@ -100,10 +100,15 @@ public static class TripsEndpoints
         return TypedResults.NotFound("Not implemented");
     }
 
-    private static async Task<Results<Ok<TripDetailsDTO>, NotFound<string>>> GetTripDetailsAsync(Guid id)
-    {
-        await Task.CompletedTask;
-        return TypedResults.NotFound("Not implemented");
+    private static async Task<Results<Ok<TripDetailsDTO>, NotFound<string>>> GetTripDetailsAsync(Guid id, ITripsService tripsService, HttpContext httpContext)
+   {
+        try {
+            var userId = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new InvalidOperationException("User not found");
+            var tripDetails = await tripsService.GetTripDetailsAsync(userId, id);
+            return TypedResults.Ok(tripDetails);
+        } catch (ArgumentException ex) {
+            return TypedResults.NotFound(ex.Message);
+        }
     }
 
     private static async Task<Results<Ok<List<TripOverviewDTO>>, NotFound<string>>> GetCurrentTripsAsync(ITripsService tripsService, HttpContext httpContext)
@@ -145,10 +150,15 @@ public static class TripsEndpoints
         return TypedResults.BadRequest("Not implemented");
     }
 
-    private static async Task<Results<Ok<TripDayDetailsDTO>, NotFound<string>>> GetTripDayDetailsAsync(Guid id)
+    private static async Task<Results<Ok<TripDayDetailsDTO>, NotFound<string>>> GetTripDayDetailsAsync(Guid id, ITripsService tripsService, HttpContext httpContext)
     {
-        await Task.CompletedTask;
-        return TypedResults.NotFound("Not implemented");
+        try {
+            var userId = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new InvalidOperationException("User not found");
+            var dayDetails = await tripsService.GetTripDayDetailsAsync(userId, id);
+            return TypedResults.Ok(dayDetails);
+        } catch (ArgumentException ex) {
+            return TypedResults.NotFound(ex.Message);
+        }
     }
 
     private static async Task<Results<Ok<List<PlaceOverviewDTO>>, NotFound<string>>> GetRecomendationsAsync(Guid tripDayId)
