@@ -6,10 +6,12 @@ export function CodeTextInput({
   style,
   value,
   onChangeText,
+  error,
 }: {
   style: StyleProp<TextStyle>;
   value: string | undefined;
   onChangeText: (((text: string) => void) & Function) | undefined;
+  error?: boolean;
 }) {
   const theme = useTheme() as MD3ThemeExtended;
   const innerStyle = makeStyles(theme);
@@ -24,11 +26,11 @@ export function CodeTextInput({
       keyboardType="numeric"
       inputMode="numeric"
       left={<TextInput.Icon style={innerStyle.icon} icon="pound" />}
+      error={error}
     />
   );
 }
 
-// TODO: Change later any to theme type
 const makeStyles = (theme: MD3ThemeExtended) =>
   StyleSheet.create({
     icon: {
