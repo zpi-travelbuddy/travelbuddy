@@ -75,7 +75,7 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
         }
         catch (Exception e) when (e is ArgumentNullException || e is InvalidOperationException || e is ArgumentException || e is HttpRequestException || e is ValidationException)
         {
-            throw new InvalidOperationException($"{ErrorMessage.CreateTrip}\n{e.Message}");
+            throw new InvalidOperationException($"{ErrorMessage.CreateTrip} {e.Message}");
         }
     }
 
