@@ -276,6 +276,7 @@ public class GeoapifyClient : IGeoapifyService
                 HouseNumber = p.housenumber,
                 Latitude = p.lat,
                 Longitude = p.lon,
+                OpenningHours = p.opening_hours,
                 Categories = categories?
                     .Where(cat => ((IEnumerable<dynamic>?)p.categories)?
                         .Any(c => c.ToString() == cat.FullName) ?? false)
@@ -284,6 +285,6 @@ public class GeoapifyClient : IGeoapifyService
                     .Where(con => ((IEnumerable<dynamic>?)p.categories)? // Yes, p.categories is correct, API returns conditions as categories.
                         .Any(c => c.ToString() == con.FullName) ?? false)
                     .ToList(),
-            }).ToList(); // TODO handle opening hours
+            }).ToList();
     }
 }
