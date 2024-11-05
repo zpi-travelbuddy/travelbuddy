@@ -17,7 +17,7 @@ public class TransferPointsService(TravelBuddyDbContext dbContext, IGeoapifyServ
     {
         public const string EmptyRequest = "Request cannot be empty.";
         public const string SameTripPoints = "From and To trip points cannot be the same.";
-        public const string TripPointNotFound = "Trip point not found.";
+        public const string TripDayNotFound = "Trip day not found.";
         public const string TripPointNotFoundInTripDay = "Trip points not found in the trip day.";
         public const string InvalidTransferPointTime = "Transfer point time is invalid.";
         public const string CreateTransferPoint = "An error occurred while creating a transfer point:";
@@ -38,16 +38,16 @@ public class TransferPointsService(TravelBuddyDbContext dbContext, IGeoapifyServ
                 throw new InvalidOperationException(ErrorMessage.SameTripPoints);
             }
 
-            var tripPoint = await _dbContext.TripDays
+            var tripDay = await _dbContext.TripDays
                 .Where(p => p.Id == transferPoint.TripDayId && p.Trip!.UserId == userId)
                 .Include(p => p.Trip!)
                 .Include(p => p.TripPoints)
                 .FirstOrDefaultAsync();
 
             
-            _ = tripPoint ?? throw new InvalidOperationException(ErrorMessage.TripPointNotFound);
+            _ = tripDay ?? throw new InvalidOperationException(ErrorMessage.TripDayNotFound);
 
-            if (tripPoint.TripPoints == null || !tripPoint.TripPoints.Any(tp => tp.Id == transferPoint.FromTripPointId) || !tripPoint.TripPoints.Any(tp => tp.Id == transferPoint.ToTripPointId))
+            if (tripDay.TripPoints == null || !tripDay.TripPoints.Any(tp => tp.Id == transferPoint.FromTripPointId) || !tripDay.TripPoints.Any(tp => tp.Id == transferPoint.ToTripPointId))
             {
                 throw new InvalidOperationException(ErrorMessage.TripPointNotFoundInTripDay);
             }
@@ -61,7 +61,7 @@ public class TransferPointsService(TravelBuddyDbContext dbContext, IGeoapifyServ
                 ToTripPointId = transferPoint.ToTripPointId,
             };
 
-            if(transferPoint.Seconds == null || transferPoint.Mode == null)
+            if(transferPoint.Seconds == null && transferPoint.Mode == null)
             {
                 throw new InvalidOperationException(ErrorMessage.InvalidTransferPointTime);
             }
