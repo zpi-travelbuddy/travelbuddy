@@ -3,7 +3,18 @@ import { TripPointCard } from "@/components/TripPointCard";
 import { TransferPointNode } from "@/components/TransferPointNode";
 import { TripPoint, TransferPoint } from "@/types/data";
 import { useTheme, FAB } from "react-native-paper";
-import { Fragment, useMemo } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import CreatingTransferSelector from "@/components/CreatingTransferSelector";
+import {
+  BUS_ICON,
+  CAR_ICON,
+  DELETE_TRANSFER_ICON,
+  NON_STANDARD_TRANSFER_ICON,
+  TRAIN_ICON,
+  WALK_ICON,
+} from "@/constants/Icons";
+import { useRouter, useLocalSearchParams } from "expo-router";
 
 const tripPoints: TripPoint[] = [
   {
@@ -51,6 +62,30 @@ const transferPoints: TransferPoint[] = [
 const TripDayView = () => {
   const theme = useTheme();
   const style = createStyles(theme);
+  const router = useRouter();
+  const params = useLocalSearchParams();
+  const { id, day_id } = params;
+
+  const [isVisible, setIsVisible] = useState<boolean>(false);
+  const [isExtendedView, setIsExtendedView] = useState<boolean>(false);
+  const [tripTime, setTripTime] = useState<number | undefined>(undefined);
+
+  const options: Option[] = [
+    { icon: BUS_ICON, label: "", onPress: () => console.log("") },
+    { icon: TRAIN_ICON, label: "", onPress: () => console.log("") },
+    { icon: CAR_ICON, label: "", onPress: () => console.log("") },
+    { icon: WALK_ICON, label: "", onPress: () => console.log("") },
+    {
+      icon: NON_STANDARD_TRANSFER_ICON,
+      label: "",
+      onPress: () => setIsExtendedView(true),
+    },
+    {
+      icon: DELETE_TRANSFER_ICON,
+      label: "",
+      onPress: () => console.log(""),
+    },
+  ];
 
   const handleTripPointPress = () => {
     console.log("Trip point pressed");
@@ -66,7 +101,12 @@ const TripDayView = () => {
 
   const handleEmptyTransferPointPress = () => {
     console.log("Empty transfer point pressed");
+    setIsVisible(true);
   };
+
+  useEffect(() => {
+    console.log("isVisible: " + isVisible);
+  }, [isVisible]);
 
   const transferPointMap = useMemo(() => {
     const map = new Map();
@@ -102,7 +142,7 @@ const TripDayView = () => {
   };
 
   return (
-    <>
+    <GestureHandlerRootView>
       <ScrollView
         style={style.container}
         contentContainerStyle={style.containerContent}
@@ -126,10 +166,22 @@ const TripDayView = () => {
         color={theme.colors.onPrimary}
         label="Dodaj"
         onPress={() => {
-          console.log("FAB Clicked");
+          console.log("DEBUG")
+          setIsVisible(true);
         }}
       />
-    </>
+
+      <CreatingTransferSelector
+        options={options}
+        isVisible={isVisible}
+        isExtendedView={isExtendedView}
+        tripTime={tripTime}
+        onChange={setTripTime}
+        onClose={() => {
+          setIsVisible(false);
+        }}
+      />
+    </GestureHandlerRootView>
   );
 };
 

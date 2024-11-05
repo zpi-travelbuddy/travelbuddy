@@ -4,7 +4,7 @@ import DateTimePicker, {
   DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
 import ClickableInput from "./ClickableInput";
-import { formatTime } from "@/utils/DateUtils";
+import { formatTime } from "@/utils/TimeUtils";
 import { CLOCK_ICON } from "@/constants/Icons";
 
 interface TimePickerProps {

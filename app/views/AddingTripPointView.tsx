@@ -7,7 +7,7 @@ import {
   Text,
   SegmentedButtons,
 } from "react-native-paper";
-import { addHoursToDate, roundToNearestQuarterHour } from "@/utils/DateUtils";
+import { addHoursToDate, roundToNearestQuarterHour } from "@/utils/TimeUtils";
 import CurrencyValueInput from "@/components/CurrencyValueInput";
 import ActionButtons from "@/components/ActionButtons";
 import TimePicker from "@/components/TimePicker";
