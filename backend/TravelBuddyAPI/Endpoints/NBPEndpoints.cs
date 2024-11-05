@@ -47,25 +47,14 @@ public static class NBPEndpoints
     {
         try
         {
-            var response = await client.GetCurrencyAsync();
+            var response = await client.GetCurrenciesAsync();
 
             if (response is null)
             {
                 return Results.BadRequest("Response is null");
             }
 
-            var jsonDocument = JsonDocument.Parse(response);
-            var ratesElement = jsonDocument.RootElement[0].GetProperty("rates");
-
-            var currencyList = ratesElement.EnumerateArray()
-                                        .Select(rate => new CurrencyDTO
-                                        {
-                                            Code = rate.GetProperty("code").GetString(),
-                                            Name = rate.GetProperty("currency").GetString()
-                                        })
-                                        .ToList();
-
-            return Results.Ok(currencyList);
+            return Results.Ok(response);
 
         }
         catch (HttpRequestException ex)

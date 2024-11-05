@@ -41,11 +41,11 @@
           "status": 200,
           "body": [
             {
-              "id": "1",
+              "id": "123e4567-e89b-12d3-a456-426614174000",
               "name": "Podróż z psem"
             },
             {
-              "id": "2",
+              "id": "123e4567-e89b-12d3-a456-426614174001",
               "name": "Podróż z osobą niepełnosprawną"
             }
           ]
@@ -129,15 +129,15 @@
           "status": 200,
           "body": [
             {
-              "id": "1",
+              "id": "123e4567-e89b-12d3-a456-426614174000",
               "name": "Przyjazne zwierzętom"
             },
             {
-              "id": "2",
+              "id": "123e4567-e89b-12d3-a456-426614174001",
               "name": "Dostępne dla wózków inwalidzkich"
             },
             {
-              "id": "3",
+              "id": "123e4567-e89b-12d3-a456-426614174002",
               "name": "Dla wegetarian"
             }
           ]
@@ -169,7 +169,7 @@
             "name": "Podróż z psem",
             "conditions": [
               {
-                "id": "1",
+                "id": "123e4567-e89b-12d3-a456-426614174000",
                 "name": "Przyjazne zwierzętom"
               }
             ]

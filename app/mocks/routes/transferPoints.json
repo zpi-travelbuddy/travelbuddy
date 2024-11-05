@@ -9,17 +9,15 @@
         "type": "json",
         "options": {
           "status": 201,
-          "body": [
-            {
-              "tripDayId": "1",
-              "transferTime": "432",
-              "startTime": "12:40",
-              "mode": 0,
-              "type": 0,
-              "fromTripPointId": "1",
-              "toTripPointId": "2"
-            }
-          ]
+          "body": {
+            "tripDayId": "123e4567-e89b-12d3-a456-426614174000",
+            "seconds": 432,
+            "startTime": "12:40",
+            "mode": 0,
+            "type": 0,
+            "fromTripPointId": "123e4567-e89b-12d3-a456-426614174000",
+            "toTripPointId": "123e4567-e89b-12d3-a456-426614174002"
+          }
         }
       },
       {
