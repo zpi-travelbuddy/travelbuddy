@@ -38,11 +38,12 @@ public class TripPointsService(TravelBuddyDbContext dbContext, INBPService nbpSe
                 ?? throw new ArgumentException(ErrorMessage.TripDayNotFound);
 
             if (tripPoint.StartTime > tripPoint.EndTime) throw new ArgumentException(ErrorMessage.StartTimeAfterEndTime);
+            // TODO check if trip day is in the past
 
             decimal exchangeRate = await _nbpService.GetClosestRateAsync(trip?.CurrencyCode ?? string.Empty, DateOnly.FromDateTime(DateTime.Now)) ?? throw new InvalidOperationException(ErrorMessage.RetriveExchangeRate);
 
             _ = tripPoint.Place ?? throw new InvalidOperationException(ErrorMessage.EmptyPlace);
-            Guid placeId = await GetPlaceIdAsync(tripPoint.Place.ProviderId) ?? (await _placesService.AddPlaceAsync(tripPoint.Place)).Id;
+            Guid placeId = (await GetPlaceIdAsync(tripPoint.Place.ProviderId)) ?? (await _placesService.AddPlaceAsync(tripPoint.Place)).Id;
 
             TripPoint newTripPoint = new()
             {
@@ -55,6 +56,7 @@ public class TripPointsService(TravelBuddyDbContext dbContext, INBPService nbpSe
                 StartTime = tripPoint.StartTime,
                 EndTime = tripPoint.EndTime,
                 Status = TripPointStatus.planned,
+                PlaceId = placeId
                 // TODO add opening and closing time
             };
 
@@ -77,7 +79,7 @@ public class TripPointsService(TravelBuddyDbContext dbContext, INBPService nbpSe
         return await _dbContext.Places
             .OfType<ProviderPlace>()
             .Where(p => p.ProviderId == providerId)
-            .Select(p => p.Id)
+            .Select(p => (Guid?)p.Id)
             .FirstOrDefaultAsync();
     }
 
@@ -97,7 +99,6 @@ public class TripPointsService(TravelBuddyDbContext dbContext, INBPService nbpSe
             .Include(tp => tp.TripDay)
                 .ThenInclude(td => td != null ? td.Trip : null)
             .Include(tp => tp.Place)
-                .ThenInclude(p => p is ProviderPlace ? ((ProviderPlace)p).OpenningHours : null)
             .Include(tp => tp.Review)
             .Where(tp => tp.Id == tripPointId
                 && tp.TripDay != null

@@ -60,11 +60,14 @@ public static class TripPointsEndpoints
 
     private static async Task<Results<Ok<TripPointDetailsDTO>, NotFound<string>>> GetTripPointDetailsAsync(Guid id, ITripPointsService tripPointsService, HttpContext httpContext)
     {
-        try {
+        try
+        {
             var userId = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new InvalidOperationException("User not found");
             var tripPointDetails = await tripPointsService.GetTripPointDetailsAsync(userId, id);
             return TypedResults.Ok(tripPointDetails);
-        } catch (InvalidOperationException ex) {
+        }
+        catch (InvalidOperationException ex)
+        {
             return TypedResults.NotFound(ex.Message);
         }
     }
@@ -81,10 +84,18 @@ public static class TripPointsEndpoints
         return TypedResults.NotFound("Not implemented");
     }
 
-    private static async Task<Results<Created<TripPointDetailsDTO>, BadRequest<string>>> CreateTripPointAsync(TripPointRequestDTO tripPoint)
-
+    private static async Task<Results<Created<TripPointDetailsDTO>, BadRequest<string>>> CreateTripPointAsync(TripPointRequestDTO tripPoint, ITripPointsService tripPointsService, HttpContext httpContext)
     {
-        await Task.CompletedTask;
-        return TypedResults.BadRequest("Not implemented");
+        try
+        {
+            string userId = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new InvalidOperationException("User not found");
+            var tripPointDetails = await tripPointsService.CreateTripPointAsync(userId, tripPoint);
+            string uri = $"/tripPoints/{tripPointDetails.Id}";
+            return TypedResults.Created(uri, tripPointDetails);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return TypedResults.BadRequest(ex.Message);
+        }
     }
 }

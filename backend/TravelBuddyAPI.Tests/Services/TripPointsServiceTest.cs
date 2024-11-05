@@ -15,6 +15,7 @@ public class TripPointsServiceTest : IDisposable
     private readonly TravelBuddyDbContext _dbContext;
     private readonly Mock<INBPService> _mockNBPService;
     private readonly Mock<IPlacesService> _mockPlacesService;
+    private readonly Mock<IGeoapifyService> _mockGeoapifyService;
     private readonly TripPointsService _tripPointsService;
 
     public TripPointsServiceTest()
@@ -25,6 +26,7 @@ public class TripPointsServiceTest : IDisposable
 
         _dbContext = new TravelBuddyDbContext(options);
         _mockNBPService = new Mock<INBPService>();
+        _mockGeoapifyService = new Mock<IGeoapifyService>();
         _mockPlacesService = new Mock<IPlacesService>();
         _tripPointsService = new TripPointsService(_dbContext, _mockNBPService.Object, _mockPlacesService.Object);
     }
@@ -42,15 +44,27 @@ public class TripPointsServiceTest : IDisposable
             PredictedCost = 100,
             StartTime = TimeOnly.FromDateTime(DateTime.Now),
             EndTime = TimeOnly.FromDateTime(DateTime.Now.AddHours(1)),
-            Place = new PlaceRequestDTO { ProviderId = "1", Name = "Test Place" }
+            Place = new PlaceRequestDTO { Name = "Test Place", ProviderId = "1", City = "Test City", Country = "Test Country" }
         };
+
+        var place = new ProviderPlace
+        {
+            Id = Guid.NewGuid(),
+            Name = tripPointRequest.Place.Name,
+            ProviderId = tripPointRequest.Place.ProviderId,
+            City = tripPointRequest.Place.City,
+            Country = tripPointRequest.Place.Country
+        };
+
+        await _dbContext.Places.AddAsync(place);
+        await _dbContext.SaveChangesAsync();
 
         var trip = new Trip
         {
             UserId = userId,
             CurrencyCode = "USD",
             Name = "Test Trip",
-            TripDays = new List<TripDay> { new TripDay { Id = tripPointRequest.TripDayId } }
+            TripDays = new List<TripDay> { new TripDay { Id = tripPointRequest.TripDayId, Date = DateOnly.FromDateTime(DateTime.Now) } }
         };
 
         await _dbContext.Trips.AddAsync(trip);
@@ -59,8 +73,8 @@ public class TripPointsServiceTest : IDisposable
         _mockNBPService.Setup(s => s.GetClosestRateAsync(It.IsAny<string>(), It.IsAny<DateOnly>(), It.IsAny<int>()))
             .ReturnsAsync(2.0m);
 
-        _mockPlacesService.Setup(s => s.AddPlaceAsync(It.IsAny<PlaceRequestDTO>()))
-            .ReturnsAsync(new PlaceDetailsDTO { Id = Guid.NewGuid() });
+        _mockGeoapifyService.Setup(s => s.GetPlaceDetailsAsync(It.IsAny<string>()))
+            .ReturnsAsync(place);
 
 
         // Act
