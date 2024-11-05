@@ -4,6 +4,8 @@ using TravelBuddyAPI.DTOs.TripPoint;
 using TravelBuddyAPI.DTOs.TripPointReview;
 using Microsoft.AspNetCore.Http.HttpResults;
 using TravelBuddyAPI.DTOs.PlaceCategory;
+using TravelBuddyAPI.Interfaces;
+using System.Security.Claims;
 
 namespace TravelBuddyAPI.Endpoints;
 
@@ -56,10 +58,15 @@ public static class TripPointsEndpoints
         return TypedResults.BadRequest("Not implemented");
     }
 
-    private static async Task<Results<Ok<TripPointDetailsDTO>, NotFound<string>>> GetTripPointDetailsAsync(Guid id)
+    private static async Task<Results<Ok<TripPointDetailsDTO>, NotFound<string>>> GetTripPointDetailsAsync(Guid id, ITripPointsService tripPointsService, HttpContext httpContext)
     {
-        await Task.CompletedTask;
-        return TypedResults.NotFound("Not implemented");
+        try {
+            var userId = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new InvalidOperationException("User not found");
+            var tripPointDetails = await tripPointsService.GetTripPointDetailsAsync(userId, id);
+            return TypedResults.Ok(tripPointDetails);
+        } catch (InvalidOperationException ex) {
+            return TypedResults.NotFound(ex.Message);
+        }
     }
 
     private static async Task<Results<NoContent, NotFound<string>>> DeleteTripPointAsync(Guid id)

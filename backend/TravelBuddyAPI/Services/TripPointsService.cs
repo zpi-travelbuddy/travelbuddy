@@ -6,6 +6,7 @@ using TravelBuddyAPI.Models;
 using Microsoft.EntityFrameworkCore;
 using TravelBuddyAPI.Enums;
 using System.ComponentModel.DataAnnotations;
+using TravelBuddyAPI.DTOs.Place;
 
 namespace TravelBuddyAPI.Services;
 
@@ -23,6 +24,7 @@ public class TripPointsService(TravelBuddyDbContext dbContext, INBPService nbpSe
         public const string RetriveExchangeRate = "Could not retrive exchange rate.";
         public const string EmptyPlace = "Place cannot be empty.";
         public const string CreateTripPoint = "An error occurred while creating a trip point.";
+        public const string TripPointNotFound = "Trip point not found.";
     }
 
     public async Task<TripPointDetailsDTO> CreateTripPointAsync(string userId, TripPointRequestDTO tripPoint)
@@ -37,7 +39,7 @@ public class TripPointsService(TravelBuddyDbContext dbContext, INBPService nbpSe
 
             if (tripPoint.StartTime > tripPoint.EndTime) throw new ArgumentException(ErrorMessage.StartTimeAfterEndTime);
 
-           decimal exchangeRate = await _nbpService.GetClosestRateAsync(trip?.CurrencyCode ?? string.Empty, DateOnly.FromDateTime(DateTime.Now)) ?? throw new InvalidOperationException(ErrorMessage.RetriveExchangeRate);
+            decimal exchangeRate = await _nbpService.GetClosestRateAsync(trip?.CurrencyCode ?? string.Empty, DateOnly.FromDateTime(DateTime.Now)) ?? throw new InvalidOperationException(ErrorMessage.RetriveExchangeRate);
 
             _ = tripPoint.Place ?? throw new InvalidOperationException(ErrorMessage.EmptyPlace);
             Guid placeId = await GetPlaceIdAsync(tripPoint.Place.ProviderId) ?? (await _placesService.AddPlaceAsync(tripPoint.Place)).Id;
@@ -89,9 +91,52 @@ public class TripPointsService(TravelBuddyDbContext dbContext, INBPService nbpSe
         throw new NotImplementedException();
     }
 
-    public Task<TripPointDetailsDTO> GetTripPointDetailsAsync(string userId, Guid tripPointId)
+    public async Task<TripPointDetailsDTO> GetTripPointDetailsAsync(string userId, Guid tripPointId)
     {
-        throw new NotImplementedException();
+        TripPoint tripPoint = await _dbContext.TripPoints
+            .Include(tp => tp.TripDay)
+                .ThenInclude(td => td != null ? td.Trip : null)
+            .Include(tp => tp.Place)
+                .ThenInclude(p => p is ProviderPlace ? ((ProviderPlace)p).OpenningHours : null)
+            .Include(tp => tp.Review)
+            .Where(tp => tp.Id == tripPointId
+                && tp.TripDay != null
+                && tp.TripDay.Trip != null
+                && tp.TripDay.Trip.UserId == userId)
+            .FirstOrDefaultAsync() ?? throw new InvalidOperationException(ErrorMessage.TripPointNotFound);
+
+        return new TripPointDetailsDTO
+        {
+            Id = tripPoint.Id,
+            Name = tripPoint.Name,
+            Comment = tripPoint.Comment,
+            TripDayId = tripPoint.TripDayId,
+            PredictedCost = tripPoint.PredictedCost / tripPoint.ExchangeRate,
+            CurrencyCode = tripPoint.TripDay?.Trip?.CurrencyCode,
+            StartTime = tripPoint.StartTime,
+            EndTime = tripPoint.EndTime,
+            Status = tripPoint.Status,
+            PlaceId = tripPoint.Place.Id,
+            Place = tripPoint.Place != null ? new PlaceOverviewDTO
+            {
+                Id = tripPoint.Place.Id,
+                ProviderId = tripPoint.Place is ProviderPlace providerPlace ? providerPlace.ProviderId : null,
+                Name = tripPoint.Place.Name,
+                Country = tripPoint.Place.Country,
+                City = tripPoint.Place.City
+            } : null,
+            Review = tripPoint.Review != null ? new TripPointReviewDetailsDTO
+            {
+                Id = tripPoint.Review.Id,
+                TripPointId = tripPoint.Review.TripPointId,
+                CurrencyCode = tripPoint.Review.CurrencyCode,
+                PlaceId = tripPoint.Review.PlaceId,
+                ActualCost = tripPoint.Review.ActualCost / tripPoint.Review.ExchangeRate,
+                ActualCostPerPerson = tripPoint.Review.ActualCostPerPerson / tripPoint.Review.ExchangeRate,
+                ActualTimeSpent = tripPoint.Review.ActualTimeSpent,
+                Rating = tripPoint.Review.Rating
+            } : null
+        };
     }
 
     public Task<TripPointReviewDetailsDTO> GetTripPointReviewDetailsAsync(string userId, Guid tripPointReviewId)
