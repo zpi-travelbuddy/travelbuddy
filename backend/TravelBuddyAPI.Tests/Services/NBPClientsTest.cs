@@ -59,11 +59,11 @@ namespace TravelBuddyAPI.Tests.Services
         public async Task GetCurrencyAsync_ReturnsCurrencyData()
         {
             // Act
-            var currencyData = await _nbpClient.GetCurrencyAsync();
+            var currencyData = await _nbpClient.GetCurrenciesAsync();
 
             // Assert
             Assert.NotNull(currencyData);
-            Assert.Contains("table", currencyData);
+            Assert.NotEmpty(currencyData);
         }
 
         [Fact]

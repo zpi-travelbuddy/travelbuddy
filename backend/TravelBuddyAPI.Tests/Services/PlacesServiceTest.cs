@@ -107,4 +107,91 @@ public class PlacesServiceTest
         // Assert
         Assert.Empty(result);
     }
+
+    [Fact]
+    public async Task AddPlaceAsync_ShouldAddProviderPlace()
+    {
+        // Arrange
+        var placeRequest = new PlaceRequestDTO
+        {
+            ProviderId = Guid.NewGuid().ToString(),
+            Name = "Test Place",
+            Country = "Test Country",
+            City = "Test City",
+            Street = "Test Street",
+            HouseNumber = "123",
+            Latitude = 50.0m,
+            Longitude = 20.0m,
+        };
+
+        _mockDbCache.Setup(x => x.GetCategoriesAsync()).ReturnsAsync(new List<PlaceCategory>());
+        _mockGeoapifyService.Setup(x => x.GetPlaceDetailsAsync(It.IsAny<string>())).ReturnsAsync(new ProviderPlace
+        {
+            ProviderId = placeRequest.ProviderId,
+            Name = placeRequest.Name,
+            Country = placeRequest.Country,
+            City = placeRequest.City,
+            Street = placeRequest.Street,
+            HouseNumber = placeRequest.HouseNumber,
+            Latitude = placeRequest.Latitude,
+            Longitude = placeRequest.Longitude,
+        });
+
+        // Act
+        var result = await _placesService.AddPlaceAsync(placeRequest);
+
+
+        // Assert
+        var addedPlace = await _dbContext.Places.FirstOrDefaultAsync();
+        Assert.NotNull(addedPlace);
+        Assert.Equal(placeRequest.Name, addedPlace.Name);
+        Assert.Equal(placeRequest.Country, addedPlace.Country);
+        Assert.Equal(placeRequest.City, addedPlace.City);
+        Assert.Equal(placeRequest.Street, addedPlace.Street);
+        Assert.Equal(placeRequest.HouseNumber, addedPlace.HouseNumber);
+        Assert.Equal(placeRequest.Latitude, addedPlace.Latitude);
+        Assert.Equal(placeRequest.Longitude, addedPlace.Longitude);
+    }
+
+    [Fact]
+    public async Task AddPlaceAsync_ShouldAddCustomPlace()
+    {
+        // Arrange
+        var placeRequest = new PlaceRequestDTO
+        {
+            Name = "Test Place",
+            Country = "Test Country",
+            City = "Test City",
+            // Street = "Test Street",
+            // HouseNumber = "123",
+            Latitude = 50.0m,
+            Longitude = 20.0m,
+            CategoryId = Guid.NewGuid()
+        };
+
+        var categories = new List<PlaceCategory>
+    {
+        new PlaceCategory { Id = placeRequest.CategoryId.Value, Name = "Test Category" }
+    };
+
+        _mockDbCache.Setup(x => x.GetCategoriesAsync()).ReturnsAsync(categories);
+
+        // Act
+        var result = await _placesService.AddPlaceAsync(placeRequest);
+
+        // Assert
+        var addedPlace = await _dbContext.Places.FirstOrDefaultAsync();
+        Assert.NotNull(addedPlace);
+        Assert.Equal(placeRequest.Name, addedPlace.Name);
+        Assert.Equal(placeRequest.Country, addedPlace.Country);
+        Assert.Equal(placeRequest.City, addedPlace.City);
+        Assert.Equal(placeRequest.Street, addedPlace.Street);
+        Assert.Equal(placeRequest.HouseNumber, addedPlace.HouseNumber);
+        Assert.Equal(placeRequest.Latitude, addedPlace.Latitude);
+        Assert.Equal(placeRequest.Longitude, addedPlace.Longitude);
+
+        // Check the added category
+        Assert.NotNull(result.SuperCategory);
+        Assert.Equal(placeRequest.CategoryId, result.SuperCategory.Id);
+    }
 }

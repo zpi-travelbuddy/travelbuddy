@@ -17,10 +17,8 @@ public abstract class Place
     [Required]
     public string? City { get; set; }
 
-    [Required]
     public string? Street { get; set; }
 
-    [Required]
     public string? HouseNumber { get; set; }
 
     [Required]

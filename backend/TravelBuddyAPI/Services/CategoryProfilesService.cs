@@ -1,12 +1,20 @@
 using TravelBuddyAPI.Data;
 using TravelBuddyAPI.DTOs.CategoryProfile;
 using TravelBuddyAPI.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using TravelBuddyAPI.Models;
+using TravelBuddyAPI.DTOs.PlaceCategory;
 
 namespace TravelBuddyAPI.Services;
 
 public class CategoryProfilesService(TravelBuddyDbContext dbContext) : ICategoryProfilesService
 {
     private readonly TravelBuddyDbContext _dbContext = dbContext;
+
+    public static class ErrorMessage
+    {
+        public const string CategoryProfileNotFound = "Category profile not found.";
+    }
 
     public Task<CategoryProfileDetailsDTO> CreateCategoryProfileAsync(string userId, CategoryProfileRequestDTO categoryProfile)
     {
@@ -23,9 +31,22 @@ public class CategoryProfilesService(TravelBuddyDbContext dbContext) : ICategory
         throw new NotImplementedException();
     }
 
-    public Task<CategoryProfileDetailsDTO> GetCategoryProfileDetailsAsync(string userId, Guid profileId)
+    public async Task<CategoryProfileDetailsDTO> GetCategoryProfileDetailsAsync(string userId, Guid profileId)
     {
-        throw new NotImplementedException();
+        CategoryProfile categoryProfile = await _dbContext.CategoryProfiles
+            .Include(cp => cp.Categories)
+            .FirstOrDefaultAsync(cp => cp.Id == profileId && cp.UserId == userId) ?? throw new InvalidOperationException(ErrorMessage.CategoryProfileNotFound);
+
+        return new CategoryProfileDetailsDTO()
+        {
+            Name = categoryProfile.Name,
+            Categories = categoryProfile?.Categories?
+                .Select(c => new PlaceCategoryDTO()
+                {
+                    Id = c.Id,
+                    Name = c.Name,
+                }).ToList()
+        };
     }
 
     public Task<List<CategoryProfileOverviewDTO>> GetUserCategoryProfilesAsync(string userId)

@@ -1,4 +1,5 @@
 using TravelBuddyAPI.DTOs.Place;
+using TravelBuddyAPI.Models;
 
 namespace TravelBuddyAPI.Interfaces;
 
@@ -35,7 +36,7 @@ public interface IPlacesService
     /// </summary>
     /// <param name="place">The data transfer object containing the place information.</param>
     /// <returns>A task that represents the asynchronous operation. The task result indicates whether the place was successfully added.</returns>
-    Task<bool> AddPlaceAsync(PlaceRequestDTO place);
+    Task<PlaceDetailsDTO> AddPlaceAsync(PlaceRequestDTO place);
 
     /// <summary>
     /// Deletes a place based on the provided identifier.
