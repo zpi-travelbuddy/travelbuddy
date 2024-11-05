@@ -3,6 +3,8 @@ using RestSharp;
 using Newtonsoft.Json;
 using System.Diagnostics;
 using Microsoft.CSharp.RuntimeBinder;
+using TravelBuddyAPI.DTOs.Currency;
+using System.Text.Json;
 
 namespace TravelBuddyAPI.Services;
 
@@ -48,16 +50,25 @@ public class NBPClient : INBPService
     }
     
 
-    public async Task<string?> GetCurrencyAsync(){
+    public async Task<List<CurrencyDTO>> GetCurrenciesAsync(){
         var request = new RestRequest($"tables/a", Method.Get);
-
         var response = await _client.ExecuteAsync(request);
-        if (!response.IsSuccessful)
+
+        if (!response.IsSuccessful || response.Content is null)
         {
             throw new HttpRequestException($"Error retrieving currency: {response.Content}");
         }
 
-        return response.Content;
+        var jsonDocument = JsonDocument.Parse(response.Content);
+        var ratesElement = jsonDocument.RootElement[0].GetProperty("rates");
+
+        return ratesElement.EnumerateArray()
+                    .Select(rate => new CurrencyDTO
+                    {
+                        Code = rate.GetProperty("code").GetString(),
+                        Name = rate.GetProperty("currency").GetString()
+                    })
+                    .ToList();
     }
     public async Task<decimal?> GetClosestRateAsync(string currencyCode, DateOnly date, int maxRetries = 2)
     {
