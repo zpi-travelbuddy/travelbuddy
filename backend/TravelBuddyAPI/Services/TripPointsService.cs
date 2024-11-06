@@ -122,6 +122,8 @@ public class TripPointsService(TravelBuddyDbContext dbContext, INBPService nbpSe
             CurrencyCode = tripPoint.TripDay?.Trip?.CurrencyCode,
             StartTime = tripPoint.StartTime,
             EndTime = tripPoint.EndTime,
+            OpeningTime = tripPoint.OpeningTime,
+            ClosingTime = tripPoint.ClosingTime,
             Status = tripPoint.Status,
             PlaceId = tripPoint.Place!.Id,
             Place = tripPoint.Place != null ? new PlaceOverviewDTO
