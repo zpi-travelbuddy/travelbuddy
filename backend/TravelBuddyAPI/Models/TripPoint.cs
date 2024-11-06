@@ -37,9 +37,9 @@ public class TripPoint{
     [Required]
     public TimeOnly EndTime { get; set; }
 
-    public TimeOnly OpeningTime { get; set; }
+    public TimeOnly? OpeningTime { get; set; }
 
-    public TimeOnly ClosingTime { get; set; }
+    public TimeOnly? ClosingTime { get; set; }
 
     [Required]
     public TripPointStatus Status { get; set; }

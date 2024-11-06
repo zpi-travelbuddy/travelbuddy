@@ -177,6 +177,7 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
 
         dayDetails.TripPoints = day.TripPoints!.Select(tp => new TripPointOverviewDTO
         {
+            Id = tp.Id,
             Name = tp.Name,
             TripDayId = tp.TripDayId,
             StartTime = tp.StartTime,
