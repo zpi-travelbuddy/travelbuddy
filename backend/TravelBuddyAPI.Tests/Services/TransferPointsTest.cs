@@ -313,7 +313,6 @@ public class TransferPointsServiceTest
             TransferTime = TimeSpan.FromSeconds(3600)
         };
 
-        // Dodanie tripDay i transferPoint do bazy danych
         await _dbContext.TransferPoints.AddAsync(transferPoint);
         await _dbContext.SaveChangesAsync();
 
@@ -323,7 +322,7 @@ public class TransferPointsServiceTest
         // Assert
         Assert.True(result);
         var deletedTransferPoint = await _dbContext.TransferPoints.FindAsync(transferPoint.Id);
-        Assert.Null(deletedTransferPoint); // Sprawdza, czy transferPoint został usunięty z bazy danych
+        Assert.Null(deletedTransferPoint);
     }
 
     [Fact]
