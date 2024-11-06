@@ -39,9 +39,9 @@ public class TripPointDetailsDTO
     [Required]
     public TimeOnly EndTime { get; set; }
 
-    public TimeOnly OpeningTime { get; set; }
+    public TimeOnly? OpeningTime { get; set; }
 
-    public TimeOnly ClosingTime { get; set; }
+    public TimeOnly? ClosingTime { get; set; }
 
     public TripPointStatus Status { get; set; }
 
