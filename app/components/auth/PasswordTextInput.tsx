@@ -13,11 +13,13 @@ export function PasswordTextInput({
   value,
   onChangeText,
   error,
+  placeholder,
 }: {
   style: StyleProp<TextStyle>;
   value: string | undefined;
   onChangeText: (((text: string) => void) & Function) | undefined;
   error?: boolean | undefined;
+  placeholder?: string;
 }) {
   const [hidePassword, setHidePassword] = useState(true);
   const theme = useTheme();
@@ -34,7 +36,7 @@ export function PasswordTextInput({
       onChangeText={onChangeText}
       error={error || undefined}
       mode="outlined"
-      placeholder="Hasło"
+      placeholder={placeholder ?? "Hasło"}
       left={<TextInput.Icon icon="lock-outline" />}
       right={
         <TextInput.Icon

@@ -94,7 +94,7 @@ export default function SignIn() {
             />
             <Text style={styles.textError}>{errors.password || " "}</Text>
             <Text style={styles.forgotPassword} variant="labelLarge">
-              Nie pamiętam hasła
+              <Link href="/forgot-password/email">Nie pamiętam hasła</Link>
             </Text>
             <Button
               style={styles.button}
