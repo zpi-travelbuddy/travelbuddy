@@ -19,7 +19,7 @@ public class TripPointsService(TravelBuddyDbContext dbContext, INBPService nbpSe
     private static class ErrorMessage
     {
         public const string TripDayNotFound = "Could not find trip day of given id.";
-
+        public const string TripDayInPast = "Cannot add trip point to past trip day.";
         public const string StartTimeAfterEndTime = "Start time cannot be after end time.";
         public const string RetriveExchangeRate = "Could not retrive exchange rate.";
         public const string EmptyPlace = "Place cannot be empty.";
@@ -38,12 +38,17 @@ public class TripPointsService(TravelBuddyDbContext dbContext, INBPService nbpSe
                 ?? throw new ArgumentException(ErrorMessage.TripDayNotFound);
 
             if (tripPoint.StartTime > tripPoint.EndTime) throw new ArgumentException(ErrorMessage.StartTimeAfterEndTime);
-            // TODO check if trip day is in the past
+
+            TripDay? tripDay = trip.TripDays?.FirstOrDefault(td => td.Id == tripPoint.TripDayId);
+            if (tripDay?.Date < DateOnly.FromDateTime(DateTime.Now)) throw new ArgumentException(ErrorMessage.TripDayInPast);
 
             decimal exchangeRate = await _nbpService.GetClosestRateAsync(trip?.CurrencyCode ?? string.Empty, DateOnly.FromDateTime(DateTime.Now)) ?? throw new InvalidOperationException(ErrorMessage.RetriveExchangeRate);
 
             _ = tripPoint.Place ?? throw new InvalidOperationException(ErrorMessage.EmptyPlace);
             Guid placeId = (await GetPlaceIdAsync(tripPoint.Place.ProviderId)) ?? (await _placesService.AddPlaceAsync(tripPoint.Place)).Id;
+
+            ProviderPlace? providerPlace = await _dbContext.Places.OfType<ProviderPlace>().FirstOrDefaultAsync(pp => pp.Id == placeId);
+            var openingHours = providerPlace?.GetOpenningHours(tripDay!.Date);
 
             TripPoint newTripPoint = new()
             {
@@ -56,8 +61,9 @@ public class TripPointsService(TravelBuddyDbContext dbContext, INBPService nbpSe
                 StartTime = tripPoint.StartTime,
                 EndTime = tripPoint.EndTime,
                 Status = TripPointStatus.planned,
-                PlaceId = placeId
-                // TODO add opening and closing time
+                PlaceId = placeId,
+                OpeningTime = openingHours?.opensAt,
+                ClosingTime = openingHours?.closesAt
             };
 
             var validationContext = new ValidationContext(newTripPoint);
@@ -117,7 +123,7 @@ public class TripPointsService(TravelBuddyDbContext dbContext, INBPService nbpSe
             StartTime = tripPoint.StartTime,
             EndTime = tripPoint.EndTime,
             Status = tripPoint.Status,
-            PlaceId = tripPoint.Place.Id,
+            PlaceId = tripPoint.Place!.Id,
             Place = tripPoint.Place != null ? new PlaceOverviewDTO
             {
                 Id = tripPoint.Place.Id,
