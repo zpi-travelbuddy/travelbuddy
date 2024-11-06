@@ -6,6 +6,8 @@ import axios from "axios";
 
 Amplify.configure(amplifyConfig);
 
+const EXPIRATION_BUFFER = 5 * 60 * 1000; // 5 minutes
+
 // axios
 const api = axios.create({
   baseURL: process.env.EXPO_PUBLIC_API_URL,
@@ -53,7 +55,7 @@ export const AuthProvider = ({ children }: any) => {
   };
 
   const getAccessToken = async () => {
-    const bufferTime = 5 * 60 * 1000; // Refresh 5 minutes before expiration
+    const bufferTime = EXPIRATION_BUFFER; // Refresh 5 minutes before expiration
 
     if (cachedAccessToken && Date.now() < tokenExpiration - bufferTime) {
       setIsAuthenticated(true);
@@ -78,11 +80,7 @@ export const AuthProvider = ({ children }: any) => {
       setIsLoading(true);
       try {
         const fetchedToken = await getAccessToken();
-        if (fetchedToken) {
-          setIsAuthenticated(true);
-        } else {
-          setIsAuthenticated(false);
-        }
+        setIsAuthenticated(!!fetchedToken);
       } catch (error) {
         console.error("Auth initialization error:", error);
         setIsAuthenticated(false);
