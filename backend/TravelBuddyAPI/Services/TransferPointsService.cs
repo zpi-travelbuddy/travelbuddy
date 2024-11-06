@@ -68,7 +68,7 @@ public class TransferPointsService(TravelBuddyDbContext dbContext, IGeoapifyServ
                 Type = transferPoint.Type
             };
 
-            if(!(transferPoint.Seconds == null) ^ (transferPoint.Mode == null))
+            if(!((transferPoint.Seconds == null) ^ (transferPoint.Mode == null)))
             {
                 throw new InvalidOperationException(ErrorMessage.InvalidTransferPointTime);
             }
@@ -154,7 +154,7 @@ public class TransferPointsService(TravelBuddyDbContext dbContext, IGeoapifyServ
             existingTransferPoint.Mode = transferPoint.Mode;
             existingTransferPoint.Type = transferPoint.Type;
 
-            if (!(transferPoint.Seconds == null) ^ (transferPoint.Mode == null))
+            if (!((transferPoint.Seconds == null) ^ (transferPoint.Mode == null)))
             {
                 throw new InvalidOperationException(ErrorMessage.InvalidTransferPointTime);
             }
