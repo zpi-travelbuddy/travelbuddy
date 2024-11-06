@@ -43,4 +43,9 @@ public class ProviderPlace : Place
             return average.HasValue ? Math.Round(average.Value, 1) : null;
         }
     }
+
+    public (TimeOnly opensAt, TimeOnly closesAt)? GetOpenningHours(DateOnly date)
+    {
+        return Utilities.OpeningHoursParser.ParseOpeningHours(OpenningHours, date);
+    }
 }
