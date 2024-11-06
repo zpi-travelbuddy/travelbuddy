@@ -220,15 +220,15 @@ public class GeoapifyClient : IGeoapifyService
         }
     }
 
-    public async Task<TimeSpan?> GetRouteTimeAsync((double latitude, double longitude) start, (double latitude, double longitude) end, TransferMode mode, TrafficType traffic = TrafficType.approximated, Units units = Units.metric)
+    public async Task<TimeSpan?> GetRouteTimeAsync((decimal latitude, decimal longitude) start, (decimal latitude, decimal longitude) end, TransferMode mode, TrafficType traffic = TrafficType.approximated, Units units = Units.metric)
     {
         var request = new RestRequest("v1/routematrix", Method.Post);
         request.AddHeader("Content-Type", "application/json");
         var body = new
         {
             mode = mode.ToString(),
-            sources = new[] { new { location = new double[] { start.longitude, start.latitude } } },
-            targets = new[] { new { location = new double[] { end.longitude, end.latitude } } },
+            sources = new[] { new { location = new decimal[] { start.longitude, start.latitude } } },
+            targets = new[] { new { location = new decimal[] { end.longitude, end.latitude } } },
             traffic = traffic.ToString(),
             units = units.ToString(),
         };

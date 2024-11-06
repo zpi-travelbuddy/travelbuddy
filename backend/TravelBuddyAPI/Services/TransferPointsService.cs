@@ -43,13 +43,16 @@ public class TransferPointsService(TravelBuddyDbContext dbContext, IGeoapifyServ
             var tripDay = await _dbContext.TripDays
                 .Where(p => p.Id == transferPoint.TripDayId && p.Trip!.UserId == userId)
                 .Include(p => p.Trip!)
-                .Include(p => p.TripPoints)
+                .Include(p => p.TripPoints!)
+                    .ThenInclude(tp => tp!.Place)
                 .FirstOrDefaultAsync();
-
             
             _ = tripDay ?? throw new InvalidOperationException(ErrorMessage.TripDayNotFound);
 
-            if (tripDay.TripPoints == null || !tripDay.TripPoints.Any(tp => tp.Id == transferPoint.FromTripPointId) || !tripDay.TripPoints.Any(tp => tp.Id == transferPoint.ToTripPointId))
+            var fromTripPoint = tripDay.TripPoints?.FirstOrDefault(tp => tp.Id == transferPoint.FromTripPointId);
+            var toTripPoint = tripDay.TripPoints?.FirstOrDefault(tp => tp.Id == transferPoint.ToTripPointId);
+
+            if (tripDay.TripPoints == null || fromTripPoint == null || toTripPoint == null || fromTripPoint.Place == null || toTripPoint.Place == null)
             {
                 throw new InvalidOperationException(ErrorMessage.TripPointNotFoundInTripDay);
             }
@@ -73,7 +76,8 @@ public class TransferPointsService(TravelBuddyDbContext dbContext, IGeoapifyServ
             }
             else
             {
-               //TODO: Calculate transfer time
+                newTranserPoint.TransferTime = await _geoapifyService.GetRouteTimeAsync((fromTripPoint.Place!.Latitude,fromTripPoint.Place.Longitude), (toTripPoint.Place!.Latitude, toTripPoint.Place.Longitude), transferPoint.Mode!.Value)
+                    ?? throw new InvalidOperationException(ErrorMessage.InvalidTransferPointTime);
             }
 
             var validationContext = new ValidationContext(newTranserPoint);
@@ -130,9 +134,13 @@ public class TransferPointsService(TravelBuddyDbContext dbContext, IGeoapifyServ
         try{
 
             var existingTransferPoint = await _dbContext.TransferPoints
-                    .Where(tp => tp.Id == transferPointId && tp.TripDay != null && tp.TripDay.Trip != null && tp.TripDay.Trip.UserId == userId)
+                    .Where(tp => tp.Id == transferPointId && tp.TripDay != null && tp.TripDay.Trip != null && tp.TripDay.Trip.UserId == userId && tp.FromTripPoint != null && tp.ToTripPoint != null && tp.FromTripPoint.Place != null && tp.ToTripPoint.Place != null)
                     .Include(tp => tp.TripDay)
-                    .ThenInclude(td => td!.Trip)
+                        .ThenInclude(td => td!.Trip)
+                    .Include(tp => tp.FromTripPoint)
+                        .ThenInclude(ft => ft!.Place)
+                    .Include(tp => tp.ToTripPoint)
+                        .ThenInclude(tt => tt!.Place)
                     .FirstOrDefaultAsync();
 
             if (existingTransferPoint == null)
@@ -152,7 +160,8 @@ public class TransferPointsService(TravelBuddyDbContext dbContext, IGeoapifyServ
             }
             else
             {
-                //TODO: Calculate transfer time
+                existingTransferPoint.TransferTime = await _geoapifyService.GetRouteTimeAsync((existingTransferPoint.FromTripPoint!.Place!.Latitude, existingTransferPoint.FromTripPoint.Place.Longitude), (existingTransferPoint.ToTripPoint!.Place!.Latitude, existingTransferPoint.ToTripPoint.Place.Longitude), transferPoint.Mode!.Value)
+                    ?? throw new InvalidOperationException(ErrorMessage.InvalidTransferPointTime);
             }
 
             var validationContext = new ValidationContext(existingTransferPoint);

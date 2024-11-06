@@ -121,7 +121,7 @@ public static class GeoapifyEndpoints
         }
     }
 
-    private static async Task<IResult> RouteTime(IGeoapifyService client, double startLatitude, double startLongitude, double endLatitude, double endLongitude, TransferMode mode, TrafficType traffic = TrafficType.approximated, Units units = Units.metric)
+    private static async Task<IResult> RouteTime(IGeoapifyService client, decimal startLatitude, decimal startLongitude, decimal endLatitude, decimal endLongitude, TransferMode mode, TrafficType traffic = TrafficType.approximated, Units units = Units.metric)
     {
         try
         {
