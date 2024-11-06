@@ -17,11 +17,13 @@ public class TransferPointsService(TravelBuddyDbContext dbContext, IGeoapifyServ
     {
         public const string EmptyRequest = "Request cannot be empty.";
         public const string SameTripPoints = "From and To trip points cannot be the same.";
+        public const string TransferPointNotFound = "Transfer point not found.";
         public const string TripDayNotFound = "Trip day not found.";
         public const string TripPointNotFoundInTripDay = "Trip points not found in the trip day.";
         public const string InvalidTransferPointTime = "Transfer point time is invalid.";
         public const string CreateTransferPoint = "An error occurred while creating a transfer point:";
-
+        public const string DeleteTransferPoint = "An error occurred while deleting a transfer point:";
+        public const string EditTransferPoint = "An error occurred while editing a transfer point:";
     }
 
     public async Task<TransferPointDTO> CreateTransferPointAsync(string userId, TransferPointDTO transferPoint)
@@ -99,57 +101,72 @@ public class TransferPointsService(TravelBuddyDbContext dbContext, IGeoapifyServ
 
     public async Task<bool> DeleteTransferPointAsync(string userId, Guid transferPointId)
     {
-        var transferPoint = await _dbContext.TransferPoints
-            .Include(tp => tp.TripDay)
-            .ThenInclude(td => td.Trip)
-            .FirstOrDefaultAsync(tp => tp.Id == transferPointId && tp.TripDay != null && tp.TripDay.Trip != null && tp.TripDay.Trip.UserId == userId);
-
-        if (transferPoint == null)
+        try
         {
-            throw new InvalidOperationException("Transfer point not found.");
-        }
+            var transferPoint = await _dbContext.TransferPoints
+                .Where(tp => tp.Id == transferPointId && tp.TripDay != null && tp.TripDay.Trip != null && tp.TripDay.Trip.UserId == userId)
+                .Include(tp => tp.TripDay)
+                .ThenInclude(td => td!.Trip)
+                .FirstOrDefaultAsync();
 
-        _dbContext.TransferPoints.Remove(transferPoint);
-        await _dbContext.SaveChangesAsync();
+            if (transferPoint == null)
+            {
+                throw new InvalidOperationException(ErrorMessage.TransferPointNotFound);
+            }
+
+            _dbContext.TransferPoints.Remove(transferPoint);
+            await _dbContext.SaveChangesAsync();
+        }
+        catch (Exception e) when (e is InvalidOperationException || e is ArgumentException)
+        {
+            throw new InvalidOperationException($"{ErrorMessage.DeleteTransferPoint} {e.Message}");
+        }
 
         return true;
     }
 
     public async Task<bool> EditTransferPointAsync(string userId, Guid transferPointId, TransferPointDTO transferPoint)
     {
-        var existingTransferPoint = await _dbContext.TransferPoints
-            .Include(tp => tp.TripDay)
-            .ThenInclude(td => td.Trip)
-            .FirstOrDefaultAsync(tp => tp.Id == transferPointId && tp.TripDay.Trip.UserId == userId);
+        try{
 
-        if (existingTransferPoint == null)
-        {
-            throw new InvalidOperationException("Transfer point not found.");
+            var existingTransferPoint = await _dbContext.TransferPoints
+                    .Where(tp => tp.Id == transferPointId && tp.TripDay != null && tp.TripDay.Trip != null && tp.TripDay.Trip.UserId == userId)
+                    .Include(tp => tp.TripDay)
+                    .ThenInclude(td => td!.Trip)
+                    .FirstOrDefaultAsync();
+
+            if (existingTransferPoint == null)
+            {
+                throw new InvalidOperationException(ErrorMessage.TransferPointNotFound);
+            }
+
+            existingTransferPoint.StartTime = transferPoint.StartTime;
+
+            if (transferPoint.Seconds == null && transferPoint.Mode == null)
+            {
+                throw new InvalidOperationException(ErrorMessage.InvalidTransferPointTime);
+            }
+            else if (transferPoint.Seconds.HasValue)
+            {
+                existingTransferPoint.TransferTime = TimeSpan.FromSeconds(transferPoint.Seconds.Value);
+            }
+            else
+            {
+                //TODO: Calculate transfer time
+            }
+
+            var validationContext = new ValidationContext(existingTransferPoint);
+            Validator.ValidateObject(existingTransferPoint, validationContext, validateAllProperties: true);
+
+            _dbContext.TransferPoints.Update(existingTransferPoint);
+            await _dbContext.SaveChangesAsync();
+
+            return true;
+
         }
-
-        existingTransferPoint.StartTime = transferPoint.StartTime;
-        existingTransferPoint.FromTripPointId = transferPoint.FromTripPointId;
-        existingTransferPoint.ToTripPointId = transferPoint.ToTripPointId;
-
-        if (transferPoint.Seconds == null || transferPoint.Mode == null)
+        catch (Exception e) when (e is InvalidOperationException || e is ArgumentException)
         {
-            throw new InvalidOperationException(ErrorMessage.InvalidTransferPointTime);
+            throw new InvalidOperationException($"{ErrorMessage.EditTransferPoint} {e.Message}");
         }
-        else if (transferPoint.Seconds.HasValue)
-        {
-            existingTransferPoint.TransferTime = TimeSpan.FromSeconds(transferPoint.Seconds.Value);
-        }
-        else
-        {
-            //TODO: Calculate transfer time
-        }
-
-        var validationContext = new ValidationContext(existingTransferPoint);
-        Validator.ValidateObject(existingTransferPoint, validationContext, validateAllProperties: true);
-
-        _dbContext.TransferPoints.Update(existingTransferPoint);
-        await _dbContext.SaveChangesAsync();
-
-        return true;
     }
 }
