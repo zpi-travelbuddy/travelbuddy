@@ -134,15 +134,12 @@ public class TripPointsService(TravelBuddyDbContext dbContext, INBPService nbpSe
                 Country = tripPoint.Place.Country,
                 City = tripPoint.Place.City
             } : null,
-            Review = tripPoint.Review != null ? new TripPointReviewDetailsDTO
+            Review = tripPoint.Review != null ? new TripPointReviewOverviewDTO
             {
                 Id = tripPoint.Review.Id,
                 TripPointId = tripPoint.Review.TripPointId,
-                CurrencyCode = tripPoint.Review.CurrencyCode,
                 PlaceId = tripPoint.Review.PlaceId,
-                ActualCost = tripPoint.Review.ActualCost / tripPoint.Review.ExchangeRate,
-                ActualCostPerPerson = tripPoint.Review.ActualCostPerPerson / tripPoint.Review.ExchangeRate,
-                ActualTimeSpent = tripPoint.Review.ActualTimeSpent,
+                PlaceName = tripPoint.Place?.Name,
                 Rating = tripPoint.Review.Rating
             } : null
         };

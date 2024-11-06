@@ -49,7 +49,7 @@ public class TripPointDetailsDTO
     public Guid PlaceId { get; set; }
     public PlaceOverviewDTO? Place { get; set; }
 
-    public TripPointReviewDetailsDTO? Review { get; set; }
+    public TripPointReviewOverviewDTO? Review { get; set; }
 
     public PlaceCategoryDTO? Category { get; set; }
 
