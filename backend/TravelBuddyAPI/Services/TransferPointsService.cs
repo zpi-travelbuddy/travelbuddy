@@ -32,8 +32,8 @@ public class TransferPointsService(TravelBuddyDbContext dbContext, IGeoapifyServ
         {
             _ = transferPoint ?? throw new ArgumentNullException(nameof(transferPoint), ErrorMessage.EmptyRequest);
 
-            _ = transferPoint.FromTripPointId ?? throw new InvalidOperationException();
-            _ = transferPoint.ToTripPointId ?? throw new InvalidOperationException();
+            _ = transferPoint.FromTripPointId ?? throw new InvalidOperationException(ErrorMessage.TransferPointNotFound);
+            _ = transferPoint.ToTripPointId ?? throw new InvalidOperationException(ErrorMessage.TransferPointNotFound);
             
             if(transferPoint.FromTripPointId == transferPoint.ToTripPointId)
             {
@@ -64,9 +64,11 @@ public class TransferPointsService(TravelBuddyDbContext dbContext, IGeoapifyServ
                 StartTime = transferPoint.StartTime,
                 FromTripPointId = transferPoint.FromTripPointId,
                 ToTripPointId = transferPoint.ToTripPointId,
+                Mode = transferPoint.Mode,
+                Type = transferPoint.Type
             };
 
-            if(transferPoint.Seconds == null && transferPoint.Mode == null)
+            if(!(transferPoint.Seconds == null) ^ (transferPoint.Mode == null))
             {
                 throw new InvalidOperationException(ErrorMessage.InvalidTransferPointTime);
             }
@@ -149,8 +151,10 @@ public class TransferPointsService(TravelBuddyDbContext dbContext, IGeoapifyServ
             }
 
             existingTransferPoint.StartTime = transferPoint.StartTime;
+            existingTransferPoint.Mode = transferPoint.Mode;
+            existingTransferPoint.Type = transferPoint.Type;
 
-            if (transferPoint.Seconds == null && transferPoint.Mode == null)
+            if (!(transferPoint.Seconds == null) ^ (transferPoint.Mode == null))
             {
                 throw new InvalidOperationException(ErrorMessage.InvalidTransferPointTime);
             }
