@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 
 namespace TravelBuddyAPI.Models;
 
@@ -14,6 +15,8 @@ public abstract class Place
     [Required]
     public string? Country { get; set; }
 
+    public string? State { get; set; }
+
     [Required]
     public string? City { get; set; }
 
@@ -22,9 +25,11 @@ public abstract class Place
     public string? HouseNumber { get; set; }
 
     [Required]
+    [Precision(18, 8)]
     public decimal Latitude { get; set; }
 
     [Required]
+    [Precision(18, 8)]
     public decimal Longitude { get; set; }
 
     public List<TripPointReview>? Reviews { get; set; }

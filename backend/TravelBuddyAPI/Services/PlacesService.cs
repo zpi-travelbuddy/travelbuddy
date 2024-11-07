@@ -32,6 +32,7 @@ public class PlacesService(TravelBuddyDbContext dbContext, IGeoapifyService geoa
                 Id = Guid.NewGuid(),
                 Name = place.Name,
                 Country = place.Country,
+                State = place.State,
                 City = place.City,
                 Street = place.Street,
                 HouseNumber = place.HouseNumber,
@@ -132,6 +133,7 @@ public class PlacesService(TravelBuddyDbContext dbContext, IGeoapifyService geoa
                     ProviderId = p.ProviderId,
                     Name = p.Name,
                     Country = p.Country,
+                    State = p.State,
                     City = p.City,
                 };
             }).ToList() ?? [];
@@ -148,6 +150,7 @@ public class PlacesService(TravelBuddyDbContext dbContext, IGeoapifyService geoa
             Id = place.Id,
             Name = place.Name,
             Country = place.Country,
+            State = place.State,
             City = place.City,
             Street = place.Street,
             HouseNumber = place.HouseNumber,
