@@ -66,13 +66,11 @@ export const AuthProvider = ({ children }: any) => {
       const session = await Auth.currentSession();
       cachedAccessToken = session.getAccessToken().getJwtToken();
       tokenExpiration = session.getAccessToken().getExpiration() * 1000;
-      setIsAuthenticated(true);
-      return cachedAccessToken;
     } catch (error) {
       cachedAccessToken = null;
-      setIsAuthenticated(false);
-      return null;
     }
+    setIsAuthenticated(!!cachedAccessToken);
+    return cachedAccessToken;
   };
 
   useEffect(() => {
