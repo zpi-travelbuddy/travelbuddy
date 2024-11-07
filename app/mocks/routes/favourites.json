@@ -10,8 +10,8 @@
         "options": {
           "status": 201,
           "body": {
-            "categoryProfileId": "1",
-            "conditionProfileId": "1"
+            "categoryProfileId": "123e4567-e89b-12d3-a456-426614174000",
+            "conditionProfileId": "123e4567-e89b-12d3-a456-426614174001"
           }
         }
       },
@@ -65,8 +65,8 @@
         "options": {
           "status": 201,
           "body": {
-            "categoryProfileId": "1",
-            "conditionProfileId": "1"
+            "categoryProfileId": "123e4567-e89b-12d3-a456-426614174000",
+            "conditionProfileId": "123e4567-e89b-12d3-a456-426614174001"
           }
         }
       },
@@ -118,10 +118,10 @@
         "id": "success",
         "type": "json",
         "options": {
-          "status": 201,
+          "status": 200,
           "body": {
-            "categoryProfileId": "1",
-            "conditionProfileId": "1"
+            "categoryProfileId": "123e4567-e89b-12d3-a456-426614174000",
+            "conditionProfileId": "123e4567-e89b-12d3-a456-426614174001"
           }
         }
       },

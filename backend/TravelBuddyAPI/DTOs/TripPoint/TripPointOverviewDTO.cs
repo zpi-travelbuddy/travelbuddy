@@ -8,6 +8,9 @@ namespace TravelBuddyAPI.DTOs.TripPoint;
 public class TripPointOverviewDTO
 {
     [Required]
+    public Guid Id { get; set; }
+    
+    [Required]
     public string? Name { get; set; }
 
     [Required]

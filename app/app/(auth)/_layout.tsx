@@ -1,10 +1,15 @@
 import { Redirect, Stack } from "expo-router";
+import LoadingView from "@/views/LoadingView";
 import { useAuth } from "../ctx";
 
 export default function RootLayout() {
-  const { authState } = useAuth();
+  const { isLoading, isAuthenticated } = useAuth();
 
-  if (!authState?.authenticated) {
+  if (isLoading) {
+    return <LoadingView transparent={false} />;
+  }
+
+  if (!isAuthenticated) {
     return <Redirect href="/sign-in" />;
   }
 

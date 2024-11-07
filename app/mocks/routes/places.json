@@ -10,8 +10,8 @@
         "options": {
           "status": 200,
           "body": {
-            "id": "1",
-            "providerId": "1",
+            "id": "123e4567-e89b-12d3-a456-426614174000",
+            "providerId": "123e4567-e89b-12d3-a456-426614174000",
             "name": "Wieża Eiffla",
             "country": "Francja",
             "city": "Paryż",
@@ -20,27 +20,27 @@
             "latitude": 2131.32,
             "longitude": 123.12,
             "averageCostPerPerson": 123.12,
-            "averageTimeSpent": 49.42,
+            "averageTimeSpent": "PT45M",
             "averageRating": 4.5,
             "conditions": [
               {
-                "id": "1",
+                "id": "123e4567-e89b-12d3-a456-426614174000",
                 "name": "Przyjazne zwierzętom"
               }
             ],
             "categories": [
               {
-                "id": "1",
+                "id": "123e4567-e89b-12d3-a456-426614174000",
                 "name": "Wysokie budowle"
               },
               {
-                "id": "2",
+                "id": "123e4567-e89b-12d3-a456-426614174001",
                 "name": "Zabytki"
               }
             ],
             "superCategory": {
-              "id": "1",
-              "name": "Super Category 1"
+              "id": "123e4567-e89b-12d3-a456-426614174000",
+              "name": "Zabytki"
             }
           }
         }
@@ -69,22 +69,22 @@
           "status": 200,
           "body": [
             {
-              "id": "1",
-              "providerId": "1",
+              "id": "123e4567-e89b-12d3-a456-426614174000",
+              "providerId": "123e4567-e89b-12d3-a456-426614174001",
               "name": "Wieża Eiffla",
-              "country": "Country 1",
-              "city": "City 1"
+              "country": "Francja",
+              "city": "Champs de Mars"
             },
             {
-              "id": "2",
-              "providerId": "2",
+              "id": "123e4567-e89b-12d3-a456-426614174004",
+              "providerId": "123e4567-e89b-12d3-a456-426614174005",
               "name": "Wieża Ciśnień we Wrocławiu",
               "country": "Polska",
               "city": "Wrocław"
             },
             {
-              "id": "3",
-              "providerId": "3",
+              "id": "123e4567-e89b-12d3-a456-426614174006",
+              "providerId": "123e4567-e89b-12d3-a456-426614174007",
               "name": "Most Golden Gate",
               "country": "Stany Zjednoczone",
               "city": "San Francisco"

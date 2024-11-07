@@ -32,10 +32,8 @@ public class TripRequestDTO
     [RegularExpression(@"^[A-Z]{3}$", ErrorMessage = $"{nameof(CurrencyCode)} must be a valid 3-letter ISO 4217 code.")]
     public string? CurrencyCode { get; set; }
 
-    [Required]
-    public Guid CategoryProfileId { get; set; }
+    public Guid? CategoryProfileId { get; set; }
 
-    [Required]
-    public Guid ConditionProfileId { get; set; }
+    public Guid? ConditionProfileId { get; set; }
 
 }

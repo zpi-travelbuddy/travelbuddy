@@ -48,6 +48,7 @@ public class GeoapifyClient : IGeoapifyService
                     ProviderId = p.place_id,
                     Name = p.name,
                     Country = p.country,
+                    State = p.state,
                     City = p.city,
                     Street = p.street,
                     HouseNumber = p.housenumber,
@@ -220,15 +221,15 @@ public class GeoapifyClient : IGeoapifyService
         }
     }
 
-    public async Task<TimeSpan?> GetRouteTimeAsync((double latitude, double longitude) start, (double latitude, double longitude) end, TransferMode mode, TrafficType traffic = TrafficType.approximated, Units units = Units.metric)
+    public async Task<TimeSpan?> GetRouteTimeAsync((decimal latitude, decimal longitude) start, (decimal latitude, decimal longitude) end, TransferMode mode, TrafficType traffic = TrafficType.approximated, Units units = Units.metric)
     {
         var request = new RestRequest("v1/routematrix", Method.Post);
         request.AddHeader("Content-Type", "application/json");
         var body = new
         {
             mode = mode.ToString(),
-            sources = new[] { new { location = new double[] { start.longitude, start.latitude } } },
-            targets = new[] { new { location = new double[] { end.longitude, end.latitude } } },
+            sources = new[] { new { location = new decimal[] { start.longitude, start.latitude } } },
+            targets = new[] { new { location = new decimal[] { end.longitude, end.latitude } } },
             traffic = traffic.ToString(),
             units = units.ToString(),
         };
@@ -271,11 +272,13 @@ public class GeoapifyClient : IGeoapifyService
                 ProviderId = p.place_id,
                 Name = p.name,
                 Country = p.country,
+                State = p.state,
                 City = p.city,
                 Street = p.street,
                 HouseNumber = p.housenumber,
                 Latitude = p.lat,
                 Longitude = p.lon,
+                OpeningHours = p.opening_hours,
                 Categories = categories?
                     .Where(cat => ((IEnumerable<dynamic>?)p.categories)?
                         .Any(c => c.ToString() == cat.FullName) ?? false)
@@ -284,6 +287,6 @@ public class GeoapifyClient : IGeoapifyService
                     .Where(con => ((IEnumerable<dynamic>?)p.categories)? // Yes, p.categories is correct, API returns conditions as categories.
                         .Any(c => c.ToString() == con.FullName) ?? false)
                     .ToList(),
-            }).ToList(); // TODO handle opening hours
+            }).ToList();
     }
 }

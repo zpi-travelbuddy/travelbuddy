@@ -15,6 +15,8 @@ import CustomModal from "@/components/CustomModal";
 import { RenderItem } from "@/components/RenderItem";
 import ActionButtons from "@/components/ActionButtons";
 import ClickableInput from "@/components/ClickableInput";
+import { useSnackbar } from "@/context/SnackbarContext";
+import { useRouter } from "expo-router";
 
 const { height, width } = Dimensions.get("window");
 
@@ -53,7 +55,10 @@ const AddingTripView = () => {
   type ProfileType = "Preference" | "Convenience";
 
   const theme = useTheme();
+  const router = useRouter();
   const styles = useMemo(() => createStyles(theme), [theme]);
+
+  const { showSnackbar } = useSnackbar();
 
   const [tripName, setTripName] = useState("");
   const [destination, setDestination] = useState("");
@@ -237,8 +242,14 @@ const AddingTripView = () => {
       </View>
 
       <ActionButtons
-        onAction1={() => console.log("Anulowanie")}
-        onAction2={() => console.log("Zapisywanie")}
+        onCancel={() => {
+          router.push("/trips");
+          showSnackbar("Anulowano dodanie wycieczki", "error");
+        }}
+        onConfirm={() => {
+          router.push("/trips");
+          showSnackbar("Zapisano wycieczkę!", "success");
+        }}
       />
     </ScrollView>
   );
