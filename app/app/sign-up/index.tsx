@@ -21,7 +21,6 @@ import {
   validateNewPassword,
 } from "@/utils/validations";
 import { Credentials, AuthErrors } from "@/types/auth";
-import { useAuth } from "../ctx";
 import { MD3ThemeExtended } from "@/constants/Themes";
 
 // It would be good if we could calculate this value dynamically, but I had some issues with that

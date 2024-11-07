@@ -22,6 +22,7 @@ import {
   validateNewPassword,
 } from "@/utils/validations";
 import LoadingView from "@/views/LoadingView";
+import { MD3ThemeExtended } from "@/constants/Themes";
 
 // It would be good if we could calculate this value dynamically, but I had some issues with that
 const BOTTOM_VIEW_HEIGHT = 54;
@@ -33,7 +34,7 @@ export default function ForgotPasswordConfirm() {
   const insets = useSafeAreaInsets();
   const keyboard = useAnimatedKeyboard();
 
-  const styles = makeStyles(theme);
+  const styles = makeStyles(theme as MD3ThemeExtended);
 
   const [confirmationCode, setConfirmationCode] = useState<string>("");
   const [newPassword, setNewPassword] = useState<string>("");
@@ -82,9 +83,10 @@ export default function ForgotPasswordConfirm() {
     } catch (error: any) {
       if (error.code === "CodeMismatchException") {
         setConfirmationCodeError("Nieprawidłowy kod weryfikacyjny");
-      }
-      if (error.code === "LimitExceededException") {
+      } else if (error.code === "LimitExceededException") {
         setConfirmationCodeError("Przekroczono limit prób, spróbuj później");
+      } else {
+        setConfirmationCodeError("Wystąpił błąd, spróbuj ponownie");
       }
       console.log(error);
     } finally {
@@ -147,8 +149,7 @@ export default function ForgotPasswordConfirm() {
   );
 }
 
-// TODO: Change later any to theme type
-const makeStyles = (theme: any) =>
+const makeStyles = (theme: MD3ThemeExtended) =>
   StyleSheet.create({
     container: {
       flex: 1,

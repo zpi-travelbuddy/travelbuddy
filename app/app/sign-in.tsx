@@ -8,13 +8,7 @@ import {
 } from "react-native";
 import { useAuth } from "./ctx";
 import { router, Link } from "expo-router";
-import {
-  useTheme,
-  Text,
-  Button,
-  ActivityIndicator,
-  Modal,
-} from "react-native-paper";
+import { useTheme, Text, Button } from "react-native-paper";
 import Animated, {
   useAnimatedKeyboard,
   useAnimatedStyle,
@@ -23,7 +17,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { EmailTextInput } from "@/components/auth/EmailTextInput";
 import { PasswordTextInput } from "@/components/auth/PasswordTextInput";
 import { validateEmail, validatePassword } from "@/utils/validations";
-import { Credentials, AuthErrors, FieldType } from "@/types/auth";
+import { Credentials, AuthErrors } from "@/types/auth";
 import { MD3ThemeExtended } from "@/constants/Themes";
 import LoadingView from "@/views/LoadingView";
 
