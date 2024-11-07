@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 using TravelBuddyAPI.Enums;
 
 namespace TravelBuddyAPI.Models;
@@ -31,6 +32,7 @@ public class Trip
     public Place? Destination { get; set; }
 
     [Required]
+    [Precision(18, 6)]
     [Range(0, double.MaxValue, ErrorMessage = $"{nameof(Budget)} must be a positive number.")]
     public decimal Budget { get; set; }
 
@@ -45,6 +47,7 @@ public class Trip
     public string? CurrencyCode { get; set; }
 
     [Required]
+    [Precision(18, 4)]
     public decimal ExchangeRate { get; set; }
 
     [Required]
