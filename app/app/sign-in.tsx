@@ -25,6 +25,7 @@ import { PasswordTextInput } from "@/components/auth/PasswordTextInput";
 import { validateField } from "@/utils/validations";
 import { Credentials, AuthErrors, FieldType } from "@/types/auth";
 import { MD3ThemeExtended } from "@/constants/Themes";
+import LoadingView from "@/views/LoadingView";
 
 // It would be good if we could calculate this value dynamically, but I had some issues with that
 const BOTTOM_VIEW_HEIGHT = 54;
@@ -100,61 +101,57 @@ export default function SignIn() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <View style={styles.innerContainer}>
-          <Animated.View style={[animatedStyles]}>
-            <Text style={styles.headline} variant="headlineLarge">
-              Logowanie
+    <>
+      <SafeAreaView style={styles.container}>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View style={styles.innerContainer}>
+            <Animated.View style={[animatedStyles]}>
+              <Text style={styles.headline} variant="headlineLarge">
+                Logowanie
+              </Text>
+              <EmailTextInput
+                value={credentials.email}
+                onChangeText={(text) =>
+                  handleInputChange(FieldType.EMAIL, text)
+                }
+                error={!!errors.email}
+                style={styles.inputText}
+              />
+              <Text style={styles.textError}>{errors.email || " "}</Text>
+              <View style={{ height: 10 }} />
+              <PasswordTextInput
+                value={credentials.password}
+                onChangeText={(text) =>
+                  handleInputChange(FieldType.PASSWORD, text)
+                }
+                error={!!errors.password}
+                style={styles.inputText}
+              />
+              <Text style={styles.textError}>{errors.password || " "}</Text>
+              <Text style={styles.forgotPassword} variant="labelLarge">
+                <Link href="/forgot-password/email">Nie pamiętam hasła</Link>
+              </Text>
+              <Button
+                style={styles.button}
+                labelStyle={styles.buttonLabel}
+                mode="contained"
+                onPress={login}
+                contentStyle={styles.buttonContent}
+              >
+                Zaloguj
+              </Button>
+            </Animated.View>
+            <Text style={styles.signUp} variant="bodyLarge">
+              Nie posiadasz konta?{" "}
+              <Link href="/sign-up" style={styles.textBold}>
+                Zarejestruj się
+              </Link>
             </Text>
-            <EmailTextInput
-              value={credentials.email}
-              onChangeText={(text) => handleInputChange(FieldType.EMAIL, text)}
-              error={!!errors.email}
-              style={styles.inputText}
-            />
-            <Text style={styles.textError}>{errors.email || " "}</Text>
-            <View style={{ height: 10 }} />
-            <PasswordTextInput
-              value={credentials.password}
-              onChangeText={(text) =>
-                handleInputChange(FieldType.PASSWORD, text)
-              }
-              error={!!errors.password}
-              style={styles.inputText}
-            />
-            <Text style={styles.textError}>{errors.password || " "}</Text>
-            <Text style={styles.forgotPassword} variant="labelLarge">
-              <Link href="/forgot-password/email">Nie pamiętam hasła</Link>
-            </Text>
-            <Button
-              style={styles.button}
-              labelStyle={styles.buttonLabel}
-              mode="contained"
-              onPress={login}
-              contentStyle={styles.buttonContent}
-            >
-              Zaloguj
-            </Button>
-          </Animated.View>
-          <Text style={styles.signUp} variant="bodyLarge">
-            Nie posiadasz konta?{" "}
-            <Link href="/sign-up" style={styles.textBold}>
-              Zarejestruj się
-            </Link>
-          </Text>
-          <Modal
-            visible={isLoading}
-            contentContainerStyle={{
-              alignSelf: "center",
-            }}
-            dismissable={false}
-          >
-            <ActivityIndicator size="large" animating={true} />
-          </Modal>
-        </View>
-      </TouchableWithoutFeedback>
-    </SafeAreaView>
+          </View>
+        </TouchableWithoutFeedback>
+      </SafeAreaView>
+      <LoadingView show={isLoading} />
+    </>
   );
 }
 

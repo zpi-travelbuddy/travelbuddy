@@ -6,7 +6,7 @@ export default function RootLayout() {
   const { isLoading, isAuthenticated } = useAuth();
 
   if (isLoading) {
-    return <LoadingView />;
+    return <LoadingView transparent={false} />;
   }
 
   if (!isAuthenticated) {

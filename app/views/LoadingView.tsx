@@ -1,31 +1,39 @@
 import { MD3ThemeExtended } from "@/constants/Themes";
-import { View } from "react-native";
 import { StyleSheet } from "react-native";
-import { ActivityIndicator, useTheme } from "react-native-paper";
+import { ActivityIndicator, Modal, useTheme } from "react-native-paper";
 
-const LoadingView = () => {
+interface LoadingViewProps {
+  show?: boolean;
+  transparent?: boolean;
+}
+
+const LoadingView = ({ show = true, transparent = true }: LoadingViewProps) => {
   const theme = useTheme();
-  const styles = createStyles(theme as MD3ThemeExtended);
+  const style = createStyles(theme as MD3ThemeExtended);
 
   return (
-    <View style={styles.container}>
-      <ActivityIndicator
-        size="large"
-        animating={true}
-        accessible={true}
-        accessibilityLabel="Loading..."
-      />
-    </View>
+    <Modal
+      visible={show}
+      style={[
+        transparent ? null : { backgroundColor: theme.colors.surface },
+        style.modal,
+      ]}
+      contentContainerStyle={style.modalContent}
+      dismissable={false}
+    >
+      <ActivityIndicator size="large" animating={true} />
+    </Modal>
   );
 };
 
 const createStyles = (theme: MD3ThemeExtended) =>
   StyleSheet.create({
-    container: {
-      flex: 1,
-      justifyContent: "center",
-      alignItems: "center",
-      backgroundColor: theme.colors.surface,
+    modal: {
+      marginTop: 0,
+      marginBottom: 0,
+    },
+    modalContent: {
+      alignSelf: "center",
     },
   });
 
