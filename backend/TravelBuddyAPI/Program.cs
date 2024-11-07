@@ -70,7 +70,6 @@ namespace TravelBuddyAPI
             if (builder.Environment.IsDevelopment())
             {
                 DotNetEnv.Env.Load(); // For running app outside of Docker
-                builder.Configuration["CLIENT_SECRET"] = DotNetEnv.Env.GetString("CLIENT_SECRET");
                 builder.Configuration["MSSQL_SA_PASSWORD"] = DotNetEnv.Env.GetString("MSSQL_SA_PASSWORD");
                 builder.Configuration["GEOAPIFY_KEY"] = DotNetEnv.Env.GetString("GEOAPIFY_KEY");
                 builder.Configuration["Cognito:Authority"] = DotNetEnv.Env.GetString("COGNITO_AUTHORITY");
