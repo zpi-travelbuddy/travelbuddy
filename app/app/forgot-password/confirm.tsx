@@ -6,7 +6,7 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
 } from "react-native";
-import { router, Link } from "expo-router";
+import { router, Link, useLocalSearchParams } from "expo-router";
 import { useTheme, Text, Button } from "react-native-paper";
 import Animated, {
   useAnimatedKeyboard,
@@ -15,16 +15,20 @@ import Animated, {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { PasswordTextInput } from "@/components/auth/PasswordTextInput";
 import { CodeTextInput } from "@/components/auth/CodeTextInput";
+import { Auth } from "aws-amplify";
 import {
   validateCode,
   validatePassword,
   validateNewPassword,
 } from "@/utils/validations";
+import LoadingView from "@/views/LoadingView";
 
 // It would be good if we could calculate this value dynamically, but I had some issues with that
 const BOTTOM_VIEW_HEIGHT = 54;
 
 export default function ForgotPasswordConfirm() {
+  const { email } = useLocalSearchParams<{ email: string }>();
+
   const theme = useTheme();
   const insets = useSafeAreaInsets();
   const keyboard = useAnimatedKeyboard();
@@ -37,6 +41,8 @@ export default function ForgotPasswordConfirm() {
   const [confirmationCodeError, setConfirmationCodeError] =
     useState<string>("");
   const [newPasswordError, setNewPasswordError] = useState<string>("");
+
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const animatedStyles = useAnimatedStyle(() => {
     return {
@@ -67,55 +73,77 @@ export default function ForgotPasswordConfirm() {
 
   const resetPassword = async () => {
     if (!validateForm()) return;
-    router.navigate("/forgot-password/success");
+
+    try {
+      Keyboard.dismiss();
+      setIsLoading(true);
+      await Auth.forgotPasswordSubmit(email, confirmationCode, newPassword);
+      router.navigate("/forgot-password/success");
+    } catch (error: any) {
+      if (error.code === "CodeMismatchException") {
+        setConfirmationCodeError("Nieprawidłowy kod weryfikacyjny");
+      }
+      if (error.code === "LimitExceededException") {
+        setConfirmationCodeError("Przekroczono limit prób, spróbuj później");
+      }
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <View style={styles.innerContainer}>
-          <Animated.View style={[animatedStyles]}>
-            <Text style={styles.headline} variant="headlineLarge">
-              Utwórz nowe hasło
+    <>
+      <SafeAreaView style={styles.container}>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View style={styles.innerContainer}>
+            <Animated.View style={[animatedStyles]}>
+              <Text style={styles.headline} variant="headlineLarge">
+                Utwórz nowe hasło
+              </Text>
+              <Text style={styles.description} variant="bodyLarge">
+                Jeśli posiadasz konto, otrzymasz kod weryfikacyjny na adres
+                email. Wprowadź go wraz z nowym hasłem.
+              </Text>
+              <CodeTextInput
+                value={confirmationCode}
+                style={styles.inputText}
+                error={!!confirmationCodeError}
+                onChangeText={handleCodeInputChange}
+              />
+              <Text style={styles.textError}>
+                {confirmationCodeError || " "}
+              </Text>
+              <View style={{ height: 10 }} />
+              <PasswordTextInput
+                value={newPassword}
+                onChangeText={handleNewPasswordInputChange}
+                error={!!newPasswordError}
+                style={styles.inputText}
+                placeholder="Nowe hasło"
+              />
+              <Text style={styles.textError}>{newPasswordError || " "}</Text>
+              <Button
+                style={styles.button}
+                labelStyle={styles.buttonLabel}
+                mode="contained"
+                onPress={resetPassword}
+                contentStyle={styles.buttonContent}
+              >
+                Zmień hasło
+              </Button>
+            </Animated.View>
+            <Text style={styles.signIn} variant="bodyLarge">
+              Wróć do{" "}
+              <Link href="/sign-in" style={styles.textBold}>
+                Logowania
+              </Link>
             </Text>
-            <Text style={styles.description} variant="bodyLarge">
-              Wprowadź kod wysłany na twój adres email i nowe hasło.
-            </Text>
-            <CodeTextInput
-              value={confirmationCode}
-              style={styles.inputText}
-              error={!!confirmationCodeError}
-              onChangeText={handleCodeInputChange}
-            />
-            <Text style={styles.textError}>{confirmationCodeError || " "}</Text>
-            <View style={{ height: 10 }} />
-            <PasswordTextInput
-              value={newPassword}
-              onChangeText={handleNewPasswordInputChange}
-              error={!!newPasswordError}
-              style={styles.inputText}
-              placeholder="Nowe hasło"
-            />
-            <Text style={styles.textError}>{newPasswordError || " "}</Text>
-            <Button
-              style={styles.button}
-              labelStyle={styles.buttonLabel}
-              mode="contained"
-              onPress={resetPassword}
-              contentStyle={styles.buttonContent}
-            >
-              Zmień hasło
-            </Button>
-          </Animated.View>
-          <Text style={styles.signIn} variant="bodyLarge">
-            Wróć do{" "}
-            <Link href="/sign-in" style={styles.textBold}>
-              Logowania
-            </Link>
-          </Text>
-        </View>
-      </TouchableWithoutFeedback>
-    </SafeAreaView>
+          </View>
+        </TouchableWithoutFeedback>
+      </SafeAreaView>
+      <LoadingView show={isLoading} />
+    </>
   );
 }
 

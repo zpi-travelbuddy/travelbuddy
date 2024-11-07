@@ -16,6 +16,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { EmailTextInput } from "@/components/auth/EmailTextInput";
 import { validateEmail } from "@/utils/validations";
 import { MD3ThemeExtended } from "@/constants/Themes";
+import { Auth } from "aws-amplify";
 
 // It would be good if we could calculate this value dynamically, but I had some issues with that
 const BOTTOM_VIEW_HEIGHT = 54;
@@ -51,13 +52,13 @@ export default function ForgotPasswordEmail() {
   };
 
   const handlePress = async () => {
-    if (validateForm()) {
-      // TODO: Add password reset request
-      router.navigate({
-        pathname: "/forgot-password/confirm",
-        params: { email },
-      });
-    }
+    if (!validateForm()) return;
+
+    await Auth.forgotPassword(email);
+    router.navigate({
+      pathname: "/forgot-password/confirm",
+      params: { email },
+    });
   };
 
   return (
