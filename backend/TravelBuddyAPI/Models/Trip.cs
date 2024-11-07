@@ -50,12 +50,10 @@ public class Trip
     [Precision(18, 4)]
     public decimal ExchangeRate { get; set; }
 
-    [Required]
-    public Guid CategoryProfileId { get; set; }
+    public Guid? CategoryProfileId { get; set; }
     public CategoryProfile? CategoryProfile { get; set; }
 
-    [Required]
-    public Guid ConditionProfileId { get; set; }
+    public Guid? ConditionProfileId { get; set; }
     public ConditionProfile? ConditionProfile { get; set; }
 
     [NotMapped]
