@@ -110,6 +110,48 @@ public class TripPointsService(TravelBuddyDbContext dbContext, INBPService nbpSe
         throw new NotImplementedException();
     }
 
+    // public async Task<bool> DeleteTripPointAsync(string userId, Guid tripPointId)
+    // {
+    //     try
+    //     {
+    //         using var transaction = await _dbContext.Database.BeginTransactionAsync();
+
+    //         await DeleteTripPointDuringTransactionAsync(userId, tripPointId);
+
+    //         await transaction.CommitAsync();
+
+    //         return true;
+    //     }
+    //     catch (Exception e) when (e is InvalidOperationException)
+    //     {
+    //         throw new InvalidOperationException($"{ErrorMessage.TripPointNotFound} {e.Message}");
+    //     }
+    // }
+
+    // private async Task<bool> DeleteTripPointDuringTransactionAsync(string userId, Guid tripPointId)
+    // {
+    //     TripPoint tripPoint = await _dbContext.TripPoints
+    //         .Include(tp => tp.TripDay)
+    //             .ThenInclude(td => td != null ? td.Trip : null)
+    //         .Include(tp => tp.Place)
+    //         .Where(tp => tp.Id == tripPointId
+    //             && tp.TripDay != null
+    //             && tp.TripDay.Trip != null
+    //             && tp.TripDay.Trip.UserId == userId)
+    //         .FirstOrDefaultAsync() ?? throw new InvalidOperationException(ErrorMessage.TripPointNotFound);
+
+    //     if (tripPoint.Place is CustomPlace customPlace)
+    //     {
+    //         _dbContext.Places.Remove(customPlace);
+    //     }
+
+    //     _dbContext.TripPoints.Remove(tripPoint);
+
+    //     await _dbContext.SaveChangesAsync();
+
+    //     return true;
+    // }
+
     public Task<bool> EditTripPointAsync(string userId, Guid tripPointId, TripPointRequestDTO tripPoint)
     {
         throw new NotImplementedException();

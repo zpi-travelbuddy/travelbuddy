@@ -214,6 +214,59 @@ public class TripPointsServiceTest : IDisposable
         Assert.Equal("An error occurred while creating a trip point. Place cannot be empty.", exception.Message);
     }
 
+     // [Fact]
+    // public async Task DeleteTripPointAsync_ReturnsTrue_WhenTripPointIsDeleted()
+    // {
+    //     // Arrange
+    //     var userId = "user1";
+    //     var tripPointId = Guid.NewGuid();
+
+    //     var trip = new Trip
+    //     {
+    //         UserId = userId,
+    //         CurrencyCode = "USD",
+    //         Name = "Test Trip",
+    //         TripDays = new List<TripDay> { new TripDay { Id = Guid.NewGuid(), Date = DateOnly.FromDateTime(DateTime.Now) } }
+    //     };
+
+    //     var tripPoint = new TripPoint
+    //     {
+    //         Id = tripPointId,
+    //         TripDayId = trip.TripDays.First().Id,
+    //         Name = "Test Trip Point",
+    //         Comment = "Test Comment",
+    //         PredictedCost = 100,
+    //         StartTime = TimeOnly.FromDateTime(DateTime.Now),
+    //         EndTime = TimeOnly.FromDateTime(DateTime.Now.AddHours(1)),
+    //         Place = new CustomPlace { Id = Guid.NewGuid(), Name = "Test Place" }
+    //     };
+
+    //     trip.TripDays.First().TripPoints = new List<TripPoint> { tripPoint };
+
+    //     await _dbContext.Trips.AddAsync(trip);
+    //     await _dbContext.TripPoints.AddAsync(tripPoint);
+    //     await _dbContext.SaveChangesAsync();
+
+    //     // Act
+    //     var result = await _tripPointsService.DeleteTripPointAsync(userId, tripPointId);
+
+    //     // Assert
+    //     Assert.True(result);
+    //     Assert.Null(await _dbContext.TripPoints.FindAsync(tripPointId));
+    // }
+
+    // [Fact]
+    // public async Task DeleteTripPointAsync_ThrowsInvalidOperationException_WhenTripPointNotFound()
+    // {
+    //     // Arrange
+    //     var userId = "user1";
+    //     var tripPointId = Guid.NewGuid();
+
+    //     // Act & Assert
+    //     var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _tripPointsService.DeleteTripPointAsync(userId, tripPointId));
+    //     Assert.Equal("Trip point not found.", exception.Message);
+    // }
+
     [Fact]
     public async Task CreateTripPointAsync_ThrowsArgumentException_WhenTripPointOverlaps()
     {
