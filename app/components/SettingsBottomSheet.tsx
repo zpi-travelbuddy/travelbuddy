@@ -17,9 +17,10 @@ import {
 
 interface SettingsBottomSheetProps {
   title: string;
-  items: string[];
+  items: Record<string, string>;
   selectedItem: string;
   isVisible: boolean;
+  itemHeight?: number;
   onSelect: (item: string) => void;
   onClose: () => void;
 }
@@ -29,24 +30,26 @@ const SettingsBottomSheet: React.FC<SettingsBottomSheetProps> = ({
   items,
   selectedItem,
   isVisible,
+  itemHeight = 50,
   onSelect,
   onClose,
 }) => {
   const theme = useTheme();
-  const styles = createStyles(theme);
+  const styles = createStyles(theme, itemHeight);
   const sheetRef = useRef<BottomSheet>(null);
   const [selectedOption, setSelectedOption] = useState<string>(selectedItem);
 
   const snapPoints = useMemo(() => {
-    const itemHeight = 50;
     const titleHeight = 60;
     const paddingHeight = 32;
-    return [titleHeight + 2 * paddingHeight + items.length * itemHeight];
-  }, [items.length]);
+    return [
+      titleHeight + 2 * paddingHeight + Object.keys(items).length * itemHeight,
+    ];
+  }, [items]);
 
-  const handleSelect = (item: string) => {
-    setSelectedOption(item);
-    onSelect(item);
+  const handleSelect = (key: string) => {
+    setSelectedOption(key);
+    onSelect(key);
     onClose();
   };
 
@@ -83,16 +86,17 @@ const SettingsBottomSheet: React.FC<SettingsBottomSheetProps> = ({
           <View style={styles.titleContainer}>
             <Text style={styles.bottomSheetTitle}>{title}</Text>
           </View>
-          {items.map((item, index) => (
+          {Object.entries(items).map(([key, value]) => (
             <List.Item
-              key={index}
-              title={item}
+              key={key}
+              title={value}
               titleStyle={styles.bottomSheetItemTitle}
+              style={{ height: itemHeight }}
               right={() => (
                 <RadioButton
-                  value={item}
-                  status={selectedItem === item ? "checked" : "unchecked"}
-                  onPress={() => handleSelect(item)}
+                  value={key}
+                  status={selectedItem === key ? "checked" : "unchecked"}
+                  onPress={() => handleSelect(key)}
                 />
               )}
             />
@@ -109,7 +113,7 @@ const SettingsBottomSheet: React.FC<SettingsBottomSheetProps> = ({
   );
 };
 
-const createStyles = (theme: MD3Theme) =>
+const createStyles = (theme: MD3Theme, itemHeight: number) =>
   StyleSheet.create({
     bottomSheetContainer: {
       padding: 30,

@@ -2,8 +2,9 @@ import { ScrollView, StyleSheet, View } from "react-native";
 import { TripPointCard } from "@/components/TripPointCard";
 import { TransferPointNode } from "@/components/TransferPointNode";
 import { TripPoint, TransferPoint } from "@/types/data";
-import { useTheme, FAB } from "react-native-paper";
+import { useTheme, FAB, MD3Theme } from "react-native-paper";
 import { Fragment, useMemo } from "react";
+import { useRouter, useLocalSearchParams } from "expo-router";
 
 const tripPoints: TripPoint[] = [
   {
@@ -51,6 +52,10 @@ const transferPoints: TransferPoint[] = [
 const TripDayView = () => {
   const theme = useTheme();
   const style = createStyles(theme);
+  const router = useRouter();
+  const params = useLocalSearchParams();
+  console.log(params);
+  const { trip_id, day_id } = params;
 
   const handleTripPointPress = () => {
     console.log("Trip point pressed");
@@ -126,14 +131,14 @@ const TripDayView = () => {
         color={theme.colors.onPrimary}
         label="Dodaj"
         onPress={() => {
-          console.log("FAB Clicked");
+          router.push("/trips/details/trip_id/day/day_id/tripPoints/create");
         }}
       />
     </>
   );
 };
 
-const createStyles = (theme: any) =>
+const createStyles = (theme: MD3Theme) =>
   StyleSheet.create({
     container: {
       backgroundColor: theme.colors.surface,

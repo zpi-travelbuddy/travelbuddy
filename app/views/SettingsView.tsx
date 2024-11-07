@@ -24,23 +24,29 @@ const SettingsView = () => {
 
   const [isSwitchOn, setIsSwitchOn] = useState(false);
 
-  const [selectedFont, setSelectedFont] = useState("mała");
-  const [selectedTheme, setSelectedTheme] = useState("ciemny");
+  const [selectedFont, setSelectedFont] = useState("small");
+  const [selectedTheme, setSelectedTheme] = useState("dark");
 
   const [isSheetVisible, setIsSheetVisible] = useState(false);
   const [bottomSheetTitle, setBottomSheetTitle] = useState("");
-  const [bottomSheetItems, setBottomSheetItems] = useState<string[]>([]);
+  const [bottomSheetItems, setBottomSheetItems] = useState<
+    Record<string, string>
+  >({});
   const [selectedOptionToModal, setSelectedOptionToModal] =
     useState<ModalOption>("FONT");
 
   const [selectedOption, setSelectedOption] = useState("");
 
-  const fontItems = ["mała", "średnia", "duża"];
-  const themeItems = ["jasny", "ciemny"];
+  const fontItems: Record<string, string> = {
+    small: "mała",
+    medium: "średnia",
+    large: "duża",
+  };
+  const themeItems: Record<string, string> = { light: "jasny", dark: "ciemny" };
 
   const openBottomSheet = (
     title: string,
-    items: string[],
+    items: Record<string, string>,
     option: ModalOption,
     selectedItem: string,
   ) => {
@@ -74,7 +80,7 @@ const SettingsView = () => {
           <SettingListItem
             title="Czcionka"
             rightComponent={() => (
-              <Text style={styles.rightText}>{selectedFont}</Text>
+              <Text style={styles.rightText}>{fontItems[selectedFont]}</Text>
             )}
             onPress={() =>
               openBottomSheet(
@@ -88,7 +94,7 @@ const SettingsView = () => {
           <SettingListItem
             title="Motyw"
             rightComponent={() => (
-              <Text style={styles.rightText}>{selectedTheme}</Text>
+              <Text style={styles.rightText}>{themeItems[selectedTheme]}</Text>
             )}
             onPress={() =>
               openBottomSheet(

@@ -1,30 +1,43 @@
 import { Dimensions, StyleSheet, View } from "react-native";
 import React, { useMemo, useState } from "react";
-import { MD3Theme, TextInput, useTheme } from "react-native-paper";
+import { MD3Theme, TextInput, useTheme, Text } from "react-native-paper";
 import {
   formatMoneyToString,
   formatMoneyToNumber,
 } from "@/utils/CurrencyUtils";
+
 import ClickableInput from "./ClickableInput";
+interface ClickableValueInputProps {
+  label: string;
+  disable?: boolean;
+  onValueChange: (value: number) => void;
+  selectedCurrency?: Currency;
+}
 
 const { width } = Dimensions.get("window");
 
-const CurrencyValueInput = () => {
+const CurrencyValueInput = ({
+  label,
+  selectedCurrency,
+  onValueChange,
+  disable = false,
+}: ClickableValueInputProps) => {
   const theme = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   const [amount, setAmount] = useState("");
-  const [budget, setBudget] = useState<number | undefined>(undefined);
-  const [currency, setCurrency] = useState("");
+  const [currency, setCurrency] = useState(selectedCurrency || "");
 
   const handleBudgetChange = (value: string) => {
     setAmount(value);
   };
 
   const handleBudgetEndEditing = () => {
-    const numericValue = formatMoneyToNumber(amount);
-    setBudget(numericValue);
-    setAmount(formatMoneyToString(numericValue));
+    if (amount.trim().length !== 0) {
+      const numericValue = formatMoneyToNumber(amount);
+      onValueChange(numericValue);
+      setAmount(formatMoneyToString(numericValue));
+    }
   };
 
   return (
@@ -32,21 +45,25 @@ const CurrencyValueInput = () => {
       <TextInput
         mode="outlined"
         style={styles.budgetInput}
-        label="Budżet"
+        label={label}
         value={amount}
         onChangeText={handleBudgetChange}
         onEndEditing={handleBudgetEndEditing}
         keyboardType="numeric"
       />
 
-      <ClickableInput
-        label="Waluta"
-        value={currency}
-        onPress={() => console.log("Navigate to currency select")}
-        touchableStyle={styles.currencyTouchable}
-        inputStyle={styles.currencyInput}
-        left={<View />}
-      />
+      {disable ? (
+        <Text style={styles.currencyLabel}>{currency}</Text>
+      ) : (
+        <ClickableInput
+          label="Waluta"
+          value={currency}
+          onPress={() => console.log("Navigate to currency select")}
+          touchableStyle={styles.currencyTouchable}
+          inputStyle={styles.currencyInput}
+          left={<View />}
+        />
+      )}
     </View>
   );
 };
@@ -76,5 +93,14 @@ const createStyles = (theme: MD3Theme) =>
       backgroundColor: theme.colors.surface,
       height: 50,
       marginTop: -10,
+    },
+    currencyLabel: {
+      flex: 0.3,
+      marginRight: 0.05 * width,
+      textAlign: "center",
+      paddingVertical: 12,
+      backgroundColor: theme.colors.surface,
+      borderRadius: 4,
+      color: theme.colors.onSurface,
     },
   });

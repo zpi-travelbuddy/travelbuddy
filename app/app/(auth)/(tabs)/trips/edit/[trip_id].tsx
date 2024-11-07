@@ -4,10 +4,10 @@ import { View, Text } from "react-native";
 
 export default function Edit() {
   const params = useLocalSearchParams();
-  const { id } = params;
+  const { trip_id } = params;
   return (
     <View>
-      <Text>TripEditView for ID: {id}</Text>
+      <Text>TripEditView for ID: {trip_id}</Text>
     </View>
   );
 }

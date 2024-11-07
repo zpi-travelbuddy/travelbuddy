@@ -15,7 +15,8 @@ const TripDetailsView = () => {
   const [dateModalVisible, setDateModalVisible] = useState(false);
 
   const params = useLocalSearchParams();
-  const { id } = params;
+  const { trip_id } = params;
+  console.log(params);
 
   const trip = {
     tripName: "Wycieczka do Londynu",
@@ -82,7 +83,7 @@ const TripDetailsView = () => {
       if (tripDayId) {
         console.log("Redirecting to day with id " + tripDayId);
         setDateModalVisible(false);
-        router.navigate(`/trips/details/id/day/${tripDayId}`);
+        router.navigate(`/trips/details/${trip_id}/day/${tripDayId}`);
       } else {
         console.error("Day not found");
       }
