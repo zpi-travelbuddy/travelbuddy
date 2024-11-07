@@ -22,7 +22,7 @@ import Animated, {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { EmailTextInput } from "@/components/auth/EmailTextInput";
 import { PasswordTextInput } from "@/components/auth/PasswordTextInput";
-import { validateField } from "@/utils/validations";
+import { validateEmail, validatePassword } from "@/utils/validations";
 import { Credentials, AuthErrors, FieldType } from "@/types/auth";
 import { MD3ThemeExtended } from "@/constants/Themes";
 import LoadingView from "@/views/LoadingView";
@@ -58,20 +58,19 @@ export default function SignIn() {
     };
   });
 
-  const handleInputChange = (field: FieldType, value: string) => {
-    setCredentials((prev) => ({ ...prev, [field]: value }));
-    setErrors((prev) => ({
-      ...prev,
-      [field]: validateField(field, value),
-    }));
+  const handleEmailChange = (email: string) => {
+    setCredentials((prev) => ({ ...prev, email }));
+    setErrors((prev) => ({ ...prev, email: validateEmail(email) }));
+  };
+
+  const handlePasswordChange = (password: string) => {
+    setCredentials((prev) => ({ ...prev, password }));
+    setErrors((prev) => ({ ...prev, password: validatePassword(password) }));
   };
 
   const validateForm = () => {
-    const emailError = validateField(FieldType.EMAIL, credentials.email);
-    const passwordError = validateField(
-      FieldType.PASSWORD,
-      credentials.password,
-    );
+    const emailError = validateEmail(credentials.email);
+    const passwordError = validatePassword(credentials.password);
     setErrors({ email: emailError, password: passwordError });
     return !emailError && !passwordError;
   };
@@ -111,9 +110,7 @@ export default function SignIn() {
               </Text>
               <EmailTextInput
                 value={credentials.email}
-                onChangeText={(text) =>
-                  handleInputChange(FieldType.EMAIL, text)
-                }
+                onChangeText={handleEmailChange}
                 error={!!errors.email}
                 style={styles.inputText}
               />
@@ -121,15 +118,13 @@ export default function SignIn() {
               <View style={{ height: 10 }} />
               <PasswordTextInput
                 value={credentials.password}
-                onChangeText={(text) =>
-                  handleInputChange(FieldType.PASSWORD, text)
-                }
+                onChangeText={handlePasswordChange}
                 error={!!errors.password}
                 style={styles.inputText}
               />
               <Text style={styles.textError}>{errors.password || " "}</Text>
               <Text style={styles.forgotPassword} variant="labelLarge">
-                <Link href="/forgot-password/email">Nie pamiętam hasła</Link>
+                <Link href="/forgot-password">Nie pamiętam hasła</Link>
               </Text>
               <Button
                 style={styles.button}

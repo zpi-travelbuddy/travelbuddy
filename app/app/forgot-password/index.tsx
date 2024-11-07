@@ -39,19 +39,13 @@ export default function ForgotPasswordEmail() {
     };
   });
 
-  const handleInputChange = (value: string) => {
+  const handleEmailChange = (value: string) => {
     setEmail(value);
-    setError(validateField(value));
-  };
-
-  const validateField = (value: string) => {
-    if (!value) return "Email jest wymagany";
-    if (!validateEmail(value)) return "Niepoprawny format email";
-    return "";
+    setError(validateEmail(value));
   };
 
   const validateForm = () => {
-    const emailError = validateField(email);
+    const emailError = validateEmail(email);
     setError(emailError);
     return !emailError;
   };
@@ -79,7 +73,7 @@ export default function ForgotPasswordEmail() {
             </Text>
             <EmailTextInput
               value={email}
-              onChangeText={(text) => handleInputChange(text)}
+              onChangeText={handleEmailChange}
               error={!!error}
               style={styles.inputText}
             />

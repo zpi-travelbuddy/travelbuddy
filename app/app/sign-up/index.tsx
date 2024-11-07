@@ -15,16 +15,20 @@ import Animated, {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { EmailTextInput } from "@/components/auth/EmailTextInput";
 import { PasswordTextInput } from "@/components/auth/PasswordTextInput";
-import { validateField } from "@/utils/validations";
+import {
+  validateEmail,
+  validatePassword,
+  validateNewPassword,
+} from "@/utils/validations";
 import { Credentials, AuthErrors } from "@/types/auth";
-import { useAuth } from "./ctx";
+import { useAuth } from "../ctx";
 import { MD3ThemeExtended } from "@/constants/Themes";
 
 // It would be good if we could calculate this value dynamically, but I had some issues with that
 const BOTTOM_VIEW_HEIGHT = 54;
 
-export default function SignIn() {
-  const { onRegister } = useAuth();
+export default function SignUp() {
+  // const { onRegister } = useAuth();
   const insets = useSafeAreaInsets();
   const keyboard = useAnimatedKeyboard();
 
@@ -50,29 +54,31 @@ export default function SignIn() {
     };
   });
 
-  const handleInputChange = (field: "email" | "password", value: string) => {
-    setCredentials((prev) => ({ ...prev, [field]: value }));
-    setErrors((prev) => ({
-      ...prev,
-      [field]: validateField(field, value),
-    }));
+  const handleEmailChange = (email: string) => {
+    setCredentials((prev) => ({ ...prev, email }));
+    setErrors((prev) => ({ ...prev, email: validateEmail(email) }));
+  };
+
+  const handlePasswordChange = (password: string) => {
+    setCredentials((prev) => ({ ...prev, password }));
+    setErrors((prev) => ({ ...prev, password: validatePassword(password) }));
   };
 
   const handleDismissDialog = () => {
     setShowDialog(false);
-    router.navigate("/confirmation");
+    router.navigate("/sign-up/confirmation");
   };
 
   const validateForm = () => {
-    const emailError = validateField("email", credentials.email);
-    const passwordError = validateField("password", credentials.password);
+    const emailError = validateEmail(credentials.email);
+    const passwordError = validateNewPassword(credentials.password);
     setErrors({ email: emailError, password: passwordError });
     return !emailError && !passwordError;
   };
 
   const signup = async () => {
     if (!validateForm()) return;
-    await onRegister!(credentials);
+    // await onRegister!(credentials);
     Keyboard.dismiss();
     setShowDialog(true);
   };
@@ -87,7 +93,7 @@ export default function SignIn() {
             </Text>
             <EmailTextInput
               value={credentials.email}
-              onChangeText={(text) => handleInputChange("email", text)}
+              onChangeText={handleEmailChange}
               error={!!errors.email}
               style={styles.inputText}
             />
@@ -95,7 +101,7 @@ export default function SignIn() {
             <View style={{ height: 10 }} />
             <PasswordTextInput
               value={credentials.password}
-              onChangeText={(text) => handleInputChange("password", text)}
+              onChangeText={handlePasswordChange}
               error={!!errors.password}
               style={styles.inputText}
             />
