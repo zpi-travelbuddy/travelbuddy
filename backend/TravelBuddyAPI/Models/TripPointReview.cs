@@ -41,6 +41,7 @@ public class TripPointReview
     public TimeSpan? ActualTimeSpent { get; set; }
 
     [Range(0, 5)]
+    [Precision(2, 1)]
     [RegularExpression(@"^\d+(\.0|\.5)?$", ErrorMessage = $"{nameof(Rating)} must have at most one digit after the decimal point, which can only be 0 or 5.")]
     public decimal? Rating { get; set; }
 }
