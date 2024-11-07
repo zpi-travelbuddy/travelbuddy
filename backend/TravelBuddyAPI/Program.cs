@@ -8,6 +8,7 @@ using TravelBuddyAPI.Endpoints;
 using RestSharp;
 using TravelBuddyAPI.Interfaces;
 using TravelBuddyAPI.Services;
+using Microsoft.IdentityModel.Tokens;
 
 namespace TravelBuddyAPI
 {
@@ -16,17 +17,6 @@ namespace TravelBuddyAPI
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-
-            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"));
-
-            builder.Services.Configure<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme, options =>
-            {
-                options.TokenValidationParameters.ValidateIssuer = true;
-                options.TokenValidationParameters.ValidAudience = builder.Configuration["AzureAd:ClientId"];
-            });
-
-            builder.Services.AddAuthorization();
 
             builder.Services.AddMemoryCache();
 
@@ -83,12 +73,31 @@ namespace TravelBuddyAPI
                 builder.Configuration["CLIENT_SECRET"] = DotNetEnv.Env.GetString("CLIENT_SECRET");
                 builder.Configuration["MSSQL_SA_PASSWORD"] = DotNetEnv.Env.GetString("MSSQL_SA_PASSWORD");
                 builder.Configuration["GEOAPIFY_KEY"] = DotNetEnv.Env.GetString("GEOAPIFY_KEY");
+                builder.Configuration["Cognito:Authority"] = DotNetEnv.Env.GetString("COGNITO_AUTHORITY");
+                builder.Configuration["Cognito:Audience"] = DotNetEnv.Env.GetString("COGNITO_AUDIENCE");
             }
 
-            builder.Services.Configure<MicrosoftIdentityOptions>(options =>
-            {
-                options.ClientSecret = builder.Configuration["CLIENT_SECRET"];
-            });
+            builder.Services.AddAuthentication(options =>
+           {
+               options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+               options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+           })
+           .AddJwtBearer(options =>
+           {
+               options.Authority = builder.Configuration["Cognito:Authority"];
+               options.TokenValidationParameters = new TokenValidationParameters
+               {
+                   ValidateIssuer = true,
+                   ValidIssuer = builder.Configuration["Cognito:Authority"],
+                   ValidateAudience = false,
+                   ValidAudience = builder.Configuration["Cognito:Audience"],
+                   ValidateLifetime = true,
+                   RequireExpirationTime = true,
+                   ValidateIssuerSigningKey = true
+               };
+           });
+
+            builder.Services.AddAuthorization();
 
             builder.Services.AddDbContext<TravelBuddyDbContext>(options =>
             {
