@@ -109,6 +109,13 @@ namespace TravelBuddyAPI
             // Development configuration
             if (app.Environment.IsDevelopment())
             {
+                // Migrate the database
+                using (var scope = app.Services.CreateScope())
+                {
+                    var dbContext = scope.ServiceProvider.GetRequiredService<TravelBuddyDbContext>();
+                    dbContext.Database.Migrate();
+                }
+
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
