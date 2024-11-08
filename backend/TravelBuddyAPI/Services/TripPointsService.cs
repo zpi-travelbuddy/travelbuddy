@@ -25,6 +25,7 @@ public class TripPointsService(TravelBuddyDbContext dbContext, INBPService nbpSe
         public const string EmptyPlace = "Place cannot be empty.";
         public const string CreateTripPoint = "An error occurred while creating a trip point.";
         public const string TripPointNotFound = "Trip point not found.";
+        public const string TripPointOverlap = "Trip point overlaps with another trip point.";
         public const string TooManyDecimalPlaces = "Predicted cost must have at most 2 decimal places.";
     }
 
@@ -44,6 +45,14 @@ public class TripPointsService(TravelBuddyDbContext dbContext, INBPService nbpSe
 
             TripDay? tripDay = trip.TripDays?.FirstOrDefault(td => td.Id == tripPoint.TripDayId);
             if (tripDay?.Date < DateOnly.FromDateTime(DateTime.Now)) throw new ArgumentException(ErrorMessage.TripDayInPast);
+
+            List<TripPoint> overlappingTripPoints = await _dbContext.TripPoints
+                .Where(tp => tp.TripDayId == tripPoint.TripDayId
+                    && ((tp.StartTime <= tripPoint.StartTime && tp.EndTime >= tripPoint.StartTime)
+                        || (tp.StartTime <= tripPoint.EndTime && tp.EndTime >= tripPoint.EndTime)))
+                .ToListAsync();
+
+            if (overlappingTripPoints.Count != 0) throw new ArgumentException(ErrorMessage.TripPointOverlap);
 
             decimal exchangeRate = await _nbpService.GetClosestRateAsync(trip?.CurrencyCode ?? string.Empty, DateOnly.FromDateTime(DateTime.Now)) ?? throw new InvalidOperationException(ErrorMessage.RetriveExchangeRate);
 
