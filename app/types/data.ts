@@ -14,3 +14,9 @@ export interface TransferPoint {
   type: TransferType;
   duration: number;
 }
+
+export interface Option {
+  icon: string;
+  label: string;
+  onPress: () => void;
+}
