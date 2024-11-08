@@ -216,6 +216,7 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
 
             _ = trip!.DestinationPlace ?? throw new InvalidOperationException();
             Guid destinationId = await GetDestinationId(trip?.DestinationPlace?.ProviderId ?? string.Empty) ?? await AddDestinationAsync(trip!.DestinationPlace);
+            // TODO potentialy remove old destination from database
 
             existingTrip.Name = trip!.Name;
             existingTrip.NumberOfTravelers = trip.NumberOfTravelers;
