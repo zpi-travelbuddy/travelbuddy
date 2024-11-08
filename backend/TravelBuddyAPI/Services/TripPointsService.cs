@@ -129,7 +129,7 @@ public class TripPointsService(TravelBuddyDbContext dbContext, INBPService nbpSe
         }
     }
 
-    private async Task<bool> DeleteTripPointDuringTransactionAsync(string userId, Guid tripPointId)
+    public async Task<bool> DeleteTripPointDuringTransactionAsync(string userId, Guid tripPointId)
     {
         TripPoint tripPoint = await _dbContext.TripPoints
             .Include(tp => tp.TripDay)
