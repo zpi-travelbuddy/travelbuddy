@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Moq;
 using TravelBuddyAPI.Data;
 using TravelBuddyAPI.DTOs.Place;
@@ -22,6 +23,7 @@ public class TripPointsServiceTest : IDisposable
     {
         var options = new DbContextOptionsBuilder<TravelBuddyDbContext>()
             .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+            .ConfigureWarnings(warnings => warnings.Ignore(InMemoryEventId.TransactionIgnoredWarning))
             .Options;
 
         _dbContext = new TravelBuddyDbContext(options);

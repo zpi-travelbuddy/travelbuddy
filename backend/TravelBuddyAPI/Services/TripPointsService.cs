@@ -31,6 +31,8 @@ public class TripPointsService(TravelBuddyDbContext dbContext, INBPService nbpSe
     {
         try
         {
+            using var transaction = await _dbContext.Database.BeginTransactionAsync();
+
             Trip trip = await _dbContext.Trips
                 .Include(t => t.TripDays)
                 .Where(t => t.UserId == userId && t.TripDays != null && t.TripDays.Any(td => td.Id == tripPoint.TripDayId))
@@ -71,11 +73,13 @@ public class TripPointsService(TravelBuddyDbContext dbContext, INBPService nbpSe
 
             await _dbContext.TripPoints.AddAsync(newTripPoint);
             await _dbContext.SaveChangesAsync();
+            await transaction.CommitAsync();
 
             return await GetTripPointDetailsAsync(userId, newTripPoint.Id);
         }
         catch (Exception e) when (e is ArgumentNullException || e is InvalidOperationException || e is ArgumentException || e is HttpRequestException || e is ValidationException)
         {
+            if (_dbContext.Database.CurrentTransaction != null) await _dbContext.Database.RollbackTransactionAsync();
             throw new InvalidOperationException($"{ErrorMessage.CreateTripPoint} {e.Message}");
         }
     }

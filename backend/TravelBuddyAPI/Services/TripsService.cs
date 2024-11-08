@@ -35,6 +35,8 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
     {
         try
         {
+            using var transaction = await _dbContext.Database.BeginTransactionAsync();
+            
             _ = trip ?? throw new ArgumentNullException(nameof(trip), ErrorMessage.EmptyRequest);
 
             if (trip.StartDate > trip.EndDate) throw new ArgumentException(ErrorMessage.StartDateAfterEndDate);
@@ -70,11 +72,13 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
             await _dbContext.Trips.AddAsync(newTrip);
             await _dbContext.SaveChangesAsync();
             await AddTripDaysAsync(newTrip.Id, newTrip.StartDate, newTrip.EndDate);
+            await transaction.CommitAsync();
 
             return await GetTripDetailsAsync(userId, newTrip.Id);
         }
         catch (Exception e) when (e is ArgumentNullException || e is InvalidOperationException || e is ArgumentException || e is HttpRequestException || e is ValidationException)
         {
+            if (_dbContext.Database.CurrentTransaction != null) await _dbContext.Database.RollbackTransactionAsync();
             throw new InvalidOperationException($"{ErrorMessage.CreateTrip} {e.Message}");
         }
     }
