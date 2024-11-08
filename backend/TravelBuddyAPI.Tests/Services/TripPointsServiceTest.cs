@@ -214,7 +214,8 @@ public class TripPointsServiceTest : IDisposable
         Assert.Equal("An error occurred while creating a trip point. Place cannot be empty.", exception.Message);
     }
 
-     // [Fact]
+    //TODO local memory cant do transactions 
+    // [Fact]
     // public async Task DeleteTripPointAsync_ReturnsTrue_WhenTripPointIsDeleted()
     // {
     //     // Arrange
@@ -238,7 +239,7 @@ public class TripPointsServiceTest : IDisposable
     //         PredictedCost = 100,
     //         StartTime = TimeOnly.FromDateTime(DateTime.Now),
     //         EndTime = TimeOnly.FromDateTime(DateTime.Now.AddHours(1)),
-    //         Place = new CustomPlace { Id = Guid.NewGuid(), Name = "Test Place" }
+    //         Place = new CustomPlace { Id = Guid.NewGuid(), Name = "Test Place", City = "Test City", Country = "Test Country" }
     //     };
 
     //     trip.TripDays.First().TripPoints = new List<TripPoint> { tripPoint };

@@ -25,6 +25,7 @@ public class TripPointsService(TravelBuddyDbContext dbContext, INBPService nbpSe
         public const string EmptyPlace = "Place cannot be empty.";
         public const string CreateTripPoint = "An error occurred while creating a trip point.";
         public const string TripPointNotFound = "Trip point not found.";
+        public const string DeleteTripPoint = "An error occurred while deleting a trip point.";
         public const string TripPointOverlap = "Trip point overlaps with another trip point.";
         public const string TooManyDecimalPlaces = "Predicted cost must have at most 2 decimal places.";
     }
@@ -105,52 +106,51 @@ public class TripPointsService(TravelBuddyDbContext dbContext, INBPService nbpSe
             .FirstOrDefaultAsync();
     }
 
-    public Task<bool> DeleteTripPointAsync(string userId, Guid tripPointId)
+    public async Task<bool> DeleteTripPointAsync(string userId, Guid tripPointId)
     {
-        throw new NotImplementedException();
+        try
+        {
+            using var transaction = await _dbContext.Database.BeginTransactionAsync();
+
+            await DeleteTripPointDuringTransactionAsync(userId, tripPointId);
+
+            await transaction.CommitAsync();
+
+            return true;
+        }
+        catch (Exception e) when (e is InvalidOperationException)
+        {
+            if (_dbContext.Database.CurrentTransaction != null)
+            {
+                await _dbContext.Database.RollbackTransactionAsync();
+            }
+            throw new InvalidOperationException($"{ErrorMessage.DeleteTripPoint} {e.Message}");
+        }
     }
 
-    // public async Task<bool> DeleteTripPointAsync(string userId, Guid tripPointId)
-    // {
-    //     try
-    //     {
-    //         using var transaction = await _dbContext.Database.BeginTransactionAsync();
+    private async Task<bool> DeleteTripPointDuringTransactionAsync(string userId, Guid tripPointId)
+    {
+        TripPoint tripPoint = await _dbContext.TripPoints
+            .Include(tp => tp.TripDay)
+                .ThenInclude(td => td != null ? td.Trip : null)
+            .Include(tp => tp.Place)
+            .Where(tp => tp.Id == tripPointId
+                && tp.TripDay != null
+                && tp.TripDay.Trip != null
+                && tp.TripDay.Trip.UserId == userId)
+            .FirstOrDefaultAsync() ?? throw new InvalidOperationException(ErrorMessage.TripPointNotFound);
 
-    //         await DeleteTripPointDuringTransactionAsync(userId, tripPointId);
+        if (tripPoint.Place is CustomPlace customPlace)
+        {
+            _dbContext.Places.Remove(customPlace);
+        }
 
-    //         await transaction.CommitAsync();
+        _dbContext.TripPoints.Remove(tripPoint);
 
-    //         return true;
-    //     }
-    //     catch (Exception e) when (e is InvalidOperationException)
-    //     {
-    //         throw new InvalidOperationException($"{ErrorMessage.TripPointNotFound} {e.Message}");
-    //     }
-    // }
+        await _dbContext.SaveChangesAsync();
 
-    // private async Task<bool> DeleteTripPointDuringTransactionAsync(string userId, Guid tripPointId)
-    // {
-    //     TripPoint tripPoint = await _dbContext.TripPoints
-    //         .Include(tp => tp.TripDay)
-    //             .ThenInclude(td => td != null ? td.Trip : null)
-    //         .Include(tp => tp.Place)
-    //         .Where(tp => tp.Id == tripPointId
-    //             && tp.TripDay != null
-    //             && tp.TripDay.Trip != null
-    //             && tp.TripDay.Trip.UserId == userId)
-    //         .FirstOrDefaultAsync() ?? throw new InvalidOperationException(ErrorMessage.TripPointNotFound);
-
-    //     if (tripPoint.Place is CustomPlace customPlace)
-    //     {
-    //         _dbContext.Places.Remove(customPlace);
-    //     }
-
-    //     _dbContext.TripPoints.Remove(tripPoint);
-
-    //     await _dbContext.SaveChangesAsync();
-
-    //     return true;
-    // }
+        return true;
+    }
 
     public Task<bool> EditTripPointAsync(string userId, Guid tripPointId, TripPointRequestDTO tripPoint)
     {
