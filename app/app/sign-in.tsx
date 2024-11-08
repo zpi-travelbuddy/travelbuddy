@@ -24,6 +24,10 @@ import LoadingView from "@/views/LoadingView";
 // It would be good if we could calculate this value dynamically, but I had some issues with that
 const BOTTOM_VIEW_HEIGHT = 54;
 
+const signInErrors: Record<string, string> = {
+  NotAuthorizedException: "Nieprawidłowy email lub hasło",
+};
+
 export default function SignIn() {
   const { signIn } = useAuth();
 
@@ -70,24 +74,19 @@ export default function SignIn() {
   };
 
   const login = async () => {
+    if (!validateForm()) return;
     Keyboard.dismiss();
     setIsLoading(true);
 
-    if (validateForm()) {
-      try {
-        await signIn!(credentials);
-        router.replace("/");
-      } catch (error: any) {
-        // TODO: Better error handling
-        if (error.code === "NotAuthorizedException") {
-          setErrors({
-            email: "Nieprawidłowy email lub hasło",
-            password: "Nieprawidłowy email lub hasło",
-          });
-        } else {
-          console.error("Error signing in:", error);
-        }
-      }
+    try {
+      await signIn!(credentials);
+      router.replace("/");
+    } catch (error: any) {
+      const errorMessage = signInErrors[error.code] || "Błąd logowania";
+      setErrors({
+        email: errorMessage,
+        password: errorMessage,
+      });
     }
 
     setIsLoading(false);

@@ -54,11 +54,15 @@ export default function ForgotPasswordEmail() {
   const handlePress = async () => {
     if (!validateForm()) return;
 
-    await Auth.forgotPassword(email);
-    router.navigate({
-      pathname: "/forgot-password/confirm",
-      params: { email },
-    });
+    try {
+      await Auth.forgotPassword(email);
+      router.navigate({
+        pathname: "/forgot-password/confirm",
+        params: { email },
+      });
+    } catch (error) {
+      setError("Wystąpił błąd. Spróbuj ponownie.");
+    }
   };
 
   return (

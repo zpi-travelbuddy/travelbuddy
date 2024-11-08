@@ -27,6 +27,11 @@ import { MD3ThemeExtended } from "@/constants/Themes";
 // It would be good if we could calculate this value dynamically, but I had some issues with that
 const BOTTOM_VIEW_HEIGHT = 54;
 
+const confirmPasswordErrors: Record<string, string> = {
+  CodeMismatchException: "Nieprawidłowy kod weryfikacyjny",
+  LimitExceededException: "Przekroczono limit prób, spróbuj później",
+};
+
 export default function ForgotPasswordConfirm() {
   const { email } = useLocalSearchParams<{ email: string }>();
 
@@ -74,24 +79,19 @@ export default function ForgotPasswordConfirm() {
 
   const resetPassword = async () => {
     if (!validateForm()) return;
+    Keyboard.dismiss();
+    setIsLoading(true);
 
     try {
-      Keyboard.dismiss();
-      setIsLoading(true);
       await Auth.forgotPasswordSubmit(email, confirmationCode, newPassword);
       router.navigate("/forgot-password/success");
     } catch (error: any) {
-      if (error.code === "CodeMismatchException") {
-        setConfirmationCodeError("Nieprawidłowy kod weryfikacyjny");
-      } else if (error.code === "LimitExceededException") {
-        setConfirmationCodeError("Przekroczono limit prób, spróbuj później");
-      } else {
-        setConfirmationCodeError("Wystąpił błąd, spróbuj ponownie");
-      }
-      console.log(error);
-    } finally {
-      setIsLoading(false);
+      const errorMessage =
+        confirmPasswordErrors[error.code] || "Wystąpił błąd, spróbuj ponownie";
+      setConfirmationCodeError(errorMessage);
     }
+
+    setIsLoading(false);
   };
 
   return (
