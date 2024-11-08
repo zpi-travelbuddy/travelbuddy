@@ -77,7 +77,7 @@ public static class TripPointsEndpoints
         try
         {
             string userId = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new InvalidOperationException("User not found");
-            var tripPointDetails = await tripPointsService.DeleteTripPointAsync(userId, id);
+            _ = await tripPointsService.DeleteTripPointAsync(userId, id);
             return TypedResults.NoContent();
         }
         catch (InvalidOperationException ex)

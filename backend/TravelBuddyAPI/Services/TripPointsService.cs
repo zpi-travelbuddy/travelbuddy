@@ -10,13 +10,14 @@ using TravelBuddyAPI.DTOs.Place;
 
 namespace TravelBuddyAPI.Services;
 
-public class TripPointsService(TravelBuddyDbContext dbContext, INBPService nbpService, IPlacesService placesService) : ITripPointsService
+public class TripPointsService(TravelBuddyDbContext dbContext, INBPService nbpService, IPlacesService placesService, ITransferPointsService transferPointsService) : ITripPointsService
 {
     private readonly TravelBuddyDbContext _dbContext = dbContext;
     private readonly INBPService _nbpService = nbpService;
     private readonly IPlacesService _placesService = placesService;
+    private readonly ITransferPointsService _transferPointService = transferPointsService;
 
-    private static class ErrorMessage
+    public static class ErrorMessage
     {
         public const string TripDayNotFound = "Could not find trip day of given id.";
         public const string TripDayInPast = "Cannot add trip point to past trip day.";
@@ -133,15 +134,31 @@ public class TripPointsService(TravelBuddyDbContext dbContext, INBPService nbpSe
         TripPoint tripPoint = await _dbContext.TripPoints
             .Include(tp => tp.TripDay)
                 .ThenInclude(td => td != null ? td.Trip : null)
+            .Include(tp => tp.TripDay != null ? tp.TripDay.TransferPoints : null)
             .Include(tp => tp.Place)
+            .Include(tp => tp.Review)
             .Where(tp => tp.Id == tripPointId
                 && tp.TripDay != null
+                && tp.Place != null
                 && tp.TripDay.Trip != null
                 && tp.TripDay.Trip.UserId == userId)
             .FirstOrDefaultAsync() ?? throw new InvalidOperationException(ErrorMessage.TripPointNotFound);
 
+        var transferPoints = tripPoint.TripDay?.TransferPoints?
+            .Where(tp => tp.FromTripPointId == tripPointId || tp.ToTripPointId == tripPointId)
+            .ToList() ?? [];
+
+        foreach (var transferPoint in transferPoints)
+        {
+            await _transferPointService.DeleteTransferPointAsync(userId,transferPoint.Id);
+        }
+
         if (tripPoint.Place is CustomPlace customPlace)
         {
+            if (tripPoint.Review != null)
+            {
+                _dbContext.TripPointReviews.Remove(tripPoint.Review);
+            }
             _dbContext.Places.Remove(customPlace);
         }
 
