@@ -26,7 +26,7 @@ export default [
   eslintPluginPrettierRecommended,
   {
     rules: {
-      "linebreak-style": "off",
+      "linebreak-style": 0,
       "react/react-in-jsx-scope": "off",
       "@typescript-eslint/no-unused-vars": "warn",
       "prettier/prettier": "error",
