@@ -29,6 +29,7 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
         public const string TripNotFound = "Trip with the specified ID does not exist.";
         public const string TripWithoutDays = "Trip does not have any days.";
         public const string TripDayNotFound = "Trip day with the specified ID does not exist.";
+        public const string TooManyDecimalPlaces = "Budget must have at most 2 decimal places.";
     }
 
     public async Task<TripDetailsDTO> CreateTripAsync(string userId, TripRequestDTO trip)
@@ -42,6 +43,8 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
 
             if (trip.CategoryProfileId is not null) await _categoryProfileService.GetCategoryProfileDetailsAsync(userId, trip.CategoryProfileId.Value);
             if (trip.ConditionProfileId is not null) await _conditionProfileService.GetConditionProfileDetailsAsync(userId, trip.ConditionProfileId.Value);
+
+            if (trip.Budget * 100 % 1 != 0) throw new ArgumentException(ErrorMessage.TooManyDecimalPlaces);
 
             decimal exchangeRate = await _nbpService.GetClosestRateAsync(trip?.CurrencyCode ?? string.Empty, DateOnly.FromDateTime(DateTime.Now)) ?? throw new InvalidOperationException(ErrorMessage.RetriveExchangeRate);
 

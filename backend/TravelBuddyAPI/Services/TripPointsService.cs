@@ -25,6 +25,7 @@ public class TripPointsService(TravelBuddyDbContext dbContext, INBPService nbpSe
         public const string EmptyPlace = "Place cannot be empty.";
         public const string CreateTripPoint = "An error occurred while creating a trip point.";
         public const string TripPointNotFound = "Trip point not found.";
+        public const string TooManyDecimalPlaces = "Predicted cost must have at most 2 decimal places.";
     }
 
     public async Task<TripPointDetailsDTO> CreateTripPointAsync(string userId, TripPointRequestDTO tripPoint)
@@ -43,6 +44,8 @@ public class TripPointsService(TravelBuddyDbContext dbContext, INBPService nbpSe
             if (tripDay?.Date < DateOnly.FromDateTime(DateTime.Now)) throw new ArgumentException(ErrorMessage.TripDayInPast);
 
             decimal exchangeRate = await _nbpService.GetClosestRateAsync(trip?.CurrencyCode ?? string.Empty, DateOnly.FromDateTime(DateTime.Now)) ?? throw new InvalidOperationException(ErrorMessage.RetriveExchangeRate);
+
+            if (tripPoint.PredictedCost * 100 % 1 != 0) throw new ArgumentException(ErrorMessage.TooManyDecimalPlaces);
 
             _ = tripPoint.Place ?? throw new InvalidOperationException(ErrorMessage.EmptyPlace);
             Guid placeId = (await GetPlaceIdAsync(tripPoint.Place.ProviderId)) ?? (await _placesService.AddPlaceAsync(tripPoint.Place)).Id;
