@@ -9,22 +9,36 @@ import ClickableInput from "./ClickableInput";
 
 const { width } = Dimensions.get("window");
 
-const CurrencyValueInput = () => {
+interface CurrencyValueInputProps {
+  amount: number;
+  currency: Currency;
+  onAmountChange: (amount: number) => void;
+  onCurrencyPress: () => void;
+}
+
+const CurrencyValueInput: React.FC<CurrencyValueInputProps> = ({
+  amount,
+  currency,
+  onAmountChange,
+  onCurrencyPress,
+}) => {
   const theme = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
-  const [amount, setAmount] = useState("");
-  const [budget, setBudget] = useState<number | undefined>(undefined);
-  const [currency, setCurrency] = useState("");
+  const [valueString, setValueString] = useState<string>(
+    formatMoneyToString(amount),
+  );
+  const [budget, setBudget] = useState<number>(amount);
 
   const handleBudgetChange = (value: string) => {
-    setAmount(value);
+    setValueString(value);
   };
 
   const handleBudgetEndEditing = () => {
-    const numericValue = formatMoneyToNumber(amount);
+    const numericValue = formatMoneyToNumber(valueString);
     setBudget(numericValue);
-    setAmount(formatMoneyToString(numericValue));
+    onAmountChange(numericValue);
+    setValueString(formatMoneyToString(numericValue));
   };
 
   return (
@@ -33,19 +47,17 @@ const CurrencyValueInput = () => {
         mode="outlined"
         style={styles.budgetInput}
         label="Budżet"
-        value={amount}
+        value={valueString}
         onChangeText={handleBudgetChange}
         onEndEditing={handleBudgetEndEditing}
         keyboardType="numeric"
+        contentStyle={styles.inputContent}
       />
-
       <ClickableInput
         label="Waluta"
-        value={currency}
-        onPress={() => console.log("Navigate to currency select")}
+        value={currency.id}
+        onPress={onCurrencyPress}
         touchableStyle={styles.currencyTouchable}
-        inputStyle={styles.currencyInput}
-        left={<View />}
       />
     </View>
   );
@@ -60,21 +72,22 @@ const createStyles = (theme: MD3Theme) =>
       alignItems: "center",
       justifyContent: "space-between",
       width: "100%",
-      marginTop: 10,
+      marginVertical: 10,
+      paddingHorizontal: 0.05 * width,
     },
     budgetInput: {
       flex: 0.65,
-      marginLeft: 0.05 * width,
       backgroundColor: theme.colors.surface,
-      marginBottom: 12,
+      marginBottom: 0,
+      marginRight: 10,
+    },
+    inputContent: {
+      justifyContent: "center",
     },
     currencyTouchable: {
       flex: 0.3,
-      marginRight: 0.05 * width,
-    },
-    currencyInput: {
+      justifyContent: "center",
+      height: 35,
       backgroundColor: theme.colors.surface,
-      height: 50,
-      marginTop: -10,
     },
   });

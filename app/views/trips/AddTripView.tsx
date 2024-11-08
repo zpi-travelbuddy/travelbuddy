@@ -18,6 +18,7 @@ import CustomModal from "@/components/CustomModal";
 import { RenderItem } from "@/components/RenderItem";
 import ActionButtons from "@/components/ActionButtons";
 import ClickableInput from "@/components/ClickableInput";
+import { useRouter } from "expo-router";
 
 const { height, width } = Dimensions.get("window");
 
@@ -38,11 +39,17 @@ const AddTripView = () => {
 
   const theme = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
+  const router = useRouter();
 
   const [tripName, setTripName] = useState("");
   const [destination, setDestination] = useState("");
   const [isOpen, setOpen] = React.useState<boolean>(false);
   const [dateRangeText, setDateRangeText] = React.useState<string>("");
+  const [budget, setBudget] = React.useState<number>(0);
+  const [currency, setCurrency] = React.useState<Currency>({
+    name: "Polski złoty",
+    id: "PLN",
+  });
   const [numberOfPeople, setNumberOfPeople] = React.useState<string>("");
   const [visible, setVisible] = React.useState(false);
 
@@ -125,6 +132,36 @@ const AddTripView = () => {
     [],
   );
 
+  const onSaveTrip = () => {
+    if (
+      !tripName ||
+      !destination ||
+      !range.startDate ||
+      !range.endDate ||
+      !numberOfPeople ||
+      !budget ||
+      !currency
+    ) {
+      console.log("Brak wymaganych danych!");
+      return;
+    }
+
+    const trip: Trip = {
+      tripName: tripName,
+      startDate: range.startDate!,
+      endDate: range.endDate!,
+      destination: destination,
+      numberOfPeople: parseInt(numberOfPeople),
+      cost: budget,
+      budget: budget,
+      currency: currency,
+      preferenceProfileName: selectedPreferenceProfile.name,
+      convenienceProfileName: selectedConvenienceProfile.name,
+    };
+
+    console.log("Zapisany obiekt wycieczki:", trip);
+  };
+
   const handleTextChange = (text: string) => {
     const numericText = text.replace(/[^0-9]/g, "");
     setNumberOfPeople(numericText);
@@ -187,7 +224,14 @@ const AddTripView = () => {
           keyboardType="numeric"
         ></TextInput>
 
-        <CurrencyValueInput />
+        <CurrencyValueInput
+          amount={budget}
+          currency={currency}
+          onAmountChange={setBudget}
+          onCurrencyPress={() => {
+            router.push("/trips/select-currency");
+          }}
+        />
 
         <ClickableInput
           label="Profil preferencji"
@@ -222,7 +266,7 @@ const AddTripView = () => {
 
       <ActionButtons
         onCancel={() => console.log("Anulowanie")}
-        onSave={() => console.log("Zapisywanie")}
+        onSave={onSaveTrip}
       />
     </ScrollView>
   );

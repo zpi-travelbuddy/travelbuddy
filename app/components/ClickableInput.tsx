@@ -21,7 +21,7 @@ interface ClickableInputProps {
 const ClickableInput: React.FC<ClickableInputProps> = ({
   label,
   value,
-  icon = "account",
+  icon,
   onPress,
   touchableStyle,
   inputStyle,
@@ -46,9 +46,9 @@ const ClickableInput: React.FC<ClickableInputProps> = ({
             React.cloneElement(left as React.ReactElement, {
               onPress: onPress,
             })
-          ) : (
+          ) : icon ? (
             <TextInput.Icon icon={icon} onPress={onPress} />
-          )
+          ) : undefined
         }
         right={
           right

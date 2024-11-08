@@ -18,6 +18,7 @@ import CustomModal from "@/components/CustomModal";
 import { RenderItem } from "@/components/RenderItem";
 import ActionButtons from "@/components/ActionButtons";
 import ClickableInput from "@/components/ClickableInput";
+import { useRouter } from "expo-router";
 
 const { height, width } = Dimensions.get("window");
 
@@ -40,7 +41,6 @@ const editedTrip: Trip = {
 };
 
 const EditTripView = () => {
-
   interface Profile {
     id: string;
     name: string;
@@ -50,11 +50,32 @@ const EditTripView = () => {
 
   const theme = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
+  const router = useRouter();
 
   const [trip, setTrip] = useState<Trip>(editedTrip);
 
-  const [isOpen, setOpen] = React.useState<boolean>(false);
-  const [visible, setVisible] = React.useState(false);
+  const handleBudgetChange = (newBudget: number) => {
+    setTrip((prevTrip) => ({ ...prevTrip, budget: newBudget }));
+  };
+
+  const handleCurrencyChange = (newCurrency: Currency) => {
+    setTrip((prevTrip) => ({ ...prevTrip, currency: newCurrency }));
+  };
+
+  const [dateRange, setDateRange] = useState<{
+    startDate: Date;
+    endDate: Date;
+  }>({
+    startDate: trip.startDate,
+    endDate: trip.endDate,
+  });
+
+  const [dateRangeText, setDateRangeText] = useState<string>(
+    formatDateRange(dateRange.startDate, dateRange.endDate),
+  );
+
+  const [isOpen, setOpen] = useState<boolean>(false);
+  const [visible, setVisible] = useState<boolean>(false);
 
   const [selectedPreferenceProfile, setSelectedPreferencesProfile] =
     useState<Profile>({
@@ -87,7 +108,13 @@ const EditTripView = () => {
     <RenderItem
       item={item}
       isSelected={selectedPreferenceProfile.id === item.id}
-      onSelect={setSelectedPreferencesProfile}
+      onSelect={() => {
+        setSelectedPreferencesProfile(item);
+        setTrip((prevTrip) => ({
+          ...prevTrip,
+          preferenceProfileName: item.name,
+        }));
+      }}
       renderContent={renderProfileContent}
     />
   );
@@ -96,11 +123,16 @@ const EditTripView = () => {
     <RenderItem
       item={item}
       isSelected={selectedConvenienceProfile.id === item.id}
-      onSelect={setSelectedConvenienceProfile}
+      onSelect={() => {
+        setSelectedConvenienceProfile(item);
+        setTrip((prevTrip) => ({
+          ...prevTrip,
+          convenienceProfileName: item.name,
+        }));
+      }}
       renderContent={renderProfileContent}
     />
   );
-
   const [selectedProfileType, setSelectedProfileType] =
     useState<ProfileType>("Preference");
 
@@ -115,7 +147,7 @@ const EditTripView = () => {
     setOpen(false);
   }, []);
 
-  const onConfirm = React.useCallback(
+  const onConfirm = useCallback(
     ({
       startDate,
       endDate,
@@ -124,17 +156,45 @@ const EditTripView = () => {
       endDate: Date | undefined;
     }) => {
       setOpen(false);
-      setRange({ startDate, endDate });
-      setDateRangeText(formatDateRange(startDate, endDate));
+      if (startDate && endDate) {
+        setDateRange({ startDate, endDate });
+        setDateRangeText(formatDateRange(startDate, endDate));
+        setTrip((prevTrip) => ({
+          ...prevTrip,
+          startDate,
+          endDate,
+        }));
+      }
     },
     [],
   );
 
-  const handleTextChange = (text: string) => {
-    const numericText = text.replace(/[^0-9]/g, "");
-    setNumberOfPeople(numericText);
+  const onSaveTrip = () => {
+    if (
+      !trip.tripName ||
+      !trip.destination ||
+      !trip.startDate ||
+      !trip.endDate ||
+      !trip.numberOfPeople ||
+      !trip.budget ||
+      !trip.currency
+    ) {
+      console.log("Brak wymaganych danych!");
+      return;
+    }
+
+    console.log("Zapisany obiekt wycieczki:", trip);
   };
 
+  
+
+  const handleTextChange = (text: string) => {
+    const numericText = text.replace(/[^0-9]/g, "");
+    setTrip((prevTrip) => ({
+      ...prevTrip,
+      numberOfPeople: parseInt(numericText) || 0,
+    }));
+  };
   return (
     <ScrollView style={styles.scrollView}>
       <View style={styles.container}>
@@ -149,14 +209,16 @@ const EditTripView = () => {
           mode="outlined"
           style={styles.textInput}
           label="Nazwa"
-          value={tripName}
-          placeholder={tripName}
-          onChangeText={setTripName}
-        ></TextInput>
+          value={trip.tripName}
+          placeholder="Wprowadź nazwę wycieczki"
+          onChangeText={(text) =>
+            setTrip((prevTrip) => ({ ...prevTrip, tripName: text }))
+          }
+        />
 
         <ClickableInput
           label="Termin wycieczki"
-          value={dateRangeText}
+          value={formatDateRange(trip.startDate, trip.endDate)}
           onPress={() => setOpen(true)}
           icon="calendar"
         />
@@ -165,34 +227,40 @@ const EditTripView = () => {
           mode="range"
           visible={isOpen}
           onDismiss={onDismiss}
-          startDate={range.startDate}
-          endDate={range.endDate}
+          startDate={trip.startDate}
+          endDate={trip.endDate}
           onConfirm={onConfirm}
           locale="pl"
-          validRange={{
-            startDate: new Date(),
-          }}
         />
 
         <TextInput
           mode="outlined"
           style={styles.textInput}
           label="Cel wycieczki"
-          value={destination}
-          placeholder={destination}
-          onChangeText={setDestination}
-        ></TextInput>
+          value={trip.destination}
+          placeholder="Podaj miejsce wycieczki"
+          onChangeText={(text) =>
+            setTrip((prevTrip) => ({ ...prevTrip, destination: text }))
+          }
+        />
 
         <TextInput
           mode="outlined"
           style={styles.textInput}
           label="Liczba osób"
-          value={numberOfPeople}
+          value={trip.numberOfPeople.toString()}
           onChangeText={handleTextChange}
           keyboardType="numeric"
-        ></TextInput>
+        />
 
-        <CurrencyValueInput />
+        <CurrencyValueInput
+          amount={trip.budget}
+          currency={trip.currency}
+          onAmountChange={handleBudgetChange}
+          onCurrencyPress={() => {
+            router.push("/trips/select-currency");
+          }}
+        />
 
         <ClickableInput
           label="Profil preferencji"
@@ -227,7 +295,7 @@ const EditTripView = () => {
 
       <ActionButtons
         onCancel={() => console.log("Anulowanie")}
-        onSave={() => console.log("Zapisywanie")}
+        onSave={onSaveTrip}
       />
     </ScrollView>
   );

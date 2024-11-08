@@ -3,12 +3,12 @@ import React, { useMemo, useState } from "react";
 import { MD3Theme, Searchbar, useTheme, Text } from "react-native-paper";
 import { RenderItem } from "@/components/RenderItem";
 import ActionButtons from "@/components/ActionButtons";
-
-
+import { useNavigation } from "@react-navigation/native";
 
 const SelectCurrencyView = () => {
   const theme = useTheme();
   const styles = createStyles(theme);
+  const navigation = useNavigation();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCurrency, setSelectedCurrency] = useState<Currency>({
@@ -59,28 +59,21 @@ const SelectCurrencyView = () => {
 
   return (
     <View style={styles.container}>
+      <Searchbar
+        value={searchQuery}
+        onChangeText={setSearchQuery}
+        placeholder="Wyszukaj walutę"
+      />
       <FlatList
-        style={styles.scrollView}
-        contentContainerStyle={styles.container}
         data={filteredCurrencies}
         renderItem={renderCurrency}
         keyExtractor={(item) => item.id}
-        ListHeaderComponent={
-          <Searchbar
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-            placeholder="Wyszukaj walutę"
-            style={styles.searchbar}
-          />
-        }
-        ListEmptyComponent={
-          <Text style={styles.emptyMessage}> Nie znaleziono walut</Text>
-        }
       />
-
       <ActionButtons
-        onCancel={() => console.log("Anulowanie")}
-        onSave={() => console.log("Zapisywanie")}
+        onCancel={() => navigation.goBack()}
+        onSave={() => {
+          navigation.goBack();
+        }}
       />
     </View>
   );
@@ -110,6 +103,6 @@ const createStyles = (theme: MD3Theme) =>
     emptyMessage: {
       textAlign: "center",
       marginTop: 20,
-      color: theme.colors.onSurface, // Użyj koloru tekstu z motywu
+      color: theme.colors.onSurface,
     },
   });

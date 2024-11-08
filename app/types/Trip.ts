@@ -9,4 +9,4 @@ type Trip = {
   currency: Currency;
   preferenceProfileName: string;
   convenienceProfileName: string;
-}
+};
