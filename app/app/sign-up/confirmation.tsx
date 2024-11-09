@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   View,
   StyleSheet,
@@ -15,6 +15,7 @@ import Animated, {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { CodeTextInput } from "@/components/auth/CodeTextInput";
 import { MD3ThemeExtended } from "@/constants/Themes";
+import { validateCode } from "@/utils/validations";
 
 // It would be good if we could calculate this value dynamically, but I had some issues with that
 const BOTTOM_VIEW_HEIGHT = 54;
@@ -27,6 +28,9 @@ export default function Confirmation() {
   const styles = makeStyles(theme);
 
   const [confirmationCode, setConfirmationCode] = useState<string>("");
+  const [confirmationCodeError, setConfirmationCodeError] =
+    useState<string>("");
+
   const animatedStyles = useAnimatedStyle(() => {
     return {
       marginBottom: Math.max(
@@ -38,10 +42,11 @@ export default function Confirmation() {
 
   const handleInputChange = (value: string) => {
     setConfirmationCode(value);
+    setConfirmationCodeError(validateCode(value));
   };
 
   const confirm = () => {
-    router.navigate("/success");
+    router.navigate("/sign-up/success");
   };
 
   return (
@@ -57,6 +62,7 @@ export default function Confirmation() {
               onChangeText={handleInputChange}
               style={styles.inputText}
             />
+            <Text style={styles.textError}>{confirmationCodeError || " "}</Text>
             <Button
               style={styles.button}
               labelStyle={styles.buttonLabel}
@@ -104,5 +110,9 @@ const makeStyles = (theme: MD3ThemeExtended) =>
       marginHorizontal: 40,
       height: 56,
       lineHeight: 20,
+    },
+    textError: {
+      marginHorizontal: 40,
+      color: theme.colors.error,
     },
   });

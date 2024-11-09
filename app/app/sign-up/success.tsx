@@ -5,7 +5,7 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
 } from "react-native";
-import { Link, router } from "expo-router";
+import { router } from "expo-router";
 import { useTheme, Text, Button } from "react-native-paper";
 import { MD3ThemeExtended } from "@/constants/Themes";
 
