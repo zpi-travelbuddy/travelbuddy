@@ -3,12 +3,21 @@ import { View, StyleSheet } from "react-native";
 import { Button } from "react-native-paper";
 
 const ActionButtons: React.FC<ActionButtonsProps> = ({
+<<<<<<< HEAD
   onAction1,
   action1ButtonLabel,
   action1Icon,
   onAction2,
   action2ButtonLabel,
   action2Icon,
+=======
+  onCancel,
+  cancelButtonLabel,
+  cancelIcon = undefined,
+  onConfirm,
+  confirmButtonLabel,
+  confirmIcon = undefined,
+>>>>>>> 17f1964 (Implement adding trip logic)
 }) => {
   const action1Label = action1ButtonLabel || "Zapisz";
   const action2Label = action2ButtonLabel || "Anuluj";
