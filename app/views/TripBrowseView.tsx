@@ -90,6 +90,7 @@ const TripBrowseView = () => {
 
   const handleLongPress = (trip: Trip) => {
     setSelectedTrip(trip);
+    setIsVisible(true);
   };
 
   const onCloseBottomSheet = () => {
