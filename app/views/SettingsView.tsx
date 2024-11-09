@@ -15,6 +15,8 @@ import {
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useAuth } from "@/app/ctx";
 import { router } from "expo-router";
+import CustomModal from "@/components/CustomModal";
+import ActionTextButtons from "@/components/ActionTextButtons";
 
 type ModalOption = "FONT" | "THEME";
 
@@ -32,6 +34,7 @@ const SettingsView = () => {
   const [selectedTheme, setSelectedTheme] = useState("ciemny");
 
   const [isSheetVisible, setIsSheetVisible] = useState(false);
+  const [isLogoutModalVisible, setIsLogoutModalVisible] = useState(false);
   const [bottomSheetTitle, setBottomSheetTitle] = useState("");
   const [bottomSheetItems, setBottomSheetItems] = useState<string[]>([]);
   const [selectedOptionToModal, setSelectedOptionToModal] =
@@ -71,10 +74,20 @@ const SettingsView = () => {
     setIsSheetVisible(false);
   };
 
-  const logout = async () => {
-    await signOut!();
-    router.navigate("/");
+  const handleLogoutButton = async () => {
+    setIsLogoutModalVisible(true);
   };
+
+  const logout = async () => {
+    try {
+      await signOut!();
+      router.navigate("/");
+    } catch (error) {
+      console.error("Error while logging out", error);
+    }
+  };
+
+  const handleDismissLogoutModal = () => setIsLogoutModalVisible(false);
 
   return (
     <GestureHandlerRootView style={styles.container}>
@@ -167,7 +180,7 @@ const SettingsView = () => {
           mode="contained"
           style={styles.logOutButton}
           icon="logout"
-          onPress={logout}
+          onPress={handleLogoutButton}
         >
           Wyloguj się
         </Button>
@@ -181,6 +194,23 @@ const SettingsView = () => {
         onSelect={handleSelect}
         onClose={() => setIsSheetVisible(false)}
       />
+
+      <CustomModal
+        visible={isLogoutModalVisible}
+        onDismiss={handleDismissLogoutModal}
+      >
+        <Text style={styles.modalTitleText}>
+          Czy na pewno chcesz się wylogować?
+        </Text>
+        <ActionTextButtons
+          onCancel={handleDismissLogoutModal}
+          onConfirm={logout}
+          cancelButtonLabel="Nie"
+          confirmButtonLabel="Tak"
+          confirmIcon={undefined}
+          cancelIcon={undefined}
+        />
+      </CustomModal>
     </GestureHandlerRootView>
   );
 };
@@ -213,6 +243,10 @@ const createStyles = (theme: MD3Theme) =>
     title: {
       width: "100%",
       marginTop: 20,
+    },
+    modalTitleText: {
+      ...theme.fonts.titleLarge,
+      color: theme.colors.onBackground,
     },
   });
 

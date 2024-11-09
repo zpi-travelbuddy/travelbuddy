@@ -11,6 +11,3 @@ COPY init-db.sql /docker-entrypoint-initdb.d/init-db.sql
 
 # Expose the SQL Server port
 EXPOSE 1433
-
-# /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P $MSSQL_SA_PASSWORD -C -i /docker-entrypoint-initdb.d/init-db.sql
-# /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P $MSSQL_SA_PASSWORD -C -Q "SELECT name FROM sys.databases;"

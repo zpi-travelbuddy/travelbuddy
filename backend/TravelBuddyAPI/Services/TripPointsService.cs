@@ -25,12 +25,16 @@ public class TripPointsService(TravelBuddyDbContext dbContext, INBPService nbpSe
         public const string EmptyPlace = "Place cannot be empty.";
         public const string CreateTripPoint = "An error occurred while creating a trip point.";
         public const string TripPointNotFound = "Trip point not found.";
+        public const string TripPointOverlap = "Trip point overlaps with another trip point.";
+        public const string TooManyDecimalPlaces = "Predicted cost must have at most 2 decimal places.";
     }
 
     public async Task<TripPointDetailsDTO> CreateTripPointAsync(string userId, TripPointRequestDTO tripPoint)
     {
         try
         {
+            using var transaction = await _dbContext.Database.BeginTransactionAsync();
+
             Trip trip = await _dbContext.Trips
                 .Include(t => t.TripDays)
                 .Where(t => t.UserId == userId && t.TripDays != null && t.TripDays.Any(td => td.Id == tripPoint.TripDayId))
@@ -42,7 +46,17 @@ public class TripPointsService(TravelBuddyDbContext dbContext, INBPService nbpSe
             TripDay? tripDay = trip.TripDays?.FirstOrDefault(td => td.Id == tripPoint.TripDayId);
             if (tripDay?.Date < DateOnly.FromDateTime(DateTime.Now)) throw new ArgumentException(ErrorMessage.TripDayInPast);
 
+            List<TripPoint> overlappingTripPoints = await _dbContext.TripPoints
+                .Where(tp => tp.TripDayId == tripPoint.TripDayId
+                    && ((tp.StartTime <= tripPoint.StartTime && tp.EndTime >= tripPoint.StartTime)
+                        || (tp.StartTime <= tripPoint.EndTime && tp.EndTime >= tripPoint.EndTime)))
+                .ToListAsync();
+
+            if (overlappingTripPoints.Count != 0) throw new ArgumentException(ErrorMessage.TripPointOverlap);
+
             decimal exchangeRate = await _nbpService.GetClosestRateAsync(trip?.CurrencyCode ?? string.Empty, DateOnly.FromDateTime(DateTime.Now)) ?? throw new InvalidOperationException(ErrorMessage.RetriveExchangeRate);
+
+            if (tripPoint.PredictedCost * 100 % 1 != 0) throw new ArgumentException(ErrorMessage.TooManyDecimalPlaces);
 
             _ = tripPoint.Place ?? throw new InvalidOperationException(ErrorMessage.EmptyPlace);
             Guid placeId = (await GetPlaceIdAsync(tripPoint.Place.ProviderId)) ?? (await _placesService.AddPlaceAsync(tripPoint.Place)).Id;
@@ -71,11 +85,13 @@ public class TripPointsService(TravelBuddyDbContext dbContext, INBPService nbpSe
 
             await _dbContext.TripPoints.AddAsync(newTripPoint);
             await _dbContext.SaveChangesAsync();
+            await transaction.CommitAsync();
 
             return await GetTripPointDetailsAsync(userId, newTripPoint.Id);
         }
         catch (Exception e) when (e is ArgumentNullException || e is InvalidOperationException || e is ArgumentException || e is HttpRequestException || e is ValidationException)
         {
+            if (_dbContext.Database.CurrentTransaction != null) await _dbContext.Database.RollbackTransactionAsync();
             throw new InvalidOperationException($"{ErrorMessage.CreateTripPoint} {e.Message}");
         }
     }

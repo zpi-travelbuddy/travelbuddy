@@ -19,7 +19,10 @@ export function PlaceCard({ place }: { place: PlaceView }) {
   return (
     <Card mode="outlined">
       <View style={styles.headerContainer}>
-        <Card.Title title={truncateText(title, 25)} subtitle={truncateText(subtitle, 25)} />
+        <Card.Title
+          title={truncateText(title, 25)}
+          subtitle={truncateText(subtitle, 25)}
+        />
         {imageUrl && <Image source={{ uri: imageUrl }} style={styles.image} />}
       </View>
       <Card.Actions>

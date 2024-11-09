@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Moq;
 using TravelBuddyAPI.Data;
 using TravelBuddyAPI.DTOs.Place;
@@ -22,6 +23,7 @@ public class TripPointsServiceTest : IDisposable
     {
         var options = new DbContextOptionsBuilder<TravelBuddyDbContext>()
             .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+            .ConfigureWarnings(warnings => warnings.Ignore(InMemoryEventId.TransactionIgnoredWarning))
             .Options;
 
         _dbContext = new TravelBuddyDbContext(options);
@@ -210,6 +212,54 @@ public class TripPointsServiceTest : IDisposable
         // Act & Assert
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _tripPointsService.CreateTripPointAsync(userId, tripPointRequest));
         Assert.Equal("An error occurred while creating a trip point. Place cannot be empty.", exception.Message);
+    }
+
+    [Fact]
+    public async Task CreateTripPointAsync_ThrowsArgumentException_WhenTripPointOverlaps()
+    {
+        // Arrange
+        var userId = "user1";
+        var tripDayId = Guid.NewGuid();
+        var existingTripPoint = new TripPoint
+        {
+            Id = Guid.NewGuid(),
+            TripDayId = tripDayId,
+            Name = "Existing Trip Point",
+            StartTime = TimeOnly.FromDateTime(DateTime.Now),
+            EndTime = TimeOnly.FromDateTime(DateTime.Now.AddHours(1))
+        };
+
+        await _dbContext.TripPoints.AddAsync(existingTripPoint);
+        await _dbContext.SaveChangesAsync();
+
+        var tripPointRequest = new TripPointRequestDTO
+        {
+            TripDayId = tripDayId,
+            Name = "New Trip Point",
+            Comment = "Test Comment",
+            PredictedCost = 100,
+            StartTime = TimeOnly.FromDateTime(DateTime.Now.AddMinutes(30)),
+            EndTime = TimeOnly.FromDateTime(DateTime.Now.AddHours(2)),
+            Place = new PlaceRequestDTO { ProviderId = "1", Name = "Test Place" }
+        };
+
+        var trip = new Trip
+        {
+            UserId = userId,
+            CurrencyCode = "USD",
+            Name = "Test Trip",
+            TripDays = new List<TripDay> { new TripDay { Id = tripDayId, Date = DateOnly.FromDateTime(DateTime.Now) } }
+        };
+
+        await _dbContext.Trips.AddAsync(trip);
+        await _dbContext.SaveChangesAsync();
+
+        _mockNBPService.Setup(s => s.GetClosestRateAsync(It.IsAny<string>(), It.IsAny<DateOnly>(), It.IsAny<int>()))
+            .ReturnsAsync(2.0m);
+
+        // Act & Assert
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _tripPointsService.CreateTripPointAsync(userId, tripPointRequest));
+        Assert.Equal("An error occurred while creating a trip point. Trip point overlaps with another trip point.", exception.Message);
     }
 
     public void Dispose()

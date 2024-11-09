@@ -109,7 +109,7 @@ const TripBrowseView = () => {
   const deleteTrip = (trip: Trip | null) => {
     console.log(`Usuwanie wycieczki: ${trip?.title}`);
     hideModal();
-    showSnackbar("Usunięto wycieczkę!")
+    showSnackbar("Usunięto wycieczkę!");
   };
 
   useEffect(() => {
