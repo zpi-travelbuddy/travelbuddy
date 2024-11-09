@@ -7,8 +7,9 @@ import {
   WALK_ICON,
   BUS_ICON,
   CAR_ICON,
-  MANUAL_ICON,
   EMPTY_ICON,
+  TRAIN_ICON,
+  NON_STANDARD_TRANSFER_ICON,
 } from "@/constants/Icons";
 
 const VERTICAL_LINE_HEIGHT = 20;
@@ -21,7 +22,9 @@ const TRANSFER_TYPE_MAP: {
   walk: WALK_ICON,
   bus: BUS_ICON,
   car: CAR_ICON,
-  manual: MANUAL_ICON,
+  train: TRAIN_ICON,
+  manual: NON_STANDARD_TRANSFER_ICON,
+  empty: EMPTY_ICON,
 };
 
 interface TransferPointNodeProps {
