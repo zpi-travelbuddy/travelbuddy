@@ -9,6 +9,10 @@ export const SETTINGS_ICON = "cog";
 export const DEFAULT_NAV_BAR_ICON = "help";
 export const CALENDAR_ICON = "calendar";
 
+export const CREATING_TRIP_POINT_ICON = "hammer-screwdriver";
+export const SEARCH_TRIP_POINT_ICON = "magnify";
+export const RECOMMENDATION_ICON = "star-outline";
+
 // Transfer type icons
 export const WALK_ICON = "walk";
 export const BUS_ICON = "bus";
@@ -25,12 +29,12 @@ export const FOOD_ICON = " silver-fork-knife";
 export const CULTURE_ICON = "drama-masks";
 export const SHOP_ICON = "basket";
 export const PARK_ICON = "pine-tree";
-export const RELIGION_ICON = "church"
+export const RELIGION_ICON = "church";
 export const MUSIC_ICON = "music-note";
 export const OTHER_ICON = "map-marker";
 
 // Convenience icons
-export const HUMAN_DISABLE_ICON = "human-wheelchair"
+export const HUMAN_DISABLE_ICON = "human-wheelchair";
 export const DOG_ICON = "dog-side";
 export const VEGAN_ICON = "leaf";
 export const VEGE_ICON = "food-drumstick-off";

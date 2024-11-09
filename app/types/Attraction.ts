@@ -5,7 +5,7 @@ export type AttractionViewModel = {
   address: Address;
   attractionType: TripPointType;
   conveniences: string[]; // TODO: changing to special enum
-  rating: 5;
+  rating: number;
   averageCostPerPerson: number;
   averageVisitTime: number;
   latitude: number;

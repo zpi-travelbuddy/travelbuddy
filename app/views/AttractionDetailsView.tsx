@@ -43,14 +43,12 @@ const getConvenienceIcons = (conveniences: string[]) => {
 
 }
 
-const TripDetailsView = () => {
+const AttractionDetailsView = () => {
   const theme = useTheme() as MD3ThemeExtended;
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   // const params = useLocalSearchParams();
   // const { id } = params;
-
-
 
   return (
     <View style={styles.container}>
@@ -124,7 +122,7 @@ const TripDetailsView = () => {
   );
 };
 
-export default TripDetailsView;
+export default AttractionDetailsView;
 
 const createStyles = (theme: MD3ThemeExtended) =>
   StyleSheet.create({

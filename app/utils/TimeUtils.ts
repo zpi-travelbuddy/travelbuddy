@@ -1,3 +1,5 @@
+import { registerTranslation } from "react-native-paper-dates";
+
 export function stringToDate(date: string): Date {
   const [year, month, day] = date.split("-").map(Number);
   return new Date(year, month - 1, day);
@@ -48,4 +50,27 @@ export function formatMinutesInWords(minutes: number): string {
 
 export function formatTimeRange(startTime: string, endTime: string): string {
   return `${startTime} - ${endTime}`;
+}
+
+export function applyRegisterTranslation(): void {
+  registerTranslation("pl", {
+    save: "Zapisz",
+    selectSingle: "Wybierz datę",
+    selectMultiple: "Wybierz daty",
+    selectRange: "Wybierz zakres",
+    notAccordingToDateFormat: (inputFormat) =>
+      `Data wymaga formatu: ${inputFormat}`,
+    mustBeHigherThan: (date) => `Musi być później niż ${date}`,
+    mustBeLowerThan: (date) => `Musi być wcześniej niż ${date}`,
+    mustBeBetween: (startDate, endDate) =>
+      `Musi być pomiędzy ${startDate} - ${endDate}`,
+    dateIsDisabled: "Dzień nie jest dozwolony",
+    previous: "Poprzedni",
+    next: "Następny",
+    typeInDate: "Wpisz datę",
+    pickDateFromCalendar: "Wybierz datę z kalendarza",
+    close: "Zamknij",
+    hour: "",
+    minute: "",
+  });
 }

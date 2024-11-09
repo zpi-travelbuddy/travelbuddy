@@ -8,8 +8,8 @@ import {
 } from "react-native";
 import React, { useCallback, useMemo, useState } from "react";
 import { useTheme, MD3Theme, TextInput, Text } from "react-native-paper";
-import { DatePickerModal, registerTranslation } from "react-native-paper-dates";
-import { formatDateRange } from "@/utils/TimeUtils";
+import { DatePickerModal } from "react-native-paper-dates";
+import { applyRegisterTranslation, formatDateRange } from "@/utils/TimeUtils";
 import CurrencyValueInput from "@/components/CurrencyValueInput";
 import CustomModal from "@/components/CustomModal";
 import { RenderItem } from "@/components/RenderItem";
@@ -20,26 +20,7 @@ import { useRouter } from "expo-router";
 
 const { height, width } = Dimensions.get("window");
 
-registerTranslation("pl", {
-  save: "Zapisz",
-  selectSingle: "Wybierz datę",
-  selectMultiple: "Wybierz daty",
-  selectRange: "Wybierz zakres",
-  notAccordingToDateFormat: (inputFormat) =>
-    `Data wymaga formatu: ${inputFormat}`,
-  mustBeHigherThan: (date) => `Musi być później niż ${date}`,
-  mustBeLowerThan: (date) => `Musi być wcześniej niż ${date}`,
-  mustBeBetween: (startDate, endDate) =>
-    `Musi być pomiędzy ${startDate} - ${endDate}`,
-  dateIsDisabled: "Dzień nie jest dozwolony",
-  previous: "Poprzedni",
-  next: "Następny",
-  typeInDate: "Wpisz datę",
-  pickDateFromCalendar: "Wybierz datę z kalendarza",
-  close: "Zamknij",
-  hour: "",
-  minute: "",
-});
+applyRegisterTranslation();
 
 const AddingTripView = () => {
   interface DateRange {
