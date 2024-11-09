@@ -1,4 +1,4 @@
-import { ScrollView, StyleSheet, View } from "react-native";
+import { Dimensions, ScrollView, StyleSheet, View } from "react-native";
 import { TripPointCard } from "@/components/TripPointCard";
 import { TransferPointNode } from "@/components/TransferPointNode";
 import {
@@ -7,8 +7,8 @@ import {
   TransferTypeLabels,
   TransferType,
 } from "@/types/data";
-import { useTheme, FAB, MD3Theme } from "react-native-paper";
-import React, { Fragment, useMemo, useState } from "react";
+import { useTheme, FAB, MD3Theme, Text, TextInput } from "react-native-paper";
+import React, { Fragment, useEffect, useMemo, useState } from "react";
 import {
   BUS_ICON,
   CAR_ICON,
@@ -19,6 +19,10 @@ import {
 } from "@/constants/Icons";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import CreatingTripPointSelector from "@/components/CreatingTripPointSelector";
+import ActionButtons from "@/components/ActionButtons";
+import { Option } from "@/types/data";
+
+const { width } = Dimensions.get("window");
 
 const tripPoints: TripPoint[] = [
   {
@@ -59,7 +63,15 @@ const TripDayView = () => {
 
   const [isVisible, setIsVisible] = useState<boolean>(false);
   const [dynamicLabel, setDynamicLabel] = useState<string>("");
+  const [estimatedTime, setEstimatedTime] = useState<number>(0);
+  const [extendedView, setExtendedView] = useState<
+    React.JSX.Element | undefined
+  >(undefined);
+  const [snapIndex, setSnapIndex] = useState<number>(-1);
   const [selectedTransferPoint, setSelectedTransferPoint] = useState<
+    TransferPoint | undefined
+  >(undefined);
+  const [previousTransfer, setPreviousTransfer] = useState<
     TransferPoint | undefined
   >(undefined);
 
@@ -71,53 +83,126 @@ const TripDayView = () => {
       type: "walk",
       duration: 110,
     },
+    {
+      id: "id1",
+      fromTripPointId: "1",
+      toTripPointId: "2",
+      type: "empty",
+      duration: 0,
+    },
+    {
+      id: "id2",
+      fromTripPointId: "3",
+      toTripPointId: "4",
+      type: "empty",
+      duration: 0,
+    },
+    {
+      id: "id3",
+      fromTripPointId: "4",
+      toTripPointId: "5",
+      type: "empty",
+      duration: 0,
+    },
   ]);
 
-  const changeTransferType = (type: TransferType) => {
+  const handleTextChange = (text: string) => {
+    const numericText = text.replace(/[^0-9]/g, "");
+    setEstimatedTime(Number(numericText));
+  };
+
+  const undoChange = () => {
+    setSelectedTransferPoint(previousTransfer);
+    if (previousTransfer) handleChangeTransferType(previousTransfer.type);
+  };
+
+  const onCancel = () => {
+    console.log("Reset");
+    undoChange();
+    console.log(JSON.stringify(previousTransfer));
+    onSelectorClose();
+  };
+
+  const onSave = () => {
+    console.log("Zapisz");
+    if (selectedTransferPoint) selectedTransferPoint.duration = estimatedTime;
+    onSelectorClose();
+  };
+
+  const ExampleExtendedView = () => (
+    <View style={style.extendedView}>
+      <Text>Wpisz szacowany czas podróży:</Text>
+      <TextInput
+        mode="outlined"
+        style={style.textInput}
+        label="Minuty"
+        defaultValue={selectedTransferPoint?.duration.toString()}
+        onChangeText={handleTextChange}
+        keyboardType="numeric"
+      ></TextInput>
+      <ActionButtons
+        onCancel={onCancel}
+        cancelButtonLabel="Resetuj"
+        cancelIcon={undefined}
+        onConfirm={onSave}
+        confirmButtonLabel="Zapisz"
+        confirmIcon={undefined}
+      />
+    </View>
+  );
+
+  const handleChangeTransferType = (
+    type: TransferType,
+    isVisibleTrigger: boolean = false,
+  ) => {
     if (selectedTransferPoint) {
-      const updatedTransferPoints = transferPoints.includes(
-        selectedTransferPoint,
-      )
-        ? transferPoints.map((point) =>
-            point.id === selectedTransferPoint.id ? { ...point, type } : point,
-          )
-        : [...transferPoints, selectedTransferPoint].map((point) =>
-            point.id === selectedTransferPoint.id ? { ...point, type } : point,
-          );
-      setTransferPoints(updatedTransferPoints);
+      setTransferPoints(
+        transferPoints.map((point) =>
+          point.id === selectedTransferPoint.id ? { ...point, type } : point,
+        ),
+      );
     }
+    setIsVisible(isVisibleTrigger);
+    if (!isVisibleTrigger) setExtendedView(undefined);
+  };
+
+  const handleManualTransferEdit = () => {
+    setExtendedView(<ExampleExtendedView />);
+    handleChangeTransferType("manual", true);
+    setDynamicLabel(TransferTypeLabels["manual"]);
+    setSnapIndex(1);
   };
 
   const transferPointOptions: Option[] = [
     {
       icon: BUS_ICON,
       label: "Autobus",
-      onPress: () => changeTransferType("bus"),
+      onPress: () => handleChangeTransferType("bus"),
     },
     {
       icon: TRAIN_ICON,
       label: "Pociąg",
-      onPress: () => changeTransferType("train"),
+      onPress: () => handleChangeTransferType("train"),
     },
     {
       icon: CAR_ICON,
       label: "Samochód",
-      onPress: () => changeTransferType("car"),
+      onPress: () => handleChangeTransferType("car"),
     },
     {
       icon: WALK_ICON,
       label: "Chód",
-      onPress: () => changeTransferType("walk"),
+      onPress: () => handleChangeTransferType("walk"),
     },
     {
       icon: NON_STANDARD_TRANSFER_ICON,
       label: "Ręcznie",
-      onPress: () => changeTransferType("manual"),
+      onPress: () => handleManualTransferEdit(),
     },
     {
       icon: DELETE_ICON,
       label: "Usuń",
-      onPress: () => console.log(selectedTransferPoint),
+      onPress: () => deleteTransferPoint(),
     },
   ];
 
@@ -132,8 +217,18 @@ const TripDayView = () => {
   const handleTransferPointPress = (transferPoint: TransferPoint) => {
     setSelectedTransferPoint(transferPoint);
     setDynamicLabel(TransferTypeLabels[transferPoint.type]);
+    if (transferPoint.type === "manual") {
+      setExtendedView(<ExampleExtendedView />);
+    }
+    setSnapIndex(1);
     setIsVisible(true);
+    if (previousTransfer === undefined)
+      setPreviousTransfer({ ...transferPoint });
   };
+
+  useEffect(() => {
+    console.log("Previous: " + JSON.stringify(previousTransfer));
+  }, [previousTransfer]);
 
   const transferPointMap = useMemo(() => {
     const map = new Map();
@@ -156,23 +251,6 @@ const TripDayView = () => {
 
     const transferPoint: TransferPoint = transferPointMap.get(fromTripPoint.id);
 
-    if (!transferPoint) {
-      // It will be replaced in the future - we need to create new transfer point but without saving it or request at the beginning in case the user cancels.
-      const tempTransferPoint: TransferPoint = {
-        id: "newID",
-        fromTripPointId: fromTripPoint.id,
-        toTripPointId: sortedTripPoints[index + 1].id,
-        type: "empty",
-        duration: 0,
-      };
-      return (
-        <TransferPointNode
-          transferPoint={tempTransferPoint}
-          onPress={() => handleTransferPointPress(tempTransferPoint)}
-        />
-      );
-    }
-
     return (
       <TransferPointNode
         onPress={() => {
@@ -181,6 +259,22 @@ const TripDayView = () => {
         transferPoint={transferPoint}
       />
     );
+  };
+
+  const deleteTransferPoint = () => {
+    if (selectedTransferPoint) {
+      selectedTransferPoint.duration = 0;
+      selectedTransferPoint.type = "empty";
+    }
+    onSelectorClose();
+  };
+
+  const onSelectorClose = () => {
+    setIsVisible(false);
+    setDynamicLabel("");
+    setExtendedView(undefined);
+    setSnapIndex(-1);
+    setPreviousTransfer(undefined);
   };
 
   return (
@@ -215,11 +309,10 @@ const TripDayView = () => {
         <CreatingTripPointSelector
           options={transferPointOptions}
           isVisible={isVisible}
-          onClose={() => {
-            setIsVisible(false);
-            setDynamicLabel("");
-          }}
+          onClose={() => onSelectorClose()}
+          snapIndex={snapIndex}
           label={dynamicLabel}
+          extendedView={extendedView}
         />
       </GestureHandlerRootView>
     </>
@@ -243,6 +336,20 @@ const createStyles = (theme: MD3Theme) =>
       right: 0,
       bottom: 0,
       backgroundColor: theme.colors.primary,
+    },
+    text: {
+      fontSize: 16,
+      marginBottom: 10,
+    },
+    textInput: {
+      width: "100%",
+      height: 50,
+      marginVertical: 10,
+      backgroundColor: theme.colors.surface,
+    },
+    extendedView: {
+      backgroundColor: theme.colors.elevation.level1,
+      paddingHorizontal: 0.1 * width,
     },
   });
 

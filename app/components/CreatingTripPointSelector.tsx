@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useCallback } from "react";
+import React, { useRef, useEffect, useCallback, useState } from "react";
 import {
   View,
   Text,
@@ -15,7 +15,8 @@ import IconComponent from "./IconComponent";
 interface BottomSheetComponentProps {
   options: Option[];
   isVisible: boolean;
-  isExtendedView?: boolean;
+  snapIndex: number;
+  extendedView?: React.ReactNode;
   onClose: () => void;
   label?: string;
 }
@@ -23,7 +24,8 @@ interface BottomSheetComponentProps {
 const CreatingTripPointSelector: React.FC<BottomSheetComponentProps> = ({
   options,
   isVisible,
-  isExtendedView = false,
+  snapIndex,
+  extendedView,
   onClose,
   label,
 }) => {
@@ -31,10 +33,23 @@ const CreatingTripPointSelector: React.FC<BottomSheetComponentProps> = ({
   const styles = createStyles(theme);
   const sheetRef = useRef<BottomSheet>(null);
 
-  const TRANSFER_SNAP_POINTS = [
-    90 * (Math.floor(options.length / 3) + 1) + (label ? 40 : 0),
-    90 * (Math.floor(options.length / 3) + 1) + (label ? 40 : 0),
+  const DEFAULT_TRANSFER_SNAP_POINTS = [
+    100 * (Math.floor(options.length / 3) + 1) + (label ? 40 : 0),
+    100 * (Math.floor(options.length / 3) + 1) + (label ? 40 : 0),
   ];
+  const EXTENDED_TRANSFER_SNAP_POINTS = [
+    100 * (Math.floor(options.length / 3) + 1) + (label ? 40 : 0),
+    150 * (Math.floor(options.length / 3) + 1) + (label ? 40 : 0),
+  ];
+
+  const [snapPoints, setSnapPoints] = useState<number[]>(
+    DEFAULT_TRANSFER_SNAP_POINTS,
+  );
+
+  useEffect(() => {
+    if (extendedView) setSnapPoints(EXTENDED_TRANSFER_SNAP_POINTS);
+    else setSnapPoints(DEFAULT_TRANSFER_SNAP_POINTS);
+  }, [extendedView]);
 
   useAnimatedKeyboard();
 
@@ -57,8 +72,8 @@ const CreatingTripPointSelector: React.FC<BottomSheetComponentProps> = ({
     <>
       <BottomSheet
         ref={sheetRef}
-        index={isVisible ? 0 : -1}
-        snapPoints={TRANSFER_SNAP_POINTS}
+        index={isVisible ? snapIndex : -1}
+        snapPoints={snapPoints}
         enablePanDownToClose
         onClose={onClose}
         onAnimate={handleAnimate}
@@ -75,7 +90,6 @@ const CreatingTripPointSelector: React.FC<BottomSheetComponentProps> = ({
               style={styles.option}
               onPress={() => {
                 option.onPress();
-                onClose();
               }}
             >
               <IconComponent
@@ -96,6 +110,7 @@ const CreatingTripPointSelector: React.FC<BottomSheetComponentProps> = ({
             </TouchableOpacity>
           ))}
         </BottomSheetView>
+        {extendedView && extendedView}
       </BottomSheet>
 
       {isVisible && (
@@ -113,20 +128,20 @@ const createStyles = (theme: MD3Theme) =>
   StyleSheet.create({
     contentContainer: {
       flexDirection: "row",
-      flexWrap: "wrap", // Pozwala na zawijanie do nowej linii
-      justifyContent: "flex-start", // Wyśrodkowanie elementów w rzędach
+      flexWrap: "wrap",
+      justifyContent: "flex-start",
       paddingTop: 10,
-      paddingHorizontal: 15, // Dodaje przestrzeń na krawędziach
+      paddingHorizontal: 15,
       borderTopLeftRadius: 40,
       borderTopRightRadius: 40,
       backgroundColor: theme.colors.elevation.level1,
     },
     option: {
       alignItems: "center",
-      flexBasis: "30%", // Ustalony procent dla 3 elementów w rzędzie
-      maxWidth: "30%", // Maksymalna szerokość elementu
+      flexBasis: "30%",
+      maxWidth: "30%",
       marginVertical: 10,
-      marginHorizontal: "1.5%", // Dodaje odstęp między elementami
+      marginHorizontal: "1.5%",
     },
     optionLabel: {
       ...theme.fonts.bodySmall,
@@ -145,4 +160,7 @@ const createStyles = (theme: MD3Theme) =>
       color: theme.colors.onBackground,
     },
     containerStyle: { zIndex: 3 },
+    extendedViewContainer: {
+      backgroundColor: theme.colors.elevation.level1,
+    },
   });
