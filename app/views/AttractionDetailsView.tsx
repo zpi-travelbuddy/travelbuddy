@@ -39,10 +39,6 @@ const attraction: AttractionViewModel = {
   imageUrl: "https://upload.wikimedia.org/wikipedia/commons/1/1a/Big_Ben..JPG",
 };
 
-const getConvenienceIcons = (conveniences: string[]) => {
-
-}
-
 const AttractionDetailsView = () => {
   const theme = useTheme() as MD3ThemeExtended;
   const styles = useMemo(() => createStyles(theme), [theme]);
@@ -88,6 +84,7 @@ const AttractionDetailsView = () => {
           <IconRow
             style={styles.space}
             icons={[HUMAN_DISABLE_ICON, DOG_ICON, VEGAN_ICON]}
+            iconColor={theme.colors.onSurface}
           />
 
           <Text style={styles.doubleSpace} variant="bodySmall">

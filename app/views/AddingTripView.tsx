@@ -9,7 +9,7 @@ import {
 import React, { useCallback, useMemo, useState } from "react";
 import { useTheme, MD3Theme, TextInput, Text } from "react-native-paper";
 import { DatePickerModal } from "react-native-paper-dates";
-import { applyRegisterTranslation, formatDateRange } from "@/utils/TimeUtils";
+import { formatDateRange } from "@/utils/TimeUtils";
 import CurrencyValueInput from "@/components/CurrencyValueInput";
 import CustomModal from "@/components/CustomModal";
 import { RenderItem } from "@/components/RenderItem";
@@ -17,10 +17,11 @@ import ActionButtons from "@/components/ActionButtons";
 import ClickableInput from "@/components/ClickableInput";
 import { useSnackbar } from "@/context/SnackbarContext";
 import { useRouter } from "expo-router";
+import { registerTranslation, pl } from "react-native-paper-dates";
 
 const { height, width } = Dimensions.get("window");
 
-applyRegisterTranslation();
+registerTranslation("pl", pl);
 
 const AddingTripView = () => {
   interface DateRange {
@@ -223,14 +224,18 @@ const AddingTripView = () => {
       </View>
 
       <ActionButtons
-        onCancel={() => {
+        onAction1={() => {
           router.push("/trips");
           showSnackbar("Anulowano dodanie wycieczki", "error");
         }}
-        onConfirm={() => {
+        action1ButtonLabel="Anuluj"
+        action1Icon={undefined}
+        onAction2={() => {
           router.push("/trips");
           showSnackbar("Zapisano wycieczkę!", "success");
         }}
+        action2ButtonLabel="Zapisz"
+        action2Icon={undefined}
       />
     </ScrollView>
   );

@@ -4,6 +4,7 @@ import { TransferPointNode } from "@/components/TransferPointNode";
 import { TripPoint, TransferPoint } from "@/types/data";
 import { useTheme, FAB } from "react-native-paper";
 import { Fragment, useMemo } from "react";
+import { MD3ThemeExtended } from "@/constants/Themes";
 
 const tripPoints: TripPoint[] = [
   {
@@ -50,7 +51,7 @@ const transferPoints: TransferPoint[] = [
 
 const TripDayView = () => {
   const theme = useTheme();
-  const style = createStyles(theme);
+  const style = createStyles(theme as MD3ThemeExtended);
 
   const handleTripPointPress = () => {
     console.log("Trip point pressed");
@@ -133,7 +134,7 @@ const TripDayView = () => {
   );
 };
 
-const createStyles = (theme: any) =>
+const createStyles = (theme: MD3ThemeExtended) =>
   StyleSheet.create({
     container: {
       backgroundColor: theme.colors.surface,
