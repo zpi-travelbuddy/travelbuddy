@@ -10,7 +10,13 @@ interface PlaceCardProps {
 export function PlaceCard({ title, subtitle }: PlaceCardProps) {
   return (
     <Card mode="outlined">
-      <Card.Title title={title} subtitle={subtitle} />
+      <View style={styles.headerContainer}>
+        <Card.Title
+          title={truncateText(title, 25)}
+          subtitle={truncateText(subtitle, 25)}
+        />
+        {imageUrl && <Image source={{ uri: imageUrl }} style={styles.image} />}
+      </View>
       <Card.Actions>
         <Button icon="information-outline" mode="outlined">
           Szczegóły

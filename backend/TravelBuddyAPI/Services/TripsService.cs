@@ -15,10 +15,102 @@ public class  TripsService(TravelBuddyDbContext dbContext, INBPService nbpServic
     private readonly ICategoryProfilesService _categoryProfileService = categoryProfilesService;
     private readonly IConditionProfilesService _conditionProfileService = conditionProfilesService;
 
-
-    public Task<Trip> CreateTripAsync(string userId, TripRequestDTO trip)
+    public static class ErrorMessage
     {
-        throw new NotImplementedException();
+        public const string EmptyRequest = "Request cannot be empty.";
+        public const string StartDateAfterEndDate = "Start date cannot be after end date.";
+        public const string StartDateInPast = "Start date cannot be in the past.";
+        public const string CreateTrip = "An error occurred while creating a trip:";
+        public const string RetriveExchangeRate = "An error occurred while retrieving exchange rate.";
+        public const string TripNotFound = "Trip with the specified ID does not exist.";
+        public const string TripWithoutDays = "Trip does not have any days.";
+        public const string TripDayNotFound = "Trip day with the specified ID does not exist.";
+        public const string TooManyDecimalPlaces = "Budget must have at most 2 decimal places.";
+    }
+
+    public async Task<TripDetailsDTO> CreateTripAsync(string userId, TripRequestDTO trip)
+    {
+        try
+        {
+            using var transaction = await _dbContext.Database.BeginTransactionAsync();
+            
+            _ = trip ?? throw new ArgumentNullException(nameof(trip), ErrorMessage.EmptyRequest);
+
+            if (trip.StartDate > trip.EndDate) throw new ArgumentException(ErrorMessage.StartDateAfterEndDate);
+            if (trip.StartDate < DateOnly.FromDateTime(DateTime.Now)) throw new ArgumentException(ErrorMessage.StartDateInPast);
+
+            if (trip.CategoryProfileId is not null) await _categoryProfileService.GetCategoryProfileDetailsAsync(userId, trip.CategoryProfileId.Value);
+            if (trip.ConditionProfileId is not null) await _conditionProfileService.GetConditionProfileDetailsAsync(userId, trip.ConditionProfileId.Value);
+
+            if (trip.Budget * 100 % 1 != 0) throw new ArgumentException(ErrorMessage.TooManyDecimalPlaces);
+
+            decimal exchangeRate = await _nbpService.GetClosestRateAsync(trip?.CurrencyCode ?? string.Empty, DateOnly.FromDateTime(DateTime.Now)) ?? throw new InvalidOperationException(ErrorMessage.RetriveExchangeRate);
+
+            _ = trip!.DestinationPlace ?? throw new InvalidOperationException();
+            Guid destinationId = await GetDestinationId(trip?.DestinationPlace?.ProviderId ?? string.Empty) ?? await AddDestinationAsync(trip!.DestinationPlace);
+
+            Trip newTrip = new()
+            {
+                Id = Guid.NewGuid(),
+                UserId = userId,
+                Name = trip!.Name, // It cannot be null here
+                NumberOfTravelers = trip.NumberOfTravelers,
+                StartDate = trip.StartDate,
+                EndDate = trip.EndDate,
+                CurrencyCode = trip.CurrencyCode,
+                DestinationId = destinationId,
+                CategoryProfileId = trip.CategoryProfileId,
+                ConditionProfileId = trip.ConditionProfileId,
+                ExchangeRate = exchangeRate,
+                Budget = trip.Budget * exchangeRate
+            };
+
+            var validationContext = new ValidationContext(newTrip);
+            Validator.ValidateObject(newTrip, validationContext, validateAllProperties: true);
+
+            await _dbContext.Trips.AddAsync(newTrip);
+            await _dbContext.SaveChangesAsync();
+            await AddTripDaysAsync(newTrip.Id, newTrip.StartDate, newTrip.EndDate);
+            await transaction.CommitAsync();
+
+            return await GetTripDetailsAsync(userId, newTrip.Id);
+        }
+        catch (Exception e) when (e is ArgumentNullException || e is InvalidOperationException || e is ArgumentException || e is HttpRequestException || e is ValidationException)
+        {
+            if (_dbContext.Database.CurrentTransaction != null) await _dbContext.Database.RollbackTransactionAsync();
+            throw new InvalidOperationException($"{ErrorMessage.CreateTrip} {e.Message}");
+        }
+    }
+
+    private async Task<Guid?> GetDestinationId(string providerId)
+    {
+        Guid? id = await _dbContext.Places
+            .OfType<ProviderPlace>()
+            .Where(p => providerId.Equals(p.ProviderId))
+            .Select(p => (Guid?)p.Id)
+            .FirstOrDefaultAsync();
+
+        return id;
+    }
+
+    private async Task<Guid> AddDestinationAsync(PlaceRequestDTO destination)
+    {
+        var newDestination = await _placesService.AddPlaceAsync(destination);
+        return newDestination.Id;
+    }
+
+    private async Task<bool> AddTripDaysAsync(Guid tripId, DateOnly from, DateOnly to)
+    {
+        var tripDays = Enumerable.Range(0, to.DayNumber - from.DayNumber + 1)
+                                 .Select(offset => new TripDay
+                                 {
+                                     Id = Guid.NewGuid(),
+                                     TripId = tripId,
+                                     Date = from.AddDays(offset)
+                                 });
+
+        await _dbContext.TripDays.AddRangeAsync(tripDays);
+        return await _dbContext.SaveChangesAsync() == tripDays.Count();
     }
 
     public Task<bool> DeleteTripAsync(string userId, Guid tripId)

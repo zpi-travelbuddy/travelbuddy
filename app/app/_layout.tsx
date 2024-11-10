@@ -1,6 +1,6 @@
 import { Slot } from "expo-router";
 import { PaperProvider } from "react-native-paper";
-import { Themes } from "@/constants/Themes";
+import { MD3ThemeExtended, Themes } from "@/constants/Themes";
 import {
   Manrope_400Regular,
   Manrope_500Medium,
@@ -58,7 +58,7 @@ export default function RootLayout() {
   );
 }
 
-const makeStyles = (theme: any) =>
+const makeStyles = (theme: MD3ThemeExtended) =>
   StyleSheet.create({
     container: {
       flex: 1,
