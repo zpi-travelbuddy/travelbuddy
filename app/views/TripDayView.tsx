@@ -8,7 +8,7 @@ import {
   TransferType,
 } from "@/types/data";
 import { useTheme, FAB, MD3Theme, Text, TextInput } from "react-native-paper";
-import React, { Fragment, useEffect, useMemo, useState } from "react";
+import React, { Fragment, useMemo, useState } from "react";
 import {
   BUS_ICON,
   CAR_ICON,
@@ -67,7 +67,6 @@ const TripDayView = () => {
   const [extendedView, setExtendedView] = useState<
     React.JSX.Element | undefined
   >(undefined);
-  const [snapIndex, setSnapIndex] = useState<number>(-1);
   const [selectedTransferPoint, setSelectedTransferPoint] = useState<
     TransferPoint | undefined
   >(undefined);
@@ -170,7 +169,6 @@ const TripDayView = () => {
     setExtendedView(<ExampleExtendedView />);
     handleChangeTransferType("manual", true);
     setDynamicLabel(TransferTypeLabels["manual"]);
-    setSnapIndex(1);
   };
 
   const transferPointOptions: Option[] = [
@@ -220,15 +218,10 @@ const TripDayView = () => {
     if (transferPoint.type === "manual") {
       setExtendedView(<ExampleExtendedView />);
     }
-    setSnapIndex(1);
     setIsVisible(true);
     if (previousTransfer === undefined)
       setPreviousTransfer({ ...transferPoint });
   };
-
-  useEffect(() => {
-    console.log("Previous: " + JSON.stringify(previousTransfer));
-  }, [previousTransfer]);
 
   const transferPointMap = useMemo(() => {
     const map = new Map();
@@ -273,7 +266,6 @@ const TripDayView = () => {
     setIsVisible(false);
     setDynamicLabel("");
     setExtendedView(undefined);
-    setSnapIndex(-1);
     setPreviousTransfer(undefined);
   };
 
@@ -310,7 +302,6 @@ const TripDayView = () => {
           options={transferPointOptions}
           isVisible={isVisible}
           onClose={() => onSelectorClose()}
-          snapIndex={snapIndex}
           label={dynamicLabel}
           extendedView={extendedView}
         />
@@ -344,12 +335,13 @@ const createStyles = (theme: MD3Theme) =>
     textInput: {
       width: "100%",
       height: 50,
-      marginVertical: 10,
+      marginTop: 10,
       backgroundColor: theme.colors.surface,
     },
     extendedView: {
       backgroundColor: theme.colors.elevation.level1,
       paddingHorizontal: 0.1 * width,
+      width: "100%",
     },
   });
 
