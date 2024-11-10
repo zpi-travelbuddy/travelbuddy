@@ -7,10 +7,13 @@ namespace TravelBuddyAPI.DTOs.TripPointReview;
 public class TripPointReviewOverviewDTO
 {
     [Required]
+    public Guid Id { get; set; }
+
+    [Required]
     public Guid TripPointId { get; set; }
 
     [Required]
-    public string? PlaceId { get; set; }
+    public Guid? PlaceId { get; set; }
 
     [Required]
     public string? PlaceName { get; set; }

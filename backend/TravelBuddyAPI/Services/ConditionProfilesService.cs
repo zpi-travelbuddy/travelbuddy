@@ -1,12 +1,20 @@
 using TravelBuddyAPI.Data;
 using TravelBuddyAPI.DTOs.ConditionProfile;
 using TravelBuddyAPI.Interfaces;
+using TravelBuddyAPI.Models;
+using Microsoft.EntityFrameworkCore;
+using TravelBuddyAPI.DTOs.PlaceCondition;
 
 namespace TravelBuddyAPI.Services;
 
 public class ConditionProfilesService(TravelBuddyDbContext dbContext) : IConditionProfilesService
 {
     private readonly TravelBuddyDbContext _dbContext = dbContext;
+
+    public static class ErrorMessage
+    {
+        public const string ConditionProfileNotFound = "Condition profile not found.";
+    }
 
     public Task<ConditionProfileDetailsDTO> CreateConditionProfileAsync(string userId, ConditionProfileRequestDTO conditionProfile)
     {
@@ -23,9 +31,22 @@ public class ConditionProfilesService(TravelBuddyDbContext dbContext) : IConditi
         throw new NotImplementedException();
     }
 
-    public Task<ConditionProfileDetailsDTO> GetConditionProfileDetailsAsync(string userId, Guid profileId)
+    public async Task<ConditionProfileDetailsDTO> GetConditionProfileDetailsAsync(string userId, Guid profileId)
     {
-        throw new NotImplementedException();
+        ConditionProfile conditionProfile = await _dbContext.ConditionProfiles
+            .Include(cp => cp.Conditions)
+            .FirstOrDefaultAsync(cp => cp.Id == profileId && cp.UserId == userId) ?? throw new InvalidOperationException(ErrorMessage.ConditionProfileNotFound);
+
+        return new ConditionProfileDetailsDTO()
+        {
+            Name = conditionProfile.Name,
+            Conditions = conditionProfile?.Conditions?
+                .Select(c => new PlaceConditionDTO()
+                {
+                    Id = c.Id,
+                    Name = c.Name,
+                }).ToList()
+        };
     }
 
     public Task<List<ConditionProfileOverviewDTO>> GetUserConditionProfilesAsync(string userId)

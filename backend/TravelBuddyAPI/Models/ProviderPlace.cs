@@ -12,7 +12,7 @@ public class ProviderPlace : Place
 
     public List<PlaceCategory>? Categories { get; set; }
 
-    public string? OpenningHours { get; set; }
+    public string? OpeningHours { get; set; }
 
     [NotMapped]
     public decimal? AverageCostPerPerson
@@ -42,5 +42,10 @@ public class ProviderPlace : Place
             decimal? average = Reviews?.Average(r => r.Rating);
             return average.HasValue ? Math.Round(average.Value, 1) : null;
         }
+    }
+
+    public (TimeOnly opensAt, TimeOnly closesAt)? GetOpenningHours(DateOnly date)
+    {
+        return Utilities.OpeningHoursParser.ParseOpeningHours(OpeningHours, date);
     }
 }

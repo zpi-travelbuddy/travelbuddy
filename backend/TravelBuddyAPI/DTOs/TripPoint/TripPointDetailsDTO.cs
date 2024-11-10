@@ -39,9 +39,9 @@ public class TripPointDetailsDTO
     [Required]
     public TimeOnly EndTime { get; set; }
 
-    public TimeOnly OpeningTime { get; set; }
+    public TimeOnly? OpeningTime { get; set; }
 
-    public TimeOnly ClosingTime { get; set; }
+    public TimeOnly? ClosingTime { get; set; }
 
     public TripPointStatus Status { get; set; }
 
@@ -49,7 +49,7 @@ public class TripPointDetailsDTO
     public Guid PlaceId { get; set; }
     public PlaceOverviewDTO? Place { get; set; }
 
-    public TripPointReviewDetailsDTO? Review { get; set; }
+    public TripPointReviewOverviewDTO? Review { get; set; }
 
     public PlaceCategoryDTO? Category { get; set; }
 

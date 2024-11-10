@@ -3,6 +3,8 @@ using Sprache;
 using TravelBuddyAPI.Models;
 using TravelBuddyAPI.DTOs.TransferPoint;
 using Microsoft.AspNetCore.Http.HttpResults;
+using TravelBuddyAPI.Interfaces;
+using System.Security.Claims;
 
 namespace TravelBuddyAPI.Endpoints;
 
@@ -22,10 +24,15 @@ public static class TransferPointsEndpoints
             .WithName("DeleteTransferPoint");  
     }
 
-    private static async Task<Results<Created<TransferPointDTO>,BadRequest<string>>> CreateTransferPointAsync(TransferPointDTO transferPoint)
+    private static async Task<Results<Created<TransferPointDTO>,BadRequest<string>>> CreateTransferPointAsync(TransferPointDTO transferPoint, ITransferPointsService transferPointsService, HttpContext httpContext)
     {
-        await Task.CompletedTask;
-        return TypedResults.BadRequest("Not implemented");
+        try {
+            var userId = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new InvalidOperationException("User not found");
+            var transferPointDetails = await transferPointsService.CreateTransferPointAsync(userId, transferPoint);
+            return TypedResults.Created($"/transferPoints/{transferPointDetails}", transferPointDetails);
+        } catch (InvalidOperationException ex) {
+            return TypedResults.BadRequest(ex.Message);
+        }
     }
 
     private static async Task<Results<Accepted<string>,NotFound<string>>> EditTransferPointAsync(Guid id, TransferPointDTO transferPoint)

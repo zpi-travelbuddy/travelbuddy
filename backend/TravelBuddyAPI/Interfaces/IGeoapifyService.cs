@@ -84,5 +84,5 @@ public interface IGeoapifyService
     /// <param name="traffic">Optional traffic condition. Default is "approximated".</param>
     /// <param name="units">Optional units for the time. Default is "metric".</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains the estimated route time.</returns>
-    public Task<TimeSpan?> GetRouteTimeAsync((double latitude, double longitude) start, (double latitude, double longitude) end, TransferMode mode, TrafficType traffic = TrafficType.approximated, Units units = Units.metric);
+    public Task<TimeSpan?> GetRouteTimeAsync((decimal latitude, decimal longitude) start, (decimal latitude, decimal longitude) end, TransferMode mode, TrafficType traffic = TrafficType.approximated, Units units = Units.metric);
 }

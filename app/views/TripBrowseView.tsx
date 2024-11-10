@@ -15,6 +15,7 @@ import ActionMenuBottomSheet from "@/components/ActionMenu/ActionMenuBottomSheet
 import CustomModal from "@/components/CustomModal";
 import ActionTextButtons from "@/components/ActionTextButtons";
 import { DELETE_ICON, DETAILS_ICON, EDIT_ICON } from "@/constants/Icons";
+import { useSnackbar } from "@/context/SnackbarContext";
 
 const TripBrowseView = () => {
   const theme = useTheme();
@@ -71,6 +72,8 @@ const TripBrowseView = () => {
     },
   ];
 
+  const { showSnackbar } = useSnackbar();
+
   const [trips, setTrips] = useState<Trip[]>(actualTrips);
   const [isVisible, setIsVisible] = useState<boolean>(false);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
@@ -87,6 +90,7 @@ const TripBrowseView = () => {
 
   const handleLongPress = (trip: Trip) => {
     setSelectedTrip(trip);
+    setIsVisible(true);
   };
 
   const onCloseBottomSheet = () => {
@@ -106,6 +110,7 @@ const TripBrowseView = () => {
   const deleteTrip = (trip: Trip | null) => {
     console.log(`Usuwanie wycieczki: ${trip?.title}`);
     hideModal();
+    showSnackbar("Usunięto wycieczkę!");
   };
 
   useEffect(() => {

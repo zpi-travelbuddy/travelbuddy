@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Http.HttpResults;
 using TravelBuddyAPI.DTOs.Place;
 using TravelBuddyAPI.Interfaces;
@@ -33,9 +34,15 @@ public static class PlacesEndpoints
         }
     }
 
-    private static async Task<Results<Ok<PlaceDetailsDTO>, NotFound<string>>> GetPlaceDetailsAsync(Guid id)
+    private static async Task<Results<Ok<PlaceDetailsDTO>, NotFound<string>>> GetPlaceDetailsAsync(Guid id, IPlacesService placesService)
     {
-        await Task.CompletedTask;
-        return TypedResults.NotFound("Not implemented");
+        try {
+            var placeDetails = await placesService.GetPlaceDetailsAsync(id);
+            return TypedResults.Ok(placeDetails);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return TypedResults.NotFound(ex.Message);
+        }
     }
 }

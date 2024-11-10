@@ -6,6 +6,7 @@ import {
   TransferPoint,
   TransferTypeLabels,
   TransferType,
+  Option,
 } from "@/types/data";
 import { useTheme, FAB, MD3Theme, Text, TextInput } from "react-native-paper";
 import React, { Fragment, useMemo, useState } from "react";
@@ -16,11 +17,14 @@ import {
   NON_STANDARD_TRANSFER_ICON,
   TRAIN_ICON,
   WALK_ICON,
+  CREATING_TRIP_POINT_ICON,
+  RECOMMENDATION_ICON,
+  SEARCH_TRIP_POINT_ICON,
 } from "@/constants/Icons";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import CreatingTripPointSelector from "@/components/CreatingTripPointSelector";
 import ActionButtons from "@/components/ActionButtons";
-import { Option } from "@/types/data";
+import { useRouter } from "expo-router";
 
 const { width } = Dimensions.get("window");
 
@@ -60,6 +64,36 @@ const tripPoints: TripPoint[] = [
 const TripDayView = () => {
   const theme = useTheme();
   const style = createStyles(theme);
+  const router = useRouter();
+
+  const [isVisible, setIsVisible] = useState<boolean>(false);
+
+  const options: Option[] = [
+    {
+      icon: CREATING_TRIP_POINT_ICON,
+      label: "Utwórz",
+      onPress: () => {
+        console.log("go to creating trip point");
+        setIsVisible(false);
+      },
+    },
+    {
+      icon: SEARCH_TRIP_POINT_ICON,
+      label: "Wyszukaj",
+      onPress: () => {
+        router.push("/explore");
+        setIsVisible(false);
+      },
+    },
+    {
+      icon: RECOMMENDATION_ICON,
+      label: "Rekomendacje",
+      onPress: () => {
+        console.log("go to recommendation");
+        setIsVisible(false);
+      },
+    },
+  ];
 
   const [isVisible, setIsVisible] = useState<boolean>(false);
   const [dynamicLabel, setDynamicLabel] = useState<string>("");
