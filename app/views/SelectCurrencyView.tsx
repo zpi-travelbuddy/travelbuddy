@@ -17,16 +17,8 @@ import { RenderItem } from "@/components/RenderItem";
 import ActionButtons from "@/components/ActionButtons";
 import { router, useLocalSearchParams } from "expo-router";
 import { useAuth } from "@/app/ctx";
-
-interface APICurrency {
-  name: string;
-  code: string;
-}
-
-interface Currency {
-  name: string;
-  id: string;
-}
+import { Currency, APICurrency } from "@/types/Currency";
+import { API_CURRENCY } from "@/constants/Endpoints";
 
 const SelectCurrencyView = () => {
   const { api } = useAuth();
@@ -46,7 +38,7 @@ const SelectCurrencyView = () => {
     const fetchCurrencies = async () => {
       setIsLoading(true);
       try {
-        const response = await api!.get("/nbp/currency");
+        const response = await api!.get(API_CURRENCY);
         const parsedCurrencies = response.data.map((currency: APICurrency) => ({
           name: currency.name,
           id: currency.code,
@@ -55,8 +47,9 @@ const SelectCurrencyView = () => {
         setCurrencies(parsedCurrencies);
       } catch (error) {
         console.error(error);
+      } finally {
+        setIsLoading(false);
       }
-      setIsLoading(false);
     };
 
     fetchCurrencies();
@@ -155,7 +148,7 @@ const createStyles = (theme: MD3Theme) =>
     emptyMessage: {
       textAlign: "center",
       marginTop: 20,
-      color: theme.colors.onSurface, // Użyj koloru tekstu z motywu
+      color: theme.colors.onSurface,
     },
     loadingIndicator: { margin: "auto" },
   });

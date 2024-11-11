@@ -17,21 +17,8 @@ import { MD3ThemeExtended } from "@/constants/Themes";
 import { useAuth } from "@/app/ctx";
 import { useDebouncedCallback } from "use-debounce";
 import { router } from "expo-router";
-
-interface APIDestination {
-  city: string;
-  country: string;
-  id: string | null;
-  name: string | null;
-  providerId: string;
-  state: string;
-}
-
-interface Destination {
-  id: string;
-  name: string;
-  country: string;
-}
+import { Destination, APIDestination } from "@/types/Destination";
+import { API_AUTOCOMPLETE_DESTINATION } from "@/constants/Endpoints";
 
 const DestinationCard = ({ destination }: { destination: Destination }) => {
   const { id, name, country } = destination;
@@ -59,8 +46,9 @@ const SelectDestinationView = () => {
   const styles = makeStyles(theme);
 
   const fetchDestinations = async (query: string) => {
+    setIsLoading(true);
     try {
-      const response = await api!.get("/trips/autocompleteDestination", {
+      const response = await api!.get(API_AUTOCOMPLETE_DESTINATION, {
         params: {
           query,
         },
@@ -73,15 +61,15 @@ const SelectDestinationView = () => {
       setDestinations(parsedData);
     } catch (error) {
       console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const debouncedFetchDestinations = useDebouncedCallback(
     async (query: string) => {
       if (query.length > 2) {
-        setIsLoading(true);
         await fetchDestinations(query);
-        setIsLoading(false);
       }
     },
     800,

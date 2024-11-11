@@ -4,10 +4,9 @@ export function stringToDate(date: string): Date {
 }
 
 export function getPreviousDay(): Date {
-  const today = new Date();
-  today.setDate(today.getDate() - 1);
+  const previousDate = new Date(Date.now() - 24 * 60 * 60 * 1000);
 
-  return new Date(formatDateToISO(today));
+  return new Date(formatDateToISO(previousDate));
 }
 
 export function formatDateToISO(date: Date | undefined): string {

@@ -27,24 +27,16 @@ import { useSnackbar } from "@/context/SnackbarContext";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useAuth } from "@/app/ctx";
 import LoadingView from "./LoadingView";
+import { Profile, ProfileType } from "@/types/Profile";
+import { DateRange, TripCreationErrors } from "@/types/Trip";
+import { MARKER_ICON, CALENDAR_ICON } from "@/constants/Icons";
+import { API_TRIPS } from "@/constants/Endpoints";
+import { validateTripForm } from "@/utils/validations";
 
 const { height, width } = Dimensions.get("window");
 registerTranslation("pl", pl);
 
 const DEFAULT_CURRENCY = "PLN";
-
-interface DateRange {
-  startDate?: Date;
-  endDate?: Date;
-}
-interface Profile {
-  id: string;
-  name: string;
-}
-interface TripCreationErrors {
-  [key: string]: string | undefined;
-}
-type ProfileType = "Preference" | "Convenience";
 
 const AddingTripView = () => {
   const { api } = useAuth();
@@ -115,16 +107,21 @@ const AddingTripView = () => {
   };
 
   const validateForm = useCallback(() => {
-    const newErrors: TripCreationErrors = {};
-    if (!tripName) newErrors.tripName = "Wprowadź nazwę wycieczki";
-    if (!range.startDate) newErrors.range = "Wybierz termin wycieczki";
-    if (!destinationId) newErrors.destination = "Wybierz cel wycieczki";
-    if (!numberOfPeople) newErrors.numberOfPeople = "Podaj liczbę osób";
-    if (budget === undefined) newErrors.budget = "Podaj budżet";
+    const validationErrors = validateTripForm(
+      tripName,
+      range,
+      destinationId,
+      numberOfPeople,
+      budget,
+    );
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    setErrors(validationErrors);
+    return Object.keys(validationErrors).length === 0;
   }, [tripName, range, destinationId, numberOfPeople, budget]);
+
+  const handleCancel = async () => {
+    router.navigate("/trips");
+  };
 
   const handleSubmit = async () => {
     if (!validateForm()) return;
@@ -141,16 +138,17 @@ const AddingTripView = () => {
       currencyCode: currency,
     };
 
+    setIsLoading(true);
     try {
-      setIsLoading(true);
-      await api?.post("/trips", tripData);
+      await api!.post(API_TRIPS, tripData);
       router.navigate("/trips");
       showSnackbar("Zapisano wycieczkę!", "success");
     } catch (error: any) {
       console.error(error.response.data);
       showSnackbar("Wystąpił błąd podczas zapisywania wycieczki", "error");
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   return (
@@ -181,7 +179,7 @@ const AddingTripView = () => {
               label="Termin wycieczki"
               value={dateRangeText}
               onPress={() => setOpen(true)}
-              icon="calendar"
+              icon={CALENDAR_ICON}
               error={!!errors.range && !range.startDate}
             />
             {errors.range && !range.startDate && (
@@ -192,7 +190,7 @@ const AddingTripView = () => {
               label="Cel wycieczki"
               value={destinationName}
               onPress={() => router.push("/trips/add/destination")}
-              icon="map-marker"
+              icon={MARKER_ICON}
               error={!!errors.destination && !destinationId}
             />
             {errors.destination && !destinationId && (
@@ -283,7 +281,7 @@ const AddingTripView = () => {
         </View>
 
         <ActionButtons
-          onAction1={() => router.navigate("/trips")}
+          onAction1={handleCancel}
           onAction2={handleSubmit}
           action1ButtonLabel="Anuluj"
           action2ButtonLabel="Zapisz"
