@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import {
   View,
   StyleSheet,
@@ -46,7 +46,6 @@ const SelectDestinationView = () => {
   const styles = makeStyles(theme);
 
   const fetchDestinations = async (query: string) => {
-    setIsLoading(true);
     try {
       const response = await api!.get(API_AUTOCOMPLETE_DESTINATION, {
         params: {
@@ -61,8 +60,6 @@ const SelectDestinationView = () => {
       setDestinations(parsedData);
     } catch (error) {
       console.error(error);
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -71,23 +68,35 @@ const SelectDestinationView = () => {
       if (query.length > 2) {
         await fetchDestinations(query);
       }
+      setIsLoading(false);
     },
     800,
   );
 
-  const handleChangeQuery = (query: string) => {
+  const handleChangeQuery = async (query: string) => {
     setDestinations([]);
     setSearchQuery(query);
+    setIsLoading(query.length > 2);
     debouncedFetchDestinations(query);
   };
 
-  const EmptyListComponent = () => (
-    <Text style={styles.emptyText} variant="bodyLarge">
-      {searchQuery
-        ? "Brak wyników wyszukiwania"
-        : "Użyj wyszukiwania aby przeglądać dostępne cele podróży"}
-    </Text>
-  );
+  const EmptyListComponent = useCallback(() => {
+    let emptyText = "Brak wyników wyszukiwania";
+
+    if (searchQuery.length < 3) {
+      emptyText = "Wpisz co najmniej 3 znaki aby wyszukać miejsce docelowe";
+    }
+
+    if (!searchQuery) {
+      emptyText = "Użyj wyszukiwania aby przeglądać dostępne cele podróży";
+    }
+
+    return (
+      <Text style={styles.emptyText} variant="bodyLarge">
+        {emptyText}
+      </Text>
+    );
+  }, [searchQuery]);
 
   const renderPlace = ({ item }: { item: Destination }) => (
     <DestinationCard destination={item} />
