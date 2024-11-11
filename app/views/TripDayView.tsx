@@ -13,8 +13,11 @@ import React, { Fragment, useMemo, useState } from "react";
 import {
   BUS_ICON,
   CAR_ICON,
+  CREATING_TRIP_POINT_ICON,
   DELETE_ICON,
   NON_STANDARD_TRANSFER_ICON,
+  RECOMMENDATION_ICON,
+  SEARCH_TRIP_POINT_ICON,
   TRAIN_ICON,
   WALK_ICON,
 } from "@/constants/Icons";
@@ -61,6 +64,34 @@ const tripPoints: TripPoint[] = [
 const TripDayView = () => {
   const theme = useTheme();
   const style = createStyles(theme as MD3ThemeExtended);
+  const router = useRouter();
+
+  const options: Option[] = [
+    {
+      icon: CREATING_TRIP_POINT_ICON,
+      label: "Utwórz",
+      onPress: () => {
+        console.log("go to creating trip point");
+        setIsVisible(false);
+      },
+    },
+    {
+      icon: SEARCH_TRIP_POINT_ICON,
+      label: "Wyszukaj",
+      onPress: () => {
+        router.push("/explore");
+        setIsVisible(false);
+      },
+    },
+    {
+      icon: RECOMMENDATION_ICON,
+      label: "Rekomendacje",
+      onPress: () => {
+        console.log("go to recommendation");
+        setIsVisible(false);
+      },
+    },
+  ];
 
   const [isVisible, setIsVisible] = useState<boolean>(false);
   const [dynamicLabel, setDynamicLabel] = useState<string>("");
