@@ -24,6 +24,7 @@ import { Credentials, AuthErrors } from "@/types/auth";
 import { MD3ThemeExtended } from "@/constants/Themes";
 import { useAuth } from "../ctx";
 import LoadingView from "@/views/LoadingView";
+import { CHECK_CIRCLE_ICON } from "@/constants/Icons";
 
 // It would be good if we could calculate this value dynamically, but I had some issues with that
 const BOTTOM_VIEW_HEIGHT = 54;
@@ -170,7 +171,7 @@ export default function SignUp() {
             </Text>
             <Portal>
               <Dialog visible={showDialog} onDismiss={handleDismissDialog}>
-                <Dialog.Icon icon="check-circle-outline" />
+                <Dialog.Icon icon={CHECK_CIRCLE_ICON} />
                 <Dialog.Title style={styles.dialogTitle}>
                   Dziękujemy za rejestrację
                 </Dialog.Title>
@@ -187,7 +188,7 @@ export default function SignUp() {
                 visible={showDialogUserExists}
                 onDismiss={handleDismissDialogUserExists}
               >
-                <Dialog.Icon icon="check-circle-outline" />
+                <Dialog.Icon icon={CHECK_CIRCLE_ICON} />
                 <Dialog.Title style={styles.dialogTitle}>
                   Użytkownik już istnieje
                 </Dialog.Title>
