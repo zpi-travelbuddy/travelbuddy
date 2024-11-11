@@ -22,12 +22,17 @@ import {
 } from "@/utils/validations";
 import { Credentials, AuthErrors } from "@/types/auth";
 import { MD3ThemeExtended } from "@/constants/Themes";
+import { useAuth } from "../ctx";
+import LoadingView from "@/views/LoadingView";
 
 // It would be good if we could calculate this value dynamically, but I had some issues with that
 const BOTTOM_VIEW_HEIGHT = 54;
 
+// For future errors
+const signUpErrors: Record<string, string> = {};
+
 export default function SignUp() {
-  // const { onRegister } = useAuth();
+  const { signUp, resendSignUp } = useAuth();
   const insets = useSafeAreaInsets();
   const keyboard = useAnimatedKeyboard();
 
@@ -42,7 +47,9 @@ export default function SignUp() {
     email: "",
     password: "",
   });
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [showDialog, setShowDialog] = useState(false);
+  const [showDialogUserExists, setShowDialogUserExists] = useState(false);
 
   const animatedStyles = useAnimatedStyle(() => {
     return {
@@ -65,7 +72,18 @@ export default function SignUp() {
 
   const handleDismissDialog = () => {
     setShowDialog(false);
-    router.navigate("/sign-up/confirmation");
+    router.navigate({
+      pathname: "/sign-up/confirmation",
+      params: { email: credentials.email },
+    });
+  };
+
+  const handleDismissDialogUserExists = () => {
+    setShowDialogUserExists(false);
+    router.navigate({
+      pathname: "/sign-up/confirmation",
+      params: { email: credentials.email },
+    });
   };
 
   const validateForm = () => {
@@ -77,69 +95,117 @@ export default function SignUp() {
 
   const signup = async () => {
     if (!validateForm()) return;
-    // await onRegister!(credentials);
     Keyboard.dismiss();
-    setShowDialog(true);
+    setIsLoading(true);
+
+    try {
+      await signUp!(credentials);
+      setShowDialog(true);
+    } catch (error: any) {
+      if (error.code === "UsernameExistsException") {
+        try {
+          await resendSignUp!(credentials);
+          setShowDialogUserExists(true);
+        } catch (error: any) {
+          console.error("Resend sign up error:", error);
+          const errorMessage =
+            signUpErrors[error.code] || "Błąd tworzenia konta";
+          setErrors({
+            email: errorMessage,
+            password: errorMessage,
+          });
+        }
+      } else {
+        console.error("Sign up error:", error);
+        const errorMessage = signUpErrors[error.code] || "Błąd tworzenia konta";
+        setErrors({
+          email: errorMessage,
+          password: errorMessage,
+        });
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <View style={styles.innerContainer}>
-          <Animated.View style={[animatedStyles]}>
-            <Text style={styles.headline} variant="headlineLarge">
-              Rejestracja
+    <>
+      <SafeAreaView style={styles.container}>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View style={styles.innerContainer}>
+            <Animated.View style={[animatedStyles]}>
+              <Text style={styles.headline} variant="headlineLarge">
+                Rejestracja
+              </Text>
+              <EmailTextInput
+                value={credentials.email}
+                onChangeText={handleEmailChange}
+                error={!!errors.email}
+                style={styles.inputText}
+              />
+              <Text style={styles.textError}>{errors.email || " "}</Text>
+              <View style={{ height: 10 }} />
+              <PasswordTextInput
+                value={credentials.password}
+                onChangeText={handlePasswordChange}
+                error={!!errors.password}
+                style={styles.inputText}
+              />
+              <Text style={styles.textError}>{errors.password || " "}</Text>
+              <Button
+                style={styles.button}
+                labelStyle={styles.buttonLabel}
+                mode="contained"
+                onPress={signup}
+                contentStyle={styles.buttonContent}
+              >
+                Zarejestruj
+              </Button>
+            </Animated.View>
+            <Text style={styles.signIn} variant="bodyLarge">
+              Posiadasz już konto?{" "}
+              <Link href="/sign-in" style={styles.textBold}>
+                Zaloguj się
+              </Link>
             </Text>
-            <EmailTextInput
-              value={credentials.email}
-              onChangeText={handleEmailChange}
-              error={!!errors.email}
-              style={styles.inputText}
-            />
-            <Text style={styles.textError}>{errors.email || " "}</Text>
-            <View style={{ height: 10 }} />
-            <PasswordTextInput
-              value={credentials.password}
-              onChangeText={handlePasswordChange}
-              error={!!errors.password}
-              style={styles.inputText}
-            />
-            <Text style={styles.textError}>{errors.password || " "}</Text>
-            <Button
-              style={styles.button}
-              labelStyle={styles.buttonLabel}
-              mode="contained"
-              onPress={signup}
-              contentStyle={styles.buttonContent}
-            >
-              Zarejestruj
-            </Button>
-          </Animated.View>
-          <Text style={styles.signIn} variant="bodyLarge">
-            Posiadasz już konto?{" "}
-            <Link href="/sign-in" style={styles.textBold}>
-              Zaloguj się
-            </Link>
-          </Text>
-          <Portal>
-            <Dialog visible={showDialog} onDismiss={handleDismissDialog}>
-              <Dialog.Icon icon="check-circle-outline" />
-              <Dialog.Title style={styles.dialogTitle}>
-                Dziękujemy za rejestrację
-              </Dialog.Title>
-              <Dialog.Content>
-                <Text variant="bodyLarge" style={styles.dialogContent}>
-                  Wysłaliśmy wiadomość z kodem potwierdzającym założenie konta
-                </Text>
-              </Dialog.Content>
-              <Dialog.Actions>
-                <Button onPress={handleDismissDialog}>Dalej</Button>
-              </Dialog.Actions>
-            </Dialog>
-          </Portal>
-        </View>
-      </TouchableWithoutFeedback>
-    </SafeAreaView>
+            <Portal>
+              <Dialog visible={showDialog} onDismiss={handleDismissDialog}>
+                <Dialog.Icon icon="check-circle-outline" />
+                <Dialog.Title style={styles.dialogTitle}>
+                  Dziękujemy za rejestrację
+                </Dialog.Title>
+                <Dialog.Content>
+                  <Text variant="bodyLarge" style={styles.dialogContent}>
+                    Wysłaliśmy wiadomość z kodem potwierdzającym założenie konta
+                  </Text>
+                </Dialog.Content>
+                <Dialog.Actions>
+                  <Button onPress={handleDismissDialog}>Dalej</Button>
+                </Dialog.Actions>
+              </Dialog>
+              <Dialog
+                visible={showDialogUserExists}
+                onDismiss={handleDismissDialogUserExists}
+              >
+                <Dialog.Icon icon="check-circle-outline" />
+                <Dialog.Title style={styles.dialogTitle}>
+                  Użytkownik już istnieje
+                </Dialog.Title>
+                <Dialog.Content>
+                  <Text variant="bodyLarge" style={styles.dialogContent}>
+                    Wysłaliśmy wiadomość z kodem potwierdzającym założenie konta
+                  </Text>
+                </Dialog.Content>
+                <Dialog.Actions>
+                  <Button onPress={handleDismissDialogUserExists}>Dalej</Button>
+                </Dialog.Actions>
+              </Dialog>
+            </Portal>
+          </View>
+        </TouchableWithoutFeedback>
+      </SafeAreaView>
+      <LoadingView show={isLoading} />
+    </>
   );
 }
 

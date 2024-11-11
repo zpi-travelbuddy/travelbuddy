@@ -27,6 +27,38 @@ export const AuthProvider = ({ children }: any) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
+  const signUp = async (credentials: Credentials) => {
+    const { email, password } = credentials;
+    try {
+      const response = await Auth.signUp({ username: email, password });
+      console.log(response);
+    } catch (error) {
+      console.error("Sign up error:", error);
+      throw error;
+    }
+  };
+
+  const resendSignUp = async (credentials: Credentials) => {
+    const { email } = credentials;
+    try {
+      const response = await Auth.resendSignUp(email);
+      console.log(response);
+    } catch (error) {
+      console.error("Resend sign up error:", error);
+      throw error;
+    }
+  };
+
+  const confirmSignUp = async (email: string, code: string) => {
+    try {
+      const response = await Auth.confirmSignUp(email, code);
+      console.log(response);
+    } catch (error) {
+      console.error("Confirm sign up error:", error);
+      throw error;
+    }
+  };
+
   const signIn = async (credentials: Credentials) => {
     const { email, password } = credentials;
     try {
@@ -110,7 +142,16 @@ export const AuthProvider = ({ children }: any) => {
     );
   }, []);
 
-  const value = { isLoading, isAuthenticated, signIn, signOut, api };
+  const value = {
+    isLoading,
+    isAuthenticated,
+    signUp,
+    resendSignUp,
+    confirmSignUp,
+    signIn,
+    signOut,
+    api,
+  };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
