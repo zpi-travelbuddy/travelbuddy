@@ -25,6 +25,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import CreatingTripPointSelector from "@/components/CreatingTripPointSelector";
 import ActionButtons from "@/components/ActionButtons";
 import { Option } from "@/types/data";
+import { useRouter } from "expo-router";
 
 const { width } = Dimensions.get("window");
 
@@ -172,12 +173,12 @@ const TripDayView = () => {
         keyboardType="numeric"
       ></TextInput>
       <ActionButtons
-        onCancel={onCancel}
-        cancelButtonLabel="Resetuj"
-        cancelIcon={undefined}
-        onConfirm={onSave}
-        confirmButtonLabel="Zapisz"
-        confirmIcon={undefined}
+        onAction1={onCancel}
+        action1ButtonLabel="Resetuj"
+        action1Icon={undefined}
+        onAction2={onSave}
+        action2ButtonLabel="Zapisz"
+        action2Icon={undefined}
       />
     </View>
   );
