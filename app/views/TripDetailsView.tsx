@@ -1,4 +1,11 @@
-import { StyleSheet, View, Image, Dimensions, ScrollView } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Image,
+  Dimensions,
+  ScrollView,
+  ActivityIndicator,
+} from "react-native";
 import React, { useMemo, useState, useCallback } from "react";
 import TripDetailLabel from "@/components/TripDetailLabel";
 import { FAB, MD3Theme, useTheme } from "react-native-paper";
@@ -6,6 +13,9 @@ import { CALENDAR_ICON } from "@/constants/Icons";
 import { router, useLocalSearchParams } from "expo-router";
 import SingleDatePickerModal from "@/components/SingleDatePickerModal";
 import { CalendarDate } from "react-native-paper-dates/lib/typescript/Date/Calendar";
+import useTripDetails from "@/composables/useTripDetails";
+import { TripDay } from "@/types/Trip";
+import { useSnackbar } from "@/context/SnackbarContext";
 
 const { height, width } = Dimensions.get("window");
 
@@ -15,41 +25,9 @@ const TripDetailsView = () => {
   const [dateModalVisible, setDateModalVisible] = useState(false);
 
   const params = useLocalSearchParams();
-  const { id } = params;
+  const id = "234455";
 
-  const trip = {
-    tripName: "Wycieczka do Londynu",
-    tripDate: "10.06.2024 - 15.06.2024",
-    destination: "London, UK",
-    numberOfTripPoints: "2",
-    numberOfPeople: "3",
-    cost: "4 700,00 PLN",
-    budget: "6 000,00 PLN",
-    preferenceProfileName: "Zwiedzanie i jedzenie",
-    convenienceProfileName: "Potrzebuję internetu",
-  };
-
-  // This will be fetched from the API
-  const startDate = "2024-06-10";
-  const endDate = "2024-06-15";
-
-  const tripDays = [
-    {
-      id: "1",
-      tripId: "1",
-      date: "2024-06-10",
-    },
-    {
-      id: "2",
-      tripId: "1",
-      date: "2024-06-11",
-    },
-    {
-      id: "3",
-      tripId: "1",
-      date: "2024-06-12",
-    },
-  ];
+  const { tripDetails, loading, error } = useTripDetails(id as string);
 
   const labels: Record<string, string> = {
     tripName: "Nazwa wycieczki",
@@ -64,8 +42,10 @@ const TripDetailsView = () => {
   };
 
   const dateToIdMap = useMemo(() => {
-    return new Map(tripDays.map((day) => [day.date, day.id]));
-  }, [tripDays]);
+    return new Map(
+      tripDetails?.tripDays.map((day: TripDay) => [day.date, day.id]) || [],
+    );
+  }, [tripDetails]);
 
   const handlePress = () => {
     setDateModalVisible(true);
@@ -87,9 +67,24 @@ const TripDetailsView = () => {
         console.error("Day not found");
       }
     },
-    [setDateModalVisible],
+    [setDateModalVisible, dateToIdMap],
   );
 
+  const { showSnackbar } = useSnackbar();
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={theme.colors.primary} />
+      </View>
+    );
+  }
+
+  if (error) {
+    showSnackbar(error?.toString() || "Unknown error", "error");
+    router.back();
+    return null; // Zapewnia, że renderowanie nie jest przerywane w tym momencie.
+  }
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -101,17 +96,25 @@ const TripDetailsView = () => {
           resizeMode="cover"
         />
 
-        {Object.entries(trip).map(([key, value]) => (
-          <TripDetailLabel key={key} title={labels[key] || key} value={value} />
-        ))}
+        {tripDetails &&
+          Object.entries(tripDetails).map(([key, value]) => (
+            <TripDetailLabel
+              key={key}
+              title={labels[key] || key}
+              value={value.toString()}
+            />
+          ))}
       </ScrollView>
-      <SingleDatePickerModal
-        visible={dateModalVisible}
-        startDate={startDate}
-        endDate={endDate}
-        onDismiss={handleDismiss}
-        onConfirm={handleConfirm}
-      />
+      {tripDetails && (
+        <SingleDatePickerModal
+          visible={dateModalVisible}
+          startDate={tripDetails?.startDate}
+          endDate={tripDetails?.endDate}
+          onDismiss={handleDismiss}
+          onConfirm={handleConfirm}
+        />
+      )}
+      ;
       <FAB
         color={theme.colors.onPrimary}
         style={styles.fab}
@@ -146,5 +149,21 @@ const createStyles = (theme: MD3Theme) =>
       marginBottom: 25,
       width: "100%",
       height: height * 0.2,
+    },
+    loadingContainer: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      backgroundColor: theme.colors.background,
+    },
+    errorContainer: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      backgroundColor: theme.colors.background,
+    },
+    errorText: {
+      color: theme.colors.error,
+      fontSize: 16,
     },
   });

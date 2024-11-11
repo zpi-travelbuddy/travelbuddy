@@ -49,3 +49,7 @@ export function formatMinutesInWords(minutes: number): string {
 export function formatTimeRange(startTime: string, endTime: string): string {
   return `${startTime} - ${endTime}`;
 }
+
+export function sleep(ms: number = 1000) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
