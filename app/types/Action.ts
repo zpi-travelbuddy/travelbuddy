@@ -5,13 +5,13 @@ type Action = {
 };
 
 type ActionTextButtonsProps = {
-  onCancel: () => void;
-  cancelButtonLabel: string | undefined;
-  onConfirm: () => void;
-  confirmButtonLabel: string | undefined;
+  onAction1: () => void;
+  action1ButtonLabel: string | undefined;
+  onAction2: () => void;
+  action2ButtonLabel: string | undefined;
 };
 
 type ActionButtonsProps = ActionTextButtonsProps & {
-  cancelIcon: string | undefined;
-  confirmIcon: string | undefined;
+  action1Icon: string | undefined;
+  action2Icon: string | undefined;
 };

@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import React, { useCallback, useMemo, useState } from "react";
 import { useTheme, MD3Theme, TextInput, Text } from "react-native-paper";
-import { DatePickerModal, registerTranslation } from "react-native-paper-dates";
+import { DatePickerModal } from "react-native-paper-dates";
 import { formatDateRange } from "@/utils/TimeUtils";
 import CurrencyValueInput from "@/components/CurrencyValueInput";
 import CustomModal from "@/components/CustomModal";
@@ -17,29 +17,11 @@ import ActionButtons from "@/components/ActionButtons";
 import ClickableInput from "@/components/ClickableInput";
 import { useSnackbar } from "@/context/SnackbarContext";
 import { useRouter } from "expo-router";
+import { registerTranslation, pl } from "react-native-paper-dates";
 
 const { height, width } = Dimensions.get("window");
 
-registerTranslation("pl", {
-  save: "Zapisz",
-  selectSingle: "Wybierz datę",
-  selectMultiple: "Wybierz daty",
-  selectRange: "Wybierz zakres",
-  notAccordingToDateFormat: (inputFormat) =>
-    `Data wymaga formatu: ${inputFormat}`,
-  mustBeHigherThan: (date) => `Musi być później niż ${date}`,
-  mustBeLowerThan: (date) => `Musi być wcześniej niż ${date}`,
-  mustBeBetween: (startDate, endDate) =>
-    `Musi być pomiędzy ${startDate} - ${endDate}`,
-  dateIsDisabled: "Dzień nie jest dozwolony",
-  previous: "Poprzedni",
-  next: "Następny",
-  typeInDate: "Wpisz datę",
-  pickDateFromCalendar: "Wybierz datę z kalendarza",
-  close: "Zamknij",
-  hour: "",
-  minute: "",
-});
+registerTranslation("pl", pl);
 
 const AddingTripView = () => {
   interface DateRange {
@@ -242,14 +224,18 @@ const AddingTripView = () => {
       </View>
 
       <ActionButtons
-        onCancel={() => {
+        onAction1={() => {
           router.push("/trips");
           showSnackbar("Anulowano dodanie wycieczki", "error");
         }}
-        onConfirm={() => {
+        action1ButtonLabel="Anuluj"
+        action1Icon={undefined}
+        onAction2={() => {
           router.push("/trips");
           showSnackbar("Zapisano wycieczkę!", "success");
         }}
+        action2ButtonLabel="Zapisz"
+        action2Icon={undefined}
       />
     </ScrollView>
   );

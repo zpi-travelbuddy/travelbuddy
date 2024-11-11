@@ -1,17 +1,10 @@
 import { ScrollView, StyleSheet, View } from "react-native";
 import { TripPointCard } from "@/components/TripPointCard";
 import { TransferPointNode } from "@/components/TransferPointNode";
-import { TripPoint, TransferPoint, Option } from "@/types/data";
-import { useTheme, FAB, MD3Theme } from "react-native-paper";
-import { Fragment, useMemo, useState } from "react";
-import CreatingTripPointSelector from "@/components/CreatingTripPointSelector";
-import {
-  CREATING_TRIP_POINT_ICON,
-  RECOMMENDATION_ICON,
-  SEARCH_TRIP_POINT_ICON,
-} from "@/constants/Icons";
-import { useRouter } from "expo-router";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { TripPoint, TransferPoint } from "@/types/data";
+import { useTheme, FAB } from "react-native-paper";
+import { Fragment, useMemo } from "react";
+import { MD3ThemeExtended } from "@/constants/Themes";
 
 const tripPoints: TripPoint[] = [
   {
@@ -58,37 +51,7 @@ const transferPoints: TransferPoint[] = [
 
 const TripDayView = () => {
   const theme = useTheme();
-  const style = createStyles(theme);
-  const router = useRouter();
-
-  const [isVisible, setIsVisible] = useState<boolean>(false);
-
-  const options: Option[] = [
-    {
-      icon: CREATING_TRIP_POINT_ICON,
-      label: "Utwórz",
-      onPress: () => {
-        console.log("go to creating trip point");
-        setIsVisible(false);
-      },
-    },
-    {
-      icon: SEARCH_TRIP_POINT_ICON,
-      label: "Wyszukaj",
-      onPress: () => {
-        router.push("/explore");
-        setIsVisible(false);
-      },
-    },
-    {
-      icon: RECOMMENDATION_ICON,
-      label: "Rekomendacje",
-      onPress: () => {
-        console.log("go to recommendation");
-        setIsVisible(false);
-      },
-    },
-  ];
+  const style = createStyles(theme as MD3ThemeExtended);
 
   const handleTripPointPress = () => {
     console.log("Trip point pressed");
@@ -141,46 +104,37 @@ const TripDayView = () => {
 
   return (
     <>
-      <GestureHandlerRootView>
-        <ScrollView
-          style={style.container}
-          contentContainerStyle={style.containerContent}
-        >
-          <View style={{ height: 40 }} />
-          {sortedTripPoints.map((tripPoint, index) => (
-            <Fragment key={tripPoint.id}>
-              <TripPointCard
-                onPress={handleTripPointPress}
-                onLongPress={handleTripPointLongPress}
-                tripPoint={tripPoint}
-              />
-              {renderTransferPoint(tripPoint.id, index)}
-            </Fragment>
-          ))}
-          <View style={{ height: 100 }} />
-        </ScrollView>
-        <FAB
-          icon="plus"
-          style={style.fab}
-          color={theme.colors.onPrimary}
-          label="Dodaj"
-          onPress={() => {
-            setIsVisible(true);
-          }}
-        />
-        <CreatingTripPointSelector
-          options={options}
-          isVisible={isVisible}
-          onClose={() => {
-            setIsVisible(false);
-          }}
-        />
-      </GestureHandlerRootView>
+      <ScrollView
+        style={style.container}
+        contentContainerStyle={style.containerContent}
+      >
+        <View style={{ height: 40 }} />
+        {sortedTripPoints.map((tripPoint, index) => (
+          <Fragment key={tripPoint.id}>
+            <TripPointCard
+              onPress={handleTripPointPress}
+              onLongPress={handleTripPointLongPress}
+              tripPoint={tripPoint}
+            />
+            {renderTransferPoint(tripPoint.id, index)}
+          </Fragment>
+        ))}
+        <View style={{ height: 100 }} />
+      </ScrollView>
+      <FAB
+        icon="plus"
+        style={style.fab}
+        color={theme.colors.onPrimary}
+        label="Dodaj"
+        onPress={() => {
+          console.log("FAB Clicked");
+        }}
+      />
     </>
   );
 };
 
-const createStyles = (theme: MD3Theme) =>
+const createStyles = (theme: MD3ThemeExtended) =>
   StyleSheet.create({
     container: {
       backgroundColor: theme.colors.surface,
