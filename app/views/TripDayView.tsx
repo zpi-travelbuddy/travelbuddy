@@ -66,8 +66,6 @@ const TripDayView = () => {
   const style = createStyles(theme);
   const router = useRouter();
 
-  const [isVisible, setIsVisible] = useState<boolean>(false);
-
   const options: Option[] = [
     {
       icon: CREATING_TRIP_POINT_ICON,
