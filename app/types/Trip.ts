@@ -4,6 +4,15 @@ type Trip = {
   dateTo: Date;
 };
 
+export interface DateRange {
+  startDate?: Date;
+  endDate?: Date;
+}
+
+export interface TripCreationErrors {
+  [key: string]: string | undefined;
+}
+
 export type TripPointType =
   | "attraction"
   | "food"
