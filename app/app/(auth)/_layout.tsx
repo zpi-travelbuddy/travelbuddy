@@ -9,7 +9,7 @@ export default function RootLayout() {
     return <LoadingView transparent={false} />;
   }
 
-  if (isAuthenticated) {
+  if (!isAuthenticated) {
     return <Redirect href="/sign-in" />;
   }
 
