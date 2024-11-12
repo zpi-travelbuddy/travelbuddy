@@ -19,6 +19,11 @@ public class NBPClient : INBPService
 
     public async Task<decimal?> GetRateAsync(string currencyCode, DateOnly? date = null)
     {
+        if(currencyCode == "PLN")
+        {
+            return 1;
+        }
+
         var endpoint = date.HasValue 
             ? $"rates/a/{currencyCode}/{date.Value:yyyy-MM-dd}" 
             : $"rates/a/{currencyCode}";
@@ -62,13 +67,21 @@ public class NBPClient : INBPService
         var jsonDocument = JsonDocument.Parse(response.Content);
         var ratesElement = jsonDocument.RootElement[0].GetProperty("rates");
 
-        return ratesElement.EnumerateArray()
-                    .Select(rate => new CurrencyDTO
-                    {
-                        Code = rate.GetProperty("code").GetString(),
-                        Name = rate.GetProperty("currency").GetString()
-                    })
-                    .ToList();
+        var currencies = ratesElement.EnumerateArray()
+                .Select(rate => new CurrencyDTO
+                {
+                Code = rate.GetProperty("code").GetString(),
+                Name = rate.GetProperty("currency").GetString()
+                })
+                .ToList();
+
+        currencies.Add(new CurrencyDTO
+        {
+            Code = "PLN",
+            Name = "Polski złoty"
+        });
+
+        return currencies;
     }
     public async Task<decimal?> GetClosestRateAsync(string currencyCode, DateOnly date, int maxRetries = 2)
     {
