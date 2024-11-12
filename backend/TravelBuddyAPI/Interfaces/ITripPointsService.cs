@@ -4,8 +4,9 @@ using TravelBuddyAPI.DTOs.TripPointReview;
 namespace TravelBuddyAPI.Interfaces;
 
 /// <summary>
-/// Deletes a trip point during a transaction asynchronously.
-///
+/// Retrieves the details of a trip point review asynchronously.
+/// Interface for managing trip points.
+/// </summary>
 public interface ITripPointsService
 {
     /// <summary>
