@@ -17,6 +17,7 @@ import useTripDetails from "@/composables/useTripDetails";
 import { TripDay, TripViewModel } from "@/types/Trip";
 import { useSnackbar } from "@/context/SnackbarContext";
 import { convertTripDetailsToViewModel } from "@/converters/tripConverters";
+import usePlaceDetails from "@/composables/usePlace";
 
 const { height, width } = Dimensions.get("window");
 
@@ -29,19 +30,45 @@ const TripDetailsView = () => {
   );
 
   const params = useLocalSearchParams();
-  const trip_id: string = "77b6b9bd-99d8-4b56-b74d-ed69c3a1238b"; // Temporary solution
+  const trip_id: string = "77b6b9bd-99d8-4b56-b74d-ed69c3a1238a"; // Temporary solution
   // const { trip_id } = params;
 
-  const { tripDetails, tripSummary, loading, error, refetch } = useTripDetails(
-    trip_id as string,
-  );
+  const {
+    tripDetails,
+    tripSummary,
+    loading: tripLoading,
+    error: tripError,
+    refetch: tripRefetch,
+  } = useTripDetails(trip_id as string);
+
+  const {
+    placeDetails: destinationDetails,
+    loading: destinationLoading,
+    error: destinationError,
+    refetch: destinationRefetch,
+  } = usePlaceDetails(tripDetails?.destinationId);
+
+  const loading = useMemo(() => {
+    return tripLoading || destinationLoading;
+  }, [tripLoading, destinationLoading]);
+
+  const error = useMemo(() => {
+    return tripError || destinationError || null;
+  }, [tripError, destinationError]);
 
   const { showSnackbar } = useSnackbar();
 
   useEffect(() => {
-    if (tripDetails)
-      setTripViewModel(convertTripDetailsToViewModel(tripDetails, tripSummary));
-  }, [tripDetails]);
+    if (tripDetails) {
+      setTripViewModel(
+        convertTripDetailsToViewModel(
+          tripDetails,
+          tripSummary,
+          destinationDetails,
+        ),
+      );
+    }
+  }, [tripDetails, tripSummary, destinationDetails]);
 
   const labels: Record<string, string> = {
     tripName: "Nazwa wycieczki",

@@ -1,3 +1,4 @@
+import { PlaceDetails } from "@/types/Place";
 import { TripDetails, TripSummary, TripViewModel } from "@/types/Trip";
 import { getMoneyWithCurrency } from "@/utils/CurrencyUtils";
 import { formatDateRange } from "@/utils/TimeUtils";
@@ -11,8 +12,12 @@ function getConditionProfileName(conditionProfileId: string): string {
   return "Potrzebuję internetu dla psa";
 }
 
-function convertDestinationIdToName(destinationId: string): string {
-  return "London, UK";
+function getDestinationName(
+  destinationDetails: PlaceDetails | undefined,
+): string {
+  return destinationDetails
+    ? `${destinationDetails.city}, ${destinationDetails.country}`
+    : "";
 }
 
 export const calculateTripSummary = (tripSummary: TripSummary) => {
@@ -35,6 +40,7 @@ export const calculateTripSummary = (tripSummary: TripSummary) => {
 export function convertTripDetailsToViewModel(
   tripDetails: TripDetails | undefined,
   tripSummary: TripSummary | undefined,
+  destinationDetails: PlaceDetails | undefined,
 ): TripViewModel {
   if (!tripDetails) throw new Error("Trip details are undefined.");
   const { totalSpendings, totalTripPoints } = tripSummary
@@ -46,7 +52,7 @@ export function convertTripDetailsToViewModel(
       new Date(tripDetails.startDate),
       new Date(tripDetails.endDate),
     ),
-    destination: convertDestinationIdToName(tripDetails.destinationId),
+    destination: getDestinationName(destinationDetails),
     numberOfTripPoints: totalTripPoints,
     numberOfTravelers: tripDetails.numberOfTravelers,
     cost: getMoneyWithCurrency(totalSpendings, tripDetails.currencyCode),
