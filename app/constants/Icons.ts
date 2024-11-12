@@ -2,6 +2,8 @@ export const EDIT_ICON = "edit";
 export const DETAILS_ICON = "info";
 export const DELETE_ICON = "delete";
 
+export const CHECK_CIRCLE_ICON = "check-circle-outline";
+
 // NavBar icons
 export const TRIPS_ICON = "car";
 export const EXPLORE_ICON = "compass-outline";

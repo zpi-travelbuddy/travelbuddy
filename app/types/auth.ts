@@ -13,6 +13,9 @@ export interface Credentials {
 export interface AuthProps {
   isLoading?: boolean;
   isAuthenticated?: boolean;
+  signUp?: (credentials: Credentials) => Promise<any>;
+  resendSignUp?: (credentials: Credentials) => Promise<any>;
+  confirmSignUp?: (email: string, code: string) => Promise<any>;
   signIn?: (credentials: Credentials) => Promise<any>;
   signOut?: () => Promise<any>;
   api?: AxiosInstance;
