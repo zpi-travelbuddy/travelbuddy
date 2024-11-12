@@ -3,10 +3,10 @@ export function stringToDate(date: string): Date {
   return new Date(year, month - 1, day);
 }
 
-export function getPreviousDay(): Date {
-  const previousDate = new Date(Date.now() - 24 * 60 * 60 * 1000);
+export function getISOToday(): Date {
+  const today = new Date(Date.now());
 
-  return new Date(formatDateToISO(previousDate));
+  return new Date(formatDateToISO(today));
 }
 
 export function formatDateToISO(date: Date | undefined): string {

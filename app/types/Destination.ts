@@ -10,5 +10,6 @@ export interface APIDestination {
 export interface Destination {
   id: string;
   name: string;
+  state: string;
   country: string;
 }

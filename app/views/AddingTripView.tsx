@@ -16,7 +16,7 @@ import {
 import {
   formatDateRange,
   formatDateToISO,
-  getPreviousDay,
+  getISOToday,
 } from "@/utils/TimeUtils";
 import CurrencyValueInput from "@/components/CurrencyValueInput";
 import CustomModal from "@/components/CustomModal";
@@ -32,6 +32,7 @@ import { DateRange, TripCreationErrors } from "@/types/Trip";
 import { MARKER_ICON, CALENDAR_ICON } from "@/constants/Icons";
 import { API_TRIPS } from "@/constants/Endpoints";
 import { validateTripForm } from "@/utils/validations";
+import { useAnimatedKeyboard } from "react-native-reanimated";
 
 const { height, width } = Dimensions.get("window");
 registerTranslation("pl", pl);
@@ -40,6 +41,8 @@ const DEFAULT_CURRENCY = "PLN";
 
 const AddingTripView = () => {
   const { api } = useAuth();
+
+  useAnimatedKeyboard();
 
   const theme = useTheme();
   const router = useRouter();
@@ -275,7 +278,7 @@ const AddingTripView = () => {
               setDateRangeText(formatDateRange(startDate, endDate));
             }}
             locale="pl"
-            validRange={{ startDate: getPreviousDay() }}
+            validRange={{ startDate: getISOToday() }}
             startWeekOnMonday
           />
         </View>

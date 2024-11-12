@@ -19,9 +19,12 @@ import { useDebouncedCallback } from "use-debounce";
 import { router } from "expo-router";
 import { Destination, APIDestination } from "@/types/Destination";
 import { API_AUTOCOMPLETE_DESTINATION } from "@/constants/Endpoints";
+import { useAnimatedKeyboard } from "react-native-reanimated";
 
 const DestinationCard = ({ destination }: { destination: Destination }) => {
-  const { id, name, country } = destination;
+  const { id, name, country, state } = destination;
+
+  useAnimatedKeyboard();
 
   const handleSelect = () => {
     router.back();
@@ -30,7 +33,10 @@ const DestinationCard = ({ destination }: { destination: Destination }) => {
 
   return (
     <Card mode="outlined" onPress={handleSelect}>
-      <Card.Title title={name} subtitle={country} />
+      <Card.Title
+        title={`${name}${state ? `, ${state}` : ""}`}
+        subtitle={country}
+      />
     </Card>
   );
 };
@@ -52,10 +58,12 @@ const SelectDestinationView = () => {
           query,
         },
       });
+      console.log(response.data);
       const parsedData = response.data.map((destination: APIDestination) => ({
         id: destination.providerId,
         name: destination.city || destination.name,
         country: destination.country,
+        state: destination.state,
       })) as Destination[];
       setDestinations(parsedData);
     } catch (error) {
@@ -143,7 +151,7 @@ const makeStyles = (theme: MD3ThemeExtended) =>
     },
     container: {
       flex: 1,
-      backgroundColor: theme.colors.background,
+      backgroundColor: theme.colors.surface,
     },
     searchbar: {
       backgroundColor: theme.colors.surfaceContainerHigh,
