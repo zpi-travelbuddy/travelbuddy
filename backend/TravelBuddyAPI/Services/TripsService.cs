@@ -181,6 +181,8 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
     {
         try
         {
+            using var transaction = await _dbContext.Database.BeginTransactionAsync();
+
             Trip existingTrip = await _dbContext.Trips
                 .Where(t => t.Id == tripId && t.UserId == userId)
                 .Include(t => t.TripDays)
@@ -229,9 +231,11 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
 
             _dbContext.Trips.Update(existingTrip);
             await _dbContext.SaveChangesAsync();
+            await transaction.CommitAsync();
         }
         catch (Exception e) when (e is ArgumentNullException || e is InvalidOperationException || e is ArgumentException || e is HttpRequestException || e is ValidationException)
         {
+            if (_dbContext.Database.CurrentTransaction != null) await _dbContext.Database.RollbackTransactionAsync();
             throw new InvalidOperationException($"{ErrorMessage.EditTrip} {e.Message}");
         }
 
