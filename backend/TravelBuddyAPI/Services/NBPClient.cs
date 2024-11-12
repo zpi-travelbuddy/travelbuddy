@@ -78,7 +78,7 @@ public class NBPClient : INBPService
         currencies.Add(new CurrencyDTO
         {
             Code = "PLN",
-            Name = "Polski złoty"
+            Name = "polski złoty"
         });
 
         return currencies;
