@@ -11,13 +11,14 @@ using TravelBuddyAPI.Models;
 
 namespace TravelBuddyAPI.Services;
 
-public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService, IPlacesService placesService, ICategoryProfilesService categoryProfilesService, IConditionProfilesService conditionProfilesService) : ITripsService
+public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService, IPlacesService placesService, ICategoryProfilesService categoryProfilesService, IConditionProfilesService conditionProfilesService, ITripPointsService tripPointsService) : ITripsService
 {
     private readonly TravelBuddyDbContext _dbContext = dbContext;
     private readonly INBPService _nbpService = nbpService;
     private readonly IPlacesService _placesService = placesService;
     private readonly ICategoryProfilesService _categoryProfileService = categoryProfilesService;
     private readonly IConditionProfilesService _conditionProfileService = conditionProfilesService;
+    private readonly ITripPointsService _tripPointsService = tripPointsService;
 
     public static class ErrorMessage
     {
@@ -250,5 +251,30 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
     public Task<TripSummaryDTO> GetTripSummaryAsync(string userId, Guid tripId)
     {
         throw new NotImplementedException();
+    }
+
+    private async Task<bool> DeleteTripDayAsync(string userId, Guid tripDayId)
+    {
+        TripDay tripDay = await _dbContext.TripDays
+            .Include(tp => tp.Trip)
+            .Include(tp => tp.TripPoints)
+            .Where(tp => tp.Id == tripDayId
+                && tp.Trip != null
+                && tp.Trip.UserId == userId)
+            .FirstOrDefaultAsync() ?? throw new InvalidOperationException(ErrorMessage.TripDayNotFound);
+
+        if(tripDay.TripPoints != null)
+        {
+            foreach (var tripPoint in tripDay.TripPoints)
+            {
+                await _tripPointsService.DeleteTripPointAsync(userId, tripPoint.Id);
+            }
+        }
+        
+        _dbContext.TripDays.Remove(tripDay);
+
+        await _dbContext.SaveChangesAsync();
+
+        return true;
     }
 }
