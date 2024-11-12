@@ -48,7 +48,7 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
 
             if (trip.Budget * 100 % 1 != 0) throw new ArgumentException(ErrorMessage.TooManyDecimalPlaces);
 
-            decimal exchangeRate = await _nbpService.GetClosestRateAsync(trip?.CurrencyCode ?? string.Empty, DateOnly.FromDateTime(DateTime.Now)) ?? throw new InvalidOperationException(ErrorMessage.RetriveExchangeRate);
+            decimal exchangeRate = await _nbpService.GetRateAsync(trip?.CurrencyCode ?? string.Empty) ?? throw new InvalidOperationException(ErrorMessage.RetriveExchangeRate);
 
             _ = trip!.DestinationPlace ?? throw new InvalidOperationException();
             Guid destinationId = await GetDestinationId(trip?.DestinationPlace?.ProviderId ?? string.Empty) ?? await AddDestinationAsync(trip!.DestinationPlace);

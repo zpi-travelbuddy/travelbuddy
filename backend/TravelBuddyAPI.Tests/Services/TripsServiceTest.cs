@@ -47,7 +47,7 @@ public class TripsServiceTest
             Longitude = 20.0m,
         };
 
-        _mockNBPService.Setup(x => x.GetClosestRateAsync(It.IsAny<string>(), It.IsAny<DateOnly>(), It.IsAny<int>())).ReturnsAsync(4.5m);
+        _mockNBPService.Setup(x => x.GetRateAsync(It.IsAny<string>(), It.IsAny<DateOnly?>())).ReturnsAsync(4.5m);
         _mockPlacesService.Setup(x => x.AddPlaceAsync(It.IsAny<PlaceRequestDTO>())).ReturnsAsync(new PlaceDetailsDTO() { Id = Guid.NewGuid() });
 
         var tripRequest = new TripRequestDTO
@@ -126,7 +126,7 @@ public class TripsServiceTest
             Longitude = 20.0m,
         };
 
-        _mockNBPService.Setup(x => x.GetClosestRateAsync(It.IsAny<string>(), It.IsAny<DateOnly>(), It.IsAny<int>())).ReturnsAsync((decimal?)null);
+        _mockNBPService.Setup(x => x.GetRateAsync(It.IsAny<string>(), It.IsAny<DateOnly?>())).ReturnsAsync((decimal?)null);
 
         var tripRequest = new TripRequestDTO
         {
