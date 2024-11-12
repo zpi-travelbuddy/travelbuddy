@@ -6,7 +6,7 @@ import {
   ScrollView,
   ActivityIndicator,
 } from "react-native";
-import React, { useMemo, useState, useCallback } from "react";
+import React, { useMemo, useState, useCallback, useEffect } from "react";
 import TripDetailLabel from "@/components/TripDetailLabel";
 import { FAB, MD3Theme, useTheme } from "react-native-paper";
 import { CALENDAR_ICON } from "@/constants/Icons";
@@ -14,8 +14,9 @@ import { router, useLocalSearchParams } from "expo-router";
 import SingleDatePickerModal from "@/components/SingleDatePickerModal";
 import { CalendarDate } from "react-native-paper-dates/lib/typescript/Date/Calendar";
 import useTripDetails from "@/composables/useTripDetails";
-import { TripDay } from "@/types/Trip";
+import { TripDay, TripViewModel } from "@/types/Trip";
 import { useSnackbar } from "@/context/SnackbarContext";
+import { convertTripDetailsToViewModel } from "@/converters/tripConverters";
 
 const { height, width } = Dimensions.get("window");
 
@@ -23,22 +24,35 @@ const TripDetailsView = () => {
   const theme = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
   const [dateModalVisible, setDateModalVisible] = useState(false);
+  const [tripViewModel, setTripViewModel] = useState<TripViewModel | undefined>(
+    undefined,
+  );
 
   const params = useLocalSearchParams();
-  const id = "234455";
+  const trip_id: string = "77b6b9bd-99d8-4b56-b74d-ed69c3a1238b"; // Temporary solution
+  // const { trip_id } = params;
 
-  const { tripDetails, loading, error } = useTripDetails(id as string);
+  const { tripDetails, tripSummary, loading, error, refetch } = useTripDetails(
+    trip_id as string,
+  );
+
+  const { showSnackbar } = useSnackbar();
+
+  useEffect(() => {
+    if (tripDetails)
+      setTripViewModel(convertTripDetailsToViewModel(tripDetails, tripSummary));
+  }, [tripDetails]);
 
   const labels: Record<string, string> = {
     tripName: "Nazwa wycieczki",
-    tripDate: "Termin wycieczki",
+    dateRange: "Termin wycieczki",
     destination: "Cel wycieczki",
     numberOfTripPoints: "Liczba punktów wycieczki",
-    numberOfPeople: "Liczba osób",
+    numberOfTravelers: "Liczba osób",
     cost: "Całkowity koszt wycieczki",
     budget: "Budżet wycieczki",
-    preferenceProfileName: "Profil preferencji",
-    convenienceProfileName: "Profil udogodnień",
+    categoryProfileName: "Profil preferencji",
+    conditionProfileName: "Profil udogodnień",
   };
 
   const dateToIdMap = useMemo(() => {
@@ -62,15 +76,13 @@ const TripDetailsView = () => {
       if (tripDayId) {
         console.log("Redirecting to day with id " + tripDayId);
         setDateModalVisible(false);
-        router.navigate(`/trips/details/id/day/${tripDayId}`);
+        router.navigate(`/trips/details/${trip_id}/day/${tripDayId}`);
       } else {
         console.error("Day not found");
       }
     },
     [setDateModalVisible, dateToIdMap],
   );
-
-  const { showSnackbar } = useSnackbar();
 
   if (loading) {
     return (
@@ -81,9 +93,9 @@ const TripDetailsView = () => {
   }
 
   if (error) {
-    showSnackbar(error?.toString() || "Unknown error", "error");
     router.back();
-    return null; // Zapewnia, że renderowanie nie jest przerywane w tym momencie.
+    showSnackbar(error?.toString() || "Unknown error", "error");
+    return null;
   }
   return (
     <View style={styles.container}>
@@ -96,14 +108,16 @@ const TripDetailsView = () => {
           resizeMode="cover"
         />
 
-        {tripDetails &&
-          Object.entries(tripDetails).map(([key, value]) => (
-            <TripDetailLabel
-              key={key}
-              title={labels[key] || key}
-              value={value.toString()}
-            />
-          ))}
+        {tripViewModel &&
+          Object.entries(tripViewModel)
+            .filter(([key]) => key in labels)
+            .map(([key, value]) => (
+              <TripDetailLabel
+                key={key}
+                title={labels[key]}
+                value={value?.toString()}
+              />
+            ))}
       </ScrollView>
       {tripDetails && (
         <SingleDatePickerModal
@@ -114,7 +128,6 @@ const TripDetailsView = () => {
           onConfirm={handleConfirm}
         />
       )}
-      ;
       <FAB
         color={theme.colors.onPrimary}
         style={styles.fab}

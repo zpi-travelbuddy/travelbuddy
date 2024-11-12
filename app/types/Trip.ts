@@ -10,6 +10,18 @@ export interface TripDay {
   date: string;
 }
 
+export interface TripViewModel {
+  name: string;
+  dateRange: string;
+  destination: string;
+  numberOfTripPoints: number;
+  numberOfTravelers: number;
+  cost: string;
+  budget: string;
+  categoryProfileName: string;
+  conditionProfileName: string;
+}
+
 export interface TripDetails {
   id: string;
   name: string;
@@ -22,6 +34,21 @@ export interface TripDetails {
   categoryProfileId: string;
   conditionProfileId: string;
   tripDays: TripDay[];
+}
+
+export interface TripSummaryPoint {
+  name: string;
+  totalSpendings: number;
+}
+
+export interface TripSummaryDay {
+  date: string;
+  tripPoints: TripSummaryPoint[];
+}
+
+export interface TripSummary {
+  currency: string;
+  tripDays: TripSummaryDay[];
 }
 
 export type TripPointType =
