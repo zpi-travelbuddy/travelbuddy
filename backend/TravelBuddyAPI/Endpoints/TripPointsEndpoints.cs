@@ -72,7 +72,7 @@ public static class TripPointsEndpoints
         }
     }
 
-    public static async Task<Results<NoContent, NotFound<string>>> DeleteTripPointAsync(Guid id,ITripPointsService tripPointsService, HttpContext httpContext)
+    private static async Task<Results<NoContent, NotFound<string>>> DeleteTripPointAsync(Guid id,ITripPointsService tripPointsService, HttpContext httpContext)
     {
         try
         {
