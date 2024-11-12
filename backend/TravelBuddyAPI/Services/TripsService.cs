@@ -11,13 +11,14 @@ using TravelBuddyAPI.Models;
 
 namespace TravelBuddyAPI.Services;
 
-public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService, IPlacesService placesService, ICategoryProfilesService categoryProfilesService, IConditionProfilesService conditionProfilesService) : ITripsService
+public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService, IPlacesService placesService, ICategoryProfilesService categoryProfilesService, IConditionProfilesService conditionProfilesService, ITripPointsService tripPointsService) : ITripsService
 {
     private readonly TravelBuddyDbContext _dbContext = dbContext;
     private readonly INBPService _nbpService = nbpService;
     private readonly IPlacesService _placesService = placesService;
     private readonly ICategoryProfilesService _categoryProfileService = categoryProfilesService;
     private readonly IConditionProfilesService _conditionProfileService = conditionProfilesService;
+    private readonly ITripPointsService _tripPointsService = tripPointsService;
 
     public static class ErrorMessage
     {
@@ -30,6 +31,7 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
         public const string TripWithoutDays = "Trip does not have any days.";
         public const string TripDayNotFound = "Trip day with the specified ID does not exist.";
         public const string TooManyDecimalPlaces = "Budget must have at most 2 decimal places.";
+        public const string DeleteTrip = "An error occurred while deleting a trip:";
     }
 
     public async Task<TripDetailsDTO> CreateTripAsync(string userId, TripRequestDTO trip)
@@ -117,9 +119,49 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
         return await _dbContext.SaveChangesAsync() == tripDays.Count();
     }
 
-    public Task<bool> DeleteTripAsync(string userId, Guid tripId)
+    public async Task<bool> DeleteTripAsync(string userId, Guid tripId)
     {
-        throw new NotImplementedException();
+        try
+        {
+            using var transaction = await _dbContext.Database.BeginTransactionAsync();
+
+            await DeleteTripDuringTransactionAsync(userId, tripId);
+
+            await transaction.CommitAsync();
+
+            return true;
+        }
+        catch (Exception e) when (e is InvalidOperationException)
+        {
+            if (_dbContext.Database.CurrentTransaction != null)
+            {
+                await _dbContext.Database.RollbackTransactionAsync();
+            }
+            throw new InvalidOperationException($"{ErrorMessage.DeleteTrip} {e.Message}");
+        }
+    }
+
+    private async Task<bool> DeleteTripDuringTransactionAsync(string userId, Guid tripId)
+    {
+        Trip trip = await _dbContext.Trips
+            .Include(tp => tp.TripDays)
+            .Where(tp => tp.Id == tripId
+                && tp.UserId == userId)
+            .FirstOrDefaultAsync() ?? throw new InvalidOperationException(ErrorMessage.TripNotFound);
+
+        if(trip.TripDays != null)
+        {
+            foreach (var tripDay in trip.TripDays.ToList())
+            {
+                await DeleteTripDayDuringTransactionAsync(userId, tripDay.Id);
+            }
+        }
+        
+        _dbContext.Trips.Remove(trip);
+
+        await _dbContext.SaveChangesAsync();
+
+        return true;
     }
 
     public Task<bool> EditTripAsync(string userId, Guid tripId, TripRequestDTO trip)
@@ -250,5 +292,30 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
     public Task<TripSummaryDTO> GetTripSummaryAsync(string userId, Guid tripId)
     {
         throw new NotImplementedException();
+    }
+
+    private async Task<bool> DeleteTripDayDuringTransactionAsync(string userId, Guid tripDayId)
+    {
+        TripDay tripDay = await _dbContext.TripDays
+            .Include(tp => tp.Trip)
+            .Include(tp => tp.TripPoints)
+            .Where(tp => tp.Id == tripDayId
+                && tp.Trip != null
+                && tp.Trip.UserId == userId)
+            .FirstOrDefaultAsync() ?? throw new InvalidOperationException(ErrorMessage.TripDayNotFound);
+
+        if(tripDay.TripPoints != null)
+        {
+            foreach (var tripPoint in tripDay.TripPoints.ToList())
+            {
+                await _tripPointsService.DeleteTripPointDuringTransactionAsync(userId, tripPoint.Id);
+            }
+        }
+        
+        _dbContext.TripDays.Remove(tripDay);
+
+        await _dbContext.SaveChangesAsync();
+
+        return true;
     }
 }
