@@ -1,5 +1,5 @@
-import { StyleSheet, View, Text } from "react-native";
-import React, { useEffect, useMemo, useState } from "react";
+import { StyleSheet, View, Text, RefreshControl } from "react-native";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { TripCard } from "@/components/TripCard";
 import { useRouter } from "expo-router";
 import {
@@ -8,6 +8,7 @@ import {
   Searchbar,
   SegmentedButtons,
   MD3Theme,
+  ActivityIndicator,
 } from "react-native-paper";
 import { FlatList } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -16,68 +17,57 @@ import CustomModal from "@/components/CustomModal";
 import ActionTextButtons from "@/components/ActionTextButtons";
 import { DELETE_ICON, DETAILS_ICON, EDIT_ICON } from "@/constants/Icons";
 import { useSnackbar } from "@/context/SnackbarContext";
+import { useAuth } from "@/app/ctx";
+import { API_TRIPS_CURRENT, API_TRIPS_PAST } from "@/constants/Endpoints";
+import { useAnimatedKeyboard } from "react-native-reanimated";
+
+interface APITrip {
+  id: string;
+  name: string;
+  startDate: string;
+  endDate: string;
+}
+
+interface Trip {
+  id: string;
+  title: string;
+  subtitle: string;
+  imageUri: string;
+  isArchived: boolean;
+}
+
+type TripViewMode = "actual" | "archive";
+
+const RANDOM_IMAGE = "https://picsum.photos/891";
 
 const TripBrowseView = () => {
+  const { api } = useAuth();
+
+  useAnimatedKeyboard();
+
   const theme = useTheme();
   const styles = createStyles(theme);
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
 
-  type Trip = {
-    id: string;
-    title: string;
-    subtitle: string;
-    imageUri: string;
-    isArchived: boolean;
-  };
-
-  const actualTrips = [
-    {
-      id: "1",
-      title: "Wycieczka do Milicza",
-      subtitle: "10.06.2025 - 15.06.2025",
-      imageUri: "https://picsum.photos/888",
-      isArchived: false,
-    },
-    {
-      id: "2",
-      title: "Wycieczka do Wrocławia",
-      subtitle: "20.06.2025 - 25.06.2025",
-      imageUri: "https://picsum.photos/889",
-      isArchived: false,
-    },
-    {
-      id: "3",
-      title: "Wycieczka do Moszczanki",
-      subtitle: "20.01.2026 - 25.01.2026",
-      imageUri: "https://picsum.photos/887",
-      isArchived: false,
-    },
-  ];
-
-  const archivedTrips = [
-    {
-      id: "1000",
-      title: "Wycieczka do Krakowa",
-      subtitle: "15.07.2024 - 20.07.2024",
-      imageUri: "https://picsum.photos/890",
-      isArchived: true,
-    },
-    {
-      id: "1001",
-      title: "Wycieczka do Zakopanego",
-      subtitle: "01.08.2024 - 07.08.2024",
-      imageUri: "https://picsum.photos/891",
-      isArchived: true,
-    },
-  ];
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [refreshing, setRefreshing] = useState<boolean>(false);
 
   const { showSnackbar } = useSnackbar();
 
-  const [trips, setTrips] = useState<Trip[]>(actualTrips);
+  const [currentTrips, setCurrentTrips] = useState<Trip[]>([]);
+  const [pastTrips, setPastTrips] = useState<Trip[]>([]);
   const [isVisible, setIsVisible] = useState<boolean>(false);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [selectedTrip, setSelectedTrip] = useState<Trip | null>(null);
+
+  const [value, setValue] = React.useState<TripViewMode>("actual");
+
+  const trips = value === "actual" ? currentTrips : pastTrips;
+
+  const handleValueChange = (newValue: string) => {
+    setValue(newValue as TripViewMode);
+  };
 
   const filteredTrips = trips.filter((trip) =>
     trip.title.toLowerCase().includes(searchQuery.toLowerCase()),
@@ -112,6 +102,55 @@ const TripBrowseView = () => {
     showSnackbar("Usunięto wycieczkę!");
   };
 
+  const fetchCurrentTrips = async () => {
+    try {
+      const currentTrips: APITrip[] = (await api!.get(API_TRIPS_CURRENT)).data;
+      const parsedCurrentTrips = currentTrips.map((trip: any) => ({
+        id: trip.id,
+        title: trip.name,
+        subtitle: `${trip.startDate} - ${trip.endDate}`,
+        imageUri: RANDOM_IMAGE,
+        isArchived: false,
+      }));
+      setCurrentTrips(parsedCurrentTrips);
+    } catch (error: any) {
+      console.error("Error fetching current trips", error.response.data);
+    }
+  };
+
+  const fetchPastTrips = async () => {
+    try {
+      const pastTrips: APITrip[] = (await api!.get(API_TRIPS_PAST)).data;
+      const parsedPastTrips = pastTrips.map((trip: any) => ({
+        id: trip.id,
+        title: trip.name,
+        subtitle: `${trip.startDate} - ${trip.endDate}`,
+        imageUri: RANDOM_IMAGE,
+        isArchived: true,
+      }));
+      setPastTrips(parsedPastTrips);
+    } catch (error: any) {
+      console.error("Error fetching past trips", error.response.data);
+    }
+  };
+
+  const fetchTrips = async () => {
+    setIsLoading(true);
+    await fetchCurrentTrips();
+    await fetchPastTrips();
+    setIsLoading(false);
+  };
+
+  useEffect(() => {
+    fetchTrips();
+  }, []);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await fetchTrips();
+    setRefreshing(false);
+  }, []);
+
   useEffect(() => {
     if (selectedTrip) {
       setIsVisible(true);
@@ -130,13 +169,6 @@ const TripBrowseView = () => {
       }}
     />
   );
-
-  const [value, setValue] = React.useState("actual");
-
-  const handleValueChange = (newValue: string) => {
-    setValue(newValue);
-    setTrips(newValue === "actual" ? actualTrips : archivedTrips);
-  };
 
   const getActionsForSelectedTrip: Action[] = useMemo(() => {
     if (!selectedTrip) return [];
@@ -195,19 +227,32 @@ const TripBrowseView = () => {
             },
           ]}
         />
+        <Searchbar
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          placeholder="Wyszukaj wycieczkę"
+          style={styles.searchbar}
+        />
         <FlatList
           data={filteredTrips}
           renderItem={renderItem}
           keyExtractor={(item, index) => index.toString()}
           contentContainerStyle={styles.flatListContent}
           showsVerticalScrollIndicator={false}
-          ListHeaderComponent={
-            <Searchbar
-              value={searchQuery}
-              onChangeText={setSearchQuery}
-              placeholder="Wyszukaj wycieczkę"
-              style={styles.searchbar}
-            />
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+          ListEmptyComponent={
+            isLoading ? (
+              <ActivityIndicator
+                style={styles.loadingIndicator}
+                animating={true}
+                size="large"
+                color={theme.colors.primary}
+              />
+            ) : (
+              <Text style={styles.emptyMessage}>Nie znaleziono wycieczek</Text>
+            )
           }
         />
         <FAB
@@ -229,8 +274,8 @@ const TripBrowseView = () => {
             <ActionTextButtons
               onAction1={hideModal}
               onAction2={() => deleteTrip(selectedTrip)}
-              action1ButtonLabel={undefined}
-              action2ButtonLabel={undefined}
+              action1ButtonLabel="Anuluj"
+              action2ButtonLabel="Usuń"
               action1Icon={undefined}
               action2Icon={undefined}
             />
@@ -256,7 +301,7 @@ const createStyles = (theme: MD3Theme) =>
   StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: theme.colors.background,
+      backgroundColor: theme.colors.surface,
     },
     segmentedButtons: {
       elevation: 0,
@@ -273,7 +318,7 @@ const createStyles = (theme: MD3Theme) =>
     },
     flatListContent: {
       flexGrow: 1,
-      backgroundColor: theme.colors.background,
+      backgroundColor: theme.colors.surface,
       paddingBottom: 20,
     },
     fab: {
@@ -285,22 +330,28 @@ const createStyles = (theme: MD3Theme) =>
     },
     modalTitleText: {
       ...theme.fonts.titleLarge,
-      color: theme.colors.onBackground,
+      color: theme.colors.onSurface,
     },
     modalContent: {
       marginVertical: 20,
     },
     boldText: {
       fontWeight: "bold",
-      color: theme.colors.onBackground,
+      color: theme.colors.onSurface,
     },
     modalSubtitle: {
-      color: theme.colors.onBackground,
+      color: theme.colors.onSurface,
     },
     bottomSheetText: {
       marginBottom: 10,
       marginTop: -10,
-      color: theme.colors.onBackground,
+      color: theme.colors.onSurface,
       ...theme.fonts.bodyMedium,
     },
+    emptyMessage: {
+      textAlign: "center",
+      marginTop: 20,
+      color: theme.colors.onSurface,
+    },
+    loadingIndicator: { margin: "auto" },
   });
