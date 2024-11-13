@@ -191,9 +191,9 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
             await ValidateTripRequest(userId, trip);
             if (existingTrip.CurrencyCode != trip.CurrencyCode) throw new InvalidOperationException(ErrorMessage.CurrencyChangeNotAllowed);
 
-            if (existingTrip.Budget != trip.Budget)
+            if (existingTrip.Budget != trip.Budget * existingTrip.ExchangeRate)
             {
-                decimal exchangeRate = await _nbpService.GetClosestRateAsync(trip?.CurrencyCode ?? string.Empty, DateOnly.FromDateTime(DateTime.Now)) ?? throw new InvalidOperationException(ErrorMessage.RetriveExchangeRate);
+                decimal exchangeRate = await _nbpService.GetRateAsync(trip?.CurrencyCode ?? string.Empty) ?? throw new InvalidOperationException(ErrorMessage.RetriveExchangeRate);
                 existingTrip.ExchangeRate = exchangeRate;
                 existingTrip.Budget = trip!.Budget * exchangeRate;
             }
@@ -203,7 +203,10 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
                 var tripDaysToRemove = existingTrip.TripDays?
                     .Where(td => td.Date < trip.StartDate || td.Date > trip.EndDate);
 
-                // Remove trip days tripDaysToRemove
+                foreach (var tripDay in tripDaysToRemove ?? [])
+                {
+                    await DeleteTripDayDuringTransactionAsync(userId, tripDay.Id);
+                }
 
                 if (trip.StartDate < existingTrip.StartDate)
                 {
@@ -214,11 +217,13 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
                 {
                     await AddTripDaysAsync(existingTrip.Id, existingTrip.EndDate.AddDays(1), trip.EndDate);
                 }
+
+                existingTrip.StartDate = trip.StartDate;
+                existingTrip.EndDate = trip.EndDate;
             }
 
             _ = trip!.DestinationPlace ?? throw new InvalidOperationException();
             Guid destinationId = await GetDestinationId(trip?.DestinationPlace?.ProviderId ?? string.Empty) ?? await AddDestinationAsync(trip!.DestinationPlace);
-            // TODO potentialy remove old destination from database
 
             existingTrip.Name = trip!.Name;
             existingTrip.NumberOfTravelers = trip.NumberOfTravelers;
