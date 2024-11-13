@@ -41,7 +41,7 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
         try
         {
             using var transaction = await _dbContext.Database.BeginTransactionAsync();
-            
+
             _ = trip ?? throw new ArgumentNullException(nameof(trip), ErrorMessage.EmptyRequest);
 
             if (trip.StartDate > trip.EndDate) throw new ArgumentException(ErrorMessage.StartDateAfterEndDate);
@@ -162,14 +162,14 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
                 && tp.UserId == userId)
             .FirstOrDefaultAsync() ?? throw new InvalidOperationException(ErrorMessage.TripNotFound);
 
-        if(trip.TripDays != null)
+        if (trip.TripDays != null)
         {
             foreach (var tripDay in trip.TripDays.ToList())
             {
                 await DeleteTripDayDuringTransactionAsync(userId, tripDay.Id);
             }
         }
-        
+
         _dbContext.Trips.Remove(trip);
 
         await _dbContext.SaveChangesAsync();
@@ -201,21 +201,28 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
             if (existingTrip.StartDate != trip.StartDate || existingTrip.EndDate != trip.EndDate)
             {
                 var tripDaysToRemove = existingTrip.TripDays?
-                    .Where(td => td.Date < trip.StartDate || td.Date > trip.EndDate);
+                    .Where(td => td.Date < trip.StartDate || td.Date > trip.EndDate).ToList();
 
                 foreach (var tripDay in tripDaysToRemove ?? [])
                 {
                     await DeleteTripDayDuringTransactionAsync(userId, tripDay.Id);
                 }
 
-                if (trip.StartDate < existingTrip.StartDate)
+                if (trip.StartDate > existingTrip.EndDate || trip.EndDate < existingTrip.StartDate)
                 {
-                    await AddTripDaysAsync(existingTrip.Id, trip.StartDate, existingTrip.StartDate.AddDays(-1));
+                    await AddTripDaysAsync(existingTrip.Id, trip.StartDate, trip.EndDate);
                 }
-
-                if (trip.EndDate > existingTrip.EndDate)
+                else
                 {
-                    await AddTripDaysAsync(existingTrip.Id, existingTrip.EndDate.AddDays(1), trip.EndDate);
+                    if (trip.StartDate < existingTrip.StartDate)
+                    {
+                        await AddTripDaysAsync(existingTrip.Id, trip.StartDate, existingTrip.StartDate.AddDays(-1));
+                    }
+
+                    if (trip.EndDate > existingTrip.EndDate)
+                    {
+                        await AddTripDaysAsync(existingTrip.Id, existingTrip.EndDate.AddDays(1), trip.EndDate);
+                    }
                 }
 
                 existingTrip.StartDate = trip.StartDate;
@@ -382,14 +389,14 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
                 && tp.Trip.UserId == userId)
             .FirstOrDefaultAsync() ?? throw new InvalidOperationException(ErrorMessage.TripDayNotFound);
 
-        if(tripDay.TripPoints != null)
+        if (tripDay.TripPoints != null)
         {
             foreach (var tripPoint in tripDay.TripPoints.ToList())
             {
                 await _tripPointsService.DeleteTripPointDuringTransactionAsync(userId, tripPoint.Id);
             }
         }
-        
+
         _dbContext.TripDays.Remove(tripDay);
 
         await _dbContext.SaveChangesAsync();
