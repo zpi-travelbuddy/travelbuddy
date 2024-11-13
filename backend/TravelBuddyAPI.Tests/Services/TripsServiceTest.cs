@@ -192,4 +192,259 @@ public class TripsServiceTest
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _tripsService.DeleteTripAsync(userId, tripId));
         Assert.Equal($"{TripsService.ErrorMessage.DeleteTrip} {TripsService.ErrorMessage.TripNotFound}", exception.Message);
     }
+
+    [Fact]
+    public async Task EditTripAsync_ValidRequest_ShouldEditTrip()
+    {
+        // Arrange
+        var userId = "user1";
+        var tripId = Guid.NewGuid();
+
+        var trip = new Trip
+        {
+            Id = tripId,
+            UserId = userId,
+            CurrencyCode = "USD",
+            Name = "Original Trip",
+            StartDate = DateOnly.FromDateTime(DateTime.Now),
+            EndDate = DateOnly.FromDateTime(DateTime.Now + TimeSpan.FromDays(1)),
+            NumberOfTravelers = 2,
+            ExchangeRate = 4.5m,
+            Budget = 1000m,
+            TripDays = new List<TripDay>
+            {
+                new TripDay { Id = Guid.NewGuid(), Date = DateOnly.FromDateTime(DateTime.Now) },
+                new TripDay { Id = Guid.NewGuid(), Date = DateOnly.FromDateTime(DateTime.Now + TimeSpan.FromDays(1)) }
+            }
+        };
+
+        await _dbContext.Trips.AddAsync(trip);
+        await _dbContext.SaveChangesAsync();
+
+        var tripRequest = new TripRequestDTO
+        {
+            Name = "Edited Trip",
+            StartDate = DateOnly.FromDateTime(DateTime.Now),
+            EndDate = DateOnly.FromDateTime(DateTime.Now + TimeSpan.FromDays(7)),
+            NumberOfTravelers = 3,
+            CurrencyCode = "USD",
+            Budget = 2000m,
+            DestinationPlace = new PlaceRequestDTO
+            {
+                ProviderId = Guid.NewGuid().ToString(),
+                Name = "Test Place",
+                Country = "Test Country",
+                City = "Test City",
+                Latitude = 50.0m,
+                Longitude = 20.0m,
+            }
+        };
+
+        _mockNBPService.Setup(x => x.GetRateAsync(It.IsAny<string>(), It.IsAny<DateOnly?>())).ReturnsAsync(4.5m);
+        _mockPlacesService.Setup(x => x.AddPlaceAsync(It.IsAny<PlaceRequestDTO>())).ReturnsAsync(new PlaceDetailsDTO() { Id = Guid.NewGuid() });
+
+        // Act
+        var result = await _tripsService.EditTripAsync(userId, tripId, tripRequest);
+
+        // Assert
+        Assert.True(result);
+        var editedTrip = await _dbContext.Trips.FindAsync(tripId);
+        Assert.NotNull(editedTrip);
+        Assert.Equal(tripRequest.Name, editedTrip.Name);
+        Assert.Equal(tripRequest.NumberOfTravelers, editedTrip.NumberOfTravelers);
+        Assert.Equal(tripRequest.Budget * editedTrip.ExchangeRate, editedTrip.Budget);
+        Assert.Equal(tripRequest.StartDate, editedTrip.StartDate);
+        Assert.Equal(tripRequest.EndDate, editedTrip.EndDate);
+        Assert.NotNull(editedTrip.TripDays);
+        Assert.Equal(8, editedTrip.TripDays.Count);
+    }
+
+    [Fact]
+    public async Task EditTripAsync_TripNotFound_ShouldThrowInvalidOperationException()
+    {
+        // Arrange
+        var userId = "user1";
+        var tripId = Guid.NewGuid();
+
+        var tripRequest = new TripRequestDTO
+        {
+            Name = "Edited Trip",
+            StartDate = DateOnly.FromDateTime(DateTime.Now),
+            EndDate = DateOnly.FromDateTime(DateTime.Now + TimeSpan.FromDays(7)),
+            NumberOfTravelers = 3,
+            CurrencyCode = "USD",
+            Budget = 2000m,
+            DestinationPlace = new PlaceRequestDTO
+            {
+                ProviderId = Guid.NewGuid().ToString(),
+                Name = "Test Place",
+                Country = "Test Country",
+                City = "Test City",
+                Latitude = 50.0m,
+                Longitude = 20.0m,
+            }
+        };
+
+        // Act & Assert
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _tripsService.EditTripAsync(userId, tripId, tripRequest));
+        Assert.Equal($"{TripsService.ErrorMessage.EditTrip} {TripsService.ErrorMessage.TripNotFound}", exception.Message);
+    }
+
+    [Fact]
+    public async Task EditTripAsync_CurrencyChange_ShouldThrowInvalidOperationException()
+    {
+        // Arrange
+        var userId = "user1";
+        var tripId = Guid.NewGuid();
+
+        var trip = new Trip
+        {
+            Id = tripId,
+            UserId = userId,
+            CurrencyCode = "USD",
+            Name = "Original Trip",
+            StartDate = DateOnly.FromDateTime(DateTime.Now),
+            EndDate = DateOnly.FromDateTime(DateTime.Now + TimeSpan.FromDays(1)),
+            NumberOfTravelers = 2,
+            ExchangeRate = 4.5m,
+            Budget = 1000m,
+            TripDays = new List<TripDay>
+            {
+                new TripDay { Id = Guid.NewGuid(), Date = DateOnly.FromDateTime(DateTime.Now) },
+                new TripDay { Id = Guid.NewGuid(), Date = DateOnly.FromDateTime(DateTime.Now + TimeSpan.FromDays(1)) }
+            }
+        };
+
+        await _dbContext.Trips.AddAsync(trip);
+        await _dbContext.SaveChangesAsync();
+
+        var tripRequest = new TripRequestDTO
+        {
+            Name = "Edited Trip",
+            StartDate = DateOnly.FromDateTime(DateTime.Now),
+            EndDate = DateOnly.FromDateTime(DateTime.Now + TimeSpan.FromDays(7)),
+            NumberOfTravelers = 3,
+            CurrencyCode = "PLN",
+            Budget = 2000m,
+            DestinationPlace = new PlaceRequestDTO
+            {
+                ProviderId = Guid.NewGuid().ToString(),
+                Name = "Test Place",
+                Country = "Test Country",
+                City = "Test City",
+                Latitude = 50.0m,
+                Longitude = 20.0m,
+            }
+        };
+
+        _mockNBPService.Setup(x => x.GetRateAsync(It.IsAny<string>(), It.IsAny<DateOnly?>())).ReturnsAsync((decimal?)null);
+
+        // Act & Assert
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _tripsService.EditTripAsync(userId, tripId, tripRequest));
+        Assert.Equal($"{TripsService.ErrorMessage.EditTrip} {TripsService.ErrorMessage.CurrencyChangeNotAllowed}", exception.Message);
+    }
+
+    [Fact]
+    public async Task EditTripAsync_StartDateAfterEndDate_ShouldThrowInvalidOperationException()
+    {
+        // Arrange
+        var userId = "user1";
+        var tripId = Guid.NewGuid();
+
+        var trip = new Trip
+        {
+            Id = tripId,
+            UserId = userId,
+            CurrencyCode = "USD",
+            Name = "Original Trip",
+            StartDate = DateOnly.FromDateTime(DateTime.Now),
+            EndDate = DateOnly.FromDateTime(DateTime.Now + TimeSpan.FromDays(7)),
+            NumberOfTravelers = 2,
+            ExchangeRate = 4.5m,
+            Budget = 1000m,
+            TripDays = new List<TripDay>
+            {
+                new TripDay { Id = Guid.NewGuid(), Date = DateOnly.FromDateTime(DateTime.Now) },
+                new TripDay { Id = Guid.NewGuid(), Date = DateOnly.FromDateTime(DateTime.Now + TimeSpan.FromDays(1)) }
+            }
+        };
+
+        await _dbContext.Trips.AddAsync(trip);
+        await _dbContext.SaveChangesAsync();
+
+        var tripRequest = new TripRequestDTO
+        {
+            Name = "Edited Trip",
+            StartDate = DateOnly.FromDateTime(DateTime.Now + TimeSpan.FromDays(7)),
+            EndDate = DateOnly.FromDateTime(DateTime.Now),
+            NumberOfTravelers = 3,
+            CurrencyCode = "USD",
+            Budget = 2000m,
+            DestinationPlace = new PlaceRequestDTO
+            {
+                ProviderId = Guid.NewGuid().ToString(),
+                Name = "Test Place",
+                Country = "Test Country",
+                City = "Test City",
+                Latitude = 50.0m,
+                Longitude = 20.0m,
+            }
+        };
+
+        // Act & Assert
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _tripsService.EditTripAsync(userId, tripId, tripRequest));
+        Assert.Equal($"{TripsService.ErrorMessage.EditTrip} {TripsService.ErrorMessage.StartDateAfterEndDate}", exception.Message);
+    }
+
+    [Fact]
+    public async Task EditTripAsync_StartDateInPast_ShouldThrowInvalidOperationException()
+    {
+        // Arrange
+        var userId = "user1";
+        var tripId = Guid.NewGuid();
+
+        var trip = new Trip
+        {
+            Id = tripId,
+            UserId = userId,
+            CurrencyCode = "USD",
+            Name = "Original Trip",
+            StartDate = DateOnly.FromDateTime(DateTime.Now),
+            EndDate = DateOnly.FromDateTime(DateTime.Now + TimeSpan.FromDays(1)),
+            NumberOfTravelers = 2,
+            ExchangeRate = 4.5m,
+            Budget = 1000m,
+            TripDays = new List<TripDay>
+            {
+                new TripDay { Id = Guid.NewGuid(), Date = DateOnly.FromDateTime(DateTime.Now) },
+                new TripDay { Id = Guid.NewGuid(), Date = DateOnly.FromDateTime(DateTime.Now + TimeSpan.FromDays(1)) }
+            }
+        };
+
+        await _dbContext.Trips.AddAsync(trip);
+        await _dbContext.SaveChangesAsync();
+
+        var tripRequest = new TripRequestDTO
+        {
+            Name = "Edited Trip",
+            StartDate = DateOnly.FromDateTime(DateTime.Now - TimeSpan.FromDays(1)),
+            EndDate = DateOnly.FromDateTime(DateTime.Now + TimeSpan.FromDays(7)),
+            NumberOfTravelers = 3,
+            CurrencyCode = "USD",
+            Budget = 2000m,
+            DestinationPlace = new PlaceRequestDTO
+            {
+                ProviderId = Guid.NewGuid().ToString(),
+                Name = "Test Place",
+                Country = "Test Country",
+                City = "Test City",
+                Latitude = 50.0m,
+                Longitude = 20.0m,
+            }
+        };
+
+        // Act & Assert
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _tripsService.EditTripAsync(userId, tripId, tripRequest));
+        Assert.Equal($"{TripsService.ErrorMessage.EditTrip} {TripsService.ErrorMessage.StartDateInPast}", exception.Message);
+    }
 }
