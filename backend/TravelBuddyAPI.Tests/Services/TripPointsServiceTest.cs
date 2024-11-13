@@ -46,8 +46,8 @@ public class TripPointsServiceTest : IDisposable
             Name = "Test Trip Point",
             Comment = "Test Comment",
             PredictedCost = 100,
-            StartTime = TimeOnly.FromDateTime(DateTime.Now),
-            EndTime = TimeOnly.FromDateTime(DateTime.Now.AddHours(1)),
+            StartTime = TimeOnly.Parse("10:00"),
+            EndTime = TimeOnly.Parse("12:00"),
             Place = new PlaceRequestDTO { Name = "Test Place", ProviderId = "1", City = "Test City", Country = "Test Country" }
         };
 
@@ -101,8 +101,8 @@ public class TripPointsServiceTest : IDisposable
             Name = "Test Trip Point",
             Comment = "Test Comment",
             PredictedCost = 100,
-            StartTime = TimeOnly.FromDateTime(DateTime.Now),
-            EndTime = TimeOnly.FromDateTime(DateTime.Now.AddHours(1)),
+            StartTime = TimeOnly.Parse("10:00"),
+            EndTime = TimeOnly.Parse("12:00"),
             Place = new PlaceRequestDTO { ProviderId = "1", Name = "Test Place" }
         };
 
@@ -122,8 +122,8 @@ public class TripPointsServiceTest : IDisposable
             Name = "Test Trip Point",
             Comment = "Test Comment",
             PredictedCost = 100,
-            StartTime = TimeOnly.FromDateTime(DateTime.Now.AddHours(1)),
-            EndTime = TimeOnly.FromDateTime(DateTime.Now),
+            StartTime = TimeOnly.Parse("12:00"),
+            EndTime = TimeOnly.Parse("10:00"),
             Place = new PlaceRequestDTO { ProviderId = "1", Name = "Test Place" }
         };
 
@@ -157,8 +157,8 @@ public class TripPointsServiceTest : IDisposable
             Name = "Test Trip Point",
             Comment = "Test Comment",
             PredictedCost = 100,
-            StartTime = TimeOnly.FromDateTime(DateTime.Now),
-            EndTime = TimeOnly.FromDateTime(DateTime.Now.AddHours(1)),
+            StartTime = TimeOnly.Parse("10:00"),
+            EndTime = TimeOnly.Parse("12:00"),
             Place = new PlaceRequestDTO { ProviderId = "1", Name = "Test Place" }
         };
 
@@ -192,8 +192,8 @@ public class TripPointsServiceTest : IDisposable
             Name = "Test Trip Point",
             Comment = "Test Comment",
             PredictedCost = 100,
-            StartTime = TimeOnly.FromDateTime(DateTime.Now),
-            EndTime = TimeOnly.FromDateTime(DateTime.Now.AddHours(1)),
+            StartTime = TimeOnly.Parse("10:00"),
+            EndTime = TimeOnly.Parse("12:00"),
             Place = null
         };
 
@@ -239,8 +239,8 @@ public class TripPointsServiceTest : IDisposable
             Name = "Test Trip Point",
             Comment = "Test Comment",
             PredictedCost = 100,
-            StartTime = TimeOnly.FromDateTime(DateTime.Now),
-            EndTime = TimeOnly.FromDateTime(DateTime.Now.AddHours(1)),
+            StartTime = TimeOnly.Parse("10:00"),
+            EndTime = TimeOnly.Parse("12:00"),
             Place = new CustomPlace { Id = Guid.NewGuid(), Name = "Test Place", City = "Test City", Country = "Test Country" }
         };
 
@@ -281,8 +281,8 @@ public class TripPointsServiceTest : IDisposable
             Id = Guid.NewGuid(),
             TripDayId = tripDayId,
             Name = "Existing Trip Point",
-            StartTime = TimeOnly.FromDateTime(DateTime.Now),
-            EndTime = TimeOnly.FromDateTime(DateTime.Now.AddHours(1))
+            StartTime = TimeOnly.Parse("10:00"),
+            EndTime = TimeOnly.Parse("12:00")
         };
 
         await _dbContext.TripPoints.AddAsync(existingTripPoint);
@@ -294,8 +294,8 @@ public class TripPointsServiceTest : IDisposable
             Name = "New Trip Point",
             Comment = "Test Comment",
             PredictedCost = 100,
-            StartTime = TimeOnly.FromDateTime(DateTime.Now.AddMinutes(30)),
-            EndTime = TimeOnly.FromDateTime(DateTime.Now.AddHours(2)),
+            StartTime = TimeOnly.Parse("10:30"),
+            EndTime = TimeOnly.Parse("13:00"),
             Place = new PlaceRequestDTO { ProviderId = "1", Name = "Test Place" }
         };
 
