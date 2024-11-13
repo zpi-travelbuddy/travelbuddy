@@ -18,7 +18,7 @@ export interface AuthProps {
   confirmSignUp?: (email: string, code: string) => Promise<any>;
   signIn?: (credentials: Credentials) => Promise<any>;
   signOut?: () => Promise<any>;
-  api?: AxiosInstance;
+  api?: AxiosInstance | null;
 }
 
 export interface AuthErrors {

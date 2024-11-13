@@ -16,6 +16,7 @@ interface ClickableInputProps {
   inputStyle?: TextStyle;
   left?: ReactNode;
   right?: ReactNode;
+  error?: boolean;
 }
 
 const ClickableInput: React.FC<ClickableInputProps> = ({
@@ -27,6 +28,7 @@ const ClickableInput: React.FC<ClickableInputProps> = ({
   inputStyle,
   left,
   right,
+  error,
 }) => {
   const theme = useTheme();
 
@@ -41,6 +43,7 @@ const ClickableInput: React.FC<ClickableInputProps> = ({
         style={[{ backgroundColor: theme.colors.surface }, inputStyle]}
         value={value}
         editable={false}
+        error={error || false}
         left={
           left ? (
             React.cloneElement(left as React.ReactElement, {
@@ -66,8 +69,6 @@ const styles = (theme: MD3Theme) =>
   StyleSheet.create({
     container: {
       width: "90%",
-      height: 50,
-      marginVertical: 10,
       backgroundColor: theme.colors.surface,
     },
   });

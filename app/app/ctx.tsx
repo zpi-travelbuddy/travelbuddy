@@ -122,6 +122,7 @@ export const AuthProvider = ({ children }: any) => {
     initializeAuth();
 
     // set up axios
+    api.interceptors.request.clear();
     api.interceptors.request.use(
       async (config) => {
         try {
