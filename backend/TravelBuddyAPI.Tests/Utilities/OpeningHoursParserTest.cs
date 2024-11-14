@@ -53,8 +53,12 @@ namespace TravelBuddyAPI.Tests.Utilities
         [Theory]
         [InlineData("Jan 01-Jan 31 Mo-Fr 09:00-17:00", "2023-01-16", "09:00", "17:00")] // Within date range
         [InlineData("Dec 01-Jan 31 Mo-Fr 09:00-17:00", "2023-01-16", "09:00", "17:00")] // Within date range, year change
+        [InlineData("Dec 01-Jan 31 Mo-Fr 09:00-17:00", "2023-01-15", null, null)] // Within date range, wrong day of week
         [InlineData("Jan 01-Jan 31 Mo-Fr 09:00-17:00", "2023-02-01", null, null)] // Outside date range
         [InlineData("Dec 01-Jan 31 Mo-Fr 09:00-17:00", "2023-02-01", null, null)] // Outside date range, year change
+        [InlineData("Jan Mo-Fr 09:00-17:00", "2023-01-16", "09:00", "17:00")]
+        [InlineData("Jan-Feb Mo-Fr 09:00-17:00", "2023-02-01", "09:00", "17:00")]
+        [InlineData("Jan-Feb Mo-Fr 09:00-17:00", "2024-02-29", "09:00", "17:00")]
         public void ParseOpeningHours_DateRange_ShouldReturnCorrectTimes(string openingHours, string dateStr, string? expectedOpen, string? expectedClose)
         {
             var date = DateOnly.Parse(dateStr);
