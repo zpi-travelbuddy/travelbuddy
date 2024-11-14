@@ -26,6 +26,7 @@ const BOTTOM_VIEW_HEIGHT = 54;
 
 const signInErrors: Record<string, string> = {
   NotAuthorizedException: "Nieprawidłowy email lub hasło",
+  UserNotConfirmedException: "Konto nie zostało jeszcze aktywowane",
 };
 
 export default function SignIn() {

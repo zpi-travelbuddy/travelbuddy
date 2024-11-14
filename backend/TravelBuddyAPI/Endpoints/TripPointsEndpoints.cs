@@ -72,10 +72,18 @@ public static class TripPointsEndpoints
         }
     }
 
-    private static async Task<Results<NoContent, NotFound<string>>> DeleteTripPointAsync(Guid id)
+    private static async Task<Results<NoContent, NotFound<string>>> DeleteTripPointAsync(Guid id,ITripPointsService tripPointsService, HttpContext httpContext)
     {
-        await Task.CompletedTask;
-        return TypedResults.NotFound("Not implemented");
+        try
+        {
+            string userId = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new InvalidOperationException("User not found");
+            _ = await tripPointsService.DeleteTripPointAsync(userId, id);
+            return TypedResults.NoContent();
+        }
+        catch (InvalidOperationException ex)
+        {
+            return TypedResults.NotFound(ex.Message);
+        }
     }
 
     private static async Task<Results<Accepted<string>, NotFound<string>>> EditTripPointAsync(Guid id, TripPointRequestDTO tripPoint)

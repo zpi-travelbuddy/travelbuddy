@@ -98,10 +98,18 @@ public static class TripsEndpoints
         }
     }
 
-    private static async Task<Results<NoContent, NotFound<string>>> DeleteTripAsync(Guid id)
+    private static async Task<Results<NoContent, NotFound<string>>> DeleteTripAsync(Guid id, ITripsService tripsService, HttpContext httpContext)
     {
-        await Task.CompletedTask;
-        return TypedResults.NotFound("Not implemented");
+        try
+        {
+            string userId = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new InvalidOperationException("User not found");
+            _ = await tripsService.DeleteTripAsync(userId, id);
+            return TypedResults.NoContent();
+        }
+        catch (InvalidOperationException ex)
+        {
+            return TypedResults.NotFound(ex.Message);
+        }
     }
 
     private static async Task<Results<Ok<TripDetailsDTO>, NotFound<string>>> GetTripDetailsAsync(Guid id, ITripsService tripsService, HttpContext httpContext)
@@ -141,10 +149,15 @@ public static class TripsEndpoints
         }
     }
 
-    private static async Task<Results<Accepted<string>, NotFound<string>>> EditTripAsync(Guid id, TripRequestDTO trip)
+    private static async Task<Results<Accepted<string>, NotFound<string>>> EditTripAsync(Guid id, TripRequestDTO trip, HttpContext httpContext, ITripsService tripsService)
     {
-        await Task.CompletedTask;
-        return TypedResults.NotFound("Not implemented");
+        try {
+            var userId = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new InvalidOperationException("User not found");
+            await tripsService.EditTripAsync(userId, id, trip);
+            return TypedResults.Accepted($"/trips/{id}", "Trip edited successfully");
+        } catch (InvalidOperationException ex) {
+            return TypedResults.NotFound(ex.Message);
+        }
     }
 
     private static async Task<Results<Created<TripDetailsDTO>, BadRequest<string>>> CreateTripAsync(TripRequestDTO trip, ITripsService tripsService, HttpContext httpContext)

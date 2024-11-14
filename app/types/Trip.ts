@@ -49,6 +49,14 @@ export interface TripSummaryDay {
 export interface TripSummary {
   currency: string;
   tripDays: TripSummaryDay[];
+
+export interface DateRange {
+  startDate?: Date;
+  endDate?: Date;
+}
+
+export interface TripCreationErrors {
+  [key: string]: string | undefined;
 }
 
 export type TripPointType =
