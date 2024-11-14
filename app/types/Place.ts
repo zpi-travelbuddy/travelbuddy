@@ -7,7 +7,6 @@ type PlaceView = {
   imageUrl?: string;
 };
 
-
 export interface PlaceCondition {
   id: string;
   name: string;
@@ -49,8 +48,8 @@ export interface PlaceViewModel {
   conveniences: string[]; // TODO: changing to special enum
   rating: number;
   averageCostPerPerson: number;
-  averageVisitTime: number;
+  averageVisitTime: string;
   latitude: number;
   longitude: number;
   imageUrl?: string;
-};
+}
