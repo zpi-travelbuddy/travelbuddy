@@ -554,12 +554,12 @@ public static class ModelBuilderExtension
 
         var transferPoints = new List<TransferPoint>
         {
-            new TransferPoint { Id = Guid.NewGuid(), TripDayId = tripDays[0].Id, TransferTime = new TimeSpan(1800), StartTime = new TimeOnly(10,20,0),FromTripPointId = tripPoints[0].Id, ToTripPointId = tripPoints[1].Id},
-            new TransferPoint { Id = Guid.NewGuid(), TripDayId = tripDays[0].Id, TransferTime = new TimeSpan(1200), StartTime = new TimeOnly(12,00,0),FromTripPointId = tripPoints[2].Id, ToTripPointId = tripPoints[3].Id},
-            new TransferPoint { Id = Guid.NewGuid(), TripDayId = tripDays[0].Id, TransferTime = new TimeSpan(1200), StartTime = new TimeOnly(13,00,0),FromTripPointId = tripPoints[3].Id, ToTripPointId = tripPoints[4].Id},
+            new TransferPoint { Id = Guid.NewGuid(), TripDayId = tripDays[0].Id, TransferTime = new TimeSpan(0,30,0), StartTime = new TimeOnly(10,20,0),FromTripPointId = tripPoints[0].Id, ToTripPointId = tripPoints[1].Id},
+            new TransferPoint { Id = Guid.NewGuid(), TripDayId = tripDays[0].Id, TransferTime = new TimeSpan(0,20,0), StartTime = new TimeOnly(12,00,0),FromTripPointId = tripPoints[2].Id, ToTripPointId = tripPoints[3].Id},
+            new TransferPoint { Id = Guid.NewGuid(), TripDayId = tripDays[0].Id, TransferTime = new TimeSpan(0,20,0), StartTime = new TimeOnly(13,00,0),FromTripPointId = tripPoints[3].Id, ToTripPointId = tripPoints[4].Id},
 
-            new TransferPoint { Id = Guid.NewGuid(), TripDayId = tripDays[1].Id, TransferTime = new TimeSpan(1200), StartTime = new TimeOnly(12,40,0),FromTripPointId = tripPoints[5].Id, ToTripPointId = tripPoints[6].Id},
-            new TransferPoint { Id = Guid.NewGuid(), TripDayId = tripDays[1].Id, TransferTime = new TimeSpan(2660), StartTime = new TimeOnly(13,10,0),FromTripPointId = tripPoints[6].Id, ToTripPointId = tripPoints[7].Id},
+            new TransferPoint { Id = Guid.NewGuid(), TripDayId = tripDays[1].Id, TransferTime = new TimeSpan(0,20,0), StartTime = new TimeOnly(12,40,0),FromTripPointId = tripPoints[5].Id, ToTripPointId = tripPoints[6].Id},
+            new TransferPoint { Id = Guid.NewGuid(), TripDayId = tripDays[1].Id, TransferTime = new TimeSpan(0,45,0), StartTime = new TimeOnly(13,10,0),FromTripPointId = tripPoints[6].Id, ToTripPointId = tripPoints[7].Id},
         };
 
         modelBuilder.Entity<TransferPoint>().HasData(transferPoints);
