@@ -1,7 +1,20 @@
 import { StyleSheet, View, Text, RefreshControl } from "react-native";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { TripCard } from "@/components/TripCard";
-import { useRouter } from "expo-router";
+import {
+  router,
+  useFocusEffect,
+  useGlobalSearchParams,
+  useLocalSearchParams,
+  useNavigation,
+  useRouter,
+} from "expo-router";
 import {
   useTheme,
   FAB,
@@ -42,12 +55,15 @@ const RANDOM_IMAGE = "https://picsum.photos/891";
 
 const TripBrowseView = () => {
   const { api } = useAuth();
+  const { refresh } = useLocalSearchParams();
+
+  const flatListRef = useRef<FlatList>(null);
 
   useAnimatedKeyboard();
 
   const theme = useTheme();
   const styles = createStyles(theme);
-  const router = useRouter();
+
   const [searchQuery, setSearchQuery] = useState("");
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -63,15 +79,22 @@ const TripBrowseView = () => {
 
   const [value, setValue] = React.useState<TripViewMode>("actual");
 
-  const trips = value === "actual" ? currentTrips : pastTrips;
+  const trips = useMemo(() => {
+    const tripsToFilter = value === "actual" ? currentTrips : pastTrips;
+
+    return tripsToFilter
+      .filter((trip) =>
+        trip.title.toLowerCase().includes(searchQuery.toLowerCase()),
+      )
+      .sort((a, b) => {
+        return a.subtitle.localeCompare(b.subtitle);
+      });
+  }, [value, searchQuery, currentTrips, pastTrips]);
 
   const handleValueChange = (newValue: string) => {
     setValue(newValue as TripViewMode);
+    flatListRef.current!.scrollToOffset({ animated: true, offset: 0 });
   };
-
-  const filteredTrips = trips.filter((trip) =>
-    trip.title.toLowerCase().includes(searchQuery.toLowerCase()),
-  );
 
   const handlePress = (trip: Trip) => {
     setIsVisible(false);
@@ -157,6 +180,19 @@ const TripBrowseView = () => {
     }
   }, [selectedTrip]);
 
+  // hack to refresh trips after adding a new one
+  useFocusEffect(
+    useCallback(() => {
+      const refreshOnFocus = async () => {
+        if (refresh && refresh === "true") {
+          router.setParams({ refresh: undefined });
+          await fetchTrips();
+        }
+      };
+      refreshOnFocus();
+    }, [router, refresh]),
+  );
+
   const renderItem = ({ item }: { item: Trip }) => (
     <TripCard
       title={item.title}
@@ -234,7 +270,8 @@ const TripBrowseView = () => {
           style={styles.searchbar}
         />
         <FlatList
-          data={filteredTrips}
+          ref={flatListRef}
+          data={trips}
           renderItem={renderItem}
           keyExtractor={(item, index) => index.toString()}
           contentContainerStyle={styles.flatListContent}

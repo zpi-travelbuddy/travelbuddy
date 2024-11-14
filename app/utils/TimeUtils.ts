@@ -5,8 +5,9 @@ export function stringToDate(date: string): Date {
 
 export function getISOToday(): Date {
   const today = new Date(Date.now());
-
-  return new Date(formatDateToISO(today));
+  const todayISO = new Date(formatDateToISO(today));
+  todayISO.setHours(todayISO.getHours() - 1); // This fixes an issue with calendar (but a new issue may appear)
+  return todayISO;
 }
 
 export function formatDateToISO(date: Date | undefined): string {
