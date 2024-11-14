@@ -31,8 +31,8 @@ export interface TripDetails {
   destinationId: string;
   budget: number;
   currencyCode: string;
-  categoryProfileId: string;
-  conditionProfileId: string;
+  categoryProfileId: string | null;
+  conditionProfileId: string | null;
   tripDays: TripDay[];
 }
 
