@@ -506,16 +506,32 @@ public static class ModelBuilderExtension
 
         //TODO PROVIDER PLACE - PLACE CATEGORY
 
-        // modelBuilder.Entity<Dictionary<string, object>>().ToTable("ProviderPlacePlaceCondition").HasData(
-        //     new { ProviderPlaceId = places[1].Id, PlaceConditionId = placeConditions["sights"].Id },
-        //     new { ProviderPlaceId = places[1].Id, PlaceConditionId = placeConditions["attraction"].Id },
-        //     new { ProviderPlaceId = places[1].Id, PlaceConditionId = placeConditions["tourism"].Id },
-        //     new { ProviderPlaceId = places[1].Id, PlaceConditionId = placeConditions["ruines"].Id },
+       modelBuilder.Entity("ProviderPlacePlaceCategory").HasData(
+            new { ProviderPlaceId = providerPlaces[1].Id, PlaceCategoryId = placeCategories["sights"].Id },
+            new { ProviderPlaceId = providerPlaces[1].Id, PlaceCategoryId = placeCategories["attraction"].Id },
+            new { ProviderPlaceId = providerPlaces[1].Id, PlaceCategoryId = placeCategories["tourism"].Id },
+            new { ProviderPlaceId = providerPlaces[1].Id, PlaceCategoryId = placeCategories["ruines"].Id },
 
-        //     new { ProviderPlaceId = places[2].Id, PlaceConditionId = placeConditions["sights"].Id },
-        //     new { ProviderPlaceId = places[2].Id, PlaceConditionId = placeConditions["memorial"].Id },
-        //     new { ProviderPlaceId = places[2].Id, PlaceConditionId = placeConditions["tourism"].Id }
-        // );
+            new { ProviderPlaceId = providerPlaces[2].Id, PlaceCategoryId = placeCategories["sights"].Id },
+            new { ProviderPlaceId = providerPlaces[2].Id, PlaceCategoryId = placeCategories["memorial"].Id },
+            new { ProviderPlaceId = providerPlaces[2].Id, PlaceCategoryId = placeCategories["tourism"].Id },
+
+            new { ProviderPlaceId = providerPlaces[3].Id, PlaceCategoryId = placeCategories["sights"].Id },
+            new { ProviderPlaceId = providerPlaces[3].Id, PlaceCategoryId = placeCategories["memorial"].Id },
+            new { ProviderPlaceId = providerPlaces[3].Id, PlaceCategoryId = placeCategories["tourism"].Id },
+
+            new { ProviderPlaceId = providerPlaces[4].Id, PlaceCategoryId = placeCategories["sights"].Id },
+            new { ProviderPlaceId = providerPlaces[4].Id, PlaceCategoryId = placeCategories["memorial"].Id },
+            new { ProviderPlaceId = providerPlaces[4].Id, PlaceCategoryId = placeCategories["tourism"].Id },
+
+            new { ProviderPlaceId = providerPlaces[5].Id, PlaceCategoryId = placeCategories["sights"].Id },
+            new { ProviderPlaceId = providerPlaces[5].Id, PlaceCategoryId = placeCategories["memorial"].Id },
+            new { ProviderPlaceId = providerPlaces[5].Id, PlaceCategoryId = placeCategories["tourism"].Id },
+
+            new { ProviderPlaceId = providerPlaces[6].Id, PlaceCategoryId = placeCategories["restaurant"].Id },
+            new { ProviderPlaceId = providerPlaces[6].Id, PlaceCategoryId = placeCategories["catering"].Id }
+
+        );
 
         //TRIPS
         var trips = new List<Trip>
