@@ -12,10 +12,10 @@ namespace TravelBuddyAPI.Tests.Services
         public void ParseFeatureCollection_ShouldReturnEmptyList_WhenJsonResponseIsNull()
         {
             // Arrange
-            dynamic jsonResponse = null;
+            JObject? jsonResponse = null;
 
             // Act
-            var result = GeoapifyClient.ParseFeatureCollection(jsonResponse);
+            var result = GeoapifyClient.ParseFeatureCollection(jsonResponse!);
 
             // Assert
             Assert.Null(result);
@@ -118,7 +118,7 @@ namespace TravelBuddyAPI.Tests.Services
             // Assert
             Assert.NotNull(result);
             Assert.Single(result);
-            var place = result[0];
+            var place = result[0];   
             Assert.Equal("123", place.ProviderId);
             Assert.Equal("Test Place", place.Name);
             Assert.Equal("Test Country", place.Country);
@@ -127,8 +127,12 @@ namespace TravelBuddyAPI.Tests.Services
             Assert.Equal("123", place.HouseNumber);
             Assert.Equal(12.34m, place.Latitude);
             Assert.Equal(56.78m, place.Longitude);
+            Assert.NotNull(place.Categories);
+            Assert.NotEmpty(place.Categories);
             Assert.Single(place.Categories);
             Assert.Equal("category1.category2", place.Categories[0].FullName);
+            Assert.NotNull(place.Conditions);
+            Assert.NotEmpty(place.Conditions);
             Assert.Single(place.Conditions);
             Assert.Equal("condition1", place.Conditions[0].FullName);
         }
