@@ -5,7 +5,13 @@ export interface TripPoint {
   toTime: string;
 }
 
-export type TransferType = "walk" | "bus" | "car" | "manual";
+export type TransferType =
+  | "walk"
+  | "bus"
+  | "car"
+  | "train"
+  | "manual"
+  | "empty";
 
 export interface TransferPoint {
   id: string;
@@ -20,3 +26,21 @@ export interface Option {
   label: string;
   onPress: () => void;
 }
+
+export const TransferTypeLabels: Record<string, string> = {
+  walk: "Chód",
+  bus: "Autobus",
+  train: "Pociąg",
+  car: "Samochód",
+  manual: "Ręcznie",
+};
+
+export const reversedTransferTypeLabels = Object.entries(
+  TransferTypeLabels,
+).reduce(
+  (acc, [key, value]) => {
+    acc[value] = key;
+    return acc;
+  },
+  {} as Record<string, string>,
+);

@@ -1,4 +1,5 @@
 import { FieldType } from "@/types/auth";
+import { DateRange, TripCreationErrors } from "@/types/Trip";
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -36,4 +37,21 @@ export const validateNewPassword = (password: string) => {
 export const validateCode = (value: string) => {
   if (!value) return "Kod jest wymagany";
   return "";
+};
+
+export const validateTripForm = (
+  tripName: string,
+  range: DateRange,
+  destinationId: string,
+  numberOfPeople: string,
+  budget: number | undefined,
+): TripCreationErrors => {
+  const newErrors: TripCreationErrors = {};
+  if (!tripName) newErrors.tripName = "Wprowadź nazwę wycieczki";
+  if (!range.startDate) newErrors.range = "Wybierz termin wycieczki";
+  if (!destinationId) newErrors.destination = "Wybierz cel wycieczki";
+  if (!numberOfPeople) newErrors.numberOfPeople = "Podaj liczbę osób";
+  if (budget === undefined) newErrors.budget = "Podaj budżet";
+
+  return newErrors;
 };

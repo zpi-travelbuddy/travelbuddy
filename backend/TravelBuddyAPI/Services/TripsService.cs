@@ -11,13 +11,14 @@ using TravelBuddyAPI.Models;
 
 namespace TravelBuddyAPI.Services;
 
-public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService, IPlacesService placesService, ICategoryProfilesService categoryProfilesService, IConditionProfilesService conditionProfilesService) : ITripsService
+public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService, IPlacesService placesService, ICategoryProfilesService categoryProfilesService, IConditionProfilesService conditionProfilesService, ITripPointsService tripPointsService) : ITripsService
 {
     private readonly TravelBuddyDbContext _dbContext = dbContext;
     private readonly INBPService _nbpService = nbpService;
     private readonly IPlacesService _placesService = placesService;
     private readonly ICategoryProfilesService _categoryProfileService = categoryProfilesService;
     private readonly IConditionProfilesService _conditionProfileService = conditionProfilesService;
+    private readonly ITripPointsService _tripPointsService = tripPointsService;
 
     public static class ErrorMessage
     {
@@ -25,11 +26,14 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
         public const string StartDateAfterEndDate = "Start date cannot be after end date.";
         public const string StartDateInPast = "Start date cannot be in the past.";
         public const string CreateTrip = "An error occurred while creating a trip:";
+        public const string EditTrip = "An error occurred while editing a trip:";
         public const string RetriveExchangeRate = "An error occurred while retrieving exchange rate.";
         public const string TripNotFound = "Trip with the specified ID does not exist.";
         public const string TripWithoutDays = "Trip does not have any days.";
         public const string TripDayNotFound = "Trip day with the specified ID does not exist.";
         public const string TooManyDecimalPlaces = "Budget must have at most 2 decimal places.";
+        public const string DeleteTrip = "An error occurred while deleting a trip:";
+        public const string CurrencyChangeNotAllowed = "Currency code cannot be changed.";
     }
 
     public async Task<TripDetailsDTO> CreateTripAsync(string userId, TripRequestDTO trip)
@@ -37,7 +41,7 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
         try
         {
             using var transaction = await _dbContext.Database.BeginTransactionAsync();
-            
+
             _ = trip ?? throw new ArgumentNullException(nameof(trip), ErrorMessage.EmptyRequest);
 
             if (trip.StartDate > trip.EndDate) throw new ArgumentException(ErrorMessage.StartDateAfterEndDate);
@@ -48,7 +52,7 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
 
             if (trip.Budget * 100 % 1 != 0) throw new ArgumentException(ErrorMessage.TooManyDecimalPlaces);
 
-            decimal exchangeRate = await _nbpService.GetClosestRateAsync(trip?.CurrencyCode ?? string.Empty, DateOnly.FromDateTime(DateTime.Now)) ?? throw new InvalidOperationException(ErrorMessage.RetriveExchangeRate);
+            decimal exchangeRate = await _nbpService.GetRateAsync(trip?.CurrencyCode ?? string.Empty) ?? throw new InvalidOperationException(ErrorMessage.RetriveExchangeRate);
 
             _ = trip!.DestinationPlace ?? throw new InvalidOperationException();
             Guid destinationId = await GetDestinationId(trip?.DestinationPlace?.ProviderId ?? string.Empty) ?? await AddDestinationAsync(trip!.DestinationPlace);
@@ -117,14 +121,137 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
         return await _dbContext.SaveChangesAsync() == tripDays.Count();
     }
 
-    public Task<bool> DeleteTripAsync(string userId, Guid tripId)
+    private async Task ValidateTripRequest(string userId, TripRequestDTO trip)
     {
-        throw new NotImplementedException();
+        _ = trip ?? throw new ArgumentNullException(nameof(trip), ErrorMessage.EmptyRequest);
+
+        if (trip.StartDate > trip.EndDate) throw new ArgumentException(ErrorMessage.StartDateAfterEndDate);
+        if (trip.StartDate < DateOnly.FromDateTime(DateTime.Now)) throw new ArgumentException(ErrorMessage.StartDateInPast);
+
+        if (trip.CategoryProfileId is not null) await _categoryProfileService.GetCategoryProfileDetailsAsync(userId, trip.CategoryProfileId.Value);
+        if (trip.ConditionProfileId is not null) await _conditionProfileService.GetConditionProfileDetailsAsync(userId, trip.ConditionProfileId.Value);
     }
 
-    public Task<bool> EditTripAsync(string userId, Guid tripId, TripRequestDTO trip)
+    public async Task<bool> DeleteTripAsync(string userId, Guid tripId)
     {
-        throw new NotImplementedException();
+        try
+        {
+            using var transaction = await _dbContext.Database.BeginTransactionAsync();
+
+            await DeleteTripDuringTransactionAsync(userId, tripId);
+
+            await transaction.CommitAsync();
+
+            return true;
+        }
+        catch (Exception e) when (e is InvalidOperationException)
+        {
+            if (_dbContext.Database.CurrentTransaction != null)
+            {
+                await _dbContext.Database.RollbackTransactionAsync();
+            }
+            throw new InvalidOperationException($"{ErrorMessage.DeleteTrip} {e.Message}");
+        }
+    }
+
+    private async Task<bool> DeleteTripDuringTransactionAsync(string userId, Guid tripId)
+    {
+        Trip trip = await _dbContext.Trips
+            .Include(tp => tp.TripDays)
+            .Where(tp => tp.Id == tripId
+                && tp.UserId == userId)
+            .FirstOrDefaultAsync() ?? throw new InvalidOperationException(ErrorMessage.TripNotFound);
+
+        if (trip.TripDays != null)
+        {
+            foreach (var tripDay in trip.TripDays.ToList())
+            {
+                await DeleteTripDayDuringTransactionAsync(userId, tripDay.Id);
+            }
+        }
+
+        _dbContext.Trips.Remove(trip);
+
+        await _dbContext.SaveChangesAsync();
+
+        return true;
+    }
+
+    public async Task<bool> EditTripAsync(string userId, Guid tripId, TripRequestDTO trip)
+    {
+        try
+        {
+            using var transaction = await _dbContext.Database.BeginTransactionAsync();
+
+            Trip existingTrip = await _dbContext.Trips
+                .Where(t => t.Id == tripId && t.UserId == userId)
+                .Include(t => t.TripDays)
+                .FirstOrDefaultAsync() ?? throw new InvalidOperationException(ErrorMessage.TripNotFound);
+
+            await ValidateTripRequest(userId, trip);
+            if (existingTrip.CurrencyCode != trip.CurrencyCode) throw new InvalidOperationException(ErrorMessage.CurrencyChangeNotAllowed);
+
+            if (existingTrip.Budget != trip.Budget * existingTrip.ExchangeRate)
+            {
+                decimal exchangeRate = await _nbpService.GetRateAsync(trip?.CurrencyCode ?? string.Empty) ?? throw new InvalidOperationException(ErrorMessage.RetriveExchangeRate);
+                existingTrip.ExchangeRate = exchangeRate;
+                existingTrip.Budget = trip!.Budget * exchangeRate;
+            }
+
+            if (existingTrip.StartDate != trip.StartDate || existingTrip.EndDate != trip.EndDate)
+            {
+                var tripDaysToRemove = existingTrip.TripDays?
+                    .Where(td => td.Date < trip.StartDate || td.Date > trip.EndDate).ToList();
+
+                foreach (var tripDay in tripDaysToRemove ?? [])
+                {
+                    await DeleteTripDayDuringTransactionAsync(userId, tripDay.Id);
+                }
+
+                if (trip.StartDate > existingTrip.EndDate || trip.EndDate < existingTrip.StartDate)
+                {
+                    await AddTripDaysAsync(existingTrip.Id, trip.StartDate, trip.EndDate);
+                }
+                else
+                {
+                    if (trip.StartDate < existingTrip.StartDate)
+                    {
+                        await AddTripDaysAsync(existingTrip.Id, trip.StartDate, existingTrip.StartDate.AddDays(-1));
+                    }
+
+                    if (trip.EndDate > existingTrip.EndDate)
+                    {
+                        await AddTripDaysAsync(existingTrip.Id, existingTrip.EndDate.AddDays(1), trip.EndDate);
+                    }
+                }
+
+                existingTrip.StartDate = trip.StartDate;
+                existingTrip.EndDate = trip.EndDate;
+            }
+
+            _ = trip!.DestinationPlace ?? throw new InvalidOperationException();
+            Guid destinationId = await GetDestinationId(trip?.DestinationPlace?.ProviderId ?? string.Empty) ?? await AddDestinationAsync(trip!.DestinationPlace);
+
+            existingTrip.Name = trip!.Name;
+            existingTrip.NumberOfTravelers = trip.NumberOfTravelers;
+            existingTrip.DestinationId = destinationId;
+            existingTrip.CategoryProfileId = trip.CategoryProfileId;
+            existingTrip.ConditionProfileId = trip.ConditionProfileId;
+
+            var validationContext = new ValidationContext(existingTrip);
+            Validator.ValidateObject(existingTrip, validationContext, validateAllProperties: true);
+
+            _dbContext.Trips.Update(existingTrip);
+            await _dbContext.SaveChangesAsync();
+            await transaction.CommitAsync();
+        }
+        catch (Exception e) when (e is ArgumentNullException || e is InvalidOperationException || e is ArgumentException || e is HttpRequestException || e is ValidationException)
+        {
+            if (_dbContext.Database.CurrentTransaction != null) await _dbContext.Database.RollbackTransactionAsync();
+            throw new InvalidOperationException($"{ErrorMessage.EditTrip} {e.Message}");
+        }
+
+        return true;
     }
 
     public async Task<List<TripOverviewDTO>> GetCurrentTripsAsync(string userId)
@@ -250,5 +377,30 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
     public Task<TripSummaryDTO> GetTripSummaryAsync(string userId, Guid tripId)
     {
         throw new NotImplementedException();
+    }
+
+    private async Task<bool> DeleteTripDayDuringTransactionAsync(string userId, Guid tripDayId)
+    {
+        TripDay tripDay = await _dbContext.TripDays
+            .Include(tp => tp.Trip)
+            .Include(tp => tp.TripPoints)
+            .Where(tp => tp.Id == tripDayId
+                && tp.Trip != null
+                && tp.Trip.UserId == userId)
+            .FirstOrDefaultAsync() ?? throw new InvalidOperationException(ErrorMessage.TripDayNotFound);
+
+        if (tripDay.TripPoints != null)
+        {
+            foreach (var tripPoint in tripDay.TripPoints.ToList())
+            {
+                await _tripPointsService.DeleteTripPointDuringTransactionAsync(userId, tripPoint.Id);
+            }
+        }
+
+        _dbContext.TripDays.Remove(tripDay);
+
+        await _dbContext.SaveChangesAsync();
+
+        return true;
     }
 }

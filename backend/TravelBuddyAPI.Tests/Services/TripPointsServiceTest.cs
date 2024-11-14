@@ -17,6 +17,7 @@ public class TripPointsServiceTest : IDisposable
     private readonly Mock<INBPService> _mockNBPService;
     private readonly Mock<IPlacesService> _mockPlacesService;
     private readonly Mock<IGeoapifyService> _mockGeoapifyService;
+    private readonly Mock<ITransferPointsService> _mockTransferPointService;
     private readonly TripPointsService _tripPointsService;
 
     public TripPointsServiceTest()
@@ -30,7 +31,8 @@ public class TripPointsServiceTest : IDisposable
         _mockNBPService = new Mock<INBPService>();
         _mockGeoapifyService = new Mock<IGeoapifyService>();
         _mockPlacesService = new Mock<IPlacesService>();
-        _tripPointsService = new TripPointsService(_dbContext, _mockNBPService.Object, _mockPlacesService.Object);
+        _mockTransferPointService = new Mock<ITransferPointsService>();
+        _tripPointsService = new TripPointsService(_dbContext, _mockNBPService.Object, _mockPlacesService.Object, _mockTransferPointService.Object);
     }
 
     [Fact]
@@ -44,8 +46,8 @@ public class TripPointsServiceTest : IDisposable
             Name = "Test Trip Point",
             Comment = "Test Comment",
             PredictedCost = 100,
-            StartTime = TimeOnly.FromDateTime(DateTime.Now),
-            EndTime = TimeOnly.FromDateTime(DateTime.Now.AddHours(1)),
+            StartTime = TimeOnly.Parse("10:00"),
+            EndTime = TimeOnly.Parse("12:00"),
             Place = new PlaceRequestDTO { Name = "Test Place", ProviderId = "1", City = "Test City", Country = "Test Country" }
         };
 
@@ -72,7 +74,7 @@ public class TripPointsServiceTest : IDisposable
         await _dbContext.Trips.AddAsync(trip);
         await _dbContext.SaveChangesAsync();
 
-        _mockNBPService.Setup(s => s.GetClosestRateAsync(It.IsAny<string>(), It.IsAny<DateOnly>(), It.IsAny<int>()))
+        _mockNBPService.Setup(s => s.GetRateAsync(It.IsAny<string>(), It.IsAny<DateOnly>()))
             .ReturnsAsync(2.0m);
 
         _mockGeoapifyService.Setup(s => s.GetPlaceDetailsAsync(It.IsAny<string>()))
@@ -99,8 +101,8 @@ public class TripPointsServiceTest : IDisposable
             Name = "Test Trip Point",
             Comment = "Test Comment",
             PredictedCost = 100,
-            StartTime = TimeOnly.FromDateTime(DateTime.Now),
-            EndTime = TimeOnly.FromDateTime(DateTime.Now.AddHours(1)),
+            StartTime = TimeOnly.Parse("10:00"),
+            EndTime = TimeOnly.Parse("12:00"),
             Place = new PlaceRequestDTO { ProviderId = "1", Name = "Test Place" }
         };
 
@@ -120,8 +122,8 @@ public class TripPointsServiceTest : IDisposable
             Name = "Test Trip Point",
             Comment = "Test Comment",
             PredictedCost = 100,
-            StartTime = TimeOnly.FromDateTime(DateTime.Now.AddHours(1)),
-            EndTime = TimeOnly.FromDateTime(DateTime.Now),
+            StartTime = TimeOnly.Parse("12:00"),
+            EndTime = TimeOnly.Parse("10:00"),
             Place = new PlaceRequestDTO { ProviderId = "1", Name = "Test Place" }
         };
 
@@ -133,7 +135,7 @@ public class TripPointsServiceTest : IDisposable
             TripDays = new List<TripDay> { new TripDay { Id = tripPointRequest.TripDayId } }
         };
 
-        _mockNBPService.Setup(s => s.GetClosestRateAsync(It.IsAny<string>(), It.IsAny<DateOnly>(), It.IsAny<int>()))
+        _mockNBPService.Setup(s => s.GetRateAsync(It.IsAny<string>(), It.IsAny<DateOnly>()))
             .ReturnsAsync(2.0m);
 
         await _dbContext.Trips.AddAsync(trip);
@@ -155,8 +157,8 @@ public class TripPointsServiceTest : IDisposable
             Name = "Test Trip Point",
             Comment = "Test Comment",
             PredictedCost = 100,
-            StartTime = TimeOnly.FromDateTime(DateTime.Now),
-            EndTime = TimeOnly.FromDateTime(DateTime.Now.AddHours(1)),
+            StartTime = TimeOnly.Parse("10:00"),
+            EndTime = TimeOnly.Parse("12:00"),
             Place = new PlaceRequestDTO { ProviderId = "1", Name = "Test Place" }
         };
 
@@ -171,7 +173,7 @@ public class TripPointsServiceTest : IDisposable
         await _dbContext.Trips.AddAsync(trip);
         await _dbContext.SaveChangesAsync();
 
-        _mockNBPService.Setup(s => s.GetClosestRateAsync(It.IsAny<string>(), It.IsAny<DateOnly>(), It.IsAny<int>()))
+        _mockNBPService.Setup(s => s.GetRateAsync(It.IsAny<string>(), It.IsAny<DateOnly>()))
             .ReturnsAsync((decimal?)null);
 
         // Act & Assert
@@ -190,8 +192,8 @@ public class TripPointsServiceTest : IDisposable
             Name = "Test Trip Point",
             Comment = "Test Comment",
             PredictedCost = 100,
-            StartTime = TimeOnly.FromDateTime(DateTime.Now),
-            EndTime = TimeOnly.FromDateTime(DateTime.Now.AddHours(1)),
+            StartTime = TimeOnly.Parse("10:00"),
+            EndTime = TimeOnly.Parse("12:00"),
             Place = null
         };
 
@@ -203,7 +205,7 @@ public class TripPointsServiceTest : IDisposable
             TripDays = new List<TripDay> { new TripDay { Id = tripPointRequest.TripDayId, Date = DateOnly.FromDateTime(DateTime.Now) } }
         };
 
-        _mockNBPService.Setup(s => s.GetClosestRateAsync(It.IsAny<string>(), It.IsAny<DateOnly>(), It.IsAny<int>()))
+        _mockNBPService.Setup(s => s.GetRateAsync(It.IsAny<string>(), It.IsAny<DateOnly>()))
             .ReturnsAsync(2.0m);
 
         await _dbContext.Trips.AddAsync(trip);
@@ -212,6 +214,60 @@ public class TripPointsServiceTest : IDisposable
         // Act & Assert
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _tripPointsService.CreateTripPointAsync(userId, tripPointRequest));
         Assert.Equal("An error occurred while creating a trip point. Place cannot be empty.", exception.Message);
+    }
+
+    //TODO local memory cant do transactions 
+    [Fact]
+    public async Task DeleteTripPointAsync_ReturnsTrue_WhenTripPointIsDeleted()
+    {
+        // Arrange
+        var userId = "user1";
+        var tripPointId = Guid.NewGuid();
+
+        var trip = new Trip
+        {
+            UserId = userId,
+            CurrencyCode = "USD",
+            Name = "Test Trip",
+            TripDays = new List<TripDay> { new TripDay { Id = Guid.NewGuid(), Date = DateOnly.FromDateTime(DateTime.Now) } }
+        };
+
+        var tripPoint = new TripPoint
+        {
+            Id = tripPointId,
+            TripDayId = trip.TripDays.First().Id,
+            Name = "Test Trip Point",
+            Comment = "Test Comment",
+            PredictedCost = 100,
+            StartTime = TimeOnly.Parse("10:00"),
+            EndTime = TimeOnly.Parse("12:00"),
+            Place = new CustomPlace { Id = Guid.NewGuid(), Name = "Test Place", City = "Test City", Country = "Test Country" }
+        };
+
+        trip.TripDays.First().TripPoints = new List<TripPoint> { tripPoint };
+
+        await _dbContext.Trips.AddAsync(trip);
+        await _dbContext.TripPoints.AddAsync(tripPoint);
+        await _dbContext.SaveChangesAsync();
+
+        // Act
+        var result = await _tripPointsService.DeleteTripPointAsync(userId, tripPointId);
+
+        // Assert
+        Assert.True(result);
+        Assert.Null(await _dbContext.TripPoints.FindAsync(tripPointId));
+    }
+
+    [Fact]
+    public async Task DeleteTripPointAsync_ThrowsInvalidOperationException_WhenTripPointNotFound()
+    {
+        // Arrange
+        var userId = "user1";
+        var tripPointId = Guid.NewGuid();
+
+        // Act & Assert
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _tripPointsService.DeleteTripPointAsync(userId, tripPointId));
+        Assert.Equal($"{TripPointsService.ErrorMessage.DeleteTripPoint} {TripPointsService.ErrorMessage.TripPointNotFound}", exception.Message);
     }
 
     [Fact]
@@ -225,8 +281,8 @@ public class TripPointsServiceTest : IDisposable
             Id = Guid.NewGuid(),
             TripDayId = tripDayId,
             Name = "Existing Trip Point",
-            StartTime = TimeOnly.FromDateTime(DateTime.Now),
-            EndTime = TimeOnly.FromDateTime(DateTime.Now.AddHours(1))
+            StartTime = TimeOnly.Parse("10:00"),
+            EndTime = TimeOnly.Parse("12:00")
         };
 
         await _dbContext.TripPoints.AddAsync(existingTripPoint);
@@ -238,8 +294,8 @@ public class TripPointsServiceTest : IDisposable
             Name = "New Trip Point",
             Comment = "Test Comment",
             PredictedCost = 100,
-            StartTime = TimeOnly.FromDateTime(DateTime.Now.AddMinutes(30)),
-            EndTime = TimeOnly.FromDateTime(DateTime.Now.AddHours(2)),
+            StartTime = TimeOnly.Parse("10:30"),
+            EndTime = TimeOnly.Parse("13:00"),
             Place = new PlaceRequestDTO { ProviderId = "1", Name = "Test Place" }
         };
 
@@ -254,7 +310,7 @@ public class TripPointsServiceTest : IDisposable
         await _dbContext.Trips.AddAsync(trip);
         await _dbContext.SaveChangesAsync();
 
-        _mockNBPService.Setup(s => s.GetClosestRateAsync(It.IsAny<string>(), It.IsAny<DateOnly>(), It.IsAny<int>()))
+        _mockNBPService.Setup(s => s.GetRateAsync(It.IsAny<string>(), It.IsAny<DateOnly>()))
             .ReturnsAsync(2.0m);
 
         // Act & Assert
