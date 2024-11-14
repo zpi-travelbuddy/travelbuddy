@@ -19,7 +19,6 @@ import CustomModal from "@/components/CustomModal";
 import { RenderItem } from "@/components/RenderItem";
 import ActionButtons from "@/components/ActionButtons";
 import ClickableInput from "@/components/ClickableInput";
-import { useRouter } from "expo-router";
 import { TripDay, TripDetails } from "@/types/Trip";
 
 const { height, width } = Dimensions.get("window");
