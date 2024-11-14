@@ -192,4 +192,9 @@ public class PlacesService(TravelBuddyDbContext dbContext, IGeoapifyService geoa
 
         return placeDetails;
     }
+
+    public async Task<ProviderPlace?> GetProviderPlaceAsync(string providerId)
+    {
+        return await _geoapifyService.GetPlaceDetailsAsync(providerId);
+    }
 }

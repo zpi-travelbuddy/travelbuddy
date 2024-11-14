@@ -34,6 +34,7 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
         public const string TooManyDecimalPlaces = "Budget must have at most 2 decimal places.";
         public const string DeleteTrip = "An error occurred while deleting a trip:";
         public const string CurrencyChangeNotAllowed = "Currency code cannot be changed.";
+        public const string ProviderPlaceNotFound = "Provider place with the specified Id does not exist.";
     }
 
     public async Task<TripDetailsDTO> CreateTripAsync(string userId, TripRequestDTO trip)
@@ -92,9 +93,11 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
 
     private async Task<Guid?> GetDestinationId(string providerId)
     {
+        var fetchedPlace = await _placesService.GetProviderPlaceAsync(providerId) ?? throw new InvalidOperationException(ErrorMessage.ProviderPlaceNotFound);
+
         Guid? id = await _dbContext.Places
             .OfType<ProviderPlace>()
-            .Where(p => providerId.Equals(p.ProviderId))
+            .Where(p => fetchedPlace.ProviderId == p.ProviderId)
             .Select(p => (Guid?)p.Id)
             .FirstOrDefaultAsync();
 
