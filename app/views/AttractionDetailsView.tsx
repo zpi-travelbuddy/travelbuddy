@@ -17,27 +17,27 @@ import IconComponent from "@/components/IconComponent";
 import IconRow from "@/components/IconRow";
 import { formatMinutesInWords } from "@/utils/TimeUtils";
 import { AttractionTypeIcons, AttractionTypeLabels } from "@/types/Trip";
-import { AttractionViewModel } from "@/types/Attraction";
+import usePlaceDetails from "@/composables/usePlace";
 
 const { height, width } = Dimensions.get("window");
 
-const attraction: AttractionViewModel = {
-  name: "Wycieczka do Londynu",
-  address: {
-    street: "",
-    number: "",
-    city: "Londyn",
-    country: "Wielka Brytania",
-  },
-  attractionType: "park",
-  conveniences: [],
-  rating: 5,
-  averageCostPerPerson: 0,
-  averageVisitTime: 120,
-  latitude: 51.50861,
-  longitude: -0.163611,
-  imageUrl: "https://upload.wikimedia.org/wikipedia/commons/1/1a/Big_Ben..JPG",
-};
+// const attraction: AttractionViewModel = {
+//   name: "Wycieczka do Londynu",
+//   address: {
+//     street: "",
+//     number: "",
+//     city: "Londyn",
+//     country: "Wielka Brytania",
+//   },
+//   attractionType: "park",
+//   conveniences: [],
+//   rating: 5,
+//   averageCostPerPerson: 0,
+//   averageVisitTime: 120,
+//   latitude: 51.50861,
+//   longitude: -0.163611,
+//   imageUrl: "https://upload.wikimedia.org/wikipedia/commons/1/1a/Big_Ben..JPG",
+// };
 
 const AttractionDetailsView = () => {
   const theme = useTheme() as MD3ThemeExtended;
@@ -45,20 +45,23 @@ const AttractionDetailsView = () => {
 
   // const params = useLocalSearchParams();
   // const { id } = params;
+  const id = "";
+
+  const { placeDetails, loading, error, refetch } = usePlaceDetails(id);
 
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <Image
           source={{
-            uri: attraction.imageUrl,
+            uri: ""
           }}
           style={styles.image}
           resizeMode="cover"
         />
         <View style={styles.labelContainer}>
-          <Text variant="headlineSmall">{attraction.name}</Text>
-          <Text variant="titleSmall">{formatAddress(attraction.address)}</Text>
+          <Text variant="headlineSmall">{placeDetails?.name}</Text>
+          <Text variant="titleSmall">{formatAddress(pl.address)}</Text>
 
           <StarRatingDisplayComponent
             style={styles.starRatingPadding}
