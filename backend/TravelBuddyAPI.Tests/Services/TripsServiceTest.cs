@@ -50,7 +50,8 @@ public class TripsServiceTest
         };
 
         _mockNBPService.Setup(x => x.GetRateAsync(It.IsAny<string>(), It.IsAny<DateOnly?>())).ReturnsAsync(4.5m);
-        _mockPlacesService.Setup(x => x.AddPlaceAsync(It.IsAny<PlaceRequestDTO>())).ReturnsAsync(new PlaceDetailsDTO() { Id = Guid.NewGuid() });
+        _mockPlacesService.Setup(x => x.AddPlaceAsync(It.IsAny<PlaceRequestDTO>())).ReturnsAsync(new PlaceDetailsDTO() { Id = Guid.NewGuid(), ProviderId = destination.ProviderId });
+        _mockPlacesService.Setup(x => x.GetProviderPlaceAsync(It.IsAny<string>())).ReturnsAsync(new ProviderPlace(){ ProviderId = destination.ProviderId });
 
         var tripRequest = new TripRequestDTO
         {
@@ -241,7 +242,8 @@ public class TripsServiceTest
         };
 
         _mockNBPService.Setup(x => x.GetRateAsync(It.IsAny<string>(), It.IsAny<DateOnly?>())).ReturnsAsync(4.5m);
-        _mockPlacesService.Setup(x => x.AddPlaceAsync(It.IsAny<PlaceRequestDTO>())).ReturnsAsync(new PlaceDetailsDTO() { Id = Guid.NewGuid() });
+        _mockPlacesService.Setup(x => x.AddPlaceAsync(It.IsAny<PlaceRequestDTO>())).ReturnsAsync(new PlaceDetailsDTO() { Id = Guid.NewGuid(), ProviderId = tripRequest.DestinationPlace.ProviderId });
+        _mockPlacesService.Setup(x => x.GetProviderPlaceAsync(It.IsAny<string>())).ReturnsAsync(new ProviderPlace(){ ProviderId = tripRequest.DestinationPlace.ProviderId });
 
         // Act
         var result = await _tripsService.EditTripAsync(userId, tripId, tripRequest);
@@ -312,7 +314,8 @@ public class TripsServiceTest
         };
 
         _mockNBPService.Setup(x => x.GetRateAsync(It.IsAny<string>(), It.IsAny<DateOnly?>())).ReturnsAsync(4.5m);
-        _mockPlacesService.Setup(x => x.AddPlaceAsync(It.IsAny<PlaceRequestDTO>())).ReturnsAsync(new PlaceDetailsDTO() { Id = Guid.NewGuid() });
+        _mockPlacesService.Setup(x => x.AddPlaceAsync(It.IsAny<PlaceRequestDTO>())).ReturnsAsync(new PlaceDetailsDTO() { Id = Guid.NewGuid(), ProviderId = tripRequest.DestinationPlace.ProviderId });
+        _mockPlacesService.Setup(x => x.GetProviderPlaceAsync(It.IsAny<string>())).ReturnsAsync(new ProviderPlace(){ ProviderId = tripRequest.DestinationPlace.ProviderId });
 
         // Act
         var result = await _tripsService.EditTripAsync(userId, tripId, tripRequest);

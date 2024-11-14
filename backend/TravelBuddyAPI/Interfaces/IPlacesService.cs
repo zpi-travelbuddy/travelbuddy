@@ -25,11 +25,18 @@ public interface IPlacesService
     Task<List<PlaceOverviewDTO>> GetAutocompletePlacesAsync(string query, decimal? latitude, decimal? longitude);
 
     /// <summary>
-    /// Retrieves the details of a place based on the provided identifier.
+    /// Retrieves the details of a place based on the identifier.
     /// </summary>
     /// <param name="id">The unique identifier of the place.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains a <see cref="PlaceDetailsDTO"/>.</returns>
     Task<PlaceDetailsDTO> GetPlaceDetailsAsync(Guid id);
+
+    /// <summary>
+    /// Retrieves the ProviderPlace based on the provider indentifier.
+    /// </summary>
+    /// <param name="id">The unique identifier of the provider place.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains a <see cref="ProviderPlace"/>.</returns>
+    Task<ProviderPlace?> GetProviderPlaceAsync(string providerId);
 
     /// <summary>
     /// Adds a new place based on the provided place request data.
