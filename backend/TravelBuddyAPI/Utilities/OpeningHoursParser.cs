@@ -85,8 +85,8 @@ namespace TravelBuddyAPI.Utilities
             };
             var dayOfWeek = dayOfWeekMap[date.DayOfWeek];
 
-            // Regex pattern to match day or day range with time range
-            var dayRangePattern = @$"(?<days>{dayOfWeek}|(?:Mo|Tu|We|Th|Fr|Sa|Su)(?:-(?:Mo|Tu|We|Th|Fr|Sa|Su))?)\s(?<opensAt>\d{{2}}:\d{{2}})-(?<closesAt>\d{{2}}:\d{{2}})";
+            // Regex pattern to match optional day or day range with time range
+            var dayRangePattern = @$"(?:(?<days>{dayOfWeek}|(?:Mo|Tu|We|Th|Fr|Sa|Su)(?:-(?:Mo|Tu|We|Th|Fr|Sa|Su))?)\s)?(?<opensAt>\d{{2}}:\d{{2}})-(?<closesAt>\d{{2}}:\d{{2}})";
             var dayRangeMatch = Regex.Match(rule, dayRangePattern);
 
             if (dayRangeMatch.Success)
@@ -95,8 +95,8 @@ namespace TravelBuddyAPI.Utilities
                 var opensAt = TimeOnly.Parse(dayRangeMatch.Groups["opensAt"].Value);
                 var closesAt = TimeOnly.Parse(dayRangeMatch.Groups["closesAt"].Value);
 
-                // Check if the date's day of the week is within the specified range
-                if (IsDayInRange(dayOfWeek, days))
+                // If days are specified, ensure the date's day of the week is within the specified range
+                if (string.IsNullOrEmpty(days) || IsDayInRange(dayOfWeek, days))
                 {
                     return (opensAt, closesAt);
                 }

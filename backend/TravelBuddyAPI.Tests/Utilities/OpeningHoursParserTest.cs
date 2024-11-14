@@ -59,6 +59,10 @@ namespace TravelBuddyAPI.Tests.Utilities
         [InlineData("Jan Mo-Fr 09:00-17:00", "2023-01-16", "09:00", "17:00")]
         [InlineData("Jan-Feb Mo-Fr 09:00-17:00", "2023-02-01", "09:00", "17:00")]
         [InlineData("Jan-Feb Mo-Fr 09:00-17:00", "2024-02-29", "09:00", "17:00")]
+        [InlineData("Jan Mo-Fr 09:00-17:00", "2024-01-29", "09:00", "17:00")]
+        [InlineData("Jan Mo-Fr 09:00-17:00", "2024-01-28", null, null)]
+        [InlineData("Nov 01-Feb 15: 08:30-16:30; Feb 16-Mar 31: 08:30-17:00; Apr-Aug: 08:30-19:15; Sep: 08:30-19:00; Oct 08:30-18:30;", "2023-04-16", "08:30", "19:15")]
+        [InlineData("Nov 01-Feb 15: 08:30-16:30; Feb 16-Mar 31: 08:30-17:00; Apr-Aug: 08:30-19:15; Sep: 08:30-19:00; Oct 08:30-18:30;", "2023-09-16", "08:30", "19:00")]
         public void ParseOpeningHours_DateRange_ShouldReturnCorrectTimes(string openingHours, string dateStr, string? expectedOpen, string? expectedClose)
         {
             var date = DateOnly.Parse(dateStr);
