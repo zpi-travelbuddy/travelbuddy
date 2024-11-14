@@ -16,7 +16,7 @@ export interface TripViewModel {
   destination: string;
   numberOfTripPoints: number;
   numberOfTravelers: number;
-  cost: string;
+  predictedCost: string;
   budget: string;
   categoryProfileName: string;
   conditionProfileName: string;
@@ -38,7 +38,7 @@ export interface TripDetails {
 
 export interface TripSummaryPoint {
   name: string;
-  totalSpendings: number;
+  predictedSpendings: number;
 }
 
 export interface TripSummaryDay {

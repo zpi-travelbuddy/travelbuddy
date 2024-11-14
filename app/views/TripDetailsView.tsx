@@ -18,6 +18,7 @@ import { TripDay, TripViewModel } from "@/types/Trip";
 import { useSnackbar } from "@/context/SnackbarContext";
 import { convertTripDetailsToViewModel } from "@/converters/tripConverters";
 import usePlaceDetails from "@/composables/usePlace";
+import LoadingView from "./LoadingView";
 
 const { height, width } = Dimensions.get("window");
 
@@ -76,7 +77,7 @@ const TripDetailsView = () => {
     destination: "Cel wycieczki",
     numberOfTripPoints: "Liczba punktów wycieczki",
     numberOfTravelers: "Liczba osób",
-    cost: "Całkowity koszt wycieczki",
+    predictedCost: "Całkowity koszt wycieczki",
     budget: "Budżet wycieczki",
     categoryProfileName: "Profil preferencji",
     conditionProfileName: "Profil udogodnień",
@@ -112,11 +113,7 @@ const TripDetailsView = () => {
   );
 
   if (loading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={theme.colors.primary} />
-      </View>
-    );
+    return <LoadingView />;
   }
 
   if (error) {

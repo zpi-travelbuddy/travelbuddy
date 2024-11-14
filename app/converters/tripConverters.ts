@@ -4,11 +4,13 @@ import { getMoneyWithCurrency } from "@/utils/CurrencyUtils";
 import { formatDateRange } from "@/utils/TimeUtils";
 
 // Temporary mocked functions
-function getCategoryProfileName(categoryProfileId: string): string {
+function getCategoryProfileName(categoryProfileId: string | null): string {
+  if (!categoryProfileId) return "";
   return "Zwiedzanie i jedzenie";
 }
 
-function getConditionProfileName(conditionProfileId: string): string {
+function getConditionProfileName(conditionProfileId: string | null): string {
+  if (!conditionProfileId) return "";
   return "Potrzebuję internetu dla psa";
 }
 
@@ -21,18 +23,18 @@ function getDestinationName(
 }
 
 export const calculateTripSummary = (tripSummary: TripSummary) => {
-  let totalSpendings = 0;
+  let predictedSpendings = 0;
   let totalTripPoints = 0;
 
   tripSummary.tripDays.forEach((day) => {
     day.tripPoints.forEach((point) => {
-      totalSpendings += point.totalSpendings;
+      predictedSpendings += point.predictedSpendings;
       totalTripPoints += 1;
     });
   });
 
   return {
-    totalSpendings,
+    predictedSpendings,
     totalTripPoints,
   };
 };
@@ -43,9 +45,9 @@ export function convertTripDetailsToViewModel(
   destinationDetails: PlaceDetails | undefined,
 ): TripViewModel {
   if (!tripDetails) throw new Error("Trip details are undefined.");
-  const { totalSpendings, totalTripPoints } = tripSummary
+  const { predictedSpendings, totalTripPoints } = tripSummary
     ? calculateTripSummary(tripSummary)
-    : { totalSpendings: 0, totalTripPoints: tripDetails.tripDays.length }; // temporary
+    : { predictedSpendings: 0, totalTripPoints: tripDetails.tripDays.length }; // temporary
   return {
     name: tripDetails.name,
     dateRange: formatDateRange(
@@ -55,7 +57,10 @@ export function convertTripDetailsToViewModel(
     destination: getDestinationName(destinationDetails),
     numberOfTripPoints: totalTripPoints,
     numberOfTravelers: tripDetails.numberOfTravelers,
-    cost: getMoneyWithCurrency(totalSpendings, tripDetails.currencyCode),
+    predictedCost: getMoneyWithCurrency(
+      predictedSpendings,
+      tripDetails.currencyCode,
+    ),
     budget: getMoneyWithCurrency(tripDetails.budget, tripDetails.currencyCode),
     categoryProfileName: getCategoryProfileName(tripDetails.categoryProfileId),
     conditionProfileName: getConditionProfileName(
