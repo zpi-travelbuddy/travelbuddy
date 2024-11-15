@@ -33,25 +33,25 @@ import { useSnackbar } from "@/context/SnackbarContext";
 import { useAuth } from "@/app/ctx";
 import { API_TRIPS_CURRENT, API_TRIPS_PAST } from "@/constants/Endpoints";
 import { useAnimatedKeyboard } from "react-native-reanimated";
-
-interface APITrip {
-  id: string;
-  name: string;
-  startDate: string;
-  endDate: string;
-}
-
-interface Trip {
-  id: string;
-  title: string;
-  subtitle: string;
-  imageUri: string;
-  isArchived: boolean;
-}
+import { formatDateFromISO, formatTimeRange } from "@/utils/TimeUtils";
+import { Trip, APITrip } from "@/types/Trip";
 
 type TripViewMode = "actual" | "archive";
 
 const RANDOM_IMAGE = "https://picsum.photos/891";
+
+const parseAPITrip = (trip: APITrip): Trip => ({
+  id: trip.id,
+  title: trip.name,
+  subtitle: formatTimeRange(
+    formatDateFromISO(trip?.startDate),
+    formatDateFromISO(trip?.endDate),
+  ),
+  from: trip.startDate,
+  to: trip.endDate,
+  imageUri: RANDOM_IMAGE,
+  isArchived: false,
+});
 
 const TripBrowseView = () => {
   const { api } = useAuth();
@@ -87,7 +87,9 @@ const TripBrowseView = () => {
         trip.title.toLowerCase().includes(searchQuery.toLowerCase()),
       )
       .sort((a, b) => {
-        return a.subtitle.localeCompare(b.subtitle);
+        if (a.from === b.from) return a.to.localeCompare(b.to);
+
+        return a.from.localeCompare(b.from);
       });
   }, [value, searchQuery, currentTrips, pastTrips]);
 
@@ -128,13 +130,7 @@ const TripBrowseView = () => {
   const fetchCurrentTrips = async () => {
     try {
       const currentTrips: APITrip[] = (await api!.get(API_TRIPS_CURRENT)).data;
-      const parsedCurrentTrips = currentTrips.map((trip: any) => ({
-        id: trip.id,
-        title: trip.name,
-        subtitle: `${trip.startDate} - ${trip.endDate}`,
-        imageUri: RANDOM_IMAGE,
-        isArchived: false,
-      }));
+      const parsedCurrentTrips = currentTrips.map(parseAPITrip);
       setCurrentTrips(parsedCurrentTrips);
     } catch (error: any) {
       console.error("Error fetching current trips", error.response.data);
@@ -144,13 +140,7 @@ const TripBrowseView = () => {
   const fetchPastTrips = async () => {
     try {
       const pastTrips: APITrip[] = (await api!.get(API_TRIPS_PAST)).data;
-      const parsedPastTrips = pastTrips.map((trip: any) => ({
-        id: trip.id,
-        title: trip.name,
-        subtitle: `${trip.startDate} - ${trip.endDate}`,
-        imageUri: RANDOM_IMAGE,
-        isArchived: true,
-      }));
+      const parsedPastTrips = pastTrips.map(parseAPITrip);
       setPastTrips(parsedPastTrips);
     } catch (error: any) {
       console.error("Error fetching past trips", error.response.data);

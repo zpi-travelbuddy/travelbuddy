@@ -20,6 +20,11 @@ export function formatDateToISO(date: Date | undefined): string {
     .join("-");
 }
 
+export function formatDateFromISO(date: string | undefined): string {
+  if (!date) return "";
+  return date.split("-").reverse().join(".");
+}
+
 export function formatDateToPolish(date: Date | undefined): string {
   if (!date) return "";
   return date.toLocaleDateString("pl-PL");
