@@ -321,8 +321,9 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
             EndTime = tp.EndTime
         }).ToList();
 
-        dayDetails.TransferPoints = day.TransferPoints!.Select(tp => new TransferPointDTO
+        dayDetails.TransferPoints = day.TransferPoints!.Select(tp => new TransferPointOverviewDTO
         {
+            Id = tp.Id,
             TripDayId = tp.TripDayId,
             Seconds = (int?)tp.TransferTime.TotalSeconds,
             StartTime = tp.StartTime,
