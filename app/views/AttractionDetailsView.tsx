@@ -23,6 +23,7 @@ import LoadingView from "./LoadingView";
 import { useRouter } from "expo-router";
 import { useSnackbar } from "@/context/SnackbarContext";
 import { convertToPlaceViewModel } from "@/converters/placeConverter";
+import ConditionIcons from "@/components/ConditionIcons";
 
 const { height, width } = Dimensions.get("window");
 
@@ -113,11 +114,11 @@ const AttractionDetailsView = () => {
               Udogodnienia
             </Text>
 
-            <IconRow
+            <ConditionIcons
+              conditions={placeViewModel.conditions}
               style={styles.space}
-              icons={[HUMAN_DISABLE_ICON, DOG_ICON, VEGAN_ICON]}
               iconColor={theme.colors.onSurface}
-            />
+            ></ConditionIcons>
 
             <Text style={styles.doubleSpace} variant="bodySmall">
               Średni koszt na osobę

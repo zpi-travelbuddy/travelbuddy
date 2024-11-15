@@ -1,15 +1,22 @@
+/* eslint-disable react/prop-types */
 import { Button, Card } from "react-native-paper";
 import { StyleSheet, Image, View } from "react-native";
-import { useRouter } from "expo-router";
-import { truncateText } from "@/utils/TextUtils";
+import { formatAddress, truncateText } from "@/utils/TextUtils";
+import { PlaceViewModel } from "@/types/Place";
 
-export function PlaceCard({ place }: { place: PlaceView }) {
-  const { id, title, subtitle, imageUrl } = place;
-  const router = useRouter();
+interface PlaceCardProps {
+  place: PlaceViewModel;
+  onDetailsClick: (id: string) => void;
+}
+
+export const PlaceCard: React.FC<PlaceCardProps> = ({
+  place,
+  onDetailsClick,
+}) => {
+  const { id, name, address, imageUrl } = place;
 
   const onDetailsPress = () => {
-    console.log("Go to attraction's details", id);
-    // router.push(...);
+    onDetailsClick(id);
   };
 
   const onAddPress = () => {
@@ -20,8 +27,8 @@ export function PlaceCard({ place }: { place: PlaceView }) {
     <Card mode="outlined">
       <View style={styles.headerContainer}>
         <Card.Title
-          title={truncateText(title, 25)}
-          subtitle={truncateText(subtitle, 25)}
+          title={truncateText(name, 25)}
+          subtitle={truncateText(formatAddress(address), 25)}
         />
         {imageUrl && <Image source={{ uri: imageUrl }} style={styles.image} />}
       </View>
@@ -39,7 +46,7 @@ export function PlaceCard({ place }: { place: PlaceView }) {
       </Card.Actions>
     </Card>
   );
-}
+};
 
 const styles = StyleSheet.create({
   card: {

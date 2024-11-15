@@ -1,6 +1,6 @@
-import { TripPointType } from "./Trip";
+import { Condition, TripPointType } from "./Trip";
 
-type PlaceView = {
+export type PlaceView = {
   id: string;
   title: string;
   subtitle: string;
@@ -42,10 +42,11 @@ export interface PlaceDetails {
 }
 
 export interface PlaceViewModel {
+  id: string;
   name: string;
   address: Address;
   attractionType: TripPointType;
-  conveniences: string[]; // TODO: changing to special enum
+  conditions: Condition[];
   rating: number;
   averageCostPerPerson: number;
   averageVisitTime: string;

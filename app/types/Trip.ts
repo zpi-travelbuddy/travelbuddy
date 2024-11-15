@@ -15,6 +15,13 @@ export type TripPointType =
   | "music"
   | "other";
 
+export type Condition =
+  | "internet_access"
+  | "wheelchair"
+  | "dogs"
+  | "vegetarian"
+  | "vegan";
+
 export const AttractionTypeIcons: Record<TripPointType, string> = {
   attraction: "camera",
   food: "silverware-fork-knife",

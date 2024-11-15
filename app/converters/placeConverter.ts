@@ -1,13 +1,14 @@
 import { PlaceDetails } from "@/types/Place";
 import { TripPointType } from "@/types/Trip";
-import { formatMinutesInWords } from "@/utils/TimeUtils";
+import { getConditions } from "@/utils/ConditionsUtils";
 
 export const convertToPlaceViewModel = (place: PlaceDetails) => {
   const result = {
+    id: place.id,
     name: place.name,
     address: getAddress(place),
     attractionType: getAttractionType(place),
-    conveniences: getConveniences(place), // TODO: changing to special enum
+    conditions: getConditions(place),
     rating: place.averageRating,
     averageCostPerPerson: place.averageCostPerPerson,
     averageVisitTime: place.averageTimeSpent,
@@ -32,9 +33,4 @@ const getAddress = (place: PlaceDetails) => {
 const getAttractionType = (place: PlaceDetails) => {
   console.log(place.categories);
   return "other" as TripPointType;
-};
-
-const getConveniences = (place: PlaceDetails) => {
-  console.log(place.conditions);
-  return [];
 };
