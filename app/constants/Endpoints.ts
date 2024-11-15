@@ -6,3 +6,6 @@ export const API_TRIPS_PAST = "/trips/past";
 
 // Currency
 export const API_CURRENCY = "/nbp/currency";
+
+// Places
+export const API_PLACES_AUTOCOMPLETE = "/places/autocomplete";
