@@ -6,7 +6,7 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
 } from "react-native";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { useTheme, Text, Button } from "react-native-paper";
 import Animated, {
   useAnimatedKeyboard,
@@ -16,11 +16,17 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { CodeTextInput } from "@/components/auth/CodeTextInput";
 import { MD3ThemeExtended } from "@/constants/Themes";
 import { validateCode } from "@/utils/validations";
+import { useAuth } from "../ctx";
+import LoadingView from "@/views/LoadingView";
 
 // It would be good if we could calculate this value dynamically, but I had some issues with that
 const BOTTOM_VIEW_HEIGHT = 54;
 
 export default function Confirmation() {
+  const { email } = useLocalSearchParams<{ email: string }>();
+
+  const { confirmSignUp } = useAuth();
+
   const theme = useTheme() as MD3ThemeExtended;
   const insets = useSafeAreaInsets();
   const keyboard = useAnimatedKeyboard();
@@ -30,6 +36,7 @@ export default function Confirmation() {
   const [confirmationCode, setConfirmationCode] = useState<string>("");
   const [confirmationCodeError, setConfirmationCodeError] =
     useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const animatedStyles = useAnimatedStyle(() => {
     return {
@@ -45,37 +52,63 @@ export default function Confirmation() {
     setConfirmationCodeError(validateCode(value));
   };
 
-  const confirm = () => {
-    router.navigate("/sign-up/success");
+  const validateForm = () => {
+    return !validateCode(confirmationCode);
+  };
+
+  const confirm = async () => {
+    if (!validateForm()) return;
+    Keyboard.dismiss();
+    setIsLoading(true);
+
+    try {
+      await confirmSignUp!(email, confirmationCode);
+      router.navigate("/sign-up/success");
+    } catch (error: any) {
+      if (error.code === "CodeMismatchException") {
+        setConfirmationCodeError("Nieprawidłowy kod weryfikacyjny");
+      } else {
+        setConfirmationCodeError("Wystąpił błąd, spróbuj ponownie");
+      }
+      console.error("Confirm sign up error:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <View style={styles.innerContainer}>
-          <Animated.View style={[animatedStyles]}>
-            <Text style={styles.headline} variant="headlineLarge">
-              Potwierdź założenie konta
-            </Text>
-            <CodeTextInput
-              value={confirmationCode}
-              onChangeText={handleInputChange}
-              style={styles.inputText}
-            />
-            <Text style={styles.textError}>{confirmationCodeError || " "}</Text>
-            <Button
-              style={styles.button}
-              labelStyle={styles.buttonLabel}
-              mode="contained"
-              onPress={confirm}
-              contentStyle={styles.buttonContent}
-            >
-              Potwierdź
-            </Button>
-          </Animated.View>
-        </View>
-      </TouchableWithoutFeedback>
-    </SafeAreaView>
+    <>
+      <SafeAreaView style={styles.container}>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View style={styles.innerContainer}>
+            <Animated.View style={[animatedStyles]}>
+              <Text style={styles.headline} variant="headlineLarge">
+                Potwierdź założenie konta
+              </Text>
+              <CodeTextInput
+                value={confirmationCode}
+                onChangeText={handleInputChange}
+                style={styles.inputText}
+                error={!!confirmationCodeError}
+              />
+              <Text style={styles.textError}>
+                {confirmationCodeError || " "}
+              </Text>
+              <Button
+                style={styles.button}
+                labelStyle={styles.buttonLabel}
+                mode="contained"
+                onPress={confirm}
+                contentStyle={styles.buttonContent}
+              >
+                Potwierdź
+              </Button>
+            </Animated.View>
+          </View>
+        </TouchableWithoutFeedback>
+      </SafeAreaView>
+      <LoadingView show={isLoading} />
+    </>
   );
 }
 

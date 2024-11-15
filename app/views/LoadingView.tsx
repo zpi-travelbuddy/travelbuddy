@@ -1,6 +1,6 @@
 import { MD3ThemeExtended } from "@/constants/Themes";
 import { StyleSheet } from "react-native";
-import { ActivityIndicator, Modal, useTheme } from "react-native-paper";
+import { ActivityIndicator, Modal, Portal, useTheme } from "react-native-paper";
 
 interface LoadingViewProps {
   show?: boolean;
@@ -12,17 +12,19 @@ const LoadingView = ({ show = true, transparent = true }: LoadingViewProps) => {
   const style = createStyles(theme as MD3ThemeExtended);
 
   return (
-    <Modal
-      visible={show}
-      style={[
-        transparent ? null : { backgroundColor: theme.colors.surface },
-        style.modal,
-      ]}
-      contentContainerStyle={style.modalContent}
-      dismissable={false}
-    >
-      <ActivityIndicator size="large" animating={true} />
-    </Modal>
+    <Portal>
+      <Modal
+        visible={show}
+        style={[
+          transparent ? null : { backgroundColor: theme.colors.surface },
+          style.modal,
+        ]}
+        contentContainerStyle={style.modalContent}
+        dismissable={false}
+      >
+        <ActivityIndicator size="large" animating={true} />
+      </Modal>
+    </Portal>
   );
 };
 

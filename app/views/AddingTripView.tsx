@@ -1,3 +1,4 @@
+import React, { useCallback, useMemo, useState } from "react";
 import {
   StyleSheet,
   View,
@@ -6,238 +7,293 @@ import {
   ScrollView,
   FlatList,
 } from "react-native";
-import React, { useCallback, useMemo, useState } from "react";
 import { useTheme, MD3Theme, TextInput, Text } from "react-native-paper";
-import { DatePickerModal } from "react-native-paper-dates";
-import { formatDateRange } from "@/utils/TimeUtils";
+import {
+  DatePickerModal,
+  registerTranslation,
+  pl,
+} from "react-native-paper-dates";
+import {
+  formatDateRange,
+  formatDateToISO,
+  getISOToday,
+} from "@/utils/TimeUtils";
 import CurrencyValueInput from "@/components/CurrencyValueInput";
 import CustomModal from "@/components/CustomModal";
 import { RenderItem } from "@/components/RenderItem";
 import ActionButtons from "@/components/ActionButtons";
 import ClickableInput from "@/components/ClickableInput";
 import { useSnackbar } from "@/context/SnackbarContext";
-import { useRouter } from "expo-router";
-import { registerTranslation, pl } from "react-native-paper-dates";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { useAuth } from "@/app/ctx";
+import LoadingView from "./LoadingView";
+import { Profile, ProfileType } from "@/types/Profile";
+import { DateRange, TripCreationErrors } from "@/types/Trip";
+import { MARKER_ICON, CALENDAR_ICON } from "@/constants/Icons";
+import { API_TRIPS } from "@/constants/Endpoints";
+import { validateTripForm } from "@/utils/validations";
+import { useAnimatedKeyboard } from "react-native-reanimated";
 
 const { height, width } = Dimensions.get("window");
-
 registerTranslation("pl", pl);
 
+const DEFAULT_CURRENCY = "PLN";
+
 const AddingTripView = () => {
-  interface DateRange {
-    startDate: Date | undefined;
-    endDate: Date | undefined;
-  }
+  const { api } = useAuth();
 
-  interface Profile {
-    id: string;
-    name: string;
-  }
-
-  type ProfileType = "Preference" | "Convenience";
+  useAnimatedKeyboard();
 
   const theme = useTheme();
   const router = useRouter();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const currency =
+    useLocalSearchParams<{ currency: string }>().currency || DEFAULT_CURRENCY;
+  const { destinationId, destinationName } = useLocalSearchParams<{
+    destinationId: string;
+    destinationName: string;
+  }>();
+
   const { showSnackbar } = useSnackbar();
 
   const [tripName, setTripName] = useState("");
-  const [destination, setDestination] = useState("");
-  const [isOpen, setOpen] = React.useState<boolean>(false);
-  const [dateRangeText, setDateRangeText] = React.useState<string>("");
-  const [numberOfPeople, setNumberOfPeople] = React.useState<string>("");
-  const [visible, setVisible] = React.useState(false);
+  const [budget, setBudget] = useState<number | undefined>();
+  const [isOpen, setOpen] = useState(false);
+  const [dateRangeText, setDateRangeText] = useState("");
+  const [numberOfPeople, setNumberOfPeople] = useState("");
+  const [visible, setVisible] = useState(false);
 
-  const [range, setRange] = React.useState<DateRange>({
-    startDate: undefined,
-    endDate: undefined,
-  });
+  const [range, setRange] = useState<DateRange>({});
+  const [errors, setErrors] = useState<TripCreationErrors>({});
 
   const [selectedPreferenceProfile, setSelectedPreferencesProfile] =
-    useState<Profile>({
-      id: "1",
-      name: "Profile1",
-    });
-
+    useState<Profile | null>(null);
   const [selectedConvenienceProfile, setSelectedConvenienceProfile] =
-    useState<Profile>({
-      id: "11",
-      name: "Profile11",
-    });
+    useState<Profile | null>(null);
 
-  const [preferenceProfiles, setPreferenceProfiles] = useState<Profile[]>([
-    { id: "1", name: "Profile1" },
-    { id: "2", name: "Profile2" },
-  ]);
-
-  const [convenienceProfiles, setConvenienceProfiles] = useState<Profile[]>([
-    { id: "11", name: "Profile11" },
-    { id: "22", name: "Profile22" },
-  ]);
-
-  const renderProfileContent = useCallback(
-    (item: { id: string; name: string }) => item.name,
+  const [profileType, setProfileType] = useState<ProfileType>("Preference");
+  const preferenceProfiles = useMemo(
+    () => [
+      { id: "1", name: "Profile1" },
+      { id: "2", name: "Profile2" },
+    ],
+    [],
+  );
+  const convenienceProfiles = useMemo(
+    () => [
+      { id: "11", name: "Profile11" },
+      { id: "22", name: "Profile22" },
+    ],
     [],
   );
 
-  const renderPreferenceProfile = ({ item }: { item: Profile }) => (
-    <RenderItem
-      item={item}
-      isSelected={selectedPreferenceProfile.id === item.id}
-      onSelect={setSelectedPreferencesProfile}
-      renderContent={renderProfileContent}
-    />
+  const handleProfileSelection = useCallback(
+    (profile: Profile) => {
+      profileType === "Preference"
+        ? setSelectedPreferencesProfile(profile)
+        : setSelectedConvenienceProfile(profile);
+    },
+    [profileType],
   );
 
-  const renderConvenienceProfile = ({ item }: { item: Profile }) => (
-    <RenderItem
-      item={item}
-      isSelected={selectedConvenienceProfile.id === item.id}
-      onSelect={setSelectedConvenienceProfile}
-      renderContent={renderProfileContent}
-    />
-  );
-
-  const [selectedProfileType, setSelectedProfileType] =
-    useState<ProfileType>("Preference");
-
-  const showModal = (type: ProfileType) => {
-    setSelectedProfileType(type);
-    setVisible(true);
+  const handleChange = (
+    setter: React.Dispatch<React.SetStateAction<any>>,
+    field: keyof TripCreationErrors = "",
+    clearError = true,
+  ) => {
+    return (value: any) => {
+      setter(value);
+      if (clearError && field) setErrors((prev) => ({ ...prev, [field]: "" }));
+    };
   };
 
-  const hideModal = () => setVisible(false);
+  const validateForm = useCallback(() => {
+    const validationErrors = validateTripForm(
+      tripName,
+      range,
+      destinationId,
+      numberOfPeople,
+      budget,
+    );
 
-  const onDismiss = React.useCallback(() => {
-    setOpen(false);
-  }, []);
+    setErrors(validationErrors);
+    return Object.keys(validationErrors).length === 0;
+  }, [tripName, range, destinationId, numberOfPeople, budget]);
 
-  const onConfirm = React.useCallback(
-    ({
-      startDate,
-      endDate,
-    }: {
-      startDate: Date | undefined;
-      endDate: Date | undefined;
-    }) => {
-      setOpen(false);
-      setRange({ startDate, endDate });
-      setDateRangeText(formatDateRange(startDate, endDate));
-    },
-    [],
-  );
+  const handleCancel = async () => {
+    router.navigate("/trips");
+  };
 
-  const handleTextChange = (text: string) => {
-    const numericText = text.replace(/[^0-9]/g, "");
-    setNumberOfPeople(numericText);
+  const handleSubmit = async () => {
+    if (!validateForm()) return;
+
+    const tripData = {
+      name: tripName,
+      numberOfTravelers: parseInt(numberOfPeople),
+      startDate: formatDateToISO(range.startDate),
+      endDate: range.endDate
+        ? formatDateToISO(range.endDate)
+        : formatDateToISO(range.startDate),
+      destinationPlace: { providerId: destinationId },
+      budget,
+      currencyCode: currency,
+    };
+
+    setIsLoading(true);
+    try {
+      await api!.post(API_TRIPS, tripData);
+      router.navigate("/trips");
+      showSnackbar("Zapisano wycieczkę!", "success");
+    } catch (error: any) {
+      console.error(error.response.data);
+      showSnackbar("Wystąpił błąd podczas zapisywania wycieczki", "error");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
-    <ScrollView style={styles.scrollView}>
-      <View style={styles.container}>
-        <Image
-          source={{
-            uri: "https://upload.wikimedia.org/wikipedia/commons/1/1a/Big_Ben..JPG",
-          }}
-          style={styles.image}
-          resizeMode="cover"
-        />
-        <TextInput
-          mode="outlined"
-          style={styles.textInput}
-          label="Nazwa"
-          value={tripName}
-          placeholder={tripName}
-          onChangeText={setTripName}
-        ></TextInput>
-
-        <ClickableInput
-          label="Termin wycieczki"
-          value={dateRangeText}
-          onPress={() => setOpen(true)}
-          icon="calendar"
-        />
-
-        <DatePickerModal
-          mode="range"
-          visible={isOpen}
-          onDismiss={onDismiss}
-          startDate={range.startDate}
-          endDate={range.endDate}
-          onConfirm={onConfirm}
-          locale="pl"
-          validRange={{
-            startDate: new Date(),
-          }}
-        />
-
-        <TextInput
-          mode="outlined"
-          style={styles.textInput}
-          label="Cel wycieczki"
-          value={destination}
-          placeholder={destination}
-          onChangeText={setDestination}
-        ></TextInput>
-
-        <TextInput
-          mode="outlined"
-          style={styles.textInput}
-          label="Liczba osób"
-          value={numberOfPeople}
-          onChangeText={handleTextChange}
-          keyboardType="numeric"
-        ></TextInput>
-
-        <CurrencyValueInput />
-
-        <ClickableInput
-          label="Profil preferencji"
-          value={selectedPreferenceProfile.name}
-          onPress={() => showModal("Preference")}
-        />
-
-        <ClickableInput
-          label="Profil udogodnień"
-          value={selectedConvenienceProfile.name}
-          onPress={() => showModal("Convenience")}
-        />
-
-        <CustomModal visible={visible} onDismiss={hideModal}>
-          <FlatList
-            data={
-              selectedProfileType === "Preference"
-                ? preferenceProfiles
-                : convenienceProfiles
-            }
-            renderItem={
-              selectedProfileType === "Preference"
-                ? renderPreferenceProfile
-                : renderConvenienceProfile
-            }
-            keyExtractor={(item) => item.id}
-            ItemSeparatorComponent={() => <View />}
-            ListEmptyComponent={<Text>Brak dostępnych profili</Text>}
+    <>
+      <ScrollView style={styles.scrollView}>
+        <View style={styles.container}>
+          <Image
+            source={{
+              uri: "https://upload.wikimedia.org/wikipedia/commons/1/1a/Big_Ben..JPG",
+            }}
+            style={styles.image}
+            resizeMode="cover"
           />
-        </CustomModal>
-      </View>
+          <View style={styles.form}>
+            <TextInput
+              mode="outlined"
+              style={styles.textInput}
+              label="Nazwa"
+              value={tripName}
+              onChangeText={handleChange(setTripName, "tripName")}
+              error={!!errors.tripName}
+            />
+            {errors.tripName && (
+              <Text style={styles.textError}>{errors.tripName}</Text>
+            )}
 
-      <ActionButtons
-        onAction1={() => {
-          router.push("/trips");
-          showSnackbar("Anulowano dodanie wycieczki", "error");
-        }}
-        action1ButtonLabel="Anuluj"
-        action1Icon={undefined}
-        onAction2={() => {
-          router.push("/trips");
-          showSnackbar("Zapisano wycieczkę!", "success");
-        }}
-        action2ButtonLabel="Zapisz"
-        action2Icon={undefined}
-      />
-    </ScrollView>
+            <ClickableInput
+              label="Termin wycieczki"
+              value={dateRangeText}
+              onPress={() => setOpen(true)}
+              icon={CALENDAR_ICON}
+              error={!!errors.range && !range.startDate}
+            />
+            {errors.range && !range.startDate && (
+              <Text style={styles.textError}>{errors.range}</Text>
+            )}
+
+            <ClickableInput
+              label="Cel wycieczki"
+              value={destinationName}
+              onPress={() => router.push("/trips/add/destination")}
+              icon={MARKER_ICON}
+              error={!!errors.destination && !destinationId}
+            />
+            {errors.destination && !destinationId && (
+              <Text style={styles.textError}>{errors.destination}</Text>
+            )}
+
+            <TextInput
+              mode="outlined"
+              style={styles.textInput}
+              label="Liczba osób"
+              value={numberOfPeople}
+              onChangeText={handleChange(setNumberOfPeople, "numberOfPeople")}
+              keyboardType="numeric"
+              error={!!errors.numberOfPeople}
+            />
+            {errors.numberOfPeople && (
+              <Text style={styles.textError}>{errors.numberOfPeople}</Text>
+            )}
+
+            <CurrencyValueInput
+              budget={budget}
+              currency={currency}
+              handleBudgetChange={handleChange(setBudget, "budget")}
+              error={!!errors.budget}
+            />
+            {errors.budget && (
+              <Text style={styles.textError}>{errors.budget}</Text>
+            )}
+
+            <ClickableInput
+              label="Profil preferencji"
+              value={selectedPreferenceProfile?.name || "Brak"}
+              onPress={() => {
+                setProfileType("Preference");
+                setVisible(true);
+              }}
+            />
+            <ClickableInput
+              label="Profil udogodnień"
+              value={selectedConvenienceProfile?.name || "Brak"}
+              onPress={() => {
+                setProfileType("Convenience");
+                setVisible(true);
+              }}
+            />
+
+            <CustomModal visible={visible} onDismiss={() => setVisible(false)}>
+              <FlatList
+                data={
+                  profileType === "Preference"
+                    ? preferenceProfiles
+                    : convenienceProfiles
+                }
+                renderItem={({ item }) => (
+                  <RenderItem
+                    item={item}
+                    isSelected={
+                      (profileType === "Preference"
+                        ? selectedPreferenceProfile
+                        : selectedConvenienceProfile
+                      )?.id === item.id
+                    }
+                    onSelect={handleProfileSelection}
+                    renderContent={(item) => item.name}
+                  />
+                )}
+                keyExtractor={(item) => item.id}
+                ItemSeparatorComponent={() => <View />}
+                ListEmptyComponent={<Text>Brak dostępnych profili</Text>}
+              />
+            </CustomModal>
+          </View>
+          <DatePickerModal
+            mode="range"
+            visible={isOpen}
+            onDismiss={() => setOpen(false)}
+            startDate={range.startDate}
+            endDate={range.endDate}
+            onConfirm={({ startDate, endDate }) => {
+              setOpen(false);
+              setRange({ startDate, endDate });
+              setDateRangeText(formatDateRange(startDate, endDate));
+            }}
+            locale="pl"
+            validRange={{ startDate: getISOToday() }}
+            startWeekOnMonday
+          />
+        </View>
+
+        <ActionButtons
+          onAction1={handleCancel}
+          onAction2={handleSubmit}
+          action1ButtonLabel="Anuluj"
+          action2ButtonLabel="Zapisz"
+          action1Icon={undefined}
+          action2Icon={undefined}
+        />
+      </ScrollView>
+      <LoadingView show={isLoading} />
+    </>
   );
 };
 
@@ -256,31 +312,21 @@ const createStyles = (theme: MD3Theme) =>
       paddingBottom: 20,
       backgroundColor: theme.colors.surface,
     },
-    image: {
-      marginVertical: 25,
-      width: "100%",
-      height: height * 0.2,
+    form: {
+      flex: 1,
+      gap: 10,
+      alignItems: "center",
+      width: width,
     },
+    image: { marginVertical: 25, width: "100%", height: height * 0.2 },
     textInput: {
       width: "90%",
       height: 50,
-      marginVertical: 10,
       backgroundColor: theme.colors.surface,
     },
-    modal: {
-      backgroundColor: theme.colors.surface,
-      marginHorizontal: "10%",
-      padding: 20,
-      borderRadius: 10,
-      alignSelf: "center",
-    },
-    modalContent: {
-      fontSize: 16,
-      textAlign: "center",
-    },
-    modalText: {
-      fontSize: 16,
-      textAlign: "center",
-      marginBottom: 20,
+    textError: {
+      marginHorizontal: "5%",
+      color: theme.colors.error,
+      alignSelf: "flex-start",
     },
   });

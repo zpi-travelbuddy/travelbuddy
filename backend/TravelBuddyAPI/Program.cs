@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
-using Microsoft.Identity.Web;
+using Azure.Identity;
 using TravelBuddyAPI.Data;
 using Microsoft.OpenApi.Models;
 using TravelBuddyAPI.Endpoints;
@@ -71,9 +70,18 @@ namespace TravelBuddyAPI
             {
                 DotNetEnv.Env.Load(); // For running app outside of Docker
                 builder.Configuration["MSSQL_SA_PASSWORD"] = DotNetEnv.Env.GetString("MSSQL_SA_PASSWORD");
-                builder.Configuration["GEOAPIFY_KEY"] = DotNetEnv.Env.GetString("GEOAPIFY_KEY");
+                builder.Configuration["Geoapify:Key"] = DotNetEnv.Env.GetString("GEOAPIFY_KEY");
                 builder.Configuration["Cognito:Authority"] = DotNetEnv.Env.GetString("COGNITO_AUTHORITY");
                 builder.Configuration["Cognito:Audience"] = DotNetEnv.Env.GetString("COGNITO_AUDIENCE");
+            }
+            else if (builder.Environment.IsProduction())
+            {
+                var keyVaultEndpoint = new Uri(builder.Configuration["Azure:KeyVault:Uri"] ?? string.Empty);
+
+                builder.Configuration.AddAzureKeyVault(
+                    keyVaultEndpoint,
+                    new DefaultAzureCredential(),
+                    new CustomKeyVaultSecretManager());
             }
 
             builder.Services.AddAuthentication(options =>
@@ -98,9 +106,16 @@ namespace TravelBuddyAPI
 
             builder.Services.AddAuthorization();
 
+
+            var databaseConnectionString = builder.Configuration.GetConnectionString("TravelBuddyDb");
+            if (builder.Environment.IsDevelopment())
+            {
+                databaseConnectionString = databaseConnectionString?.Replace("{MSSQL_SA_PASSWORD}", builder.Configuration["MSSQL_SA_PASSWORD"]);
+            }
+
             builder.Services.AddDbContext<TravelBuddyDbContext>(options =>
             {
-                options.UseSqlServer(builder.Configuration.GetConnectionString("TravelBuddyDb")?.Replace("{MSSQL_SA_PASSWORD}", builder.Configuration["MSSQL_SA_PASSWORD"]));
+                options.UseSqlServer(databaseConnectionString);
 
             });
 

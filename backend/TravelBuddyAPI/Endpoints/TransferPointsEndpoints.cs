@@ -35,15 +35,25 @@ public static class TransferPointsEndpoints
         }
     }
 
-    private static async Task<Results<Accepted<string>,NotFound<string>>> EditTransferPointAsync(Guid id, TransferPointDTO transferPoint)
+    private static async Task<Results<Accepted<string>,NotFound<string>>> EditTransferPointAsync(Guid id, TransferPointDTO transferPoint, ITransferPointsService transferPointsService, HttpContext httpContext)
     {
-        await Task.CompletedTask;
-        return TypedResults.NotFound("Not implemented");
+        try {
+            var userId = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new InvalidOperationException("User not found");
+            var transferPointEdited = await transferPointsService.EditTransferPointAsync(userId, id, transferPoint) ? "Transfer point edited successfully" : throw new InvalidOperationException("Failed to edit transfer point");
+            return TypedResults.Accepted($"/transferPoints/{transferPointEdited}", transferPointEdited);
+        } catch (InvalidOperationException ex) {
+            return TypedResults.NotFound(ex.Message);
+        }
     }
 
-    private static async Task<Results<NoContent,NotFound<string>>> DeleteTransferPointAsync(Guid id)
+    private static async Task<Results<NoContent,NotFound<string>>> DeleteTransferPointAsync(Guid id, ITransferPointsService transferPointsService, HttpContext httpContext)
     {
-        await Task.CompletedTask;
-        return TypedResults.NotFound("Not implemented");
+        try {
+            var userId = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new InvalidOperationException("User not found");
+            var transferPointDeleted = await transferPointsService.DeleteTransferPointAsync(userId, id) ? "Transfer point edited successfully" : throw new InvalidOperationException("Failed to edit transfer point");
+            return TypedResults.NoContent();
+        } catch (InvalidOperationException ex) {
+            return TypedResults.NotFound(ex.Message);
+        }
     }
 }

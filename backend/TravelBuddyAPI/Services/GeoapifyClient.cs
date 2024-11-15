@@ -18,7 +18,7 @@ public class GeoapifyClient : IGeoapifyService
     {
         _client = client;
         _dataCache = dataCache;
-        _apiKey = configuration["GEOAPIFY_KEY"] ?? throw new ArgumentNullException($"{nameof(_apiKey)} is not set in the configuration");
+        _apiKey = configuration["Geoapify:Key"] ?? throw new ArgumentNullException($"{nameof(_apiKey)} is not set in the configuration");
     }
 
     public async Task<List<ProviderPlace>?> GetAddressAutocompleteAsync(string text, AddressLevel? type = null, string? lang = null, string? filter = null, string? bias = null, string format = "json")

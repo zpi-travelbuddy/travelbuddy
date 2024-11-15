@@ -2,6 +2,8 @@ export const EDIT_ICON = "edit";
 export const DETAILS_ICON = "info";
 export const DELETE_ICON = "delete";
 
+export const CHECK_CIRCLE_ICON = "check-circle-outline";
+
 // NavBar icons
 export const TRIPS_ICON = "car";
 export const EXPLORE_ICON = "compass-outline";
@@ -16,6 +18,7 @@ export const RECOMMENDATION_ICON = "star-outline";
 // Transfer type icons
 export const WALK_ICON = "walk";
 export const BUS_ICON = "bus";
+export const TRAIN_ICON = "train";
 export const CAR_ICON = "car";
 export const MANUAL_ICON = "hand";
 export const EMPTY_ICON = "plus";
@@ -40,3 +43,5 @@ export const VEGAN_ICON = "leaf";
 export const VEGE_ICON = "food-drumstick-off";
 
 export const DEFAULT_ICON_SIZE = 24;
+export const NON_STANDARD_TRANSFER_ICON = "compass-outline";
+export const MARKER_ICON = "map-marker";

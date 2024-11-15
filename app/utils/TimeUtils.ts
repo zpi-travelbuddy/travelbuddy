@@ -3,22 +3,35 @@ export function stringToDate(date: string): Date {
   return new Date(year, month - 1, day);
 }
 
-export function formatDate(date: Date | undefined): string {
-  if (!date) return "";
-  const day = String(date.getDate()).padStart(2, "0");
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const year = date.getFullYear();
+export function getISOToday(): Date {
+  const today = new Date(Date.now());
 
-  return `${day}.${month}.${year}`;
+  return new Date(formatDateToISO(today));
+}
+
+export function formatDateToISO(date: Date | undefined): string {
+  if (!date) return "";
+  const polishDate = formatDateToPolish(date);
+  return polishDate
+    .split(".")
+    .reverse()
+    .map((part: string) => part.padStart(2, "0"))
+    .join("-");
+}
+
+export function formatDateToPolish(date: Date | undefined): string {
+  if (!date) return "";
+  return date.toLocaleDateString("pl-PL");
 }
 
 export function formatDateRange(
   startDate: Date | undefined,
   endDate: Date | undefined,
 ): string {
+  if (!endDate) return formatDateToPolish(startDate);
   if (startDate?.getDate() !== endDate?.getDate())
-    return formatDate(startDate) + " - " + formatDate(endDate);
-  return formatDate(startDate);
+    return formatDateToPolish(startDate) + " - " + formatDateToPolish(endDate);
+  return formatDateToPolish(startDate);
 }
 
 export function formatMinutes(minutes: number): string {
@@ -49,3 +62,7 @@ export function formatMinutesInWords(minutes: number): string {
 export function formatTimeRange(startTime: string, endTime: string): string {
   return `${startTime} - ${endTime}`;
 }
+
+export const formatToISODate = (date: Date): string => {
+  return date.toISOString().split("T")[0];
+};

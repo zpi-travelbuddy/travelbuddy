@@ -1,8 +1,77 @@
-type Trip = {
+export interface TripDay {
+  id: string;
+  tripId: string;
+  date: string;
+}
+
+export interface TripDetails {
+  id: string;
   name: string;
-  dateFrom: Date;
-  dateTo: Date;
-};
+  numberOfTravelers: number;
+  startDate: string;
+  endDate: string;
+  destinationId: string;
+  budget: number;
+  currencyCode: string;
+  categoryProfileId: string;
+  conditionProfileId: string;
+  tripDays: TripDay[];
+}
+
+export interface TripDay {
+  id: string;
+  tripId: string;
+  date: string;
+}
+
+export interface TripViewModel {
+  name: string;
+  dateRange: string;
+  destination: string;
+  numberOfTripPoints: number;
+  numberOfTravelers: number;
+  predictedCost: string;
+  budget: string;
+  categoryProfileName: string;
+  conditionProfileName: string;
+}
+
+export interface TripDetails {
+  id: string;
+  name: string;
+  numberOfTravelers: number;
+  startDate: string;
+  endDate: string;
+  destinationId: string;
+  budget: number;
+  currencyCode: string;
+  categoryProfileId: string | null;
+  conditionProfileId: string | null;
+  tripDays: TripDay[];
+}
+
+export interface TripSummaryPoint {
+  name: string;
+  predictedSpendings: number;
+}
+
+export interface TripSummaryDay {
+  date: string;
+  tripPoints: TripSummaryPoint[];
+}
+
+export interface TripSummary {
+  currency: string;
+  tripDays: TripSummaryDay[];
+
+export interface DateRange {
+  startDate?: Date;
+  endDate?: Date;
+}
+
+export interface TripCreationErrors {
+  [key: string]: string | undefined;
+}
 
 export type TripPointType =
   | "attraction"
