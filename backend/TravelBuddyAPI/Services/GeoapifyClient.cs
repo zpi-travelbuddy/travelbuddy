@@ -18,7 +18,7 @@ public class GeoapifyClient : IGeoapifyService
     {
         _client = client;
         _dataCache = dataCache;
-        _apiKey = configuration["GEOAPIFY_KEY"] ?? throw new ArgumentNullException($"{nameof(_apiKey)} is not set in the configuration");
+        _apiKey = configuration["Geoapify:Key"] ?? throw new ArgumentNullException($"{nameof(_apiKey)} is not set in the configuration");
     }
 
     public async Task<List<ProviderPlace>?> GetAddressAutocompleteAsync(string text, AddressLevel? type = null, string? lang = null, string? filter = null, string? bias = null, string format = "json")
@@ -48,6 +48,7 @@ public class GeoapifyClient : IGeoapifyService
                     ProviderId = p.place_id,
                     Name = p.name,
                     Country = p.country,
+                    State = p.state,
                     City = p.city,
                     Street = p.street,
                     HouseNumber = p.housenumber,
@@ -271,12 +272,13 @@ public class GeoapifyClient : IGeoapifyService
                 ProviderId = p.place_id,
                 Name = p.name,
                 Country = p.country,
+                State = p.state,
                 City = p.city,
                 Street = p.street,
                 HouseNumber = p.housenumber,
                 Latitude = p.lat,
                 Longitude = p.lon,
-                OpenningHours = p.opening_hours,
+                OpeningHours = p.opening_hours,
                 Categories = categories?
                     .Where(cat => ((IEnumerable<dynamic>?)p.categories)?
                         .Any(c => c.ToString() == cat.FullName) ?? false)

@@ -10,13 +10,14 @@ using TravelBuddyAPI.DTOs.Place;
 
 namespace TravelBuddyAPI.Services;
 
-public class TripPointsService(TravelBuddyDbContext dbContext, INBPService nbpService, IPlacesService placesService) : ITripPointsService
+public class TripPointsService(TravelBuddyDbContext dbContext, INBPService nbpService, IPlacesService placesService, ITransferPointsService transferPointsService) : ITripPointsService
 {
     private readonly TravelBuddyDbContext _dbContext = dbContext;
     private readonly INBPService _nbpService = nbpService;
     private readonly IPlacesService _placesService = placesService;
+    private readonly ITransferPointsService _transferPointService = transferPointsService;
 
-    private static class ErrorMessage
+    public static class ErrorMessage
     {
         public const string TripDayNotFound = "Could not find trip day of given id.";
         public const string TripDayInPast = "Cannot add trip point to past trip day.";
@@ -25,12 +26,17 @@ public class TripPointsService(TravelBuddyDbContext dbContext, INBPService nbpSe
         public const string EmptyPlace = "Place cannot be empty.";
         public const string CreateTripPoint = "An error occurred while creating a trip point.";
         public const string TripPointNotFound = "Trip point not found.";
+        public const string DeleteTripPoint = "An error occurred while deleting a trip point.";
+        public const string TripPointOverlap = "Trip point overlaps with another trip point.";
+        public const string TooManyDecimalPlaces = "Predicted cost must have at most 2 decimal places.";
     }
 
     public async Task<TripPointDetailsDTO> CreateTripPointAsync(string userId, TripPointRequestDTO tripPoint)
     {
         try
         {
+            using var transaction = await _dbContext.Database.BeginTransactionAsync();
+
             Trip trip = await _dbContext.Trips
                 .Include(t => t.TripDays)
                 .Where(t => t.UserId == userId && t.TripDays != null && t.TripDays.Any(td => td.Id == tripPoint.TripDayId))
@@ -42,7 +48,17 @@ public class TripPointsService(TravelBuddyDbContext dbContext, INBPService nbpSe
             TripDay? tripDay = trip.TripDays?.FirstOrDefault(td => td.Id == tripPoint.TripDayId);
             if (tripDay?.Date < DateOnly.FromDateTime(DateTime.Now)) throw new ArgumentException(ErrorMessage.TripDayInPast);
 
-            decimal exchangeRate = await _nbpService.GetClosestRateAsync(trip?.CurrencyCode ?? string.Empty, DateOnly.FromDateTime(DateTime.Now)) ?? throw new InvalidOperationException(ErrorMessage.RetriveExchangeRate);
+            List<TripPoint> overlappingTripPoints = await _dbContext.TripPoints
+                .Where(tp => tp.TripDayId == tripPoint.TripDayId
+                    && ((tp.StartTime <= tripPoint.StartTime && tp.EndTime >= tripPoint.StartTime)
+                        || (tp.StartTime <= tripPoint.EndTime && tp.EndTime >= tripPoint.EndTime)))
+                .ToListAsync();
+
+            if (overlappingTripPoints.Count != 0) throw new ArgumentException(ErrorMessage.TripPointOverlap);
+
+            decimal exchangeRate = await _nbpService.GetRateAsync(trip?.CurrencyCode ?? string.Empty, DateOnly.FromDateTime(DateTime.Now)) ?? throw new InvalidOperationException(ErrorMessage.RetriveExchangeRate);
+
+            if (tripPoint.PredictedCost * 100 % 1 != 0) throw new ArgumentException(ErrorMessage.TooManyDecimalPlaces);
 
             _ = tripPoint.Place ?? throw new InvalidOperationException(ErrorMessage.EmptyPlace);
             Guid placeId = (await GetPlaceIdAsync(tripPoint.Place.ProviderId)) ?? (await _placesService.AddPlaceAsync(tripPoint.Place)).Id;
@@ -71,11 +87,13 @@ public class TripPointsService(TravelBuddyDbContext dbContext, INBPService nbpSe
 
             await _dbContext.TripPoints.AddAsync(newTripPoint);
             await _dbContext.SaveChangesAsync();
+            await transaction.CommitAsync();
 
             return await GetTripPointDetailsAsync(userId, newTripPoint.Id);
         }
         catch (Exception e) when (e is ArgumentNullException || e is InvalidOperationException || e is ArgumentException || e is HttpRequestException || e is ValidationException)
         {
+            if (_dbContext.Database.CurrentTransaction != null) await _dbContext.Database.RollbackTransactionAsync();
             throw new InvalidOperationException($"{ErrorMessage.CreateTripPoint} {e.Message}");
         }
     }
@@ -89,9 +107,66 @@ public class TripPointsService(TravelBuddyDbContext dbContext, INBPService nbpSe
             .FirstOrDefaultAsync();
     }
 
-    public Task<bool> DeleteTripPointAsync(string userId, Guid tripPointId)
+    public async Task<bool> DeleteTripPointAsync(string userId, Guid tripPointId)
     {
-        throw new NotImplementedException();
+        try
+        {
+            using var transaction = await _dbContext.Database.BeginTransactionAsync();
+
+            await DeleteTripPointDuringTransactionAsync(userId, tripPointId);
+
+            await transaction.CommitAsync();
+
+            return true;
+        }
+        catch (Exception e) when (e is InvalidOperationException)
+        {
+            if (_dbContext.Database.CurrentTransaction != null)
+            {
+                await _dbContext.Database.RollbackTransactionAsync();
+            }
+            throw new InvalidOperationException($"{ErrorMessage.DeleteTripPoint} {e.Message}");
+        }
+    }
+
+    public async Task<bool> DeleteTripPointDuringTransactionAsync(string userId, Guid tripPointId)
+    {
+        TripPoint tripPoint = await _dbContext.TripPoints
+            .Include(tp => tp.TripDay)
+                .ThenInclude(td => td != null ? td.Trip : null)
+            .Include(tp => tp.TripDay != null ? tp.TripDay.TransferPoints : null)
+            .Include(tp => tp.Place)
+            .Include(tp => tp.Review)
+            .Where(tp => tp.Id == tripPointId
+                && tp.TripDay != null
+                && tp.Place != null
+                && tp.TripDay.Trip != null
+                && tp.TripDay.Trip.UserId == userId)
+            .FirstOrDefaultAsync() ?? throw new InvalidOperationException(ErrorMessage.TripPointNotFound);
+
+        var transferPoints = tripPoint.TripDay?.TransferPoints?
+            .Where(tp => tp.FromTripPointId == tripPointId || tp.ToTripPointId == tripPointId)
+            .ToList() ?? [];
+
+        foreach (var transferPoint in transferPoints)
+        {
+            await _transferPointService.DeleteTransferPointAsync(userId,transferPoint.Id);
+        }
+
+        if (tripPoint.Place is CustomPlace customPlace)
+        {
+            if (tripPoint.Review != null)
+            {
+                _dbContext.TripPointReviews.Remove(tripPoint.Review);
+            }
+            _dbContext.Places.Remove(customPlace);
+        }
+
+        _dbContext.TripPoints.Remove(tripPoint);
+
+        await _dbContext.SaveChangesAsync();
+
+        return true;
     }
 
     public Task<bool> EditTripPointAsync(string userId, Guid tripPointId, TripPointRequestDTO tripPoint)

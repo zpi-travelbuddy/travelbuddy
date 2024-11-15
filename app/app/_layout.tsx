@@ -1,6 +1,6 @@
 import { Slot } from "expo-router";
-import { PaperProvider } from "react-native-paper";
-import { Themes } from "@/constants/Themes";
+import { PaperProvider, Portal } from "react-native-paper";
+import { Themes, MD3ThemeExtended } from "@/constants/Themes";
 import {
   Manrope_400Regular,
   Manrope_500Medium,
@@ -51,17 +51,19 @@ export default function RootLayout() {
     <AuthProvider>
       <PaperProvider theme={theme}>
         <SnackbarProvider>
-          <StatusBar />
-          <View style={styles.container}>
-            <Slot />
-          </View>
+          <Portal.Host>
+            <StatusBar />
+            <View style={styles.container}>
+              <Slot />
+            </View>
+          </Portal.Host>
         </SnackbarProvider>
       </PaperProvider>
     </AuthProvider>
   );
 }
 
-const makeStyles = (theme: any) =>
+const makeStyles = (theme: MD3ThemeExtended) =>
   StyleSheet.create({
     container: {
       flex: 1,

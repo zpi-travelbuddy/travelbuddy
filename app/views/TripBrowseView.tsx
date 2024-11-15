@@ -109,7 +109,7 @@ const TripBrowseView = () => {
   const deleteTrip = (trip: Trip | null) => {
     console.log(`Usuwanie wycieczki: ${trip?.title}`);
     hideModal();
-    showSnackbar("Usunięto wycieczkę!")
+    showSnackbar("Usunięto wycieczkę!");
   };
 
   useEffect(() => {
@@ -227,8 +227,8 @@ const TripBrowseView = () => {
               <Text style={styles.modalSubtitle}>{selectedTrip?.subtitle}</Text>
             </View>
             <ActionTextButtons
-              onCancel={hideModal}
-              onConfirm={() => deleteTrip(selectedTrip)}
+              onAction1={hideModal}
+              onAction2={() => deleteTrip(selectedTrip)}
             />
           </View>
         </CustomModal>

@@ -3,13 +3,25 @@ export function stringToDate(date: string): Date {
   return new Date(year, month - 1, day);
 }
 
-export function formatDate(date: Date | undefined): string {
-  if (!date) return "";
-  const day = String(date.getDate()).padStart(2, "0");
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const year = date.getFullYear();
+export function getISOToday(): Date {
+  const today = new Date(Date.now());
 
-  return `${day}.${month}.${year}`;
+  return new Date(formatDateToISO(today));
+}
+
+export function formatDateToISO(date: Date | undefined): string {
+  if (!date) return "";
+  const polishDate = formatDateToPolish(date);
+  return polishDate
+    .split(".")
+    .reverse()
+    .map((part: string) => part.padStart(2, "0"))
+    .join("-");
+}
+
+export function formatDateToPolish(date: Date | undefined): string {
+  if (!date) return "";
+  return date.toLocaleDateString("pl-PL");
 }
 
 export const formatTime = (date: Date): string => {
@@ -22,19 +34,35 @@ export function formatDateRange(
   startDate: Date | undefined,
   endDate: Date | undefined,
 ): string {
+  if (!endDate) return formatDateToPolish(startDate);
   if (startDate?.getDate() !== endDate?.getDate())
-    return formatDate(startDate) + " - " + formatDate(endDate);
-  return formatDate(startDate);
+    return formatDateToPolish(startDate) + " - " + formatDateToPolish(endDate);
+  return formatDateToPolish(startDate);
 }
 
 export function formatMinutes(minutes: number): string {
   const hours = Math.floor(minutes / 60);
 
   if (hours > 0) {
+    if (minutes % 60 === 0) return `${hours} h`;
     return `${hours} h ${minutes % 60} min`;
   }
 
   return `${minutes} min`;
+}
+
+export function formatMinutesInWords(minutes: number): string {
+  const hours = Math.floor(minutes / 60);
+  const remainingMinutes = minutes % 60;
+  if (hours > 0) {
+    const hoursInWord =
+      hours === 1 ? "godzina" : hours > 4 ? "godzin" : "godziny";
+    return remainingMinutes === 0
+      ? `${hours} ${hoursInWord}`
+      : `Ponad ${hours} ${hoursInWord}`;
+  }
+
+  return `${minutes} minut`;
 }
 
 export function formatTimeRange(startTime: string, endTime: string): string {
@@ -59,3 +87,7 @@ export function addHoursToDate(
   newDate.setHours(newDate.getHours() + hours);
   return newDate;
 }
+
+export const formatToISODate = (date: Date): string => {
+  return date.toISOString().split("T")[0];
+};

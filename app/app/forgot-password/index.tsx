@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   View,
   StyleSheet,
@@ -16,6 +16,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { EmailTextInput } from "@/components/auth/EmailTextInput";
 import { validateEmail } from "@/utils/validations";
 import { MD3ThemeExtended } from "@/constants/Themes";
+import { Auth } from "aws-amplify";
 
 // It would be good if we could calculate this value dynamically, but I had some issues with that
 const BOTTOM_VIEW_HEIGHT = 54;
@@ -39,30 +40,28 @@ export default function ForgotPasswordEmail() {
     };
   });
 
-  const handleInputChange = (value: string) => {
+  const handleEmailChange = (value: string) => {
     setEmail(value);
-    setError(validateField(value));
-  };
-
-  const validateField = (value: string) => {
-    if (!value) return "Email jest wymagany";
-    if (!validateEmail(value)) return "Niepoprawny format email";
-    return "";
+    setError(validateEmail(value));
   };
 
   const validateForm = () => {
-    const emailError = validateField(email);
+    const emailError = validateEmail(email);
     setError(emailError);
     return !emailError;
   };
 
   const handlePress = async () => {
-    if (validateForm()) {
-      // TODO: Add password reset request
+    if (!validateForm()) return;
+
+    try {
+      await Auth.forgotPassword(email);
       router.navigate({
         pathname: "/forgot-password/confirm",
         params: { email },
       });
+    } catch (error) {
+      setError("Wystąpił błąd. Spróbuj ponownie.");
     }
   };
 
@@ -79,7 +78,7 @@ export default function ForgotPasswordEmail() {
             </Text>
             <EmailTextInput
               value={email}
-              onChangeText={(text) => handleInputChange(text)}
+              onChangeText={handleEmailChange}
               error={!!error}
               style={styles.inputText}
             />

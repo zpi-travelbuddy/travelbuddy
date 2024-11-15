@@ -62,7 +62,7 @@ public class TransferPointsServiceTest
         await _dbContext.TripDays.AddAsync(tripDay);
         await _dbContext.SaveChangesAsync();
 
-        var transferPointDTO = new TransferPointDTO
+        var transferPointDTO = new TransferPointRequestDTO
         {
             TripDayId = tripDay.Id,
             StartTime = TimeOnly.FromDateTime(DateTime.Now),
@@ -114,7 +114,7 @@ public class TransferPointsServiceTest
         await _dbContext.TripDays.AddAsync(tripDay);
         await _dbContext.SaveChangesAsync();
 
-        var transferPointDTO = new TransferPointDTO
+        var transferPointDTO = new TransferPointRequestDTO
         {
             TripDayId = tripDay.Id,
             StartTime = TimeOnly.FromDateTime(DateTime.Now),
@@ -144,7 +144,7 @@ public class TransferPointsServiceTest
     public async Task CreateTransferPointAsync_EmptyRequest_ShouldThrowArgumentNullException()
     {
         string userId = "testUser";
-        TransferPointDTO transferPoint = null!;
+        TransferPointRequestDTO transferPoint = null!;
 
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _transferPointsService.CreateTransferPointAsync(userId, transferPoint));
 
@@ -169,7 +169,7 @@ public class TransferPointsServiceTest
         await _dbContext.TripDays.AddAsync(tripDay);
         await _dbContext.SaveChangesAsync();
 
-        var transferPointDTO = new TransferPointDTO
+        var transferPointDTO = new TransferPointRequestDTO
         {
             TripDayId = tripDay.Id,
             FromTripPointId = tripPoint.Id,
@@ -186,7 +186,7 @@ public class TransferPointsServiceTest
     [Fact]
     public async Task CreateTransferPointAsync_TripDayNotFound_ShouldThrowInvalidOperationException()
     {
-        var transferPointDTO = new TransferPointDTO
+        var transferPointDTO = new TransferPointRequestDTO
         {
             TripDayId = Guid.NewGuid(),
             FromTripPointId = Guid.NewGuid(),
@@ -217,7 +217,7 @@ public class TransferPointsServiceTest
         await _dbContext.TripDays.AddAsync(tripDay);
         await _dbContext.SaveChangesAsync();
 
-        var transferPointDTO = new TransferPointDTO
+        var transferPointDTO = new TransferPointRequestDTO
         {
             TripDayId = tripDay.Id,
             FromTripPointId = Guid.NewGuid(),
@@ -267,7 +267,7 @@ public class TransferPointsServiceTest
         await _dbContext.TripDays.AddAsync(tripDay);
         await _dbContext.SaveChangesAsync();
 
-        var transferPointDTO = new TransferPointDTO
+        var transferPointDTO = new TransferPointRequestDTO
         {
             TripDayId = tripDay.Id,
             FromTripPointId = fromTripPoint.Id,
@@ -311,7 +311,7 @@ public class TransferPointsServiceTest
         await _dbContext.TransferPoints.AddAsync(transferPoint);
         await _dbContext.SaveChangesAsync();
 
-        var transferPointDTO = new TransferPointDTO
+        var transferPointDTO = new TransferPointRequestDTO
         {
             TripDayId = tripDay.Id,
             FromTripPointId = fromTripPoint.Id,
@@ -376,7 +376,7 @@ public class TransferPointsServiceTest
             await _dbContext.TransferPoints.AddAsync(transferPoint);
             await _dbContext.SaveChangesAsync();
 
-            var transferPointDTO = new TransferPointDTO
+            var transferPointDTO = new TransferPointRequestDTO
             {
                 TripDayId = tripDay.Id,
                 FromTripPointId = fromTripPoint.Id,
@@ -405,7 +405,7 @@ public class TransferPointsServiceTest
     [Fact]
     public async Task EditTransferPointAsync_TransferPointNotFound_ShouldThrowInvalidOperationException()
     {
-        var transferPointDTO = new TransferPointDTO
+        var transferPointDTO = new TransferPointRequestDTO
         {
             TripDayId = Guid.NewGuid(),
             FromTripPointId = Guid.NewGuid(),
@@ -450,7 +450,7 @@ public class TransferPointsServiceTest
         await _dbContext.TransferPoints.AddAsync(transferPoint);
         await _dbContext.SaveChangesAsync();
 
-        var transferPointDTO = new TransferPointDTO
+        var transferPointDTO = new TransferPointRequestDTO
         {
             TripDayId = tripDay.Id,
             FromTripPointId = fromTripPoint.Id,

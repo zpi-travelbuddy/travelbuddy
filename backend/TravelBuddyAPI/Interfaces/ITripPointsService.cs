@@ -4,7 +4,6 @@ using TravelBuddyAPI.DTOs.TripPointReview;
 namespace TravelBuddyAPI.Interfaces;
 
 /// <summary>
-/// Retrieves the details of a trip point review asynchronously.
 /// Interface for managing trip points.
 /// </summary>
 public interface ITripPointsService
@@ -33,6 +32,15 @@ public interface ITripPointsService
     /// <param name="tripPointId">The ID of the trip point to delete.</param>
     /// <returns>A task that represents the asynchronous operation. The task result indicates whether the deletion was successful.</returns>
     Task<bool> DeleteTripPointAsync(string userId, Guid tripPointId);
+
+    /// <summary>
+    /// Deletes a trip point during a transaction asynchronously.
+    /// </summary>
+    /// <param name="userId">The ID of the user deleting the trip point.</param>
+    /// <param name="tripPointId">The ID of the trip point to delete.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result indicates whether the deletion was successful.</returns>
+    Task<bool> DeleteTripPointDuringTransactionAsync(string userId, Guid tripPointId);
+
 
     /// <summary>
     /// Gets the details of a specific trip point.
@@ -73,4 +81,5 @@ public interface ITripPointsService
     /// <param name="userId">The ID of the user requesting the trip point reviews.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains a list of trip point review overviews.</returns>
     Task<List<TripPointReviewOverviewDTO>> GetTripPointsReviewsAsync(string userId);
+
 }

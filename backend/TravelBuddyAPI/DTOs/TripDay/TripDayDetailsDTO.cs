@@ -18,7 +18,7 @@ public class TripDayDetailsDTO
     public DateOnly Date { get; set; }
 
     [Required]
-    public List<TransferPointDTO>? TransferPoints { get; set; }
+    public List<TransferPointOverviewDTO>? TransferPoints { get; set; }
 
     [Required]
     public List<TripPointOverviewDTO>? TripPoints { get; set; }

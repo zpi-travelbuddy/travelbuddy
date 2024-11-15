@@ -21,6 +21,8 @@ public class PlaceDetailsDTO
     [Required]
     public string? Country { get; set; }
 
+    public string? State { get; set; }
+
     [Required]
     public string? City { get; set; }
 
