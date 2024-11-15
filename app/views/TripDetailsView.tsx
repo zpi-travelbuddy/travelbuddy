@@ -69,7 +69,7 @@ const TripDetailsView = () => {
   }, [tripDetails, tripSummary, destinationDetails]);
 
   const labels: Record<string, string> = {
-    tripName: "Nazwa wycieczki",
+    name: "Nazwa wycieczki",
     dateRange: "Termin wycieczki",
     destination: "Cel wycieczki",
     numberOfTripPoints: "Liczba punktów wycieczki",
