@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
+using TravelBuddyAPI.Enums;
 using TravelBuddyAPI.Models;
 
 public static class ModelBuilderExtension
@@ -489,7 +490,7 @@ public static class ModelBuilderExtension
             new ProviderPlace { Id = Guid.NewGuid(), Name = "Jana Pawła II", City = "Raszków", Country = "Poland", Latitude = 51.7165523m, Longitude = 17.7274935m, ProviderId = "51768d96033dba314059315a59fcb7db4940f00103f901262f10ed0100000092030e4a616e6120506177c58261204949", State = "Greater Poland Voivodeship", Street = "Kościelna"},
             
             new ProviderPlace { Id = Guid.NewGuid(), Name = "Samolot MIG", City = "Ostrów Wielkopolski", Country = "Poland", Latitude = 51.6550975m, Longitude = 17.8059913m, ProviderId = "514b5c227255ce314059cd461f3cdad34940f00103f901c95100f70000000092030b53616d6f6c6f74204d4947", State = "Greater Poland Voivodeship", Street = "Raszkowska"},
-            new ProviderPlace { Id = Guid.NewGuid(), Name = "Pomnik 60 Pułku Piechoty", City = "Ostrów Wielkopolski", Country = "Poland", Latitude = 51.652452m, Longitude = 17.8150573m, ProviderId = "51b6dd5f98a7d031405953490f8c83d34940f00103f901c3b040f600000000920319506f6d6e696b203630205075c5826b752050696563686f7479", State = "Greater Poland Voivodeship", Street = "60 Pułku Piechoty"},
+            new ProviderPlace { Id = Guid.NewGuid(), Name = "Pomnik 60 Pułku Piechoty", City = "Ostrów Wielkopolski", Country = "Poland", Latitude = 51.652452m, Longitude = 17.8150573m, ProviderId = "51b6dd5f98a7d031405953490f8c83d34940f00103f901c3b040f600000000920319506f6d6e696b203630205075c5826b752050696563686f7479"},
             new ProviderPlace { Id = Guid.NewGuid(), Name = "Bistro Bravo", City = "Ostrów Wielkopolski", Country = "Poland", Latitude = 51.6494557m, Longitude = 17.8174638m, ProviderId = "51f4a9be4e45d13140596108465d21d34940f00103f901d44b66110100000092030c42697374726f20427261766f", State = "Greater Poland Voivodeship", Street = "Rynek", HouseNumber = "15", OpeningHours = "Mo-Th 12:00-24:00; Fr-Su 12:00-24:00+"},
         };
 
@@ -498,13 +499,14 @@ public static class ModelBuilderExtension
         // CUSTOM PLACE
         var CustomPlaces = new List<Place>
         {
-            new CustomPlace { Id = Guid.NewGuid(), Name = "Zalew", City = "Raszków", Country = "Poland", Latitude = 51.42426m, Longitude = 17.43164m},
+            new CustomPlace { Id = Guid.NewGuid(), Name = "Zalew", City = "Raszków", Country = "Poland", Latitude = 51.711806m, Longitude = 17.721194m},
             new CustomPlace { Id = Guid.NewGuid(), Name = "Kościół w parku", City = "Przybysławice", Country = "Poland", Latitude = 51.707396m, Longitude = 17.720968m},
+            new CustomPlace { Id = Guid.NewGuid(), Name = "Parowóz TKi3-120", City = "Ostrów Wielkopolski", Country = "Poland", Latitude = 51.6514858m, Longitude = 17.810879178559084m},
         };
 
         modelBuilder.Entity<CustomPlace>().HasData(CustomPlaces);
 
-        //TODO PROVIDER PLACE - PLACE CATEGORY
+        //PROVIDER PLACE - PLACE CATEGORY
 
        modelBuilder.Entity("ProviderPlacePlaceCategory").HasData(
             new { ProviderPlaceId = providerPlaces[1].Id, PlaceCategoryId = placeCategories["sights"].Id },
@@ -560,8 +562,9 @@ public static class ModelBuilderExtension
             new TripPoint { Id = Guid.NewGuid(), Name = "Kościół w parku", TripDayId = tripDays[0].Id, PredictedCost = 0, StartTime = new TimeOnly(13,30,0), EndTime = new TimeOnly(14,00,0), Status = 0, PlaceId = CustomPlaces[1].Id, ExchangeRate = 1},
 
             new TripPoint { Id = Guid.NewGuid(), Name = "Samolot MIG", Comment = "Czy to lata?", TripDayId = tripDays[1].Id, PredictedCost = 0, StartTime = new TimeOnly(12,30,0), EndTime = new TimeOnly(12,40,0), Status = 0, PlaceId = providerPlaces[4].Id, ExchangeRate = 1},
-            new TripPoint { Id = Guid.NewGuid(), Name = "Pomnik 60 Pułku Piechoty", Comment = "Ciekawe skąd ta nazwa ulicy", TripDayId = tripDays[1].Id, PredictedCost = 0, StartTime = new TimeOnly(13,0,0), EndTime = new TimeOnly(13,10,0), Status = 0, PlaceId = providerPlaces[5].Id, ExchangeRate = 1},
-            new TripPoint { Id = Guid.NewGuid(), Name = "Bistro Bravo", Comment = "Czas na jedzonko", TripDayId = tripDays[1].Id, PredictedCost = 30, StartTime = new TimeOnly(14,0,0), EndTime = new TimeOnly(15,30,0), Status = 0, PlaceId = providerPlaces[6].Id, ExchangeRate = 1, OpeningTime = new TimeOnly(12,0,0), ClosingTime = new TimeOnly(0,0,0)}
+            new TripPoint { Id = Guid.NewGuid(), Name = "Pomnik 60 Pułku Piechoty", TripDayId = tripDays[1].Id, PredictedCost = 0, StartTime = new TimeOnly(13,0,0), EndTime = new TimeOnly(13,10,0), Status = 0, PlaceId = providerPlaces[5].Id, ExchangeRate = 1},
+            new TripPoint { Id = Guid.NewGuid(), Name = "Bistro Bravo", Comment = "Czas na jedzonko", TripDayId = tripDays[1].Id, PredictedCost = 30, StartTime = new TimeOnly(14,0,0), EndTime = new TimeOnly(15,30,0), Status = 0, PlaceId = providerPlaces[6].Id, ExchangeRate = 1, OpeningTime = new TimeOnly(12,0,0), ClosingTime = new TimeOnly(0,0,0)},
+            new TripPoint { Id = Guid.NewGuid(), Name = "Parowóz TKi3-120", TripDayId = tripDays[1].Id, PredictedCost = 0, StartTime = new TimeOnly(16,30,0), EndTime = new TimeOnly(17,0,0), Status = 0, PlaceId = CustomPlaces[2].Id, ExchangeRate = 1}
         };
 
         modelBuilder.Entity<TripPoint>().HasData(tripPoints);
@@ -570,12 +573,13 @@ public static class ModelBuilderExtension
 
         var transferPoints = new List<TransferPoint>
         {
-            new TransferPoint { Id = Guid.NewGuid(), TripDayId = tripDays[0].Id, TransferTime = new TimeSpan(0,30,0), StartTime = new TimeOnly(10,20,0),FromTripPointId = tripPoints[0].Id, ToTripPointId = tripPoints[1].Id},
-            new TransferPoint { Id = Guid.NewGuid(), TripDayId = tripDays[0].Id, TransferTime = new TimeSpan(0,20,0), StartTime = new TimeOnly(12,00,0),FromTripPointId = tripPoints[2].Id, ToTripPointId = tripPoints[3].Id},
+            new TransferPoint { Id = Guid.NewGuid(), TripDayId = tripDays[0].Id, TransferTime = new TimeSpan(0,14,21), StartTime = new TimeOnly(10,20,0),FromTripPointId = tripPoints[0].Id, ToTripPointId = tripPoints[1].Id, Mode = TransferMode.drive},
+            new TransferPoint { Id = Guid.NewGuid(), TripDayId = tripDays[0].Id, TransferTime = new TimeSpan(0,0,55), StartTime = new TimeOnly(12,00,0),FromTripPointId = tripPoints[2].Id, ToTripPointId = tripPoints[3].Id, Mode = TransferMode.motorcycle},
             new TransferPoint { Id = Guid.NewGuid(), TripDayId = tripDays[0].Id, TransferTime = new TimeSpan(0,20,0), StartTime = new TimeOnly(13,00,0),FromTripPointId = tripPoints[3].Id, ToTripPointId = tripPoints[4].Id},
 
-            new TransferPoint { Id = Guid.NewGuid(), TripDayId = tripDays[1].Id, TransferTime = new TimeSpan(0,20,0), StartTime = new TimeOnly(12,40,0),FromTripPointId = tripPoints[5].Id, ToTripPointId = tripPoints[6].Id},
-            new TransferPoint { Id = Guid.NewGuid(), TripDayId = tripDays[1].Id, TransferTime = new TimeSpan(0,45,0), StartTime = new TimeOnly(13,10,0),FromTripPointId = tripPoints[6].Id, ToTripPointId = tripPoints[7].Id},
+            new TransferPoint { Id = Guid.NewGuid(), TripDayId = tripDays[1].Id, TransferTime = new TimeSpan(0,3,13), StartTime = new TimeOnly(12,40,0),FromTripPointId = tripPoints[5].Id, ToTripPointId = tripPoints[6].Id, Mode = TransferMode.bicycle},
+            new TransferPoint { Id = Guid.NewGuid(), TripDayId = tripDays[1].Id, TransferTime = new TimeSpan(0,8,18), StartTime = new TimeOnly(13,10,0),FromTripPointId = tripPoints[6].Id, ToTripPointId = tripPoints[7].Id, Mode = TransferMode.walk},
+            new TransferPoint { Id = Guid.NewGuid(), TripDayId = tripDays[1].Id, TransferTime = new TimeSpan(0,13,30), StartTime = new TimeOnly(15,30,0),FromTripPointId = tripPoints[7].Id, ToTripPointId = tripPoints[8].Id, Mode = TransferMode.approximated_transit},
         };
 
         modelBuilder.Entity<TransferPoint>().HasData(transferPoints);
