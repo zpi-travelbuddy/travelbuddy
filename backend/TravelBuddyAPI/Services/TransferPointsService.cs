@@ -26,7 +26,7 @@ public class TransferPointsService(TravelBuddyDbContext dbContext, IGeoapifyServ
         public const string EditTransferPoint = "An error occurred while editing a transfer point:";
     }
 
-    public async Task<TransferPointDTO> CreateTransferPointAsync(string userId, TransferPointDTO transferPoint)
+    public async Task<TransferPointOverviewDTO> CreateTransferPointAsync(string userId, TransferPointRequestDTO transferPoint)
     {
         try
         {
@@ -88,8 +88,9 @@ public class TransferPointsService(TravelBuddyDbContext dbContext, IGeoapifyServ
             await _dbContext.TransferPoints.AddAsync(newTranserPoint);
             await _dbContext.SaveChangesAsync();
 
-            return new TransferPointDTO
+            return new TransferPointOverviewDTO
             {
+                Id = newTranserPoint.Id,
                 TripDayId = newTranserPoint.TripDayId,
                 StartTime = newTranserPoint.StartTime,
                 Seconds = (int)newTranserPoint.TransferTime.TotalSeconds,
@@ -131,7 +132,7 @@ public class TransferPointsService(TravelBuddyDbContext dbContext, IGeoapifyServ
         return true;
     }
 
-    public async Task<bool> EditTransferPointAsync(string userId, Guid transferPointId, TransferPointDTO transferPoint)
+    public async Task<bool> EditTransferPointAsync(string userId, Guid transferPointId, TransferPointRequestDTO transferPoint)
     {
         try{
 

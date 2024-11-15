@@ -24,7 +24,7 @@ public static class TransferPointsEndpoints
             .WithName("DeleteTransferPoint");  
     }
 
-    private static async Task<Results<Created<TransferPointDTO>,BadRequest<string>>> CreateTransferPointAsync(TransferPointDTO transferPoint, ITransferPointsService transferPointsService, HttpContext httpContext)
+    private static async Task<Results<Created<TransferPointOverviewDTO>,BadRequest<string>>> CreateTransferPointAsync(TransferPointRequestDTO transferPoint, ITransferPointsService transferPointsService, HttpContext httpContext)
     {
         try {
             var userId = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new InvalidOperationException("User not found");
@@ -35,7 +35,7 @@ public static class TransferPointsEndpoints
         }
     }
 
-    private static async Task<Results<Accepted<string>,NotFound<string>>> EditTransferPointAsync(Guid id, TransferPointDTO transferPoint, ITransferPointsService transferPointsService, HttpContext httpContext)
+    private static async Task<Results<Accepted<string>,NotFound<string>>> EditTransferPointAsync(Guid id, TransferPointRequestDTO transferPoint, ITransferPointsService transferPointsService, HttpContext httpContext)
     {
         try {
             var userId = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new InvalidOperationException("User not found");
