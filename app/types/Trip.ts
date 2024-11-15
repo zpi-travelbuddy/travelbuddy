@@ -4,20 +4,6 @@ export interface TripDay {
   date: string;
 }
 
-export interface TripDetails {
-  id: string;
-  name: string;
-  numberOfTravelers: number;
-  startDate: string;
-  endDate: string;
-  destinationId: string;
-  budget: number;
-  currencyCode: string;
-  categoryProfileId: string;
-  conditionProfileId: string;
-  tripDays: TripDay[];
-}
-
 export interface TripDay {
   id: string;
   tripId: string;
@@ -63,6 +49,7 @@ export interface TripSummaryDay {
 export interface TripSummary {
   currency: string;
   tripDays: TripSummaryDay[];
+}
 
 export interface DateRange {
   startDate?: Date;
