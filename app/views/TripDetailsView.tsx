@@ -1,14 +1,7 @@
-import {
-  StyleSheet,
-  View,
-  Image,
-  Dimensions,
-  ScrollView,
-  ActivityIndicator,
-} from "react-native";
+import { StyleSheet, View, Image, Dimensions, ScrollView } from "react-native";
 import React, { useMemo, useState, useCallback, useEffect } from "react";
 import TripDetailLabel from "@/components/TripDetailLabel";
-import { FAB, MD3Theme, useTheme } from "react-native-paper";
+import { FAB, useTheme } from "react-native-paper";
 import { CALENDAR_ICON } from "@/constants/Icons";
 import { router, useLocalSearchParams } from "expo-router";
 import SingleDatePickerModal from "@/components/SingleDatePickerModal";
@@ -19,12 +12,16 @@ import { useSnackbar } from "@/context/SnackbarContext";
 import { convertTripDetailsToViewModel } from "@/converters/tripConverters";
 import usePlaceDetails from "@/composables/usePlace";
 import LoadingView from "./LoadingView";
+import { MD3ThemeExtended } from "@/constants/Themes";
 
 const { height, width } = Dimensions.get("window");
 
 const TripDetailsView = () => {
   const theme = useTheme();
-  const styles = useMemo(() => createStyles(theme), [theme]);
+  const styles = useMemo(
+    () => createStyles(theme as MD3ThemeExtended),
+    [theme],
+  );
   const [dateModalVisible, setDateModalVisible] = useState(false);
   const [tripViewModel, setTripViewModel] = useState<TripViewModel | undefined>(
     undefined,
@@ -77,7 +74,7 @@ const TripDetailsView = () => {
     destination: "Cel wycieczki",
     numberOfTripPoints: "Liczba punktów wycieczki",
     numberOfTravelers: "Liczba osób",
-    predictedCost: "Całkowity koszt wycieczki",
+    predictedCost: "Przewidywany koszt wycieczki",
     budget: "Budżet wycieczki",
     categoryProfileName: "Profil preferencji",
     conditionProfileName: "Profil udogodnień",
@@ -132,17 +129,30 @@ const TripDetailsView = () => {
           resizeMode="cover"
         />
 
-        {tripViewModel &&
-          Object.entries(tripViewModel)
-            .filter(([key]) => key in labels)
-            .map(([key, value]) => (
-              <TripDetailLabel
-                key={key}
-                title={labels[key]}
-                value={value?.toString()}
-              />
-            ))}
+        <View style={styles.detailsContainer}>
+          <View style={styles.entriesContainer}>
+            {tripViewModel &&
+              Object.entries(tripViewModel)
+                .filter(([key]) => key in labels)
+                .map(([key, value]) => (
+                  <TripDetailLabel
+                    key={key}
+                    title={labels[key]}
+                    value={value?.toString()}
+                  />
+                ))}
+          </View>
+
+          <FAB
+            color={theme.colors.onPrimary}
+            style={styles.fab}
+            icon={CALENDAR_ICON}
+            customSize={width * 0.25}
+            onPress={handlePress}
+          />
+        </View>
       </ScrollView>
+
       {tripDetails && (
         <SingleDatePickerModal
           visible={dateModalVisible}
@@ -152,20 +162,13 @@ const TripDetailsView = () => {
           onConfirm={handleConfirm}
         />
       )}
-      <FAB
-        color={theme.colors.onPrimary}
-        style={styles.fab}
-        icon={CALENDAR_ICON}
-        customSize={width * 0.25}
-        onPress={handlePress}
-      />
     </View>
   );
 };
 
 export default TripDetailsView;
 
-const createStyles = (theme: MD3Theme) =>
+const createStyles = (theme: MD3ThemeExtended) =>
   StyleSheet.create({
     container: {
       flex: 1,
@@ -175,10 +178,21 @@ const createStyles = (theme: MD3Theme) =>
       alignItems: "center",
       paddingBottom: 25,
     },
+    detailsContainer: {
+      width: "100%",
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      position: "relative",
+    },
+    entriesContainer: {
+      flex: 1,
+      paddingRight: 16,
+    },
     fab: {
       backgroundColor: theme.colors.primary,
       position: "absolute",
-      bottom: width * 0.85,
+      top: 16,
       right: 16,
       borderRadius: 10000,
     },
