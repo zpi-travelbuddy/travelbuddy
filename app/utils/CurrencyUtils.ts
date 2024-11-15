@@ -1,3 +1,5 @@
+import { TripDetails } from "@/types/Trip";
+
 export function formatMoneyToString(amount: number | undefined): string {
   if (amount === undefined || isNaN(amount)) return "";
   return amount
@@ -13,4 +15,11 @@ export function formatMoneyToNumber(value: string): number {
     .replace(/(,|\.){2,}/g, "$1")
     .replace(/(,|\.)+/, (match) => match[0]);
   return Number(numericValue);
+}
+
+export function getMoneyWithCurrency(
+  amount: number,
+  currencyCode: string,
+): string {
+  return `${formatMoneyToString(amount)} ${currencyCode}`;
 }
