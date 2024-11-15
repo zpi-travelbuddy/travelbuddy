@@ -62,3 +62,7 @@ export function formatMinutesInWords(minutes: number): string {
 export function formatTimeRange(startTime: string, endTime: string): string {
   return `${startTime} - ${endTime}`;
 }
+
+export const formatToISODate = (date: Date): string => {
+  return date.toISOString().split("T")[0];
+};
