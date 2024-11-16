@@ -58,8 +58,8 @@ jobs:
     # Step 3: Build and push Docker image
     - name: Build and push Docker image
       run: |
-        docker build -t ${{ secrets.DOCKER_USERNAME }}/travelbuddyapi:${{ github.sha }} -f Dockerfile.api .
-        docker push ${{ secrets.DOCKER_USERNAME }}/travelbuddyapi:${{ github.sha }}
+        docker build -t ${{ secrets.DOCKER_USERNAME }}/travelbuddyapi:latest -f Dockerfile.api .
+        docker push ${{ secrets.DOCKER_USERNAME }}/travelbuddyapi:latest
 
   deploy:
     needs: docker
