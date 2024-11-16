@@ -1,6 +1,7 @@
 import { Dimensions, ScrollView, StyleSheet, View } from "react-native";
 import { TripPointCard } from "@/components/TripPointCard";
 import { TransferPointNode } from "@/components/TransferPointNode";
+import { useRouter, useLocalSearchParams } from "expo-router";
 import { MD3ThemeExtended } from "@/constants/Themes";
 import {
   TripPoint,
@@ -25,7 +26,6 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import CreatingTripPointSelector from "@/components/CreatingTripPointSelector";
 import ActionButtons from "@/components/ActionButtons";
 import { Option } from "@/types/data";
-import { useRouter } from "expo-router";
 
 const { width } = Dimensions.get("window");
 
@@ -66,6 +66,9 @@ const TripDayView = () => {
   const theme = useTheme();
   const style = createStyles(theme as MD3ThemeExtended);
   const router = useRouter();
+  const params = useLocalSearchParams();
+
+  const { trip_id, day_id } = params;
 
   const options: Option[] = [
     {
@@ -73,6 +76,9 @@ const TripDayView = () => {
       label: "Utwórz",
       onPress: () => {
         console.log("go to creating trip point");
+        router.push(
+          `/(auth)/(tabs)/trips/details/${trip_id}/day/${day_id}/tripPoints/create`,
+        );
         setIsVisible(false);
       },
     },
@@ -237,6 +243,8 @@ const TripDayView = () => {
     },
   ];
 
+  const [selectedOptions, setSelectedOptions] = useState<Option[]>(options);
+
   const handleTripPointPress = () => {
     console.log("Trip point pressed");
   };
@@ -246,6 +254,7 @@ const TripDayView = () => {
   };
 
   const handleTransferPointPress = (transferPoint: TransferPoint) => {
+    setSelectedOptions(transferPointOptions);
     setSelectedTransferPoint(transferPoint);
     setDynamicLabel(TransferTypeLabels[transferPoint.type]);
     if (transferPoint.type === "manual") {
@@ -328,11 +337,12 @@ const TripDayView = () => {
           color={theme.colors.onPrimary}
           label="Dodaj"
           onPress={() => {
-            console.log("FAB Clicked");
+            setSelectedOptions(options);
+            setIsVisible(true);
           }}
         />
         <CreatingTripPointSelector
-          options={transferPointOptions}
+          options={selectedOptions}
           isVisible={isVisible}
           onClose={() => onSelectorClose()}
           label={dynamicLabel}

@@ -3,7 +3,7 @@ import React, { useMemo, useState, useCallback, useEffect } from "react";
 import TripDetailLabel from "@/components/TripDetailLabel";
 import { FAB, useTheme } from "react-native-paper";
 import { CALENDAR_ICON } from "@/constants/Icons";
-import { router, useLocalSearchParams } from "expo-router";
+import { router } from "expo-router";
 import SingleDatePickerModal from "@/components/SingleDatePickerModal";
 import { CalendarDate } from "react-native-paper-dates/lib/typescript/Date/Calendar";
 import useTripDetails from "@/composables/useTripDetails";
@@ -27,9 +27,9 @@ const TripDetailsView = () => {
     undefined,
   );
 
-  const params = useLocalSearchParams();
-  const trip_id: string = "77b6b9bd-99d8-4b56-b74d-ed69c3a1238a"; // Temporary solution
+  // const params = useLocalSearchParams();
   // const { trip_id } = params;
+  const trip_id: string = "77b6b9bd-99d8-4b56-b74d-ed69c3a1238a"; // Temporary solution
 
   const {
     tripDetails,
@@ -138,7 +138,7 @@ const TripDetailsView = () => {
                   <TripDetailLabel
                     key={key}
                     title={labels[key]}
-                    value={value?.toString()}
+                    value={value ? value.toString() : ""}
                   />
                 ))}
           </View>

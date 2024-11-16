@@ -1,8 +1,19 @@
+import { Place } from "./Place";
+
 export interface TripPoint {
   id: string;
   name: string;
   fromTime: string;
   toTime: string;
+}
+
+export interface CreateTripPointRequest {
+  name: string;
+  tripDayId: string;
+  place: Place;
+  predictedCost: number;
+  startTime: string;
+  endTime: string;
 }
 
 export type TransferType =

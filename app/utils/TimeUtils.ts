@@ -24,6 +24,12 @@ export function formatDateToPolish(date: Date | undefined): string {
   return date.toLocaleDateString("pl-PL");
 }
 
+export const formatTime = (date: Date): string => {
+  const hours = date.getHours().toString().padStart(2, "0");
+  const minutes = date.getMinutes().toString().padStart(2, "0");
+  return `${hours}:${minutes}`;
+};
+
 export function formatDateRange(
   startDate: Date | undefined,
   endDate: Date | undefined,
@@ -61,6 +67,40 @@ export function formatMinutesInWords(minutes: number): string {
 
 export function formatTimeRange(startTime: string, endTime: string): string {
   return `${startTime} - ${endTime}`;
+}
+
+export function roundToNearestQuarterHour(date: Date = new Date()): Date {
+  const minutes = date.getMinutes();
+  const remainder = minutes % 15;
+  const roundedMinutes = remainder === 0 ? minutes : minutes + (15 - remainder);
+  const roundedDate = new Date(date);
+  roundedDate.setMinutes(roundedMinutes);
+  roundedDate.setSeconds(0);
+  roundedDate.setMilliseconds(0);
+  return roundedDate;
+}
+export function addHoursToDate(
+  date: Date = new Date(),
+  hours: number = 1,
+): Date {
+  const newDate = new Date(date);
+  newDate.setHours(newDate.getHours() + hours);
+  return newDate;
+}
+
+export function addHoursToTheSameDate(
+  date: Date = new Date(),
+  hours: number = 1,
+): Date {
+  let newDate = new Date(date);
+  newDate.setHours(newDate.getHours() + hours);
+
+  if (newDate.getDate() !== date.getDate()) {
+    newDate = new Date(date);
+    newDate.setHours(23, 59, 59, 999);
+  }
+
+  return newDate;
 }
 
 export const formatToISODate = (date: Date): string => {

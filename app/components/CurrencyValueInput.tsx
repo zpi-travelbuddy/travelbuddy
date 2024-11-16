@@ -1,10 +1,11 @@
 import { Dimensions, StyleSheet, View } from "react-native";
 import React, { useMemo, useState } from "react";
-import { MD3Theme, TextInput, useTheme } from "react-native-paper";
+import { MD3Theme, TextInput, useTheme, Text } from "react-native-paper";
 import {
   formatMoneyToString,
   formatMoneyToNumber,
 } from "@/utils/CurrencyUtils";
+
 import ClickableInput from "./ClickableInput";
 import { router } from "expo-router";
 
@@ -15,6 +16,8 @@ interface CurrencyValueInputProps {
   currency: string;
   handleBudgetChange: (value: number) => void;
   error?: boolean;
+  disable?: boolean;
+  label?: string;
 }
 
 const CurrencyValueInput = ({
@@ -22,6 +25,8 @@ const CurrencyValueInput = ({
   currency,
   handleBudgetChange,
   error,
+  disable = false,
+  label = "Budżet",
 }: CurrencyValueInputProps) => {
   const theme = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
@@ -47,21 +52,26 @@ const CurrencyValueInput = ({
       <TextInput
         mode="outlined"
         style={styles.budgetInput}
-        label="Budżet"
+        label={label}
         value={displayBudget}
         onChangeText={handleChange}
         onEndEditing={handleEndEditing}
         keyboardType="numeric"
         error={error ?? false}
       />
-      <ClickableInput
-        label="Waluta"
-        value={currency}
-        onPress={handleSelectCurrency}
-        touchableStyle={styles.currencyTouchable}
-        inputStyle={styles.currencyInput}
-        left={<View />}
-      />
+
+      {disable ? (
+        <Text style={styles.currencyLabel}>{currency}</Text>
+      ) : (
+        <ClickableInput
+          label="Waluta"
+          value={currency}
+          onPress={handleSelectCurrency}
+          touchableStyle={styles.currencyTouchable}
+          inputStyle={styles.currencyInput}
+          left={<View />}
+        />
+      )}
     </View>
   );
 };
@@ -75,6 +85,7 @@ const createStyles = (theme: MD3Theme) =>
       alignItems: "center",
       justifyContent: "space-between",
       width: "100%",
+      marginVertical: 10,
     },
     budgetInput: {
       flex: 0.65,
@@ -87,5 +98,14 @@ const createStyles = (theme: MD3Theme) =>
     },
     currencyInput: {
       backgroundColor: theme.colors.surface,
+    },
+    currencyLabel: {
+      flex: 0.3,
+      marginRight: 0.05 * width,
+      textAlign: "center",
+      paddingVertical: 12,
+      backgroundColor: theme.colors.surface,
+      borderRadius: 4,
+      color: theme.colors.onSurface,
     },
   });

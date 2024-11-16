@@ -1,3 +1,9 @@
+type Trip = {
+  name: string;
+  dateFrom: Date;
+  dateTo: Date;
+};
+
 export interface TripDay {
   id: string;
   tripId: string;
@@ -56,7 +62,7 @@ export interface DateRange {
   endDate?: Date;
 }
 
-export interface TripCreationErrors {
+export interface TripErrors {
   [key: string]: string | undefined;
 }
 
