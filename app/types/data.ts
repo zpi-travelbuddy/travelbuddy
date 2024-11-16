@@ -9,11 +9,53 @@ export interface TripPoint {
 
 export interface CreateTripPointRequest {
   name: string;
+  comment?: string;
   tripDayId: string;
   place: Place;
   predictedCost: number;
   startTime: string;
   endTime: string;
+}
+
+// export interface TripPointResponse {
+//   name: string;
+//   tripDayId: string;
+//   place: Place;
+//   predictedCost: number;
+//   startTime: string;
+//   endTime: string;
+// }
+
+export interface Review {
+  id: string;
+  tripPointId: string;
+  placeId: string;
+  placeName: string;
+  rating: number;
+}
+
+export interface Category {
+  id: string;
+  name: string;
+}
+
+export interface TripPointResponse {
+  id: string;
+  name: string;
+  comment: string;
+  tripDayId: string;
+  predictedCost: number;
+  predictedCostPerPerson: number;
+  currencyCode: string;
+  startTime: string;
+  endTime: string;
+  openingTime: string;
+  closingTime: string;
+  status: number;
+  placeId: string;
+  place: Place;
+  review: Review;
+  category: Category;
 }
 
 export type TransferType =

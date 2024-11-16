@@ -24,14 +24,45 @@ import { useAnimatedKeyboard } from "react-native-reanimated";
 import TripPointTypePicker from "@/components/TripPointTypePicker";
 import { CreateTripPointRequest } from "@/types/data";
 import { Place } from "@/types/Place";
+import { useCreateTripPoint } from "@/composables/useTripPoint";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import LoadingView from "./LoadingView";
+import { useSnackbar } from "@/context/SnackbarContext";
+import useTripDetails from "@/composables/useTripDetails";
+import usePlaceDetails from "@/composables/usePlace";
 
 const { height, width } = Dimensions.get("window");
 
 const AddingTripPointView = () => {
   const theme = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
+  const router = useRouter();
+  const { showSnackbar } = useSnackbar();
+
+  const params = useLocalSearchParams();
+  const { day_id } = params;
+  const trip_id: string = "77b6b9bd-99d8-4b56-b74d-ed69c3a1238a";
 
   useAnimatedKeyboard();
+
+  const {
+    tripDetails,
+    loading: tripLoading,
+    error: tripError,
+  } = useTripDetails(trip_id as string);
+
+  const {
+    placeDetails: destinationDetails,
+    loading: destinationLoading,
+    error: destinationError,
+  } = usePlaceDetails(tripDetails?.destinationId);
+
+  const {
+    createTripPoint,
+    loading: creatingLoading,
+    error: createError,
+    data: createResponse,
+  } = useCreateTripPoint();
 
   const [tripPointName, setTripPointName] = useState("");
   const [place, setPlace] = useState<Place>({
@@ -44,11 +75,20 @@ const AddingTripPointView = () => {
     name: "",
   } as Place);
 
+  useEffect(() => {
+    console.log(tripDetails);
+  }, [tripDetails]);
+
+  useEffect(() => {
+    console.log(destinationDetails);
+  }, [destinationDetails]);
+
   const [errors, setErrors] = useState<TripErrors>({});
+  const [loading, setLoading] = useState<boolean>(false);
 
   const [expectedCost, setExpectedCost] = useState<number>(0);
   const [costType, setCostType] = useState<string>("perPerson");
-  const selectedCurrency = "EUR";
+  const selectedCurrency = tripDetails ? tripDetails.currencyCode : "EUR";
   const [comment, setComment] = useState<string>("");
   const [tripPointType, setTripPointType] =
     useState<TripPointType>("attraction");
@@ -56,11 +96,11 @@ const AddingTripPointView = () => {
   const [endTime, setEndTime] = useState<Date>(
     addHoursToTheSameDate(startTime, 1),
   );
-  const [country, setCountry] = useState<string>(""); // Default value will be from trip destination
-  const [state, setState] = useState<string>(""); // Default value will be from trip destination
-  const [street, setStreet] = useState<string>(""); // Default value will be from trip destination
-  const [city, setCity] = useState<string>(""); // Default value will be from trip destination
-  const [houseNumber, setHouseNumber] = useState<string>(""); // Default value will be from trip destination
+  const [country, setCountry] = useState<string>("");
+  const [state, setState] = useState<string>("");
+  const [street, setStreet] = useState<string>("");
+  const [city, setCity] = useState<string>("");
+  const [houseNumber, setHouseNumber] = useState<string>("");
 
   const [longitude, setLongitude] = useState<number>(0);
   const [latitude, setLatitude] = useState<number>(0);
@@ -86,6 +126,27 @@ const AddingTripPointView = () => {
     };
   };
 
+  useEffect(() => {
+    if (destinationDetails) {
+      setCountry(destinationDetails.country || "");
+      setState(destinationDetails.state || "");
+      setCity(destinationDetails.city || "");
+      setStreet(destinationDetails.street || "");
+      setHouseNumber(destinationDetails.houseNumber || "");
+    }
+  }, [destinationDetails]);
+
+  useEffect(() => {
+    setErrors((prev) => ({
+      ...prev,
+      ["api"]: tripError || createError || destinationError || "",
+    }));
+  }, [tripError, createError, destinationError]);
+
+  useEffect(() => {
+    setLoading(tripLoading || creatingLoading || destinationLoading || false);
+  }, [tripLoading, creatingLoading, destinationLoading]);
+
   const requiredFields = [
     {
       field: "tripPointName",
@@ -93,12 +154,12 @@ const AddingTripPointView = () => {
     },
     {
       field: "country",
-      errorMessage: "Państwo jest wymagane.",
+      errorMessage: "Nazwa państwa jest wymagana.",
     },
-    { field: "city", errorMessage: "Miasto jest wymagane." },
+    { field: "city", errorMessage: "Nazwa miasta jest wymagana." },
     {
-      field: "predictedCost",
-      errorMessage: "Godzina rozpoczęcia jest wymagana.",
+      field: "expectedCost",
+      errorMessage: "Przewidywany koszt jest wymagany.",
     },
     {
       field: "startTime",
@@ -116,6 +177,7 @@ const AddingTripPointView = () => {
     requiredFields.forEach(({ field, errorMessage }) => {
       const fieldValue = {
         tripPointName,
+        expectedCost,
         country,
         city,
         startTime,
@@ -131,6 +193,8 @@ const AddingTripPointView = () => {
       }
     });
 
+    console.log("hasErrors: " + hasErrors);
+
     if (!hasErrors) {
       setPlace({
         country: country,
@@ -143,19 +207,36 @@ const AddingTripPointView = () => {
       } as Place);
 
       if (costType === "perPerson") {
-        // setPredictedCost(trip.numberOfTravelers * predictedCost);
+        const numberOfTravelers = tripDetails
+          ? tripDetails?.numberOfTravelers
+          : 1;
+        setExpectedCost(numberOfTravelers * expectedCost);
       }
 
       const tripPointRequest: CreateTripPointRequest = {
         name: tripPointName,
+        comment: comment,
+        tripDayId: day_id as string,
+        place: place,
         startTime: formatToISODate(startTime),
         endTime: formatToISODate(endTime),
-        place: place,
-        tripDayId: "",
-        predictedCost: 0,
+        predictedCost: expectedCost,
       };
 
+      createTripPoint(tripPointRequest);
+
+      if (!createResponse) {
+        showSnackbar("Wystąpił błąd przy dodawaniu punktu wycieczki");
+        return;
+      }
+
+      showSnackbar("Punkt wycieczki zapisany!");
+      console.log(JSON.stringify(createResponse));
       console.log("Punkt wycieczki zapisany!");
+      router.back();
+    } else {
+      showSnackbar("Uzupełnij brakujące pola i popraw błędy!");
+      console.log(JSON.stringify(errors));
     }
   };
 
@@ -195,6 +276,14 @@ const AddingTripPointView = () => {
       setErrors((prev) => ({ ...prev, endTime: "" }));
     }
   }, [startTime, endTime]);
+
+  if (loading) {
+    return <LoadingView />;
+  }
+
+  if (errors.api) {
+    showSnackbar(errors.api, "error");
+  }
 
   return (
     <>

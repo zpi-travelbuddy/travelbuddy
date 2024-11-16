@@ -1,7 +1,7 @@
 import { Dimensions, ScrollView, StyleSheet, View } from "react-native";
 import { TripPointCard } from "@/components/TripPointCard";
 import { TransferPointNode } from "@/components/TransferPointNode";
-import { useRouter, useLocalSearchParams } from "expo-router";
+import { useRouter, useLocalSearchParams, useFocusEffect } from "expo-router";
 import { MD3ThemeExtended } from "@/constants/Themes";
 import {
   TripPoint,
@@ -10,7 +10,13 @@ import {
   TransferType,
 } from "@/types/data";
 import { useTheme, FAB, Text, TextInput } from "react-native-paper";
-import React, { Fragment, useMemo, useState } from "react";
+import React, {
+  Fragment,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import {
   BUS_ICON,
   CAR_ICON,
@@ -68,7 +74,7 @@ const TripDayView = () => {
   const router = useRouter();
   const params = useLocalSearchParams();
 
-  const { trip_id, day_id } = params;
+  const { trip_id, day_id, refresh } = params;
 
   const options: Option[] = [
     {
@@ -101,6 +107,7 @@ const TripDayView = () => {
   ];
 
   const [isVisible, setIsVisible] = useState<boolean>(false);
+  const [refreshing, setRefreshing] = useState<boolean>(false);
   const [dynamicLabel, setDynamicLabel] = useState<string>("");
   const [estimatedTime, setEstimatedTime] = useState<number>(0);
   const [extendedView, setExtendedView] = useState<
@@ -143,6 +150,16 @@ const TripDayView = () => {
       duration: 0,
     },
   ]);
+
+  // Future refreshing after adding TripPoint - but first to connecting retrieving day data from backend
+
+  useFocusEffect(
+    useCallback(() => {
+      // refetchDayData();
+      console.log("REFRESH");
+      // }, [refetch]);
+    }, []),
+  );
 
   const handleTextChange = (text: string) => {
     const numericText = text.replace(/[^0-9]/g, "");
