@@ -80,7 +80,8 @@ const AddingTripPointView = () => {
     clearError = true,
   ) => {
     return (value: any) => {
-      setter(value);
+      if (typeof value === "string") setter(value.trim());
+      else setter(value);
       if (clearError && field) setErrors((prev) => ({ ...prev, [field]: "" }));
     };
   };
@@ -127,8 +128,6 @@ const AddingTripPointView = () => {
           [field]: errorMessage,
         }));
         hasErrors = true;
-      } else {
-        setErrors((prev) => ({ ...prev, [field]: "" }));
       }
     });
 
@@ -147,7 +146,7 @@ const AddingTripPointView = () => {
         // setPredictedCost(trip.numberOfTravelers * predictedCost);
       }
 
-      const tripPoint: CreateTripPointRequest = {
+      const tripPointRequest: CreateTripPointRequest = {
         name: tripPointName,
         startTime: formatToISODate(startTime),
         endTime: formatToISODate(endTime),
@@ -289,7 +288,7 @@ const AddingTripPointView = () => {
             <TextInput
               mode="outlined"
               style={styles.textInput}
-              label="Szerokość"
+              label="Szerokość geograficzna"
               value={latitudeText}
               onChangeText={setLatitudeText}
               onEndEditing={handleLatitudeChange}
@@ -303,7 +302,7 @@ const AddingTripPointView = () => {
             <TextInput
               mode="outlined"
               style={styles.textInput}
-              label="Długość"
+              label="Długość geograficzna"
               value={longitudeText}
               onChangeText={setLongitudeText}
               onEndEditing={handleLongitudeChange}
