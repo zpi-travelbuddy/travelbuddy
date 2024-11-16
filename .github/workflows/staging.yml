@@ -34,7 +34,7 @@ jobs:
 
     # Step 5: Run tests
     - name: Run tests
-      run: dotnet test --no-build --verbosity normal
+      run: dotnet test --verbosity normal
 
   docker:
     needs: build-and-test
