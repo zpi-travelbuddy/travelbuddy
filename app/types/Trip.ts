@@ -1,15 +1,3 @@
-type Trip = {
-  name: string;
-  dateFrom: Date;
-  dateTo: Date;
-};
-
-export interface TripDay {
-  id: string;
-  tripId: string;
-  date: string;
-}
-
 export interface TripDay {
   id: string;
   tripId: string;
