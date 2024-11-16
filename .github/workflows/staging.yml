@@ -72,8 +72,26 @@ jobs:
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-    # Step 2: Restart or update Azure Container Instance
-    - name: Restart Azure Container Instance
+    # Step 2: Start or restart Azure Container Instance
+    - name: Start or restart Azure Container Instance
+      env:
+        CONTAINER_NAME: "travelbuddyapi-container" # Replace with your container name
+        RESOURCE_GROUP: "TravelBuddy" # Replace with your resource group
       run: |
-        az container restart --name travelbuddyapi-container --resource-group TravelBuddy || \
-        az container create --name travelbuddyapi-container --resource-group TravelBuddy --image ${{ secrets.DOCKER_USERNAME }}/travelbuddyapi:${{ github.sha }} --dns-name-label travelbuddy --ports 8080
+        CONTAINER_STATE=$(az container show \
+          --name "$CONTAINER_NAME" \
+          --resource-group "$RESOURCE_GROUP" \
+          --query "instanceView.state" \
+          --output tsv)
+
+        echo "Current state: $CONTAINER_STATE"
+
+        if [ "$CONTAINER_STATE" == "Stopped" ]; then
+          echo "Starting the container..."
+          az container start --name "$CONTAINER_NAME" --resource-group "$RESOURCE_GROUP"
+        elif [ "$CONTAINER_STATE" == "Running" ]; then
+          echo "Restarting the container..."
+          az container restart --name "$CONTAINER_NAME" --resource-group "$RESOURCE_GROUP"
+        else
+          echo "No action taken. Container state: $CONTAINER_STATE"
+        fi
