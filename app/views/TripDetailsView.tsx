@@ -111,7 +111,7 @@ const TripDetailsView = () => {
   );
 
   if (loading) {
-    return <LoadingView />;
+    return <LoadingView transparent={false} />;
   }
 
   if (error) {

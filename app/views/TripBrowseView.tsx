@@ -33,25 +33,10 @@ import { useSnackbar } from "@/context/SnackbarContext";
 import { useAuth } from "@/app/ctx";
 import { API_TRIPS_CURRENT, API_TRIPS_PAST } from "@/constants/Endpoints";
 import { useAnimatedKeyboard } from "react-native-reanimated";
-import { formatDateFromISO, formatTimeRange } from "@/utils/TimeUtils";
 import { Trip, APITrip } from "@/types/Trip";
+import { convertAPITripToTrip } from "@/converters/tripConverters";
 
 type TripViewMode = "actual" | "archive";
-
-const RANDOM_IMAGE = "https://picsum.photos/891";
-
-const parseAPITrip = (trip: APITrip): Trip => ({
-  id: trip.id,
-  title: trip.name,
-  subtitle: formatTimeRange(
-    formatDateFromISO(trip?.startDate),
-    formatDateFromISO(trip?.endDate),
-  ),
-  from: trip.startDate,
-  to: trip.endDate,
-  imageUri: RANDOM_IMAGE,
-  isArchived: false,
-});
 
 const TripBrowseView = () => {
   const { api } = useAuth();
@@ -77,7 +62,7 @@ const TripBrowseView = () => {
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [selectedTrip, setSelectedTrip] = useState<Trip | null>(null);
 
-  const [value, setValue] = React.useState<TripViewMode>("actual");
+  const [value, setValue] = useState<TripViewMode>("actual");
 
   const trips = useMemo(() => {
     const tripsToFilter = value === "actual" ? currentTrips : pastTrips;
@@ -130,7 +115,7 @@ const TripBrowseView = () => {
   const fetchCurrentTrips = async () => {
     try {
       const currentTrips: APITrip[] = (await api!.get(API_TRIPS_CURRENT)).data;
-      const parsedCurrentTrips = currentTrips.map(parseAPITrip);
+      const parsedCurrentTrips = currentTrips.map(convertAPITripToTrip);
       setCurrentTrips(parsedCurrentTrips);
     } catch (error: any) {
       console.error("Error fetching current trips", error.response.data);
@@ -140,7 +125,7 @@ const TripBrowseView = () => {
   const fetchPastTrips = async () => {
     try {
       const pastTrips: APITrip[] = (await api!.get(API_TRIPS_PAST)).data;
-      const parsedPastTrips = pastTrips.map(parseAPITrip);
+      const parsedPastTrips = pastTrips.map(convertAPITripToTrip);
       setPastTrips(parsedPastTrips);
     } catch (error: any) {
       console.error("Error fetching past trips", error.response.data);
