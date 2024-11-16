@@ -229,6 +229,10 @@ const TripBrowseView = () => {
             <ActionTextButtons
               onAction1={hideModal}
               onAction2={() => deleteTrip(selectedTrip)}
+              action1ButtonLabel={undefined}
+              action2ButtonLabel={undefined}
+              action1Icon={undefined}
+              action2Icon={undefined}
             />
           </View>
         </CustomModal>

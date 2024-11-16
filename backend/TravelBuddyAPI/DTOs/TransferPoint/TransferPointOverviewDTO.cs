@@ -5,8 +5,11 @@ using TravelBuddyAPI.Enums;
 namespace TravelBuddyAPI.DTOs.TransferPoint;
 
 [NotMapped]
-public class TransferPointDTO
+public class TransferPointOverviewDTO
 {
+    [Required]
+    public Guid Id { get; set; }
+
     [Required]
     public Guid TripDayId { get; set; }
 

@@ -13,7 +13,7 @@ public interface ITransferPointsService
     /// <param name="userId">The ID of the user creating the transfer point.</param>
     /// <param name="transferPoint">The transfer point data to be created.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains the created transfer point.</returns>
-    Task<TransferPointDTO> CreateTransferPointAsync(string userId, TransferPointDTO transferPoint);
+    Task<TransferPointOverviewDTO> CreateTransferPointAsync(string userId, TransferPointRequestDTO transferPoint);
 
     /// <summary>
     /// Edits an existing transfer point.
@@ -22,7 +22,7 @@ public interface ITransferPointsService
     /// <param name="transferPointId">The ID of the transfer point to be edited.</param>
     /// <param name="transferPoint">The transfer point data to be edited.</param>
     /// <returns>A task that represents the asynchronous operation. The task result indicates whether the edit was successful.</returns>
-    Task<bool> EditTransferPointAsync(string userId, Guid transferPointId, TransferPointDTO transferPoint);
+    Task<bool> EditTransferPointAsync(string userId, Guid transferPointId, TransferPointRequestDTO transferPoint);
 
     /// <summary>
     /// Deletes a transfer point.
