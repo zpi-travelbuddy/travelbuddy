@@ -1,5 +1,5 @@
 import { FieldType } from "@/types/auth";
-import { DateRange, TripCreationErrors } from "@/types/Trip";
+import { DateRange, TripErrors } from "@/types/Trip";
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -45,8 +45,8 @@ export const validateTripForm = (
   destinationId: string,
   numberOfPeople: string,
   budget: number | undefined,
-): TripCreationErrors => {
-  const newErrors: TripCreationErrors = {};
+): TripErrors => {
+  const newErrors: TripErrors = {};
   if (!tripName) newErrors.tripName = "Wprowadź nazwę wycieczki";
   if (!range.startDate) newErrors.range = "Wybierz termin wycieczki";
   if (!destinationId) newErrors.destination = "Wybierz cel wycieczki";

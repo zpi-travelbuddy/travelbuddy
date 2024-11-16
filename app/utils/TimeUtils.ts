@@ -88,6 +88,21 @@ export function addHoursToDate(
   return newDate;
 }
 
+export function addHoursToTheSameDate(
+  date: Date = new Date(),
+  hours: number = 1,
+): Date {
+  let newDate = new Date(date);
+  newDate.setHours(newDate.getHours() + hours);
+
+  if (newDate.getDate() !== date.getDate()) {
+    newDate = new Date(date);
+    newDate.setHours(23, 59, 59, 999);
+  }
+
+  return newDate;
+}
+
 export const formatToISODate = (date: Date): string => {
   return date.toISOString().split("T")[0];
 };

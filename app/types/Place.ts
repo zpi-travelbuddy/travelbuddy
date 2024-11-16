@@ -5,6 +5,18 @@ type PlaceView = {
   imageUrl?: string;
 };
 
+export interface Place {
+  categoryId?: string;
+  name: string;
+  country: string;
+  state?: string;
+  city: string;
+  street: string;
+  houseNumber?: string;
+  latitude: number;
+  longitude: number;
+}
+
 export interface PlaceCondition {
   id: string;
   name: string;

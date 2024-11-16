@@ -13,6 +13,7 @@ interface TimePickerProps {
   setShowPicker: (val: boolean) => void;
   onDateChange: (date: Date) => void;
   label?: string;
+  error?: boolean;
 }
 
 const { width } = Dimensions.get("window");
@@ -23,6 +24,7 @@ const TimePicker: React.FC<TimePickerProps> = ({
   setShowPicker,
   onDateChange,
   label,
+  error,
 }) => {
   const [timeString, setTimeString] = useState<string>(formatTime(date));
 
@@ -42,6 +44,7 @@ const TimePicker: React.FC<TimePickerProps> = ({
         onPress={() => setShowPicker(true)}
         touchableStyle={styles.touchable}
         inputStyle={styles.input}
+        error={error || false}
       />
       {showPicker && (
         <DateTimePicker
@@ -58,7 +61,8 @@ const TimePicker: React.FC<TimePickerProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    padding: 5,
+    paddingHorizontal: 5,
+    paddingVertical: 10,
   },
   timeText: {
     fontSize: 18,

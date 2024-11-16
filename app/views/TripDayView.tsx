@@ -76,6 +76,9 @@ const TripDayView = () => {
       label: "Utwórz",
       onPress: () => {
         console.log("go to creating trip point");
+        router.push(
+          `/(auth)/(tabs)/trips/details/${trip_id}/day/${day_id}/tripPoints/create`,
+        );
         setIsVisible(false);
       },
     },
@@ -240,6 +243,8 @@ const TripDayView = () => {
     },
   ];
 
+  const [selectedOptions, setSelectedOptions] = useState<Option[]>(options);
+
   const handleTripPointPress = () => {
     console.log("Trip point pressed");
   };
@@ -249,6 +254,7 @@ const TripDayView = () => {
   };
 
   const handleTransferPointPress = (transferPoint: TransferPoint) => {
+    setSelectedOptions(transferPointOptions);
     setSelectedTransferPoint(transferPoint);
     setDynamicLabel(TransferTypeLabels[transferPoint.type]);
     if (transferPoint.type === "manual") {
@@ -331,11 +337,12 @@ const TripDayView = () => {
           color={theme.colors.onPrimary}
           label="Dodaj"
           onPress={() => {
-            console.log("FAB Clicked");
+            setSelectedOptions(options);
+            setIsVisible(true);
           }}
         />
         <CreatingTripPointSelector
-          options={transferPointOptions}
+          options={selectedOptions}
           isVisible={isVisible}
           onClose={() => onSelectorClose()}
           label={dynamicLabel}

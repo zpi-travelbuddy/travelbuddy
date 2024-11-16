@@ -17,6 +17,7 @@ interface CurrencyValueInputProps {
   handleBudgetChange: (value: number) => void;
   error?: boolean;
   disable?: boolean;
+  label?: string;
 }
 
 const CurrencyValueInput = ({
@@ -25,6 +26,7 @@ const CurrencyValueInput = ({
   handleBudgetChange,
   error,
   disable = false,
+  label = "Budżet",
 }: CurrencyValueInputProps) => {
   const theme = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
@@ -50,7 +52,7 @@ const CurrencyValueInput = ({
       <TextInput
         mode="outlined"
         style={styles.budgetInput}
-        label="Budżet"
+        label={label}
         value={displayBudget}
         onChangeText={handleChange}
         onEndEditing={handleEndEditing}
@@ -83,6 +85,7 @@ const createStyles = (theme: MD3Theme) =>
       alignItems: "center",
       justifyContent: "space-between",
       width: "100%",
+      marginVertical: 10,
     },
     budgetInput: {
       flex: 0.65,

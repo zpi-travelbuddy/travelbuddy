@@ -62,7 +62,7 @@ export interface DateRange {
   endDate?: Date;
 }
 
-export interface TripCreationErrors {
+export interface TripErrors {
   [key: string]: string | undefined;
 }
 
