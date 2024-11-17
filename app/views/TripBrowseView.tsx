@@ -33,21 +33,21 @@ const TripBrowseView = () => {
 
   const actualTrips = [
     {
-      id: "1",
+      id: "77b6b9bd-99d8-4b56-b74d-ed69c3a1238a",
       title: "Wycieczka do Milicza",
       subtitle: "10.06.2025 - 15.06.2025",
       imageUri: "https://picsum.photos/888",
       isArchived: false,
     },
     {
-      id: "2",
+      id: "77b6b9bd-99d8-4b56-b74d-ed69c3a1238a",
       title: "Wycieczka do Wrocławia",
       subtitle: "20.06.2025 - 25.06.2025",
       imageUri: "https://picsum.photos/889",
       isArchived: false,
     },
     {
-      id: "3",
+      id: "77b6b9bd-99d8-4b56-b74d-ed69c3a1238a",
       title: "Wycieczka do Moszczanki",
       subtitle: "20.01.2026 - 25.01.2026",
       imageUri: "https://picsum.photos/887",

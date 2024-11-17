@@ -1,6 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
 import { TripDetails, TripSummary } from "@/types/Trip";
 import { useAuth } from "@/app/ctx";
+import { API_TRIPS } from "@/constants/Endpoints";
+
+
 
 const useTripDetails = (tripId: string | null) => {
   const [tripDetails, setTripDetails] = useState<TripDetails | undefined>(
@@ -9,7 +12,7 @@ const useTripDetails = (tripId: string | null) => {
   const [tripSummary, setTripSummary] = useState<TripSummary | undefined>(
     undefined,
   );
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   const { api } = useAuth();
@@ -22,6 +25,7 @@ const useTripDetails = (tripId: string | null) => {
       if (err.response && err.response.status === 404) {
         setError("Wycieczka nie została znaleziona.");
       } else {
+        console.log(JSON.stringify(err));
         setError("Wystąpił błąd podczas pobierania danych.");
       }
     }
@@ -57,3 +61,8 @@ const useTripDetails = (tripId: string | null) => {
 };
 
 export default useTripDetails;
+
+export const useEditTripDetails = async (trip: TripDetails) => {
+  const { api } = useAuth();
+  return await api!.put(API_TRIPS, trip);
+};
