@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useCallback, useMemo, useState } from "react";
 import {
   StyleSheet,
@@ -68,20 +69,22 @@ const AddingTripView = () => {
   const [range, setRange] = useState<DateRange>({});
   const [errors, setErrors] = useState<TripErrors>({});
 
-  const [selectedPreferenceProfile, setSelectedPreferencesProfile] =
-    useState<Profile | null>(null);
-  const [selectedConvenienceProfile, setSelectedConvenienceProfile] =
-    useState<Profile | null>(null);
+  const [categoryProfileId, setCategoryProfileId] = useState<string | null>(
+    null,
+  );
+  const [conditionProfileId, setConditionProfileId] = useState<string | null>(
+    null,
+  );
 
-  const [profileType, setProfileType] = useState<ProfileType>("Preference");
-  const preferenceProfiles = useMemo(
+  const [profileType, setProfileType] = useState<ProfileType>("Category");
+  const categoryProfiles = useMemo(
     () => [
       { id: "1", name: "Profile1" },
       { id: "2", name: "Profile2" },
     ],
     [],
   );
-  const convenienceProfiles = useMemo(
+  const conditionProfiles = useMemo(
     () => [
       { id: "11", name: "Profile11" },
       { id: "22", name: "Profile22" },
@@ -91,9 +94,8 @@ const AddingTripView = () => {
 
   const handleProfileSelection = useCallback(
     (profile: Profile) => {
-      profileType === "Preference"
-        ? setSelectedPreferencesProfile(profile)
-        : setSelectedConvenienceProfile(profile);
+      if (profileType === "Category") setCategoryProfileId(profile.id);
+      else setConditionProfileId(profile.id);
     },
     [profileType],
   );
@@ -152,6 +154,17 @@ const AddingTripView = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const getProfileName = (profileType: ProfileType, id: string | null) => {
+    if (id) {
+      let profiles;
+      if (profileType === "Category") profiles = categoryProfiles;
+      else if (profileType === "Condition") profiles = conditionProfiles;
+      else throw new Error();
+      const profile = profiles.find((p) => p.id === id);
+      return profile ? profile.name : "Brak";
+    } else return "Brak";
   };
 
   return (
@@ -226,18 +239,18 @@ const AddingTripView = () => {
             <ClickableInput
               icon="account"
               label="Profil preferencji"
-              value={selectedPreferenceProfile?.name || "Brak"}
+              value={getProfileName("Category", categoryProfileId)}
               onPress={() => {
-                setProfileType("Preference");
+                setProfileType("Category");
                 setVisible(true);
               }}
             />
             <ClickableInput
               icon="account"
               label="Profil udogodnień"
-              value={selectedConvenienceProfile?.name || "Brak"}
+              value={getProfileName("Condition", conditionProfileId)}
               onPress={() => {
-                setProfileType("Convenience");
+                setProfileType("Condition");
                 setVisible(true);
               }}
             />
@@ -245,18 +258,17 @@ const AddingTripView = () => {
             <CustomModal visible={visible} onDismiss={() => setVisible(false)}>
               <FlatList
                 data={
-                  profileType === "Preference"
-                    ? preferenceProfiles
-                    : convenienceProfiles
+                  profileType === "Category"
+                    ? categoryProfiles
+                    : conditionProfiles
                 }
                 renderItem={({ item }) => (
                   <RenderItem
                     item={item}
                     isSelected={
-                      (profileType === "Preference"
-                        ? selectedPreferenceProfile
-                        : selectedConvenienceProfile
-                      )?.id === item.id
+                      (profileType === "Category"
+                        ? categoryProfileId
+                        : conditionProfileId) === item.id
                     }
                     onSelect={handleProfileSelection}
                     renderContent={(item) => item.name}

@@ -40,19 +40,17 @@ import usePlaceDetails from "@/composables/usePlace";
 import { convertTripResponseToTripRequest } from "@/converters/tripConverters";
 import { Place } from "@/types/Place";
 import { getDisplayPlace } from "@/utils/TextUtils";
+import { Profile, ProfileType } from "@/types/Profile";
 
 const { height, width } = Dimensions.get("window");
-
-interface Profile {
-  id: string;
-  name: string;
-}
-
-type ProfileType = "Category" | "Condition";
 
 registerTranslation("pl", pl);
 
 const EditTripView = () => {
+  // =====================
+  // SECTION: Hook calls (API or logic hooks)
+  // =====================
+
   const theme = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
   const router = useRouter();
@@ -60,8 +58,6 @@ const EditTripView = () => {
   const params = useLocalSearchParams();
   const { trip_id } = params;
 
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
   const [tripRequest, setTripRequest] = useState<TripRequest>(
     {} as TripRequest,
   );
@@ -87,17 +83,53 @@ const EditTripView = () => {
     success: editSuccess,
   } = useEditTripDetails(tripRequest, { immediate: false });
 
-  // const {
-  //   profiles: categoryProfiles,
-  //   loading: categoryProfilesLoading,
-  //   error: categoryProfilesError,
-  // } = useGetCategoryProfiles();
+  // =====================
+  // SECTION: useState variables
+  // =====================
 
-  // const {
-  //   profiles: conditionProfiles,
-  //   loading: conditionProfilesLoading,
-  //   error: conditionProfilesError,
-  // } = useGetConditionProfiles();
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const [errors, setErrors] = useState<TripErrors>({});
+  const [numberOfPeople, setNumberOfPeople] = useState<string>("");
+
+  const [dateRange, setDateRange] = useState<{
+    startDate: Date;
+    endDate: Date;
+  }>({
+    startDate: new Date(),
+    endDate: new Date(),
+  });
+
+  const [dateRangeText, setDateRangeText] = useState<string>(
+    formatDateRange(dateRange.startDate, dateRange.endDate),
+  );
+
+  const [isOpen, setOpen] = useState<boolean>(false);
+  const [visible, setVisible] = useState<boolean>(false);
+
+  const [categoryProfileId, setCategoryProfileId] = useState<string | null>(
+    null,
+  );
+  const [conditionProfileId, setConditionProfileId] = useState<string | null>(
+    null,
+  );
+
+  const [profileType, setProfileType] = useState<ProfileType>("Category");
+
+  const [categoryProfiles, setCategoryProfiles] = useState<Profile[]>([
+    { id: "1", name: "Profile1" },
+    { id: "2", name: "Zwiedzanie i jedzenie" },
+  ]);
+
+  const [conditionProfiles, setConditionProfiles] = useState<Profile[]>([
+    { id: "11", name: "Profile11" },
+    { id: "22", name: "Potrzebuję internetu dla psa" },
+  ]);
+
+  // =====================
+  // SECTION: useEffect hooks
+  // =====================
 
   useEffect(() => {
     setError(tripError || destinationError || "");
@@ -106,9 +138,6 @@ const EditTripView = () => {
   useEffect(() => {
     setLoading(tripLoading || destinationLoading || editTripLoading || false);
   }, [tripLoading, destinationLoading, editTripLoading]);
-
-  const [errors, setErrors] = useState<TripErrors>({});
-  const [numberOfPeople, setNumberOfPeople] = useState<string>("");
 
   useEffect(() => {
     console.log(JSON.stringify(tripDetails));
@@ -125,78 +154,18 @@ const EditTripView = () => {
         startDate: new Date(tripDetails.startDate),
         endDate: new Date(tripDetails.endDate),
       });
-      // setCategoryProfileId(tripDetails.categoryProfileId);
-      // setConditionProfileId(tripDetails.conditionProfileId);
       setCategoryProfileId("null");
       setConditionProfileId("null");
     }
   }, [tripDetails, destinationDetails]);
 
-  // const setSelectedProfileById = (id: string, profiles: Profile[], setter) => {
-  //   const profile = profiles.find((p) => p.id === id);
-  //   if (profile) {
-  //     setter(profile);
-  //   } else {
-  //     console.error("Profile with the given ID not found");
-  //     selectedProfile = null; // Wyczyść profil, jeśli ID nie pasuje
-  //   }
-  // }
-
-  const [dateRange, setDateRange] = useState<{
-    startDate: Date;
-    endDate: Date;
-  }>({
-    startDate: new Date(),
-    endDate: new Date(),
-  });
-
   useEffect(() => {
     console.log(JSON.stringify(tripRequest));
   }, [tripRequest]);
 
-  const [dateRangeText, setDateRangeText] = useState<string>(
-    formatDateRange(dateRange.startDate, dateRange.endDate),
-  );
-
   useEffect(() => {
     setDateRangeText(formatDateRange(dateRange.startDate, dateRange.endDate));
   }, [dateRange]);
-
-  const [isOpen, setOpen] = useState<boolean>(false);
-  const [visible, setVisible] = useState<boolean>(false);
-
-  const [categoryProfileId, setCategoryProfileId] = useState<string | null>(
-    null,
-  );
-
-  const [conditionProfileId, setConditionProfileId] = useState<string | null>(
-    null,
-  );
-
-  const [profileType, setProfileType] = useState<ProfileType>("Category");
-
-  const [categoryProfiles, setCategoryProfiles] = useState<Profile[]>([
-    { id: "1", name: "Profile1" },
-    { id: "null", name: "Zwiedzanie i jedzenie" },
-  ]);
-
-  const [conditionProfiles, setConditionProfiles] = useState<Profile[]>([
-    { id: "11", name: "Profile11" },
-    { id: "null", name: "Potrzebuję internetu dla psa" },
-  ]);
-
-  // const renderProfileContent = useCallback(
-  //   (item: { id: string; name: string }) => item.name,
-  //   [],
-  // );
-
-  const handleProfileSelection = useCallback(
-    (profile: Profile) => {
-      if (profileType === "Category") setCategoryProfileId(profile.id);
-      else setConditionProfileId(profile.id);
-    },
-    [profileType],
-  );
 
   useEffect(() => {
     if (editSuccess !== null) {
@@ -209,68 +178,9 @@ const EditTripView = () => {
     console.log(editError);
   }, [editError]);
 
-  // const renderCategoryProfile = ({ item }: { item: Profile }) => (
-  //   <RenderItem
-  //     item={item}
-  //     isSelected={selectedCategoryProfile.id === item.id}
-  //     onSelect={() => {
-  //       setSelectedCategoryProfile(item);
-  //       setTrip((prevTrip: TripDetails) => ({
-  //         ...prevTrip,
-  //         categoryProfileId: item.id,
-  //       }));
-  //     }}
-  //     renderContent={renderProfileContent}
-  //   />
-  // );
-
-  // const renderConditionProfile = ({ item }: { item: Profile }) => (
-  //   <RenderItem
-  //     item={item}
-  //     isSelected={selectedConditionProfile.id === item.id}
-  //     onSelect={() => {
-  //       setSelectedCategoryProfile(item);
-  //       setTrip((prevTrip: TripDetails) => ({
-  //         ...prevTrip,
-  //         conditionProfileId: item.id,
-  //       }));
-  //     }}
-  //     renderContent={renderProfileContent}
-  //   />
-  // );
-
-  // const showModal = (type: ProfileType) => {
-  //   setProfileType(type);
-  //   setVisible(true);
-  // };
-
-  // const hideModal = () => setVisible(false);
-
-  // const onDismiss = React.useCallback(() => {
-  //   setOpen(false);
-  // }, []);
-
-  // const onConfirm = useCallback(
-  //   ({
-  //     startDate,
-  //     endDate,
-  //   }: {
-  //     startDate: Date | undefined;
-  //     endDate: Date | undefined;
-  //   }) => {
-  //     setOpen(false);
-  //     if (startDate && endDate) {
-  //       setDateRange({ startDate, endDate });
-  //       setDateRangeText(formatDateRange(startDate, endDate));
-  //       setTrip((prevTrip: TripDetails) => ({
-  //         ...prevTrip,
-  //         startDate: formatToISODate(startDate),
-  //         endDate: formatToISODate(endDate),
-  //       }));
-  //     }
-  //   },
-  //   [],
-  // );
+  // =====================
+  // SECTION: Functions
+  // =====================
 
   const saveTrip = async () => {
     try {
@@ -329,6 +239,18 @@ const EditTripView = () => {
       return profile ? profile.name : "Brak";
     } else return "Brak";
   };
+
+  const handleProfileSelection = useCallback(
+    (profile: Profile) => {
+      if (profileType === "Category") setCategoryProfileId(profile.id);
+      else setConditionProfileId(profile.id);
+    },
+    [profileType],
+  );
+
+  // =====================
+  // SECTION: Return JSX (UI rendering)
+  // =====================
 
   if (loading) {
     return <LoadingView />;
