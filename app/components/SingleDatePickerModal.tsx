@@ -21,6 +21,8 @@ const SingleDatePickerModal = ({
   const fixedStartDate = stringToDate(startDate);
   const fixedEndDate = stringToDate(endDate);
 
+  fixedEndDate.setHours(fixedEndDate.getHours() - 1);
+
   return (
     <DatePickerModal
       mode="single"

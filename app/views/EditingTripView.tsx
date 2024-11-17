@@ -127,7 +127,7 @@ const EditTripView = () => {
 
   const hideModal = () => setVisible(false);
 
-  const onDismiss = React.useCallback(() => {
+  const onDismiss = useCallback(() => {
     setOpen(false);
   }, []);
 
