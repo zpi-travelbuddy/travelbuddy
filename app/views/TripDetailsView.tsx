@@ -95,8 +95,6 @@ const TripDetailsView = () => {
   const handleConfirm = useCallback(
     ({ date }: { date: CalendarDate }) => {
       const fixedDate = date as Date;
-      fixedDate.setHours(fixedDate.getHours() + 1); // Another fix, because the date is 1 millisecond before the actual day
-
       const formattedDate = fixedDate.toISOString().split("T")[0];
       const tripDayId = dateToIdMap.get(formattedDate);
       if (tripDayId) {

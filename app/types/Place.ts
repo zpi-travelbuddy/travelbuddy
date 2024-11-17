@@ -1,9 +1,18 @@
-type PlaceView = {
+export interface APIPlace {
+  id: string | null;
+  providerId: string;
+  name?: string;
+  country?: string;
+  state?: string | null;
+  city?: string;
+}
+
+export interface Place {
   id: string;
-  title: string;
-  subtitle: string;
+  title?: string;
+  subtitle?: string;
   imageUrl?: string;
-};
+}
 
 export interface Place {
   categoryId?: string;
