@@ -71,7 +71,7 @@ const CurrencyValueInput = ({
           onPress={handleSelectCurrency}
           touchableStyle={styles.currencyTouchable}
           inputStyle={styles.currencyInput}
-          left={<View />}
+          left={undefined}
         />
       )}
     </View>

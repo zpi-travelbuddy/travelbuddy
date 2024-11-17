@@ -224,6 +224,7 @@ const AddingTripView = () => {
             )}
 
             <ClickableInput
+              icon="account"
               label="Profil preferencji"
               value={selectedPreferenceProfile?.name || "Brak"}
               onPress={() => {
@@ -232,6 +233,7 @@ const AddingTripView = () => {
               }}
             />
             <ClickableInput
+              icon="account"
               label="Profil udogodnień"
               value={selectedConvenienceProfile?.name || "Brak"}
               onPress={() => {

@@ -9,7 +9,7 @@ import { CalendarDate } from "react-native-paper-dates/lib/typescript/Date/Calen
 import useTripDetails from "@/composables/useTripDetails";
 import { TripDay, TripViewModel } from "@/types/Trip";
 import { useSnackbar } from "@/context/SnackbarContext";
-import { convertTripDetailsToViewModel } from "@/converters/tripConverters";
+import { convertTripResponseToViewModel } from "@/converters/tripConverters";
 import usePlaceDetails from "@/composables/usePlace";
 import LoadingView from "./LoadingView";
 import { MD3ThemeExtended } from "@/constants/Themes";
@@ -59,7 +59,7 @@ const TripDetailsView = () => {
   useEffect(() => {
     if (tripDetails) {
       setTripViewModel(
-        convertTripDetailsToViewModel(
+        convertTripResponseToViewModel(
           tripDetails,
           tripSummary,
           destinationDetails,

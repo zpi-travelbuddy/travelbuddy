@@ -16,7 +16,7 @@ import {
 } from "react-native-paper-dates";
 import {
   formatDateRange,
-  formatToISODate,
+  formatDateToISO,
   getISOToday,
 } from "@/utils/TimeUtils";
 import CurrencyValueInput from "@/components/CurrencyValueInput";
@@ -24,15 +24,22 @@ import CustomModal from "@/components/CustomModal";
 import { RenderItem } from "@/components/RenderItem";
 import ActionButtons from "@/components/ActionButtons";
 import ClickableInput from "@/components/ClickableInput";
-import { TripDetails, TripErrors } from "@/types/Trip";
+import { TripRequest, TripResponse, TripErrors } from "@/types/Trip";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import useTripDetails, {
   useEditTripDetails,
 } from "@/composables/useTripDetails";
 import { useSnackbar } from "@/context/SnackbarContext";
 import LoadingView from "./LoadingView";
-import { API_TRIPS } from "@/constants/Endpoints";
 import { CALENDAR_ICON, MARKER_ICON } from "@/constants/Icons";
+import {
+  useGetCategoryProfiles,
+  useGetConditionProfiles,
+} from "@/composables/useProfiles";
+import usePlaceDetails from "@/composables/usePlace";
+import { convertTripResponseToTripRequest } from "@/converters/tripConverters";
+import { Place } from "@/types/Place";
+import { getDisplayPlace } from "@/utils/TextUtils";
 
 const { height, width } = Dimensions.get("window");
 
@@ -53,41 +60,118 @@ const EditTripView = () => {
   const params = useLocalSearchParams();
   const { trip_id } = params;
 
-  const { tripDetails, tripSummary, loading, error, refetch } = useTripDetails(
-    trip_id as string,
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [tripRequest, setTripRequest] = useState<TripRequest>(
+    {} as TripRequest,
   );
 
-  const [trip, setTrip] = useState<TripDetails>({} as TripDetails);
+  const {
+    tripDetails,
+    loading: tripLoading,
+    error: tripError,
+    refetch: tripRefetch,
+  } = useTripDetails(trip_id as string);
+
+  const {
+    placeDetails: destinationDetails,
+    loading: destinationLoading,
+    error: destinationError,
+    refetch: destinationRefetch,
+  } = usePlaceDetails(tripDetails?.destinationId);
+
+  const {
+    editTrip,
+    loading: editTripLoading,
+    error: editError,
+    success: editSuccess,
+  } = useEditTripDetails(tripRequest, { immediate: false });
+
+  // const {
+  //   profiles: categoryProfiles,
+  //   loading: categoryProfilesLoading,
+  //   error: categoryProfilesError,
+  // } = useGetCategoryProfiles();
+
+  // const {
+  //   profiles: conditionProfiles,
+  //   loading: conditionProfilesLoading,
+  //   error: conditionProfilesError,
+  // } = useGetConditionProfiles();
+
+  useEffect(() => {
+    setError(tripError || destinationError || "");
+  }, [tripError, destinationError, editError]);
+
+  useEffect(() => {
+    setLoading(tripLoading || destinationLoading || editTripLoading || false);
+  }, [tripLoading, destinationLoading, editTripLoading]);
+
   const [errors, setErrors] = useState<TripErrors>({});
   const [numberOfPeople, setNumberOfPeople] = useState<string>("");
 
   useEffect(() => {
-    if (tripDetails) {
-      setTrip(tripDetails);
+    console.log(JSON.stringify(tripDetails));
+    console.log(JSON.stringify(destinationDetails));
+    if (tripDetails && destinationDetails) {
+      setTripRequest(
+        convertTripResponseToTripRequest(
+          tripDetails,
+          destinationDetails as Place,
+        ),
+      );
       setNumberOfPeople(tripDetails.numberOfTravelers.toString());
+      setDateRange({
+        startDate: new Date(tripDetails.startDate),
+        endDate: new Date(tripDetails.endDate),
+      });
+      // setCategoryProfileId(tripDetails.categoryProfileId);
+      // setConditionProfileId(tripDetails.conditionProfileId);
+      setCategoryProfileId("null");
+      setConditionProfileId("null");
     }
-  }, [tripDetails]);
+  }, [tripDetails, destinationDetails]);
+
+  // const setSelectedProfileById = (id: string, profiles: Profile[], setter) => {
+  //   const profile = profiles.find((p) => p.id === id);
+  //   if (profile) {
+  //     setter(profile);
+  //   } else {
+  //     console.error("Profile with the given ID not found");
+  //     selectedProfile = null; // Wyczyść profil, jeśli ID nie pasuje
+  //   }
+  // }
 
   const [dateRange, setDateRange] = useState<{
     startDate: Date;
     endDate: Date;
   }>({
-    startDate: new Date(trip.startDate),
-    endDate: new Date(trip.endDate),
+    startDate: new Date(),
+    endDate: new Date(),
   });
+
+  useEffect(() => {
+    console.log(JSON.stringify(tripRequest));
+  }, [tripRequest]);
 
   const [dateRangeText, setDateRangeText] = useState<string>(
     formatDateRange(dateRange.startDate, dateRange.endDate),
   );
 
+  useEffect(() => {
+    setDateRangeText(formatDateRange(dateRange.startDate, dateRange.endDate));
+  }, [dateRange]);
+
   const [isOpen, setOpen] = useState<boolean>(false);
   const [visible, setVisible] = useState<boolean>(false);
 
-  const [selectedCategoryProfile, setSelectedCategoryProfile] =
-    useState<Profile>({ id: "null", name: "Zwiedzanie i jedzenie" });
+  const [categoryProfileId, setCategoryProfileId] = useState<string | null>(
+    null,
+  );
 
-  const [selectedConditionProfile, setSelectedConditionProfile] =
-    useState<Profile>({ id: "null", name: "Potrzebuję internetu dla psa" });
+  const [conditionProfileId, setConditionProfileId] = useState<string | null>(
+    null,
+  );
 
   const [profileType, setProfileType] = useState<ProfileType>("Category");
 
@@ -101,107 +185,119 @@ const EditTripView = () => {
     { id: "null", name: "Potrzebuję internetu dla psa" },
   ]);
 
-  const renderProfileContent = useCallback(
-    (item: { id: string; name: string }) => item.name,
-    [],
-  );
+  // const renderProfileContent = useCallback(
+  //   (item: { id: string; name: string }) => item.name,
+  //   [],
+  // );
 
   const handleProfileSelection = useCallback(
     (profile: Profile) => {
-      if (profileType === "Category") setSelectedCategoryProfile(profile);
-      else setSelectedConditionProfile(profile);
+      if (profileType === "Category") setCategoryProfileId(profile.id);
+      else setConditionProfileId(profile.id);
     },
     [profileType],
   );
 
-  const renderCategoryProfile = ({ item }: { item: Profile }) => (
-    <RenderItem
-      item={item}
-      isSelected={selectedCategoryProfile.id === item.id}
-      onSelect={() => {
-        setSelectedCategoryProfile(item);
-        setTrip((prevTrip: TripDetails) => ({
-          ...prevTrip,
-          categoryProfileId: item.id,
-        }));
-      }}
-      renderContent={renderProfileContent}
-    />
-  );
+  useEffect(() => {
+    if (editSuccess !== null) {
+      if (editSuccess) showSnackbar("Wycieczka została zapisana!", "success");
+      else showSnackbar("Błąd przy zapisie wycieczki", "error");
+    }
+  }, [editSuccess]);
 
-  const renderConditionProfile = ({ item }: { item: Profile }) => (
-    <RenderItem
-      item={item}
-      isSelected={selectedConditionProfile.id === item.id}
-      onSelect={() => {
-        setSelectedCategoryProfile(item);
-        setTrip((prevTrip: TripDetails) => ({
-          ...prevTrip,
-          conditionProfileId: item.id,
-        }));
-      }}
-      renderContent={renderProfileContent}
-    />
-  );
+  useEffect(() => {
+    console.log(editError);
+  }, [editError]);
 
-  const showModal = (type: ProfileType) => {
-    setProfileType(type);
-    setVisible(true);
-  };
+  // const renderCategoryProfile = ({ item }: { item: Profile }) => (
+  //   <RenderItem
+  //     item={item}
+  //     isSelected={selectedCategoryProfile.id === item.id}
+  //     onSelect={() => {
+  //       setSelectedCategoryProfile(item);
+  //       setTrip((prevTrip: TripDetails) => ({
+  //         ...prevTrip,
+  //         categoryProfileId: item.id,
+  //       }));
+  //     }}
+  //     renderContent={renderProfileContent}
+  //   />
+  // );
 
-  const hideModal = () => setVisible(false);
+  // const renderConditionProfile = ({ item }: { item: Profile }) => (
+  //   <RenderItem
+  //     item={item}
+  //     isSelected={selectedConditionProfile.id === item.id}
+  //     onSelect={() => {
+  //       setSelectedCategoryProfile(item);
+  //       setTrip((prevTrip: TripDetails) => ({
+  //         ...prevTrip,
+  //         conditionProfileId: item.id,
+  //       }));
+  //     }}
+  //     renderContent={renderProfileContent}
+  //   />
+  // );
 
-  const onDismiss = React.useCallback(() => {
-    setOpen(false);
-  }, []);
+  // const showModal = (type: ProfileType) => {
+  //   setProfileType(type);
+  //   setVisible(true);
+  // };
 
-  const onConfirm = useCallback(
-    ({
-      startDate,
-      endDate,
-    }: {
-      startDate: Date | undefined;
-      endDate: Date | undefined;
-    }) => {
-      setOpen(false);
-      if (startDate && endDate) {
-        setDateRange({ startDate, endDate });
-        setDateRangeText(formatDateRange(startDate, endDate));
-        setTrip((prevTrip: TripDetails) => ({
-          ...prevTrip,
-          startDate: formatToISODate(startDate),
-          endDate: formatToISODate(endDate),
-        }));
-      }
-    },
-    [],
-  );
+  // const hideModal = () => setVisible(false);
+
+  // const onDismiss = React.useCallback(() => {
+  //   setOpen(false);
+  // }, []);
+
+  // const onConfirm = useCallback(
+  //   ({
+  //     startDate,
+  //     endDate,
+  //   }: {
+  //     startDate: Date | undefined;
+  //     endDate: Date | undefined;
+  //   }) => {
+  //     setOpen(false);
+  //     if (startDate && endDate) {
+  //       setDateRange({ startDate, endDate });
+  //       setDateRangeText(formatDateRange(startDate, endDate));
+  //       setTrip((prevTrip: TripDetails) => ({
+  //         ...prevTrip,
+  //         startDate: formatToISODate(startDate),
+  //         endDate: formatToISODate(endDate),
+  //       }));
+  //     }
+  //   },
+  //   [],
+  // );
 
   const saveTrip = async () => {
     try {
+      setTripRequest((prev) => ({
+        ...prev,
+        startDate: formatDateToISO(dateRange.startDate),
+        endDate: formatDateToISO(dateRange.endDate),
+        categoryProfileId: categoryProfileId,
+        conditionProfileId: conditionProfileId,
+      }));
       if (
-        !trip.id ||
-        !trip.name ||
-        !trip.destinationId ||
-        !trip.startDate ||
-        !trip.endDate ||
-        !trip.numberOfTravelers ||
-        !trip.budget ||
-        !trip.categoryProfileId ||
-        !trip.conditionProfileId ||
-        !trip.currencyCode
+        !tripRequest.id ||
+        !tripRequest.name ||
+        !tripRequest.destinationPlace.providerId ||
+        !tripRequest.startDate ||
+        !tripRequest.endDate ||
+        !tripRequest.numberOfTravelers ||
+        !tripRequest.budget ||
+        !tripRequest.categoryProfileId ||
+        !tripRequest.conditionProfileId ||
+        !tripRequest.currencyCode
       ) {
+        console.log("Trip request: " + JSON.stringify(tripRequest));
         showSnackbar("Proszę uzupełnić wszystkie wymagane pola!", "error");
         return;
       }
-      const response = await useEditTripDetails(trip);
-
-      if (response.status === 202) {
-        showSnackbar("Wycieczka została zapisana!", "success");
-        router.back();
-      } else {
-        throw new Error();
-      }
+      await editTrip();
     } catch (error) {
       showSnackbar("Błąd podczas zapisywania wycieczki!", "error");
       console.error(error);
@@ -210,22 +306,28 @@ const EditTripView = () => {
 
   const handleChange = (field: keyof TripErrors = "", clearError = true) => {
     return (value: any) => {
-      setTrip((prev) => ({ ...prev, [field]: value }));
+      setTripRequest((prev) => ({ ...prev, [field]: value }));
       if (clearError && field) setErrors((prev) => ({ ...prev, [field]: "" }));
     };
   };
 
-  const handleNumericChange = (
-    field: keyof TripErrors = "",
-    clearError = true,
-  ) => {
-    return (value: any) => {
-      const numericValue = value.replace(/[^0-9]/g, "");
-      let convertedNumber = Number(numericValue);
-      if (isNaN(convertedNumber)) convertedNumber = 0;
-      setTrip((prev) => ({ ...prev, [field]: convertedNumber }));
-      if (clearError && field) setErrors((prev) => ({ ...prev, [field]: "" }));
-    };
+  const validateNumberOfPeople = () => {
+    const numericValue = numberOfPeople.replace(/[^0-9]/g, "");
+    const parsedValue = parseInt(numericValue, 10);
+    if (!isNaN(parsedValue) && parsedValue > 0)
+      setNumberOfPeople(parsedValue.toString());
+    else setNumberOfPeople("");
+  };
+
+  const getProfileName = (profileType: ProfileType, id: string | null) => {
+    if (id) {
+      let profiles;
+      if (profileType === "Category") profiles = categoryProfiles;
+      else if (profileType === "Condition") profiles = conditionProfiles;
+      else throw new Error();
+      const profile = profiles.find((p) => p.id === id);
+      return profile ? profile.name : "Brak";
+    } else return "Brak";
   };
 
   if (loading) {
@@ -254,7 +356,7 @@ const EditTripView = () => {
               mode="outlined"
               style={styles.textInput}
               label="Nazwa"
-              value={trip.name}
+              value={tripRequest.name}
               onChangeText={handleChange("name")}
               error={!!errors.name}
             />
@@ -273,12 +375,12 @@ const EditTripView = () => {
 
             <ClickableInput
               label="Cel wycieczki"
-              value={trip.destinationId}
+              value={getDisplayPlace(tripRequest?.destinationPlace)}
               onPress={() => router.push("/trips/add/destination")}
               icon={MARKER_ICON}
-              error={!!errors.destination && !trip.destinationId}
+              error={!!errors.destination && !tripRequest?.destinationPlace?.id}
             />
-            {errors.destination && !trip.destinationId && (
+            {errors.destination && (
               <Text style={styles.textError}>{errors.destination}</Text>
             )}
 
@@ -287,7 +389,8 @@ const EditTripView = () => {
               style={styles.textInput}
               label="Liczba osób"
               value={numberOfPeople}
-              onChangeText={handleNumericChange("numberOfPeople")}
+              onChangeText={setNumberOfPeople}
+              onEndEditing={validateNumberOfPeople}
               keyboardType="numeric"
               error={!!errors.numberOfPeople}
             />
@@ -296,9 +399,9 @@ const EditTripView = () => {
             )}
 
             <CurrencyValueInput
-              budget={trip.budget}
-              currency={trip.currencyCode}
-              handleBudgetChange={handleNumericChange("budget")}
+              budget={tripRequest.budget}
+              currency={tripRequest.currencyCode}
+              handleBudgetChange={handleChange("budget")}
               error={!!errors.budget}
             />
             {errors.budget && (
@@ -306,16 +409,18 @@ const EditTripView = () => {
             )}
 
             <ClickableInput
+              icon="account"
               label="Profil preferencji"
-              value={selectedCategoryProfile?.name || "Brak"}
+              value={getProfileName("Category", categoryProfileId)}
               onPress={() => {
                 setProfileType("Category");
                 setVisible(true);
               }}
             />
             <ClickableInput
+              icon="account"
               label="Profil udogodnień"
-              value={selectedConditionProfile?.name || "Brak"}
+              value={getProfileName("Condition", conditionProfileId)}
               onPress={() => {
                 setProfileType("Condition");
                 setVisible(true);
@@ -334,9 +439,8 @@ const EditTripView = () => {
                     item={item}
                     isSelected={
                       (profileType === "Category"
-                        ? selectedCategoryProfile
-                        : selectedConditionProfile
-                      )?.id === item.id
+                        ? categoryProfileId
+                        : conditionProfileId) === item.id
                     }
                     onSelect={handleProfileSelection}
                     renderContent={(item) => item.name}
@@ -362,11 +466,8 @@ const EditTripView = () => {
                   startDate: new Date(startDate),
                   endDate: new Date(endDate),
                 });
-                setDateRangeText(
-                  formatDateRange(new Date(startDate), new Date(endDate)),
-                );
               } else {
-                console.log("startDate lub endDate jest undefined");
+                console.log("startDate i/lub endDate jest undefined");
               }
             }}
             locale="pl"
@@ -376,7 +477,7 @@ const EditTripView = () => {
         </View>
 
         <ActionButtons
-          onAction1={() => router.back()}
+          onAction1={router.back}
           onAction2={saveTrip}
           action1ButtonLabel="Anuluj"
           action2ButtonLabel="Zapisz"

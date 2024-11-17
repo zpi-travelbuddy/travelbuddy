@@ -1,8 +1,17 @@
-type Trip = {
+import { Place } from "./Place";
+
+export interface TripRequest {
+  id?: string;
   name: string;
-  dateFrom: Date;
-  dateTo: Date;
-};
+  numberOfTravelers: number;
+  startDate: string;
+  endDate: string;
+  destinationPlace: Place;
+  budget: number;
+  currencyCode: string;
+  categoryProfileId: string | null;
+  conditionProfileId: string | null;
+}
 
 export interface TripDay {
   id: string;
@@ -28,7 +37,7 @@ export interface TripViewModel {
   conditionProfileName: string;
 }
 
-export interface TripDetails {
+export interface TripResponse {
   id: string;
   name: string;
   numberOfTravelers: number;

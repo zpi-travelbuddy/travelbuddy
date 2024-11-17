@@ -1,3 +1,5 @@
+import { Place } from "@/types/Place";
+
 export function formatAddress(address: Address): string {
   return `${address.city}, ${address.country}`;
 }
@@ -10,4 +12,9 @@ export function displayCost(number: number): string {
 
 export const truncateText = (text: string, maxLength: number) => {
   return text.length > maxLength ? `${text.slice(0, maxLength)}...` : text;
+};
+
+export const getDisplayPlace = (place: Place | null) => {
+  if (place) return `${place.city}, ${place.country}`;
+  else return "";
 };

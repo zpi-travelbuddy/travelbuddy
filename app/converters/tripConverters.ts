@@ -1,5 +1,11 @@
-import { PlaceDetails } from "@/types/Place";
-import { TripDetails, TripSummary, TripViewModel } from "@/types/Trip";
+import { Place, PlaceDetails } from "@/types/Place";
+import {
+  TripRequest,
+  TripDay,
+  TripResponse,
+  TripSummary,
+  TripViewModel,
+} from "@/types/Trip";
 import { getMoneyWithCurrency } from "@/utils/CurrencyUtils";
 import { formatDateRange } from "@/utils/TimeUtils";
 
@@ -39,12 +45,14 @@ export const calculateTripSummary = (tripSummary: TripSummary) => {
   };
 };
 
-export function convertTripDetailsToViewModel(
-  tripDetails: TripDetails | undefined,
+export function convertTripResponseToViewModel(
+  tripDetails: TripResponse | undefined,
   tripSummary: TripSummary | undefined,
   destinationDetails: PlaceDetails | undefined,
 ): TripViewModel {
   if (!tripDetails) throw new Error("Trip details are undefined.");
+  if (!destinationDetails)
+    throw new Error("Destination details are undefined.");
   const { predictedSpendings, totalTripPoints } = tripSummary
     ? calculateTripSummary(tripSummary)
     : { predictedSpendings: 0, totalTripPoints: tripDetails.tripDays.length }; // temporary
@@ -67,4 +75,45 @@ export function convertTripDetailsToViewModel(
       tripDetails.conditionProfileId,
     ),
   };
+}
+
+export function convertTripRequestToTripResponse(
+  request: TripRequest,
+  id: string,
+  destinationId: string,
+  tripDays: TripDay[] = [],
+): TripResponse {
+  return {
+    id,
+    name: request.name,
+    numberOfTravelers: request.numberOfTravelers,
+    startDate: request.startDate,
+    endDate: request.endDate,
+    destinationId,
+    budget: request.budget,
+    currencyCode: request.currencyCode,
+    categoryProfileId: request.categoryProfileId,
+    conditionProfileId: request.conditionProfileId,
+    tripDays,
+  };
+}
+
+export function convertTripResponseToTripRequest(
+  response: TripResponse,
+  destination: Place,
+): TripRequest {
+  const tripRequest: TripRequest = {
+    id: response.id,
+    name: response.name,
+    numberOfTravelers: response.numberOfTravelers,
+    startDate: response.startDate,
+    endDate: response.endDate,
+    destinationPlace: JSON.parse(JSON.stringify(destination)),
+    budget: response.budget,
+    currencyCode: response.currencyCode,
+    categoryProfileId: response.categoryProfileId,
+    conditionProfileId: response.conditionProfileId,
+  };
+
+  return tripRequest;
 }

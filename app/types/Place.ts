@@ -1,20 +1,15 @@
-type PlaceView = {
-  id: string;
-  title: string;
-  subtitle: string;
-  imageUrl?: string;
-};
-
 export interface Place {
+  id?: string;
+  providerId?: string;
   categoryId?: string;
-  name: string;
-  country: string;
+  name?: string;
+  country?: string;
   state?: string;
-  city: string;
-  street: string;
+  city?: string;
+  street?: string;
   houseNumber?: string;
-  latitude: number;
-  longitude: number;
+  latitude?: number;
+  longitude?: number;
 }
 
 export interface PlaceCondition {
