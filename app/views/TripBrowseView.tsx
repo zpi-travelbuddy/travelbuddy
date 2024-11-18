@@ -1,20 +1,7 @@
 import { StyleSheet, View, Text, RefreshControl } from "react-native";
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { TripCard } from "@/components/TripCard";
-import {
-  router,
-  useFocusEffect,
-  useGlobalSearchParams,
-  useLocalSearchParams,
-  useNavigation,
-  useRouter,
-} from "expo-router";
+import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import {
   useTheme,
   FAB,
@@ -106,10 +93,18 @@ const TripBrowseView = () => {
     setSelectedTrip(null);
   };
 
-  const deleteTrip = (trip: Trip | null) => {
-    console.log(`Usuwanie wycieczki: ${trip?.title}`);
+  const deleteTrip = async (trip: Trip | null) => {
+    if (!trip) return;
+
+    console.log(`Usuwanie wycieczki: ${trip.title}`);
     hideModal();
-    showSnackbar("Usunięto wycieczkę!");
+    try {
+      await api!.delete(`/trips/${trip.id}`);
+      await fetchTrips();
+      showSnackbar("Usunięto wycieczkę!");
+    } catch (error: any) {
+      showSnackbar("Wystąpił błąd podczas usuwania wycieczki", "error");
+    }
   };
 
   const fetchCurrentTrips = async () => {
@@ -118,7 +113,11 @@ const TripBrowseView = () => {
       const parsedCurrentTrips = currentTrips.map(convertAPITripToTrip);
       setCurrentTrips(parsedCurrentTrips);
     } catch (error: any) {
-      console.error("Error fetching current trips", error.response.data);
+      if (error.response && error.response.status === 404) {
+        setCurrentTrips([]);
+      } else {
+        console.error("Error fetching current trips", error.response.data);
+      }
     }
   };
 
@@ -128,7 +127,11 @@ const TripBrowseView = () => {
       const parsedPastTrips = pastTrips.map(convertAPITripToTrip);
       setPastTrips(parsedPastTrips);
     } catch (error: any) {
-      console.error("Error fetching past trips", error.response.data);
+      if (error.response && error.response.status === 404) {
+        setCurrentTrips([]);
+      } else {
+        console.error("Error fetching current trips", error.response.data);
+      }
     }
   };
 
