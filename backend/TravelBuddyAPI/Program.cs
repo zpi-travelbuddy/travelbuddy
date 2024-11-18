@@ -10,6 +10,7 @@ using TravelBuddyAPI.Services;
 using Microsoft.IdentityModel.Tokens;
 using Azure.Security.KeyVault.Certificates;
 using System.Security.Cryptography.X509Certificates;
+using System.Net;
 
 namespace TravelBuddyAPI
 {
@@ -94,6 +95,11 @@ namespace TravelBuddyAPI
                     options.ConfigureHttpsDefaults(httpsOptions =>
                     {
                         httpsOptions.ServerCertificate = new X509Certificate2(certificateResponse.Value.Cer);
+                    });
+
+                    options.Listen(IPAddress.Any, 8081, listenOptions =>
+                    {
+                        listenOptions.UseHttps();
                     });
                 });
             }
