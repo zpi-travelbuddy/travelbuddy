@@ -88,15 +88,17 @@ namespace TravelBuddyAPI
 
                 var certificateClient = new CertificateClient(keyVaultEndpoint, new DefaultAzureCredential());
                 var certificateName = builder.Configuration["Azure:KeyVault:CertificateName"];
-                var certificateResponse = certificateClient.GetCertificate(certificateName);
+                var certificateResponse  = certificateClient.GetCertificate(certificateName);
+                var certificate = new X509Certificate2(certificateResponse.Value.Cer);
 
                 builder.WebHost.ConfigureKestrel(options =>
                 {
                     options.ConfigureHttpsDefaults(httpsOptions =>
                     {
-                        httpsOptions.ServerCertificate = new X509Certificate2(certificateResponse.Value.Cer);
+                        httpsOptions.ServerCertificate = certificate;
                     });
 
+                    options.Listen(IPAddress.Any, 8080);
                     options.Listen(IPAddress.Any, 8081, listenOptions =>
                     {
                         listenOptions.UseHttps();
