@@ -223,18 +223,13 @@ public class GeoapifyClient : IGeoapifyService
 
     public async Task<TimeSpan?> GetRouteTimeAsync((decimal latitude, decimal longitude) start, (decimal latitude, decimal longitude) end, TransferMode mode, TrafficType traffic = TrafficType.approximated, Units units = Units.metric)
     {
-        var request = new RestRequest("v1/routematrix", Method.Post);
+        var request = new RestRequest("v1/routing", Method.Get);
         request.AddHeader("Content-Type", "application/json");
-        var body = new
-        {
-            mode = mode.ToString(),
-            sources = new[] { new { location = new decimal[] { start.longitude, start.latitude } } },
-            targets = new[] { new { location = new decimal[] { end.longitude, end.latitude } } },
-            traffic = traffic.ToString(),
-            units = units.ToString(),
-        };
-        request.AddJsonBody(body);
-        request.AddQueryParameter("apiKey", _apiKey);
+        request.AddParameter("waypoints", $"{start.latitude},{start.longitude}|{end.latitude},{end.longitude}");
+        request.AddParameter("mode", mode.ToString());
+        request.AddParameter("traffic", traffic.ToString());
+        request.AddParameter("units", units.ToString());
+        request.AddParameter("apiKey", _apiKey);
 
         var response = await _client.ExecuteAsync(request);
 
@@ -247,7 +242,7 @@ public class GeoapifyClient : IGeoapifyService
 
         try
         {
-            var seconds = jsonResponse?.sources_to_targets?[0]?[0]?.time;
+            var seconds = jsonResponse?.features?[0]?.properties?.time;
             double result = 0;
 
             if (seconds is not null && double.TryParse(seconds.ToString(), out result))

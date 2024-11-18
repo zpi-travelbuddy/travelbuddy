@@ -27,9 +27,7 @@ const TripDetailsView = () => {
     undefined,
   );
 
-  const params = useLocalSearchParams();
-  const trip_id: string = "77b6b9bd-99d8-4b56-b74d-ed69c3a1238a"; // Temporary solution
-  // const { trip_id } = params;
+  const { trip_id } = useLocalSearchParams();
 
   const {
     tripDetails,
@@ -69,7 +67,7 @@ const TripDetailsView = () => {
   }, [tripDetails, tripSummary, destinationDetails]);
 
   const labels: Record<string, string> = {
-    tripName: "Nazwa wycieczki",
+    name: "Nazwa wycieczki",
     dateRange: "Termin wycieczki",
     destination: "Cel wycieczki",
     numberOfTripPoints: "Liczba punktów wycieczki",
@@ -96,7 +94,8 @@ const TripDetailsView = () => {
 
   const handleConfirm = useCallback(
     ({ date }: { date: CalendarDate }) => {
-      const formattedDate = (date as Date).toISOString().split("T")[0];
+      const fixedDate = date as Date;
+      const formattedDate = fixedDate.toISOString().split("T")[0];
       const tripDayId = dateToIdMap.get(formattedDate);
       if (tripDayId) {
         console.log("Redirecting to day with id " + tripDayId);
@@ -110,7 +109,7 @@ const TripDetailsView = () => {
   );
 
   if (loading) {
-    return <LoadingView />;
+    return <LoadingView transparent={false} />;
   }
 
   if (error) {
@@ -138,7 +137,7 @@ const TripDetailsView = () => {
                   <TripDetailLabel
                     key={key}
                     title={labels[key]}
-                    value={value?.toString()}
+                    value={value ? value.toString() : ""}
                   />
                 ))}
           </View>

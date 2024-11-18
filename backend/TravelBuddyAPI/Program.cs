@@ -8,6 +8,9 @@ using RestSharp;
 using TravelBuddyAPI.Interfaces;
 using TravelBuddyAPI.Services;
 using Microsoft.IdentityModel.Tokens;
+using Azure.Security.KeyVault.Certificates;
+using System.Security.Cryptography.X509Certificates;
+using System.Net;
 
 namespace TravelBuddyAPI
 {
@@ -82,6 +85,24 @@ namespace TravelBuddyAPI
                     keyVaultEndpoint,
                     new DefaultAzureCredential(),
                     new CustomKeyVaultSecretManager());
+
+                var certificateClient = new CertificateClient(keyVaultEndpoint, new DefaultAzureCredential());
+                var certificateName = builder.Configuration["Azure:KeyVault:CertificateName"];
+                var certificate = certificateClient.DownloadCertificate(certificateName).Value;
+
+                builder.WebHost.ConfigureKestrel(options =>
+                {
+                    options.ConfigureHttpsDefaults(httpsOptions =>
+                    {
+                        httpsOptions.ServerCertificate = certificate;
+                    });
+
+                    options.Listen(IPAddress.Any, 8080);
+                    options.Listen(IPAddress.Any, 8081, listenOptions =>
+                    {
+                        listenOptions.UseHttps();
+                    });
+                });
             }
 
             builder.Services.AddAuthentication(options =>
@@ -121,16 +142,16 @@ namespace TravelBuddyAPI
 
             var app = builder.Build();
 
+            // Migrate the database
+            using (var scope = app.Services.CreateScope())
+            {
+                var dbContext = scope.ServiceProvider.GetRequiredService<TravelBuddyDbContext>();
+                dbContext.Database.Migrate();
+            }
+
             // Development configuration
             if (app.Environment.IsDevelopment())
             {
-                // Migrate the database
-                using (var scope = app.Services.CreateScope())
-                {
-                    var dbContext = scope.ServiceProvider.GetRequiredService<TravelBuddyDbContext>();
-                    dbContext.Database.Migrate();
-                }
-
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }

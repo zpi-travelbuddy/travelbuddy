@@ -216,7 +216,6 @@ public class TripPointsServiceTest : IDisposable
         Assert.Equal("An error occurred while creating a trip point. Place cannot be empty.", exception.Message);
     }
 
-    //TODO local memory cant do transactions 
     [Fact]
     public async Task DeleteTripPointAsync_ReturnsTrue_WhenTripPointIsDeleted()
     {

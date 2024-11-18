@@ -1,7 +1,18 @@
-export interface TripDay {
+export interface APITrip {
   id: string;
-  tripId: string;
-  date: string;
+  name: string;
+  startDate: string;
+  endDate: string;
+}
+
+export interface Trip {
+  id: string;
+  title: string;
+  subtitle: string;
+  from: string;
+  to: string;
+  imageUri: string;
+  isArchived: boolean;
 }
 
 export interface TripDay {
@@ -56,7 +67,7 @@ export interface DateRange {
   endDate?: Date;
 }
 
-export interface TripCreationErrors {
+export interface TripErrors {
   [key: string]: string | undefined;
 }
 

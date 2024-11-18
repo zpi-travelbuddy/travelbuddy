@@ -28,7 +28,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { useAuth } from "@/app/ctx";
 import LoadingView from "./LoadingView";
 import { Profile, ProfileType } from "@/types/Profile";
-import { DateRange, TripCreationErrors } from "@/types/Trip";
+import { DateRange, TripErrors } from "@/types/Trip";
 import { MARKER_ICON, CALENDAR_ICON } from "@/constants/Icons";
 import { API_TRIPS } from "@/constants/Endpoints";
 import { validateTripForm } from "@/utils/validations";
@@ -66,7 +66,7 @@ const AddingTripView = () => {
   const [visible, setVisible] = useState(false);
 
   const [range, setRange] = useState<DateRange>({});
-  const [errors, setErrors] = useState<TripCreationErrors>({});
+  const [errors, setErrors] = useState<TripErrors>({});
 
   const [selectedPreferenceProfile, setSelectedPreferencesProfile] =
     useState<Profile | null>(null);
@@ -100,7 +100,7 @@ const AddingTripView = () => {
 
   const handleChange = (
     setter: React.Dispatch<React.SetStateAction<any>>,
-    field: keyof TripCreationErrors = "",
+    field: keyof TripErrors = "",
     clearError = true,
   ) => {
     return (value: any) => {
@@ -144,7 +144,7 @@ const AddingTripView = () => {
     setIsLoading(true);
     try {
       await api!.post(API_TRIPS, tripData);
-      router.navigate("/trips");
+      router.navigate({ pathname: "/trips", params: { refresh: "true" } });
       showSnackbar("Zapisano wycieczkę!", "success");
     } catch (error: any) {
       console.error(error.response.data);
