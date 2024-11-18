@@ -89,6 +89,14 @@ export type Condition =
   | "vegetarian"
   | "vegan";
 
+export const ConditionList: Condition[] = [
+  "internet_access",
+  "wheelchair",
+  "dogs",
+  "vegetarian",
+  "vegan",
+];
+
 export const AttractionTypeIcons: Record<TripPointType, string> = {
   attraction: "camera",
   food: "silverware-fork-knife",

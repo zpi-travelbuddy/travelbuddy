@@ -1,5 +1,5 @@
-import { PlaceDetails } from "@/types/Place";
-import { TripPointType } from "@/types/Trip";
+import { PlaceCategory, PlaceCondition, PlaceDetails } from "@/types/Place";
+import { Condition, ConditionList, TripPointType } from "@/types/Trip";
 import { getConditions } from "@/utils/ConditionsUtils";
 
 export const convertToPlaceViewModel = (place: PlaceDetails) => {
@@ -33,4 +33,12 @@ const getAddress = (place: PlaceDetails) => {
 const getAttractionType = (place: PlaceDetails) => {
   console.log(place.categories);
   return "other" as TripPointType;
+};
+
+export const convertConditions = (placeConditions: PlaceCondition[]) => {
+  return placeConditions
+    .map((condition) => condition.name)
+    .filter((name): name is Condition =>
+      ConditionList.includes(name as Condition),
+    );
 };

@@ -1,49 +1,20 @@
 import { StyleSheet, View, Image, Dimensions, ScrollView } from "react-native";
-import React, { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useTheme, Text } from "react-native-paper";
-import {
-  ADD_ICON,
-  DEFAULT_ICON_SIZE,
-  DOG_ICON,
-  HUMAN_DISABLE_ICON,
-  VEGAN_ICON,
-  LOCATION_ICON,
-} from "@/constants/Icons";
+import { ADD_ICON, DEFAULT_ICON_SIZE, LOCATION_ICON } from "@/constants/Icons";
 import ActionButtons from "@/components/ActionButtons";
 import { MD3ThemeExtended } from "@/constants/Themes";
 import { displayCost, displayTime, formatAddress } from "@/utils/TextUtils";
 import StarRatingDisplayComponent from "@/components/StarRatingDisplayComponent";
 import IconComponent from "@/components/IconComponent";
-import IconRow from "@/components/IconRow";
-import { formatMinutesInWords } from "@/utils/TimeUtils";
 import { AttractionTypeIcons, AttractionTypeLabels } from "@/types/Trip";
 import usePlaceDetails from "@/composables/usePlace";
-import { PlaceViewModel } from "@/types/Place";
 import LoadingView from "./LoadingView";
 import { useRouter } from "expo-router";
 import { useSnackbar } from "@/context/SnackbarContext";
-import { convertToPlaceViewModel } from "@/converters/placeConverter";
 import ConditionIcons from "@/components/ConditionIcons";
 
 const { height, width } = Dimensions.get("window");
-
-// const attraction: AttractionViewModel = {
-//   name: "Wycieczka do Londynu",
-//   address: {
-//     street: "",
-//     number: "",
-//     city: "Londyn",
-//     country: "Wielka Brytania",
-//   },
-//   attractionType: "park",
-//   conveniences: [],
-//   rating: 5,
-//   averageCostPerPerson: 0,
-//   averageVisitTime: 120,
-//   latitude: 51.50861,
-//   longitude: -0.163611,
-//   imageUrl: "https://upload.wikimedia.org/wikipedia/commons/1/1a/Big_Ben..JPG",
-// };
 
 const AttractionDetailsView = () => {
   const theme = useTheme() as MD3ThemeExtended;
@@ -56,7 +27,7 @@ const AttractionDetailsView = () => {
   // const { id } = params;
   const id = "eb2a3de6-8998-4a3c-992c-9e4fd76ef027";
 
-  const { placeDetails, loading, error, refetch } = usePlaceDetails(id);
+  const { placeDetails, loading, error } = usePlaceDetails(id);
 
   if (loading) {
     return <LoadingView />;

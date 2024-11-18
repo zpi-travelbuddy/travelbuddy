@@ -1,10 +1,11 @@
 import { StyleSheet, ViewStyle } from "react-native";
 import { Text, useTheme } from "react-native-paper";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import IconRow from "./IconRow";
 import { Condition } from "@/types/Trip";
 import { MD3ThemeExtended } from "@/constants/Themes";
 import { PlaceCondition } from "@/types/Place";
+import { convertConditions } from "@/converters/placeConverter";
 
 interface ConditionIconsProps {
   placeConditions: PlaceCondition[];
@@ -20,11 +21,14 @@ const ConditionIcons: React.FC<ConditionIconsProps> = ({
   const theme = useTheme() as MD3ThemeExtended;
   const styles = createStyles(theme, iconColor);
 
-  // TO DO: convert PlaceConditions to conditions
   const [conditions, setConditions] = useState<Condition[]>([
     "wheelchair",
     "dogs",
   ]);
+
+  useEffect(() => {
+    setConditions(convertConditions(placeConditions));
+  }, [placeConditions]);
 
   if (conditions.length === 0)
     return (

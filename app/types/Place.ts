@@ -3,7 +3,7 @@ export type PlaceViewModel = {
   title?: string;
   subtitle?: string;
   imageUrl?: string;
-}
+};
 
 export interface Place {
   categoryId?: string;
