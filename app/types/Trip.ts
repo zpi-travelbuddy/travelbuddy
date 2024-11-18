@@ -1,3 +1,20 @@
+export interface APITrip {
+  id: string;
+  name: string;
+  startDate: string;
+  endDate: string;
+}
+
+export interface Trip {
+  id: string;
+  title: string;
+  subtitle: string;
+  from: string;
+  to: string;
+  imageUri: string;
+  isArchived: boolean;
+}
+
 export interface TripDay {
   id: string;
   tripId: string;

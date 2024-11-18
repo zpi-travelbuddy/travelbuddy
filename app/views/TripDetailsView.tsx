@@ -3,7 +3,7 @@ import React, { useMemo, useState, useCallback, useEffect } from "react";
 import TripDetailLabel from "@/components/TripDetailLabel";
 import { FAB, useTheme } from "react-native-paper";
 import { CALENDAR_ICON } from "@/constants/Icons";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import SingleDatePickerModal from "@/components/SingleDatePickerModal";
 import { CalendarDate } from "react-native-paper-dates/lib/typescript/Date/Calendar";
 import useTripDetails from "@/composables/useTripDetails";
@@ -27,9 +27,7 @@ const TripDetailsView = () => {
     undefined,
   );
 
-  // const params = useLocalSearchParams();
-  // const { trip_id } = params;
-  const trip_id: string = "77b6b9bd-99d8-4b56-b74d-ed69c3a1238a"; // Temporary solution
+  const { trip_id } = useLocalSearchParams();
 
   const {
     tripDetails,
@@ -96,7 +94,8 @@ const TripDetailsView = () => {
 
   const handleConfirm = useCallback(
     ({ date }: { date: CalendarDate }) => {
-      const formattedDate = (date as Date).toISOString().split("T")[0];
+      const fixedDate = date as Date;
+      const formattedDate = fixedDate.toISOString().split("T")[0];
       const tripDayId = dateToIdMap.get(formattedDate);
       if (tripDayId) {
         console.log("Redirecting to day with id " + tripDayId);
@@ -110,7 +109,7 @@ const TripDetailsView = () => {
   );
 
   if (loading) {
-    return <LoadingView />;
+    return <LoadingView transparent={false} />;
   }
 
   if (error) {

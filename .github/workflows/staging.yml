@@ -1,0 +1,94 @@
+name: Build, Test, Deploy to Azure Container Instance
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend/
+
+    steps:
+    # Step 1: Checkout the code
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    # Step 2: Setup .NET SDK
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '8.0.403'
+
+    # Step 3: Restore dependencies
+    - name: Restore dependencies
+      run: dotnet restore
+
+    # Step 4: Build the project
+    - name: Build project
+      run: dotnet build --no-restore --configuration Release
+
+    # Step 5: Run tests
+    - name: Run tests
+      run: dotnet test --verbosity normal
+
+  docker:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend/TravelBuddyAPI
+
+    steps:
+    # Step 1: Checkout the code
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    # Step 2: Log in to Docker Hub
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    # Step 3: Build and push Docker image
+    - name: Build and push Docker image
+      run: |
+        docker build -t ${{ secrets.DOCKER_USERNAME }}/travelbuddyapi:latest -f Dockerfile.api .
+        docker push ${{ secrets.DOCKER_USERNAME }}/travelbuddyapi:latest
+
+  deploy:
+    needs: docker
+    runs-on: ubuntu-latest
+
+    steps:
+    # Step 1: Login to Azure
+    - name: Log in to Azure
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    # Step 2: Start or restart Azure Container Instance
+    - name: Start or restart Azure Container Instance
+      env:
+        CONTAINER_NAME: "travelbuddyapi-container" # Replace with your container name
+        RESOURCE_GROUP: "TravelBuddy" # Replace with your resource group
+      run: |
+        CONTAINER_STATE=$(az container show \
+          --name "$CONTAINER_NAME" \
+          --resource-group "$RESOURCE_GROUP" \
+          --query "instanceView.state" \
+          --output tsv)
+
+        echo "Current state: $CONTAINER_STATE"
+
+        if [ "$CONTAINER_STATE" == "Stopped" ]; then
+          echo "Starting the container..."
+          az container start --name "$CONTAINER_NAME" --resource-group "$RESOURCE_GROUP"
+        elif [ "$CONTAINER_STATE" == "Running" ]; then
+          echo "Restarting the container..."
+          az container restart --name "$CONTAINER_NAME" --resource-group "$RESOURCE_GROUP"
+        else
+          echo "No action taken. Container state: $CONTAINER_STATE"
+        fi
