@@ -8,6 +8,8 @@ using RestSharp;
 using TravelBuddyAPI.Interfaces;
 using TravelBuddyAPI.Services;
 using Microsoft.IdentityModel.Tokens;
+using Azure.Security.KeyVault.Certificates;
+using System.Security.Cryptography.X509Certificates;
 
 namespace TravelBuddyAPI
 {
@@ -82,6 +84,18 @@ namespace TravelBuddyAPI
                     keyVaultEndpoint,
                     new DefaultAzureCredential(),
                     new CustomKeyVaultSecretManager());
+
+                var certificateClient = new CertificateClient(keyVaultEndpoint, new DefaultAzureCredential());
+                var certificateName = builder.Configuration["Azure:KeyVault:CertificateName"];
+                var certificateResponse = certificateClient.GetCertificate(certificateName);
+
+                builder.WebHost.ConfigureKestrel(options =>
+                {
+                    options.ConfigureHttpsDefaults(httpsOptions =>
+                    {
+                        httpsOptions.ServerCertificate = new X509Certificate2(certificateResponse.Value.Cer);
+                    });
+                });
             }
 
             builder.Services.AddAuthentication(options =>
