@@ -206,11 +206,12 @@ const AddingTripPointView = () => {
         name: "",
       } as Place);
 
+      let totalExpectedCost = expectedCost;
       if (costType === "perPerson") {
         const numberOfTravelers = tripDetails
           ? tripDetails?.numberOfTravelers
           : 1;
-        setExpectedCost(numberOfTravelers * expectedCost);
+        totalExpectedCost = numberOfTravelers * expectedCost;
       }
 
       const tripPointRequest: CreateTripPointRequest = {
@@ -220,7 +221,7 @@ const AddingTripPointView = () => {
         place: place,
         startTime: formatToISODate(startTime),
         endTime: formatToISODate(endTime),
-        predictedCost: expectedCost,
+        predictedCost: totalExpectedCost,
       };
 
       createTripPoint(tripPointRequest);
@@ -407,8 +408,13 @@ const AddingTripPointView = () => {
               budget={expectedCost}
               currency={selectedCurrency}
               disable={true}
+              error={!!errors.expectedCost}
               handleBudgetChange={handleChange(setExpectedCost, "expectedCost")}
             />
+            {errors.expectedCost && (
+              <Text style={styles.textError}>{errors.expectedCost}</Text>
+            )}
+
 
             <SegmentedButtons
               value={costType}
