@@ -1,36 +1,30 @@
-/* eslint-disable react/prop-types */
 import { Button, Card } from "react-native-paper";
-import { StyleSheet, Image, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { formatAddress, truncateText } from "@/utils/TextUtils";
-import { PlaceViewModel } from "@/types/Place";
+import { PlaceDetails } from "@/types/Place";
 
 interface PlaceCardProps {
-  place: PlaceViewModel;
-  onDetailsClick: (id: string) => void;
+  place: PlaceDetails;
+  handleAddPress: () => void;
 }
 
-export const PlaceCard: React.FC<PlaceCardProps> = ({
-  place,
-  onDetailsClick,
-}) => {
-  const { id, name, address, imageUrl } = place;
-
+export function PlaceCard({ place, handleAddPress }: PlaceCardProps) {
   const onDetailsPress = () => {
-    onDetailsClick(id);
+    console.log("Go to attraction's details", place.id);
+    // router.push(...);
   };
 
   const onAddPress = () => {
-    console.log("Go to adding attraction to trip.", id);
-    // router.push(...);
+    console.log("Go to adding attraction to trip.", place.id);
+    handleAddPress();
   };
   return (
     <Card mode="outlined">
       <View style={styles.headerContainer}>
         <Card.Title
-          title={truncateText(name, 25)}
-          subtitle={truncateText(formatAddress(address), 25)}
+          title={truncateText(place.name, 50)}
+          subtitle={truncateText(formatAddress(place), 50)}
         />
-        {imageUrl && <Image source={{ uri: imageUrl }} style={styles.image} />}
       </View>
       <Card.Actions>
         <Button
@@ -46,7 +40,7 @@ export const PlaceCard: React.FC<PlaceCardProps> = ({
       </Card.Actions>
     </Card>
   );
-};
+}
 
 const styles = StyleSheet.create({
   card: {
@@ -54,13 +48,5 @@ const styles = StyleSheet.create({
   },
   headerContainer: {
     position: "relative",
-  },
-  image: {
-    position: "absolute",
-    top: 8,
-    right: 8,
-    width: 100,
-    height: 60,
-    borderRadius: 20,
   },
 });

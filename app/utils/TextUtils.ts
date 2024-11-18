@@ -1,6 +1,8 @@
-export function formatAddress(address: Address | undefined): string {
-  if (!address) return "";
-  return `${address.city}, ${address.country}`;
+import { PlaceDetails } from "@/types/Place";
+
+export function formatAddress(place: PlaceDetails): string {
+  if (!place) return "";
+  return `${place.city}, ${place.country}`;
 }
 
 export function displayCost(number: number): string {

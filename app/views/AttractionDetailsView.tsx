@@ -57,13 +57,6 @@ const AttractionDetailsView = () => {
   const id = "eb2a3de6-8998-4a3c-992c-9e4fd76ef027";
 
   const { placeDetails, loading, error, refetch } = usePlaceDetails(id);
-  const [placeViewModel, setPlaceViewModel] = useState<PlaceViewModel | null>(
-    null,
-  );
-
-  useEffect(() => {
-    if (placeDetails) setPlaceViewModel(convertToPlaceViewModel(placeDetails));
-  }, [placeDetails]);
 
   if (loading) {
     return <LoadingView />;
@@ -75,7 +68,7 @@ const AttractionDetailsView = () => {
     return null;
   }
 
-  if (placeViewModel) {
+  if (placeDetails) {
     return (
       <View style={styles.container}>
         <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -87,26 +80,24 @@ const AttractionDetailsView = () => {
             resizeMode="cover"
           />
           <View style={styles.labelContainer}>
-            <Text variant="headlineSmall">{placeViewModel.name}</Text>
-            <Text variant="titleSmall">
-              {formatAddress(placeViewModel.address)}
-            </Text>
+            <Text variant="headlineSmall">{placeDetails.name}</Text>
+            <Text variant="titleSmall">{formatAddress(placeDetails)}</Text>
 
             <StarRatingDisplayComponent
               style={styles.starRatingPadding}
-              rating={placeViewModel.rating || 0.0}
+              rating={placeDetails?.averageRating || 0.0}
             />
 
             <Text variant="bodySmall">Rodzaj</Text>
             <View style={styles.rowContainer}>
               <IconComponent
-                source={AttractionTypeIcons[placeViewModel.attractionType]}
+                source={AttractionTypeIcons["attraction"]}
                 iconSize={DEFAULT_ICON_SIZE}
                 color={theme.colors.onSurface}
                 backgroundColor={theme.colors.primaryContainer}
               />
               <Text style={styles.label}>
-                {AttractionTypeLabels[placeViewModel.attractionType]}
+                {AttractionTypeLabels["attraction"]}
               </Text>
             </View>
 
@@ -115,7 +106,7 @@ const AttractionDetailsView = () => {
             </Text>
 
             <ConditionIcons
-              conditions={placeViewModel.conditions}
+              placeConditions={placeDetails.conditions}
               style={styles.space}
               iconColor={theme.colors.onSurface}
             ></ConditionIcons>
@@ -124,14 +115,14 @@ const AttractionDetailsView = () => {
               Średni koszt na osobę
             </Text>
             <Text variant="titleSmall">
-              {displayCost(placeViewModel.averageCostPerPerson)}
+              {displayCost(placeDetails.averageCostPerPerson)}
             </Text>
 
             <Text style={styles.doubleSpace} variant="bodySmall">
               Średni czas pobytu
             </Text>
             <Text variant="titleSmall">
-              {displayTime(placeViewModel.averageVisitTime)}
+              {displayTime(placeDetails.averageTimeSpent)}
             </Text>
           </View>
         </ScrollView>

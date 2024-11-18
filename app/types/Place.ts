@@ -1,6 +1,4 @@
-import { Condition, TripPointType } from "./Trip";
-
-export type PlaceView = {
+export type PlaceViewModel = {
   id: string;
   title: string;
   subtitle: string;
@@ -13,11 +11,6 @@ export interface PlaceCondition {
 }
 
 export interface PlaceCategory {
-  id: string;
-  name: string;
-}
-
-export interface PlaceSuperCategory {
   id: string;
   name: string;
 }
@@ -38,19 +31,5 @@ export interface PlaceDetails {
   averageRating: number;
   conditions: PlaceCondition[];
   categories: PlaceCategory[];
-  superCategory: PlaceSuperCategory;
-}
-
-export interface PlaceViewModel {
-  id: string;
-  name: string;
-  address: Address;
-  attractionType: TripPointType;
-  conditions: Condition[];
-  rating: number;
-  averageCostPerPerson: number;
-  averageVisitTime: string;
-  latitude: number;
-  longitude: number;
-  imageUrl?: string;
+  superCategory: PlaceCategory;
 }
