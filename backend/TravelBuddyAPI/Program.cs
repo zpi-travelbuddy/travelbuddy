@@ -98,10 +98,10 @@ namespace TravelBuddyAPI
                     });
 
                     options.Listen(IPAddress.Any, 8080);
-                    options.Listen(IPAddress.Any, 8081, listenOptions =>
-                    {
-                        listenOptions.UseHttps();
-                    });
+                    // options.Listen(IPAddress.Any, 8081, listenOptions =>
+                    // {
+                    //     listenOptions.UseHttps();
+                    // });
                 });
             }
 
@@ -156,7 +156,7 @@ namespace TravelBuddyAPI
                 app.UseSwaggerUI();
             }
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
 
             app.UseAuthentication();
 
