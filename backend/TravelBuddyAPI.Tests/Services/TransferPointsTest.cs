@@ -65,7 +65,6 @@ public class TransferPointsServiceTest
         var transferPointDTO = new TransferPointRequestDTO
         {
             TripDayId = tripDay.Id,
-            StartTime = TimeOnly.FromDateTime(DateTime.Now),
             FromTripPointId = fromTripPoint.Id,
             ToTripPointId = toTripPoint.Id,
             Seconds = 3600,
@@ -117,7 +116,6 @@ public class TransferPointsServiceTest
         var transferPointDTO = new TransferPointRequestDTO
         {
             TripDayId = tripDay.Id,
-            StartTime = TimeOnly.FromDateTime(DateTime.Now),
             FromTripPointId = fromTripPoint.Id,
             ToTripPointId = toTripPoint.Id,
             Mode = TransferMode.approximated_transit,
@@ -174,7 +172,6 @@ public class TransferPointsServiceTest
             TripDayId = tripDay.Id,
             FromTripPointId = tripPoint.Id,
             ToTripPointId = tripPoint.Id,
-            StartTime = TimeOnly.FromDateTime(DateTime.Now),
             Seconds = 3600,
         };
 
@@ -191,7 +188,6 @@ public class TransferPointsServiceTest
             TripDayId = Guid.NewGuid(),
             FromTripPointId = Guid.NewGuid(),
             ToTripPointId = Guid.NewGuid(),
-            StartTime = TimeOnly.FromDateTime(DateTime.Now),
             Seconds = 3600,
         };
 
@@ -222,7 +218,6 @@ public class TransferPointsServiceTest
             TripDayId = tripDay.Id,
             FromTripPointId = Guid.NewGuid(),
             ToTripPointId = Guid.NewGuid(),
-            StartTime = TimeOnly.FromDateTime(DateTime.Now),
             Seconds = 3600,
         };
 
@@ -231,56 +226,6 @@ public class TransferPointsServiceTest
         Assert.Equal($"{TransferPointsService.ErrorMessage.CreateTransferPoint} {TransferPointsService.ErrorMessage.TripPointNotFoundInTripDay}", exception.Message);
     }
 
-    [Fact]
-    public async Task CreateTransferPointAsync_InvalidTransferPointTime_ShouldThrowInvalidOperationException()
-    {
-               var fromTripPointPlace = new ProviderPlace 
-        { 
-            Id = Guid.NewGuid(), 
-            Name = "From Point", 
-            City = "CityA", 
-            Country = "CountryA", 
-            ProviderId = "ProviderA", 
-            Latitude = (decimal)40.7128, 
-            Longitude = (decimal)-74.0060 
-        };
-        var toTripPointPlace = new ProviderPlace 
-        { 
-            Id = Guid.NewGuid(), 
-            Name = "To Point", 
-            City = "CityB", 
-            Country = "CountryB", 
-            ProviderId = "ProviderB", 
-            Latitude = (decimal)40.7128, 
-            Longitude = (decimal)-74.0060 
-        };
-        var fromTripPoint = new TripPoint { Id = Guid.NewGuid(), Name = "From Point", Place = fromTripPointPlace };
-        var toTripPoint = new TripPoint { Id = Guid.NewGuid(), Name = "To Point", Place = toTripPointPlace };
-        var tripDay = new TripDay 
-        { 
-            Id = Guid.NewGuid(), 
-            Trip = new Trip { UserId = "testUser", Name = "Test Trip", CurrencyCode = "USD" },
-            TripPoints = new List<TripPoint> { fromTripPoint, toTripPoint }
-        };
-
-        
-        await _dbContext.TripDays.AddAsync(tripDay);
-        await _dbContext.SaveChangesAsync();
-
-        var transferPointDTO = new TransferPointRequestDTO
-        {
-            TripDayId = tripDay.Id,
-            FromTripPointId = fromTripPoint.Id,
-            ToTripPointId = toTripPoint.Id,
-            StartTime = TimeOnly.FromDateTime(DateTime.Now),
-            Seconds = null,
-            Mode = null
-        };
-
-        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _transferPointsService.CreateTransferPointAsync("testUser", transferPointDTO));
-
-        Assert.Equal($"{TransferPointsService.ErrorMessage.CreateTransferPoint} {TransferPointsService.ErrorMessage.InvalidTransferPointTime}", exception.Message);
-    }
 
     [Fact]
     public async Task EditTransferPointAsync_ValidRequestWithTime_ShouldEditTransferPoint()
@@ -304,7 +249,6 @@ public class TransferPointsServiceTest
             TripDayId = tripDay.Id,
             FromTripPointId = fromTripPoint.Id,
             ToTripPointId = toTripPoint.Id,
-            StartTime = TimeOnly.FromDateTime(DateTime.Now),
             TransferTime = TimeSpan.FromSeconds(3600)
         };
 
@@ -316,7 +260,6 @@ public class TransferPointsServiceTest
             TripDayId = tripDay.Id,
             FromTripPointId = fromTripPoint.Id,
             ToTripPointId = toTripPoint.Id,
-            StartTime = TimeOnly.FromDateTime(DateTime.Now.AddHours(1)),
             Seconds = 7200
         };
 
@@ -325,7 +268,6 @@ public class TransferPointsServiceTest
         Assert.True(result);
         var updatedTransferPoint = await _dbContext.TransferPoints.FindAsync(transferPoint.Id);
         Assert.NotNull(updatedTransferPoint);
-        Assert.Equal(transferPointDTO.StartTime, updatedTransferPoint.StartTime);
         Assert.Equal(transferPointDTO.Seconds, (int)updatedTransferPoint.TransferTime.TotalSeconds);
     }
 
@@ -369,7 +311,6 @@ public class TransferPointsServiceTest
                 TripDayId = tripDay.Id,
                 FromTripPointId = fromTripPoint.Id,
                 ToTripPointId = toTripPoint.Id,
-                StartTime = TimeOnly.FromDateTime(DateTime.Now),
                 TransferTime = TimeSpan.FromSeconds(3600)
             };
 
@@ -381,7 +322,6 @@ public class TransferPointsServiceTest
                 TripDayId = tripDay.Id,
                 FromTripPointId = fromTripPoint.Id,
                 ToTripPointId = toTripPoint.Id,
-                StartTime = TimeOnly.FromDateTime(DateTime.Now.AddHours(1)),
                 Mode = TransferMode.approximated_transit
             };
 
@@ -398,7 +338,6 @@ public class TransferPointsServiceTest
             Assert.True(result);
             var updatedTransferPoint = await _dbContext.TransferPoints.FindAsync(transferPoint.Id);
             Assert.NotNull(updatedTransferPoint);
-            Assert.Equal(transferPointDTO.StartTime, updatedTransferPoint.StartTime);
             Assert.Equal(7200, (int)updatedTransferPoint.TransferTime.TotalSeconds);
         }
 
@@ -410,7 +349,6 @@ public class TransferPointsServiceTest
             TripDayId = Guid.NewGuid(),
             FromTripPointId = Guid.NewGuid(),
             ToTripPointId = Guid.NewGuid(),
-            StartTime = TimeOnly.FromDateTime(DateTime.Now),
             Seconds = 3600
         };
 
@@ -443,7 +381,6 @@ public class TransferPointsServiceTest
             TripDayId = tripDay.Id,
             FromTripPointId = fromTripPoint.Id,
             ToTripPointId = toTripPoint.Id,
-            StartTime = TimeOnly.FromDateTime(DateTime.Now),
             TransferTime = TimeSpan.FromSeconds(3600)
         };
 
@@ -455,7 +392,6 @@ public class TransferPointsServiceTest
             TripDayId = tripDay.Id,
             FromTripPointId = fromTripPoint.Id,
             ToTripPointId = toTripPoint.Id,
-            StartTime = TimeOnly.FromDateTime(DateTime.Now.AddHours(1)),
             Seconds = null,
             Mode = null
         };
@@ -486,7 +422,6 @@ public class TransferPointsServiceTest
             TripDayId = tripDay.Id,
             FromTripPointId = fromTripPoint.Id,
             ToTripPointId = toTripPoint.Id,
-            StartTime = TimeOnly.FromDateTime(DateTime.Now),
             TransferTime = TimeSpan.FromSeconds(3600)
         };
 
