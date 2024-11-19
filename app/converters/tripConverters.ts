@@ -1,27 +1,26 @@
 import { PlaceDetails } from "@/types/Place";
 import {
-  APITrip,
-  Trip,
+  TripCompact,
   TripDetails,
   TripSummary,
   TripViewModel,
 } from "@/types/Trip";
 import { getMoneyWithCurrency } from "@/utils/CurrencyUtils";
-import {
-  formatDateFromISO,
-  formatDateRange,
-  formatTimeRange,
-} from "@/utils/TimeUtils";
+import { formatDateFromISO, formatDateRange } from "@/utils/TimeUtils";
 
 const RANDOM_IMAGE = "https://picsum.photos/891";
 
 // Temporary mocked functions
-function getCategoryProfileName(categoryProfileId: string | null): string {
+function getCategoryProfileName(
+  categoryProfileId?: string | null | undefined,
+): string {
   if (!categoryProfileId) return "";
   return "Zwiedzanie i jedzenie";
 }
 
-function getConditionProfileName(conditionProfileId: string | null): string {
+function getConditionProfileName(
+  conditionProfileId?: string | null | undefined,
+): string {
   if (!conditionProfileId) return "";
   return "Potrzebuję internetu dla psa";
 }
@@ -74,22 +73,23 @@ export function convertTripDetailsToViewModel(
       tripDetails.currencyCode,
     ),
     budget: getMoneyWithCurrency(tripDetails.budget, tripDetails.currencyCode),
-    categoryProfileName: getCategoryProfileName(tripDetails.categoryProfileId),
+    categoryProfileName: getCategoryProfileName(tripDetails?.categoryProfileId),
     conditionProfileName: getConditionProfileName(
-      tripDetails.conditionProfileId,
+      tripDetails?.conditionProfileId,
     ),
   };
 }
 
-export const convertAPITripToTrip = (trip: APITrip): Trip => ({
-  id: trip.id,
-  title: trip.name,
-  subtitle: formatTimeRange(
-    formatDateFromISO(trip?.startDate),
-    formatDateFromISO(trip?.endDate),
-  ),
-  from: trip.startDate,
-  to: trip.endDate,
-  imageUri: RANDOM_IMAGE,
-  isArchived: false,
-});
+export const convertTripsFromAPI = (
+  trips: TripCompact[],
+  isArchived = false,
+): TripCompact[] => {
+  return trips.map((trip) => ({
+    id: trip.id,
+    name: trip.name,
+    startDate: formatDateFromISO(trip.startDate),
+    endDate: formatDateFromISO(trip.endDate),
+    imageUri: RANDOM_IMAGE,
+    isArchived: isArchived,
+  }));
+};

@@ -1,15 +1,22 @@
 import { Button, Card } from "react-native-paper";
-import { StyleSheet, Image, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { truncateText } from "@/utils/TextUtils";
-import { Place } from "@/types/Place";
+import { PlaceCompact } from "@/types/Place";
+import { useState, useEffect } from "react";
 
 interface PlaceCardProps {
-  place: Place;
+  place: PlaceCompact;
   handleAddPress: () => void;
 }
 
 export function PlaceCard({ place, handleAddPress }: PlaceCardProps) {
-  const { id, title, subtitle } = place;
+  const { id, name: title, country, city } = place;
+
+  const [subtitle, setSubtitle] = useState<string>("");
+
+  useEffect(() => {
+    setSubtitle(`${country}, ${city}`);
+  }, [place]);
 
   const onDetailsPress = () => {
     console.log("Go to attraction's details", id);

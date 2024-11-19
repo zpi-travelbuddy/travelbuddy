@@ -1,4 +1,4 @@
-import { TransferPoint, TransferType } from "@/types/data";
+import { TransferPoint, TransferType } from "@/types/TripDayData";
 import { StyleSheet, View } from "react-native";
 import { useTheme, Text, IconButton } from "react-native-paper";
 import { DashedVerticalLine } from "./DashedVerticalLine";
@@ -11,6 +11,7 @@ import {
   TRAIN_ICON,
   NON_STANDARD_TRANSFER_ICON,
 } from "@/constants/Icons";
+import { MD3ThemeExtended } from "@/constants/Themes";
 
 const VERTICAL_LINE_HEIGHT = 20;
 const ICON_SIZE = 40;
@@ -39,13 +40,13 @@ export const TransferPointNode = ({
   onPressEmpty,
 }: TransferPointNodeProps) => {
   // change any to MD3ThemeExtended later
-  const theme = useTheme() as any;
+  const theme = useTheme() as MD3ThemeExtended;
   const style = createStyles(theme);
 
-  const { type, duration } = transferPoint || {};
+  const { mode, seconds: duration } = transferPoint || {};
 
-  const icon = type ? TRANSFER_TYPE_MAP[type] : EMPTY_ICON;
-  const handlePress = type ? onPress : onPressEmpty;
+  const icon = mode ? TRANSFER_TYPE_MAP[mode] : EMPTY_ICON;
+  const handlePress = mode ? onPress : onPressEmpty;
 
   return (
     <View style={style.wrapper}>
@@ -67,7 +68,7 @@ export const TransferPointNode = ({
   );
 };
 
-const createStyles = (theme: any) =>
+const createStyles = (theme: MD3ThemeExtended) =>
   StyleSheet.create({
     wrapper: {
       position: "relative",

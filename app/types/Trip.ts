@@ -1,24 +1,16 @@
-export interface APITrip {
-  id: string;
-  name: string;
-  startDate: string;
-  endDate: string;
-}
-
-export interface Trip {
-  id: string;
-  title: string;
-  subtitle: string;
-  from: string;
-  to: string;
-  imageUri: string;
-  isArchived: boolean;
-}
-
 export interface TripDay {
   id: string;
   tripId: string;
   date: string;
+}
+
+export interface TripCompact {
+  id: string;
+  name: string;
+  startDate: string;
+  endDate: string;
+  isArchived: boolean; // these 2 are not included in API data
+  imageUri?: string;
 }
 
 export interface TripViewModel {
@@ -42,9 +34,10 @@ export interface TripDetails {
   destinationId: string;
   budget: number;
   currencyCode: string;
-  categoryProfileId: string | null;
-  conditionProfileId: string | null;
+  categoryProfileId?: string | null;
+  conditionProfileId?: string | null;
   tripDays: TripDay[];
+  isArchived?: boolean;
 }
 
 export interface TripSummaryPoint {

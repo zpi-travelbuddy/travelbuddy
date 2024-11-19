@@ -9,7 +9,7 @@ import {
   SegmentedButtons,
 } from "react-native-paper";
 import {
-  addHoursToTheSameDate,
+  addHoursToTheSameDay,
   formatToISODate,
   roundToNearestQuarterHour,
 } from "@/utils/TimeUtils";
@@ -22,7 +22,7 @@ import { AttractionTypeLabels, TripErrors, TripPointType } from "@/types/Trip";
 import { CALENDAR_ICON } from "@/constants/Icons";
 import { useAnimatedKeyboard } from "react-native-reanimated";
 import TripPointTypePicker from "@/components/TripPointTypePicker";
-import { CreateTripPointRequest } from "@/types/data";
+import { CreateTripPointRequest } from "@/types/TripDayData";
 import { Place } from "@/types/Place";
 import { useLocalSearchParams } from "expo-router";
 
@@ -57,7 +57,7 @@ const AddingTripPointView = () => {
     useState<TripPointType>("attraction");
   const [startTime, setStartTime] = useState<Date>(roundToNearestQuarterHour());
   const [endTime, setEndTime] = useState<Date>(
-    addHoursToTheSameDate(startTime, 1),
+    addHoursToTheSameDay(startTime, 1),
   );
   const [country, setCountry] = useState<string>(""); // Default value will be from trip destination
   const [state, setState] = useState<string>(""); // Default value will be from trip destination

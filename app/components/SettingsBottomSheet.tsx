@@ -35,7 +35,7 @@ const SettingsBottomSheet: React.FC<SettingsBottomSheetProps> = ({
   onClose,
 }) => {
   const theme = useTheme();
-  const styles = createStyles(theme, itemHeight);
+  const styles = createStyles(theme);
   const sheetRef = useRef<BottomSheet>(null);
   const [selectedOption, setSelectedOption] = useState<string>(selectedItem);
 
@@ -113,7 +113,7 @@ const SettingsBottomSheet: React.FC<SettingsBottomSheetProps> = ({
   );
 };
 
-const createStyles = (theme: MD3Theme, itemHeight: number) =>
+const createStyles = (theme: MD3Theme) =>
   StyleSheet.create({
     bottomSheetContainer: {
       padding: 30,

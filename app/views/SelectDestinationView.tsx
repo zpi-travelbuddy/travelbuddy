@@ -17,9 +17,9 @@ import { MD3ThemeExtended } from "@/constants/Themes";
 import { useAuth } from "@/app/ctx";
 import { useDebouncedCallback } from "use-debounce";
 import { router } from "expo-router";
-import { Destination, APIDestination } from "@/types/Destination";
 import { API_AUTOCOMPLETE_DESTINATION } from "@/constants/Endpoints";
 import { useAnimatedKeyboard } from "react-native-reanimated";
+import { Destination, PlaceCompact } from "@/types/Place";
 
 const DestinationCard = ({ destination }: { destination: Destination }) => {
   const { id, name, country, state } = destination;
@@ -58,7 +58,7 @@ const SelectDestinationView = () => {
           query,
         },
       });
-      const parsedData = response.data.map((destination: APIDestination) => ({
+      const parsedData = response.data.map((destination: PlaceCompact) => ({
         id: destination.providerId,
         name: destination.city || destination.name,
         country: destination.country,

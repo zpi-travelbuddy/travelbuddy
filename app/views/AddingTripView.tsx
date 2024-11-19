@@ -68,12 +68,12 @@ const AddingTripView = () => {
   const [range, setRange] = useState<DateRange>({});
   const [errors, setErrors] = useState<TripErrors>({});
 
-  const [selectedPreferenceProfile, setSelectedPreferencesProfile] =
-    useState<Profile | null>(null);
-  const [selectedConvenienceProfile, setSelectedConvenienceProfile] =
-    useState<Profile | null>(null);
+  const [categoryProfile, setCategoryProfile] = useState<Profile | null>(null);
+  const [conditionProfile, setConditionProfile] = useState<Profile | null>(
+    null,
+  );
 
-  const [profileType, setProfileType] = useState<ProfileType>("Preference");
+  const [profileType, setProfileType] = useState<ProfileType>("Category");
   const preferenceProfiles = useMemo(
     () => [
       { id: "1", name: "Profile1" },
@@ -91,9 +91,9 @@ const AddingTripView = () => {
 
   const handleProfileSelection = useCallback(
     (profile: Profile) => {
-      profileType === "Preference"
-        ? setSelectedPreferencesProfile(profile)
-        : setSelectedConvenienceProfile(profile);
+      profileType === "Category"
+        ? setCategoryProfile(profile)
+        : setConditionProfile(profile);
     },
     [profileType],
   );
@@ -225,17 +225,17 @@ const AddingTripView = () => {
 
             <ClickableInput
               label="Profil preferencji"
-              value={selectedPreferenceProfile?.name || "Brak"}
+              value={categoryProfile?.name || "Brak"}
               onPress={() => {
-                setProfileType("Preference");
+                setProfileType("Category");
                 setVisible(true);
               }}
             />
             <ClickableInput
               label="Profil udogodnień"
-              value={selectedConvenienceProfile?.name || "Brak"}
+              value={conditionProfile?.name || "Brak"}
               onPress={() => {
-                setProfileType("Convenience");
+                setProfileType("Condition");
                 setVisible(true);
               }}
             />
@@ -243,7 +243,7 @@ const AddingTripView = () => {
             <CustomModal visible={visible} onDismiss={() => setVisible(false)}>
               <FlatList
                 data={
-                  profileType === "Preference"
+                  profileType === "Category"
                     ? preferenceProfiles
                     : convenienceProfiles
                 }
@@ -251,9 +251,9 @@ const AddingTripView = () => {
                   <RenderItem
                     item={item}
                     isSelected={
-                      (profileType === "Preference"
-                        ? selectedPreferenceProfile
-                        : selectedConvenienceProfile
+                      (profileType === "Category"
+                        ? categoryProfile
+                        : conditionProfile
                       )?.id === item.id
                     }
                     onSelect={handleProfileSelection}

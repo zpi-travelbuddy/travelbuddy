@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useCallback, useEffect } from "react";
 import { View, StyleSheet, FlatList } from "react-native";
 import {
@@ -8,7 +9,7 @@ import {
 } from "react-native-paper";
 import { PlaceCard } from "@/components/explore/PlaceCard";
 import { MD3ThemeExtended } from "@/constants/Themes";
-import { APIPlace, Place } from "@/types/Place";
+import { PlaceCompact } from "@/types/Place";
 import { useAnimatedKeyboard } from "react-native-reanimated";
 import { useDebouncedCallback } from "use-debounce";
 import { useAuth } from "@/app/ctx";
@@ -18,17 +19,17 @@ import { RenderItem } from "@/components/RenderItem";
 import ActionTextButtons from "@/components/ActionTextButtons";
 import { truncateText } from "@/utils/TextUtils";
 
-const convertPlace = (place: APIPlace): Place => {
-  const subtitle = [place.city, place.state, place.country]
-    .filter(Boolean)
-    .join(", ");
+// const convertPlace = (place: APIPlace): Place => {
+//   const subtitle = [place.city, place.state, place.country]
+//     .filter(Boolean)
+//     .join(", ");
 
-  return {
-    id: place.providerId,
-    title: place.name,
-    subtitle: subtitle,
-  };
-};
+//   return {
+//     id: place.providerId,
+//     title: place.name,
+//     subtitle: subtitle,
+//   };
+// };
 
 interface ExploreViewProps {
   tripId?: string;
@@ -44,7 +45,7 @@ const ExploreView = ({ tripId }: ExploreViewProps) => {
   const theme = useTheme() as MD3ThemeExtended;
   const styles = makeStyles(theme);
 
-  const [places, setPlaces] = useState<Place[]>([]);
+  const [places, setPlaces] = useState<PlaceCompact[]>([]);
   const [currentTrips, setCurrentTrips] = useState<any[]>([]); // will change to Trips later (after trips browse merge)
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [tripModalVisible, setTripModalVisible] = useState(false);
@@ -61,8 +62,8 @@ const ExploreView = ({ tripId }: ExploreViewProps) => {
         },
       });
 
-      const parsedData = response.data.map(convertPlace) as Place[];
-      setPlaces(parsedData.filter((place) => place.title && place.subtitle));
+      const parsedData = response.data as PlaceCompact[];
+      setPlaces(parsedData.filter((place) => place.name && place.city));
     } catch (error: any) {
       console.error(error.response.data);
     }
@@ -106,7 +107,7 @@ const ExploreView = ({ tripId }: ExploreViewProps) => {
     console.log("Selected trip", item.id);
   };
 
-  const handleAddPress = (place: Place) => {
+  const handleAddPress = (place: PlaceCompact) => {
     console.log("Selected place", place);
     if (tripId) {
       // logic for adding place to trip
@@ -134,7 +135,7 @@ const ExploreView = ({ tripId }: ExploreViewProps) => {
     );
   }, [searchQuery]);
 
-  const renderPlace = ({ item }: { item: Place }) => {
+  const renderPlace = ({ item }: { item: PlaceCompact }) => {
     return (
       <PlaceCard
         place={item}

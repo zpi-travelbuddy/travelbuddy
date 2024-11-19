@@ -1,20 +1,21 @@
-export interface APIPlace {
-  id: string | null;
-  providerId: string;
-  name?: string;
-  country?: string;
-  state?: string | null;
-  city?: string;
-}
-
-export interface Place {
+export interface PlaceCompact {
   id: string;
-  title?: string;
-  subtitle?: string;
-  imageUrl?: string;
+  providerId?: string;
+  name: string;
+  country: string;
+  state?: string;
+  city: string;
+}
+
+export interface Destination {
+  id: string;
+  name: string;
+  country: string;
+  state: string;
 }
 
 export interface Place {
+  providerId: string;
   categoryId?: string;
   name: string;
   country: string;

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/app/ctx";
-import { TransferPoint, TripPointCompact, TripDayResponse } from "@/types/data";
+import { TransferPoint, TripPointCompact, TripDayDetails } from "@/types/TripDayData";
 import { TripDay } from "@/types/Trip";
 
 const useTripDayDetails = (tripDayId: string | null) => {
@@ -14,7 +14,7 @@ const useTripDayDetails = (tripDayId: string | null) => {
 
   const fetchTripDayDetails = useCallback(async () => {
     try {
-      const response = await api!.get<TripDayResponse>(
+      const response = await api!.get<TripDayDetails>(
         `/trips/tripDay/${tripDayId}`,
       );
       console.log(JSON.stringify(response));

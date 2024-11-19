@@ -1,5 +1,7 @@
-export function formatAddress(address: Address): string {
-  return `${address.city}, ${address.country}`;
+import { Place } from "@/types/Place";
+
+export function formatAddress(place: Place): string {
+  return `${place.city}, ${place.country}`;
 }
 
 export function displayCost(number: number): string {

@@ -1,4 +1,4 @@
-export type ProfileType = "Preference" | "Convenience";
+export type ProfileType = "Category" | "Condition";
 
 export interface Profile {
   id: string;

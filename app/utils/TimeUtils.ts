@@ -21,6 +21,7 @@ export function formatDateToISO(date: Date | undefined): string {
 }
 
 export function formatDateFromISO(date: string | undefined): string {
+  console.log(date);
   if (!date) return "";
   return date.split("-").reverse().join(".");
 }
@@ -94,7 +95,7 @@ export function addHoursToDate(
   return newDate;
 }
 
-export function addHoursToTheSameDate(
+export function addHoursToTheSameDay(
   date: Date = new Date(),
   hours: number = 1,
 ): Date {
@@ -111,4 +112,17 @@ export function addHoursToTheSameDate(
 
 export const formatToISODate = (date: Date): string => {
   return date.toISOString().split("T")[0];
+};
+
+type TimeType = "hours" | "minutes";
+
+export const convertToSeconds = (time: number, timeType: TimeType) => {
+  if (timeType === "hours") return 60 * 60 * time;
+  else if (timeType === "minutes") return 60 * time;
+  else return time;
+};
+export const convertFromSeconds = (time: number, timeType: TimeType) => {
+  if (timeType === "hours") return time / (60 * 60);
+  else if (timeType === "minutes") return time / 60;
+  else return time;
 };
