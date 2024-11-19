@@ -5,11 +5,15 @@ import {
   StyleSheet,
   TouchableOpacity,
   TouchableWithoutFeedback,
+  Keyboard,
 } from "react-native";
 import { MD3Theme, useTheme } from "react-native-paper";
 import { Option } from "@/types/TripDayData";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
-import { useAnimatedKeyboard } from "react-native-reanimated";
+import Animated, {
+  useAnimatedKeyboard,
+  useAnimatedStyle,
+} from "react-native-reanimated";
 import IconComponent from "./IconComponent";
 
 interface BottomSheetComponentProps {
@@ -31,7 +35,13 @@ const CreatingTripPointSelector: React.FC<BottomSheetComponentProps> = ({
   const styles = createStyles(theme);
   const sheetRef = useRef<BottomSheet>(null);
 
-  useAnimatedKeyboard();
+  const keyboard = useAnimatedKeyboard();
+
+  const animatedStyles = useAnimatedStyle(() => {
+    return {
+      marginBottom: keyboard.height.value,
+    };
+  });
 
   const handleAnimate = useCallback(
     (fromIndex: number, toIndex: number) => {
@@ -61,37 +71,41 @@ const CreatingTripPointSelector: React.FC<BottomSheetComponentProps> = ({
           <View style={[style, styles.contentContainer]} />
         )}
       >
-        <BottomSheetView style={styles.contentContainer}>
-          {!!label && <Text style={styles.label}>{label}</Text>}
-          <View style={styles.buttonsContainer}>
-            {options.map((option, index) => (
-              <TouchableOpacity
-                key={index}
-                style={styles.option}
-                onPress={() => {
-                  option.onPress();
-                }}
-              >
-                <IconComponent
-                  source={option.icon}
-                  iconSize={36}
-                  color={
-                    option.label === label
-                      ? theme.colors.onPrimary
-                      : theme.colors.onSecondaryContainer
-                  }
-                  backgroundColor={
-                    option.label === label
-                      ? theme.colors.primary
-                      : theme.colors.secondaryContainer
-                  }
-                />
-                <Text style={styles.optionLabel}>{option.label}</Text>
-              </TouchableOpacity>
-            ))}
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View>
+            <BottomSheetView style={styles.contentContainer}>
+              {!!label && <Text style={styles.label}>{label}</Text>}
+              <Animated.View style={[animatedStyles, styles.buttonsContainer]}>
+                {options.map((option, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    style={styles.option}
+                    onPress={() => {
+                      option.onPress();
+                    }}
+                  >
+                    <IconComponent
+                      source={option.icon}
+                      iconSize={36}
+                      color={
+                        option.label === label
+                          ? theme.colors.onPrimary
+                          : theme.colors.onSecondaryContainer
+                      }
+                      backgroundColor={
+                        option.label === label
+                          ? theme.colors.primary
+                          : theme.colors.secondaryContainer
+                      }
+                    />
+                    <Text style={styles.optionLabel}>{option.label}</Text>
+                  </TouchableOpacity>
+                ))}
+                {extendedView && extendedView}
+              </Animated.View>
+            </BottomSheetView>
           </View>
-          {extendedView && extendedView}
-        </BottomSheetView>
+        </TouchableWithoutFeedback>
       </BottomSheet>
 
       {isVisible && (
