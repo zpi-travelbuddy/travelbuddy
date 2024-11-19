@@ -117,11 +117,11 @@ export interface EditTripRequest {
   endDate: string;
   destinationPlace: {
     providerId: string,
-    name: string;
-    country: string;
-    city: string;
-    latitude: number;
-    longitude: number;
+    name?: string;
+    country?: string;
+    city?: string;
+    latitude?: number;
+    longitude?: number;
   }
   budget: number;
   currencyCode: string;

@@ -24,7 +24,7 @@ import CustomModal from "@/components/CustomModal";
 import { RenderItem } from "@/components/RenderItem";
 import ActionButtons from "@/components/ActionButtons";
 import ClickableInput from "@/components/ClickableInput";
-import { TripRequest, TripResponse, TripErrors, EditTripRequest } from "@/types/Trip";
+import { TripErrors, EditTripRequest } from "@/types/Trip";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import useTripDetails, {
   useEditTripDetails,
@@ -56,7 +56,9 @@ const EditTripView = () => {
   const router = useRouter();
   const { showSnackbar } = useSnackbar();
   const params = useLocalSearchParams();
-  const { trip_id } = params;
+  const { trip_id, new_destination_id, new_destination_name } = params;
+
+  console.log(params)
 
   const [editTripRequest, setEditTripRequest] = useState<EditTripRequest>({} as EditTripRequest)
 
@@ -90,6 +92,7 @@ const EditTripView = () => {
 
   const [errors, setErrors] = useState<TripErrors>({});
   const [numberOfPeople, setNumberOfPeople] = useState<string>("");
+  const [destinationName, setDestinationName] = useState<string>("");
 
   const [dateRange, setDateRange] = useState<{
     startDate: Date;
@@ -130,6 +133,17 @@ const EditTripView = () => {
   // =====================
 
   useEffect(() => {
+    if (destinationDetails && !new_destination_id){
+      setDestinationName(getDisplayPlace(destinationDetails))
+    } else if (new_destination_id && new_destination_name) {
+      setDestinationName(new_destination_name as string);
+      setEditTripRequest((prev) => ({...prev, destinationPlace: { providerId: new_destination_id as string }}))
+    } else console.log("ERRRRROR")
+
+  },[destinationDetails, new_destination_id]) 
+  
+
+  useEffect(() => {
     setError(tripError || destinationError || "");
   }, [tripError, destinationError, editError]);
 
@@ -156,14 +170,6 @@ const EditTripView = () => {
   }, [tripDetails, destinationDetails]);
 
   useEffect(() => {
-    console.log("TripDetails: " + JSON.stringify(tripDetails));
-  }, [tripDetails]);
-
-  useEffect(() => {
-    console.log("DestinationDetails: " + JSON.stringify(destinationDetails));
-  }, [destinationDetails]);
-
-  useEffect(() => {
     setDateRangeText(formatDateRange(dateRange.startDate, dateRange.endDate));
   }, [dateRange]);
 
@@ -187,25 +193,53 @@ const EditTripView = () => {
       showSnackbar("Błąd z celem wycieczki!", "error");
       console.error(editTripRequest.destinationPlace.providerId);
     }
+
+    let hasErrors = false;
+    if (!editTripRequest.name){
+      hasErrors = true;
+      setErrors((prev) => ({...prev, name: "Nazwa wycieczki jest wymagana."}))
+    }    
+    if (!dateRange.startDate){
+      hasErrors = true;
+      setErrors((prev) => ({...prev, startDate: "Termin wycieczki jest wymagany."}))
+    }
+    if (!editTripRequest.destinationPlace.providerId){
+      hasErrors = true;
+      setErrors((prev) => ({...prev, providerId: "Cel wycieczki jest wymagany."}))
+    }   
+    if (!numberOfPeople){
+      hasErrors = true;
+      setErrors((prev) => ({...prev, numberOfTravelers: "Liczba osób jest wymagana."}))
+    } else if (editTripRequest.numberOfTravelers < 1) {
+      hasErrors = true;
+      setErrors((prev) => ({...prev, numberOfTravelers: "Liczba osób musi dodatnia."}))
+    }
+    if (!editTripRequest.budget){
+      hasErrors = true;
+      setErrors((prev) => ({...prev, budget: "Kwota budżetu jest wymagana."}))
+    }   
+    // if (!editTripRequest.categoryProfileId){
+    //   hasErrors = true;
+    //   setErrors((prev) => ({...prev, categoryProfile: "Profil preferencji jest wymagany."}))
+    // }
+   
+    // if (!editTripRequest.conditionProfileId){
+    //   hasErrors = true;
+    //   setErrors((prev) => ({...prev, conditionProfile: "Profil udogodnień jest wymagany."}))
+    // }
+    if (hasErrors) {
+      console.log("EditTripRequest: " + JSON.stringify(editTripRequest));
+      showSnackbar("Proszę uzupełnić wszystkie wymagane pola!", "error");
+      return;
+    }
+
+
     try {
       setEditTripRequest((prev) => ({
         ...prev,
         startDate: formatDateToISO(dateRange.startDate),
         endDate: formatDateToISO(dateRange.endDate),
       }));
-      if (
-        !editTripRequest.name ||
-        !editTripRequest.startDate ||
-        !editTripRequest.endDate ||
-        !editTripRequest.numberOfTravelers ||
-        !editTripRequest.budget
-        // || !editTripRequest.categoryProfileId   // TODO available in future
-        // || !editTripRequest.conditionProfileId
-      ) {
-        console.log("EditTripRequest: " + JSON.stringify(editTripRequest));
-        showSnackbar("Proszę uzupełnić wszystkie wymagane pola!", "error");
-        return;
-      }
       await editTrip();
     } catch (error) {
       showSnackbar("Błąd podczas zapisywania wycieczki!", "error");
@@ -223,9 +257,14 @@ const EditTripView = () => {
   const validateNumberOfPeople = () => {
     const numericValue = numberOfPeople.replace(/[^0-9]/g, "");
     const parsedValue = parseInt(numericValue, 10);
-    if (!isNaN(parsedValue) && parsedValue > 0)
+    if (!isNaN(parsedValue) && parsedValue > 0){
       setNumberOfPeople(parsedValue.toString());
-    else setNumberOfPeople("");
+      handleChange("numberOfTravelers")(parsedValue);
+    }
+    else {
+      setNumberOfPeople("");
+      handleChange("numberOfTravelers")(0);
+    }
   };
 
   const getProfileName = (profileType: ProfileType, id: string | null) => {
@@ -296,7 +335,7 @@ const EditTripView = () => {
 
             <ClickableInput
               label="Cel wycieczki"
-              value={getDisplayPlace(editTripRequest.destinationPlace)}
+              value={destinationName}
               onPress={() => router.push("/trips/add/destination")}
               icon={MARKER_ICON}
               error={!!errors.destinationPlace}
@@ -313,16 +352,17 @@ const EditTripView = () => {
               onChangeText={setNumberOfPeople}
               onEndEditing={validateNumberOfPeople}
               keyboardType="numeric"
-              error={!!errors.numberOfPeople}
+              error={!!errors.numberOfTravelers}
             />
-            {errors.numberOfPeople && (
-              <Text style={styles.textError}>{errors.numberOfPeople}</Text>
+            {errors.numberOfTravelers && (
+              <Text style={styles.textError}>{errors.numberOfTravelers}</Text>
             )}
 
             <CurrencyValueInput
               budget={editTripRequest.budget}
               currency={editTripRequest.currencyCode}
               handleBudgetChange={handleChange("budget")}
+              disable={true}
               error={!!errors.budget}
             />
             {errors.budget && (
@@ -337,7 +377,12 @@ const EditTripView = () => {
                 setProfileType("Category");
                 setVisible(true);
               }}
+              error={!!errors.categoryProfile}
             />
+            {errors.categoryProfile && (
+              <Text style={styles.textError}>{errors.categoryProfile}</Text>
+            )}
+
             <ClickableInput
               icon="account"
               label="Profil udogodnień"
@@ -346,7 +391,12 @@ const EditTripView = () => {
                 setProfileType("Condition");
                 setVisible(true);
               }}
+              error={!!errors.conditionProfile}
             />
+            {errors.conditionProfile && (
+              <Text style={styles.textError}>{errors.conditionProfile}</Text>
+            )}
+  
 
             <CustomModal visible={visible} onDismiss={() => setVisible(false)}>
               <FlatList
