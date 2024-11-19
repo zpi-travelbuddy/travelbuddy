@@ -1,11 +1,11 @@
 export interface Place {
-  id?: string;
-  providerId?: string;
+  id: string;
+  providerId: string;
   categoryId?: string;
-  name?: string;
-  country?: string;
+  name: string;
+  country: string;
   state?: string;
-  city?: string;
+  city: string;
   street?: string;
   houseNumber?: string;
   latitude?: number;

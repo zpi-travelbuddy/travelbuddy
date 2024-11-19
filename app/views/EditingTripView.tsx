@@ -155,9 +155,13 @@ const EditTripView = () => {
     }
   }, [tripDetails, destinationDetails]);
 
-  // useEffect(() => {
-  //   console.log(JSON.stringify(tripRequest));
-  // }, [tripRequest]);
+  useEffect(() => {
+    console.log("TripDetails: " + JSON.stringify(tripDetails));
+  }, [tripDetails]);
+
+  useEffect(() => {
+    console.log("DestinationDetails: " + JSON.stringify(destinationDetails));
+  }, [destinationDetails]);
 
   useEffect(() => {
     setDateRangeText(formatDateRange(dateRange.startDate, dateRange.endDate));
@@ -179,6 +183,10 @@ const EditTripView = () => {
   // =====================
 
   const saveTrip = async () => {
+    if (!editTripRequest.destinationPlace.providerId) {
+      showSnackbar("Błąd z celem wycieczki!", "error");
+      console.error(editTripRequest.destinationPlace.providerId);
+    }
     try {
       setEditTripRequest((prev) => ({
         ...prev,
@@ -190,17 +198,11 @@ const EditTripView = () => {
         !editTripRequest.startDate ||
         !editTripRequest.endDate ||
         !editTripRequest.numberOfTravelers ||
-        !editTripRequest.budget ||
-        !editTripRequest.destinationPlace ||
-        !editTripRequest.destinationPlace.name ||
-        !editTripRequest.destinationPlace.country ||
-        !editTripRequest.destinationPlace.city ||
-        // !editTripRequest.destinationPlace.latitude ||
-        // !editTripRequest.destinationPlace.longitude ||
-        !editTripRequest.budget ||
-        !editTripRequest.currencyCode
+        !editTripRequest.budget
+        // || !editTripRequest.categoryProfileId   // TODO available in future
+        // || !editTripRequest.conditionProfileId
       ) {
-        // console.log("Trip request: " + JSON.stringify(tripRequest));
+        console.log("EditTripRequest: " + JSON.stringify(editTripRequest));
         showSnackbar("Proszę uzupełnić wszystkie wymagane pola!", "error");
         return;
       }

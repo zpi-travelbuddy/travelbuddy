@@ -116,6 +116,7 @@ export interface EditTripRequest {
   startDate: string;
   endDate: string;
   destinationPlace: {
+    providerId: string,
     name: string;
     country: string;
     city: string;

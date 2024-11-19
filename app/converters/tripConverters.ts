@@ -109,6 +109,7 @@ export function convertTripResponseToEditTripRequest(
     startDate: response.startDate,
     endDate: response.endDate,
     destinationPlace: {
+      providerId: destination.providerId || "",
       name: destination.name || "",
       country: destination.country || "",
       city: destination.city || "",

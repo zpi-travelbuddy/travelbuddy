@@ -18,12 +18,6 @@ const usePlaceDetails = (placeId: string | undefined) => {
       setError(null);
 
       const response = await api!.get<PlaceDetails>(`/places/${placeId}`);
-      // const updatedPlaceDetails = {
-      //   ...response.data,
-      //   providerId:
-      //     "51fd2488049d5ac0bf59e23f38faf3c04940f00103f901ffa4010000000000c0020792030b5743324e203544582b6762",
-      // };
-      // setPlaceDetails(updatedPlaceDetails);
       setPlaceDetails(response.data);
     } catch (err: any) {
       if (err.response && err.response.status === 404) {
