@@ -579,7 +579,7 @@ public static class ModelBuilderExtension
 
             new TransferPoint { Id = Guid.NewGuid(), TripDayId = tripDays[1].Id, TransferTime = new TimeSpan(0,3,13), FromTripPointId = tripPoints[5].Id, ToTripPointId = tripPoints[6].Id, Mode = TransferMode.bicycle},
             new TransferPoint { Id = Guid.NewGuid(), TripDayId = tripDays[1].Id, TransferTime = new TimeSpan(0,8,18), FromTripPointId = tripPoints[6].Id, ToTripPointId = tripPoints[7].Id, Mode = TransferMode.walk},
-            new TransferPoint { Id = Guid.NewGuid(), TripDayId = tripDays[1].Id, TransferTime = new TimeSpan(0,13,30), FromTripPointId = tripPoints[7].Id, ToTripPointId = tripPoints[8].Id, Mode = TransferMode.approximated_transit},
+            new TransferPoint { Id = Guid.NewGuid(), TripDayId = tripDays[1].Id, TransferTime = new TimeSpan(0,13,30), FromTripPointId = tripPoints[7].Id, ToTripPointId = tripPoints[8].Id, Mode = TransferMode.walk},
         };
 
         modelBuilder.Entity<TransferPoint>().HasData(transferPoints);

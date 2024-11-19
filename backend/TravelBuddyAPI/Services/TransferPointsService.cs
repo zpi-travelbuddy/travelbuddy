@@ -24,7 +24,7 @@ public class TransferPointsService(TravelBuddyDbContext dbContext, IGeoapifyServ
         public const string CreateTransferPoint = "An error occurred while creating a transfer point:";
         public const string DeleteTransferPoint = "An error occurred while deleting a transfer point:";
         public const string EditTransferPoint = "An error occurred while editing a transfer point:";
-        public const string NullLatitudeOrLongitude = "Latitude or Longitude cannot be null when mode present.";
+        public const string NullLatitudeOrLongitude = "Latitude or Longitude cannot be null when mode is present.";
     }
 
     public async Task<TransferPointOverviewDTO> CreateTransferPointAsync(string userId, TransferPointRequestDTO transferPoint)
