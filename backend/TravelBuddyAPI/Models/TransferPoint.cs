@@ -21,12 +21,6 @@ public class TransferPoint
     public TimeSpan TransferTime { get; set; }
 
     [Required]
-    public TimeOnly StartTime { get; set; }
-
-    [NotMapped]
-    public TimeOnly EndTime => StartTime.Add(TransferTime);
-
-    [Required]
     public Guid? FromTripPointId { get; set; }
     public TripPoint? FromTripPoint { get; set; }
 
@@ -36,5 +30,4 @@ public class TransferPoint
 
     public TransferMode? Mode { get; set; }
 
-    public TransferType? Type { get; set; }
 }

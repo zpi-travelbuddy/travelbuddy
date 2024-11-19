@@ -326,9 +326,7 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
             Id = tp.Id,
             TripDayId = tp.TripDayId,
             Seconds = (int?)tp.TransferTime.TotalSeconds,
-            StartTime = tp.StartTime,
             Mode = tp.Mode,
-            Type = tp.Type,
             FromTripPointId = tp.FromTripPointId,
             ToTripPointId = tp.ToTripPointId
         }).ToList();

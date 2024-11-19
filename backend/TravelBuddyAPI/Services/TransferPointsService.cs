@@ -61,11 +61,9 @@ public class TransferPointsService(TravelBuddyDbContext dbContext, IGeoapifyServ
             {
                 Id = Guid.NewGuid(),
                 TripDayId = transferPoint.TripDayId,
-                StartTime = transferPoint.StartTime,
                 FromTripPointId = transferPoint.FromTripPointId,
                 ToTripPointId = transferPoint.ToTripPointId,
                 Mode = transferPoint.Mode,
-                Type = transferPoint.Type
             };
 
             if(!((transferPoint.Seconds == null) ^ (transferPoint.Mode == null)))
@@ -92,12 +90,10 @@ public class TransferPointsService(TravelBuddyDbContext dbContext, IGeoapifyServ
             {
                 Id = newTranserPoint.Id,
                 TripDayId = newTranserPoint.TripDayId,
-                StartTime = newTranserPoint.StartTime,
                 Seconds = (int)newTranserPoint.TransferTime.TotalSeconds,
                 FromTripPointId = newTranserPoint.FromTripPointId,
                 ToTripPointId = newTranserPoint.ToTripPointId,
                 Mode = newTranserPoint.Mode,
-                Type = newTranserPoint.Type
             };
         }
         catch (Exception e) when (e is ArgumentNullException || e is InvalidOperationException || e is ArgumentException || e is HttpRequestException || e is ValidationException)
@@ -151,10 +147,6 @@ public class TransferPointsService(TravelBuddyDbContext dbContext, IGeoapifyServ
                 throw new InvalidOperationException(ErrorMessage.TransferPointNotFound);
             }
 
-            existingTransferPoint.StartTime = transferPoint.StartTime;
-            existingTransferPoint.Mode = transferPoint.Mode;
-            existingTransferPoint.Type = transferPoint.Type;
-
             if (!((transferPoint.Seconds == null) ^ (transferPoint.Mode == null)))
             {
                 throw new InvalidOperationException(ErrorMessage.InvalidTransferPointTime);
@@ -165,6 +157,7 @@ public class TransferPointsService(TravelBuddyDbContext dbContext, IGeoapifyServ
             }
             else
             {
+                existingTransferPoint.Mode = transferPoint.Mode;
                 existingTransferPoint.TransferTime = await _geoapifyService.GetRouteTimeAsync((existingTransferPoint.FromTripPoint!.Place!.Latitude, existingTransferPoint.FromTripPoint.Place.Longitude), (existingTransferPoint.ToTripPoint!.Place!.Latitude, existingTransferPoint.ToTripPoint.Place.Longitude), transferPoint.Mode!.Value)
                     ?? throw new InvalidOperationException(ErrorMessage.InvalidTransferPointTime);
             }

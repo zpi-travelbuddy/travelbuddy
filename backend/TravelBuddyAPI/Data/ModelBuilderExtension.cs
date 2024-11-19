@@ -573,13 +573,13 @@ public static class ModelBuilderExtension
 
         var transferPoints = new List<TransferPoint>
         {
-            new TransferPoint { Id = Guid.NewGuid(), TripDayId = tripDays[0].Id, TransferTime = new TimeSpan(0,14,21), StartTime = new TimeOnly(10,20,0),FromTripPointId = tripPoints[0].Id, ToTripPointId = tripPoints[1].Id, Mode = TransferMode.drive},
-            new TransferPoint { Id = Guid.NewGuid(), TripDayId = tripDays[0].Id, TransferTime = new TimeSpan(0,0,55), StartTime = new TimeOnly(12,00,0),FromTripPointId = tripPoints[2].Id, ToTripPointId = tripPoints[3].Id, Mode = TransferMode.motorcycle},
-            new TransferPoint { Id = Guid.NewGuid(), TripDayId = tripDays[0].Id, TransferTime = new TimeSpan(0,20,0), StartTime = new TimeOnly(13,00,0),FromTripPointId = tripPoints[3].Id, ToTripPointId = tripPoints[4].Id},
+            new TransferPoint { Id = Guid.NewGuid(), TripDayId = tripDays[0].Id, TransferTime = new TimeSpan(0,14,21), FromTripPointId = tripPoints[0].Id, ToTripPointId = tripPoints[1].Id, Mode = TransferMode.drive},
+            new TransferPoint { Id = Guid.NewGuid(), TripDayId = tripDays[0].Id, TransferTime = new TimeSpan(0,0,55), FromTripPointId = tripPoints[2].Id, ToTripPointId = tripPoints[3].Id, Mode = TransferMode.motorcycle},
+            new TransferPoint { Id = Guid.NewGuid(), TripDayId = tripDays[0].Id, TransferTime = new TimeSpan(0,20,0), FromTripPointId = tripPoints[3].Id, ToTripPointId = tripPoints[4].Id},
 
-            new TransferPoint { Id = Guid.NewGuid(), TripDayId = tripDays[1].Id, TransferTime = new TimeSpan(0,3,13), StartTime = new TimeOnly(12,40,0),FromTripPointId = tripPoints[5].Id, ToTripPointId = tripPoints[6].Id, Mode = TransferMode.bicycle},
-            new TransferPoint { Id = Guid.NewGuid(), TripDayId = tripDays[1].Id, TransferTime = new TimeSpan(0,8,18), StartTime = new TimeOnly(13,10,0),FromTripPointId = tripPoints[6].Id, ToTripPointId = tripPoints[7].Id, Mode = TransferMode.walk},
-            new TransferPoint { Id = Guid.NewGuid(), TripDayId = tripDays[1].Id, TransferTime = new TimeSpan(0,13,30), StartTime = new TimeOnly(15,30,0),FromTripPointId = tripPoints[7].Id, ToTripPointId = tripPoints[8].Id, Mode = TransferMode.approximated_transit},
+            new TransferPoint { Id = Guid.NewGuid(), TripDayId = tripDays[1].Id, TransferTime = new TimeSpan(0,3,13), FromTripPointId = tripPoints[5].Id, ToTripPointId = tripPoints[6].Id, Mode = TransferMode.bicycle},
+            new TransferPoint { Id = Guid.NewGuid(), TripDayId = tripDays[1].Id, TransferTime = new TimeSpan(0,8,18), FromTripPointId = tripPoints[6].Id, ToTripPointId = tripPoints[7].Id, Mode = TransferMode.walk},
+            new TransferPoint { Id = Guid.NewGuid(), TripDayId = tripDays[1].Id, TransferTime = new TimeSpan(0,13,30), FromTripPointId = tripPoints[7].Id, ToTripPointId = tripPoints[8].Id, Mode = TransferMode.approximated_transit},
         };
 
         modelBuilder.Entity<TransferPoint>().HasData(transferPoints);
