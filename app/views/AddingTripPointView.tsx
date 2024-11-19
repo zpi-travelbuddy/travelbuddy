@@ -10,6 +10,9 @@ import {
 } from "react-native-paper";
 import {
   addHoursToTheSameDate,
+  formatDateToISO,
+  formatDateToPolish,
+  formatTime,
   formatToISODate,
   roundToNearestQuarterHour,
 } from "@/utils/TimeUtils";
@@ -30,6 +33,7 @@ import LoadingView from "./LoadingView";
 import { useSnackbar } from "@/context/SnackbarContext";
 import useTripDetails from "@/composables/useTripDetails";
 import usePlaceDetails from "@/composables/usePlace";
+import { create } from "react-test-renderer";
 
 const { height, width } = Dimensions.get("window");
 
@@ -68,6 +72,7 @@ const AddingTripPointView = () => {
   const [place, setPlace] = useState<Place>({
     country: "",
     state: "",
+    city: "",
     street: "",
     houseNumber: "",
     latitude: 0,
@@ -158,10 +163,6 @@ const AddingTripPointView = () => {
     },
     { field: "city", errorMessage: "Nazwa miasta jest wymagana." },
     {
-      field: "expectedCost",
-      errorMessage: "Przewidywany koszt jest wymagany.",
-    },
-    {
       field: "startTime",
       errorMessage: "Godzina rozpoczęcia jest wymagana.",
     },
@@ -171,15 +172,23 @@ const AddingTripPointView = () => {
     },
   ];
 
-  const onSave = () => {
+  const onSave = async () => {
     let hasErrors = false;
+
+    if (expectedCost === undefined || expectedCost < 0) {
+      hasErrors = true;
+      setErrors((prev) => ({
+        ...prev,
+        ["expectedCost"]: "Przewidywany koszt jest wymagany",
+      }));
+    }
 
     requiredFields.forEach(({ field, errorMessage }) => {
       const fieldValue = {
         tripPointName,
-        expectedCost,
         country,
         city,
+        expectedCost,
         startTime,
         endTime,
       }[field];
@@ -197,13 +206,14 @@ const AddingTripPointView = () => {
 
     if (!hasErrors) {
       setPlace({
+        name: tripPointName,
         country: country,
         state: state,
         street: street,
+        city: city,
         houseNumber: houseNumber,
-        latitude: latitude || 0,
-        longitude: longitude || 0,
-        name: "",
+        latitude: latitude ? latitude : 0,
+        longitude: longitude ? longitude : 0,
       } as Place);
 
       let totalExpectedCost = expectedCost;
@@ -219,12 +229,14 @@ const AddingTripPointView = () => {
         comment: comment,
         tripDayId: day_id as string,
         place: place,
-        startTime: formatToISODate(startTime),
-        endTime: formatToISODate(endTime),
+        startTime: `${formatTime(startTime)}:00`,
+        endTime: `${formatTime(endTime)}:00`,
         predictedCost: totalExpectedCost,
       };
 
-      createTripPoint(tripPointRequest);
+      console.log("Place: " + JSON.stringify(place));
+
+      await createTripPoint(tripPointRequest);
 
       if (!createResponse) {
         showSnackbar("Wystąpił błąd przy dodawaniu punktu wycieczki");
@@ -266,6 +278,14 @@ const AddingTripPointView = () => {
   const handleLongitudeChange = () => {
     handleCoordinateChange(longitudeText, setLongitude, "longitude", 180);
   };
+
+  useEffect(() => {
+    console.log("ExpectedCost: " + expectedCost);
+  }, [expectedCost]);
+
+  useEffect(() => {
+    console.log("Errors: " + JSON.stringify(errors));
+  }, [errors]);
 
   useEffect(() => {
     if (startTime.getTime() > endTime.getTime()) {

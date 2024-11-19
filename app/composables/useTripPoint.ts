@@ -18,7 +18,7 @@ export const useCreateTripPoint = () => {
       setLoading(true);
       setError(null);
       setData(null);
-
+      console.log(JSON.stringify(request));
       const response = await api!.post<TripPointResponse>(
         API_ADDING_TRIP_POINT,
         request,
