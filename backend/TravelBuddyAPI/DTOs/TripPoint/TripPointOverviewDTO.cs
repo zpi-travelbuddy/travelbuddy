@@ -21,4 +21,8 @@ public class TripPointOverviewDTO
 
     [Required]
     public TimeOnly EndTime { get; set; }
+
+    public decimal? Latitude { get; set; }
+
+    public decimal? Longitude { get; set; }
 }

@@ -74,7 +74,7 @@ public class TripPointsServiceTest : IDisposable
         await _dbContext.Trips.AddAsync(trip);
         await _dbContext.SaveChangesAsync();
 
-        _mockNBPService.Setup(s => s.GetRateAsync(It.IsAny<string>(), It.IsAny<DateOnly>()))
+        _mockNBPService.Setup(s => s.GetRateAsync(It.IsAny<string>(), It.IsAny<DateOnly?>()))
             .ReturnsAsync(2.0m);
 
         _mockGeoapifyService.Setup(s => s.GetPlaceDetailsAsync(It.IsAny<string>()))
@@ -205,7 +205,7 @@ public class TripPointsServiceTest : IDisposable
             TripDays = new List<TripDay> { new TripDay { Id = tripPointRequest.TripDayId, Date = DateOnly.FromDateTime(DateTime.Now) } }
         };
 
-        _mockNBPService.Setup(s => s.GetRateAsync(It.IsAny<string>(), It.IsAny<DateOnly>()))
+        _mockNBPService.Setup(s => s.GetRateAsync(It.IsAny<string>(), It.IsAny<DateOnly?>()))
             .ReturnsAsync(2.0m);
 
         await _dbContext.Trips.AddAsync(trip);
