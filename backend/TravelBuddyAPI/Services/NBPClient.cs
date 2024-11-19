@@ -32,7 +32,7 @@ public class NBPClient : INBPService
         var response = await _client.ExecuteAsync(request);
         if (!response.IsSuccessful || response.Content is null)
         {
-            throw new HttpRequestException($"Error retrieving rate: {response.Content}");
+            throw new HttpRequestException($"Error retrieving currency exchange rate: {response.Content}");
         }
 
         var jsonResponse = JsonConvert.DeserializeObject<dynamic>(response.Content);
@@ -42,7 +42,7 @@ public class NBPClient : INBPService
 
             if (jsonResponse?.rates?.Count is null || jsonResponse?.rates?.Count == 0)
             {
-                throw new HttpRequestException($"Error rate is null or 0: {response.Content}");
+                throw new HttpRequestException($"Error currency exchange rate is null or 0: {response.Content}");
             }
 
             return (decimal?)jsonResponse?.rates[0].mid;
@@ -92,7 +92,7 @@ public class NBPClient : INBPService
         }
         catch (HttpRequestException)
         {
-            Debug.WriteLine($"Error retrieving rate for {currencyCode} on {date}");
+            Debug.WriteLine($"Error retrieving exchange rate for {currencyCode} on {date}");
         }
 
         for (int i = 1; i <= maxRetries; i++)
@@ -121,6 +121,6 @@ public class NBPClient : INBPService
             }
         }
 
-        throw new HttpRequestException($"Error: Unable to retrieve rate for {currencyCode} on or around {date} after {maxRetries} retries.");
+        throw new HttpRequestException($"Error: Unable to retrieve exchange rate for {currencyCode} on or around {date} after {maxRetries} retries.");
     }
 }
