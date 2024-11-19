@@ -24,7 +24,7 @@ import CustomModal from "@/components/CustomModal";
 import { RenderItem } from "@/components/RenderItem";
 import ActionButtons from "@/components/ActionButtons";
 import ClickableInput from "@/components/ClickableInput";
-import { TripRequest, TripResponse, TripErrors } from "@/types/Trip";
+import { TripRequest, TripResponse, TripErrors, EditTripRequest } from "@/types/Trip";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import useTripDetails, {
   useEditTripDetails,
@@ -37,7 +37,7 @@ import {
   useGetConditionProfiles,
 } from "@/composables/useProfiles";
 import usePlaceDetails from "@/composables/usePlace";
-import { convertTripResponseToTripRequest } from "@/converters/tripConverters";
+import { convertTripResponseToEditTripRequest } from "@/converters/tripConverters";
 import { Place } from "@/types/Place";
 import { getDisplayPlace } from "@/utils/TextUtils";
 import { Profile, ProfileType } from "@/types/Profile";
@@ -58,9 +58,7 @@ const EditTripView = () => {
   const params = useLocalSearchParams();
   const { trip_id } = params;
 
-  const [tripRequest, setTripRequest] = useState<TripRequest>(
-    {} as TripRequest,
-  );
+  const [editTripRequest, setEditTripRequest] = useState<EditTripRequest>({} as EditTripRequest)
 
   const {
     tripDetails,
@@ -81,7 +79,7 @@ const EditTripView = () => {
     loading: editTripLoading,
     error: editError,
     success: editSuccess,
-  } = useEditTripDetails(tripRequest, { immediate: false });
+  } = useEditTripDetails(trip_id as string, editTripRequest, { immediate: false });
 
   // =====================
   // SECTION: useState variables
@@ -140,11 +138,9 @@ const EditTripView = () => {
   }, [tripLoading, destinationLoading, editTripLoading]);
 
   useEffect(() => {
-    console.log(JSON.stringify(tripDetails));
-    console.log(JSON.stringify(destinationDetails));
     if (tripDetails && destinationDetails) {
-      setTripRequest(
-        convertTripResponseToTripRequest(
+      setEditTripRequest(
+        convertTripResponseToEditTripRequest(
           tripDetails,
           destinationDetails as Place,
         ),
@@ -159,9 +155,9 @@ const EditTripView = () => {
     }
   }, [tripDetails, destinationDetails]);
 
-  useEffect(() => {
-    console.log(JSON.stringify(tripRequest));
-  }, [tripRequest]);
+  // useEffect(() => {
+  //   console.log(JSON.stringify(tripRequest));
+  // }, [tripRequest]);
 
   useEffect(() => {
     setDateRangeText(formatDateRange(dateRange.startDate, dateRange.endDate));
@@ -184,26 +180,27 @@ const EditTripView = () => {
 
   const saveTrip = async () => {
     try {
-      setTripRequest((prev) => ({
+      setEditTripRequest((prev) => ({
         ...prev,
         startDate: formatDateToISO(dateRange.startDate),
         endDate: formatDateToISO(dateRange.endDate),
-        categoryProfileId: categoryProfileId,
-        conditionProfileId: conditionProfileId,
       }));
       if (
-        !tripRequest.id ||
-        !tripRequest.name ||
-        !tripRequest.destinationPlace.providerId ||
-        !tripRequest.startDate ||
-        !tripRequest.endDate ||
-        !tripRequest.numberOfTravelers ||
-        !tripRequest.budget ||
-        !tripRequest.categoryProfileId ||
-        !tripRequest.conditionProfileId ||
-        !tripRequest.currencyCode
+        !editTripRequest.name ||
+        !editTripRequest.startDate ||
+        !editTripRequest.endDate ||
+        !editTripRequest.numberOfTravelers ||
+        !editTripRequest.budget ||
+        !editTripRequest.destinationPlace ||
+        !editTripRequest.destinationPlace.name ||
+        !editTripRequest.destinationPlace.country ||
+        !editTripRequest.destinationPlace.city ||
+        // !editTripRequest.destinationPlace.latitude ||
+        // !editTripRequest.destinationPlace.longitude ||
+        !editTripRequest.budget ||
+        !editTripRequest.currencyCode
       ) {
-        console.log("Trip request: " + JSON.stringify(tripRequest));
+        // console.log("Trip request: " + JSON.stringify(tripRequest));
         showSnackbar("Proszę uzupełnić wszystkie wymagane pola!", "error");
         return;
       }
@@ -216,7 +213,7 @@ const EditTripView = () => {
 
   const handleChange = (field: keyof TripErrors = "", clearError = true) => {
     return (value: any) => {
-      setTripRequest((prev) => ({ ...prev, [field]: value }));
+      setEditTripRequest((prev) => ({ ...prev, [field]: value }));
       if (clearError && field) setErrors((prev) => ({ ...prev, [field]: "" }));
     };
   };
@@ -278,7 +275,7 @@ const EditTripView = () => {
               mode="outlined"
               style={styles.textInput}
               label="Nazwa"
-              value={tripRequest.name}
+              value={editTripRequest.name}
               onChangeText={handleChange("name")}
               error={!!errors.name}
             />
@@ -297,13 +294,13 @@ const EditTripView = () => {
 
             <ClickableInput
               label="Cel wycieczki"
-              value={getDisplayPlace(tripRequest?.destinationPlace)}
+              value={getDisplayPlace(editTripRequest.destinationPlace)}
               onPress={() => router.push("/trips/add/destination")}
               icon={MARKER_ICON}
-              error={!!errors.destination && !tripRequest?.destinationPlace?.id}
+              error={!!errors.destinationPlace}
             />
             {errors.destination && (
-              <Text style={styles.textError}>{errors.destination}</Text>
+              <Text style={styles.textError}>{errors.destinationPlace}</Text>
             )}
 
             <TextInput
@@ -321,8 +318,8 @@ const EditTripView = () => {
             )}
 
             <CurrencyValueInput
-              budget={tripRequest.budget}
-              currency={tripRequest.currencyCode}
+              budget={editTripRequest.budget}
+              currency={editTripRequest.currencyCode}
               handleBudgetChange={handleChange("budget")}
               error={!!errors.budget}
             />

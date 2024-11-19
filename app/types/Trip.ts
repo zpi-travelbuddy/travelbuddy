@@ -109,3 +109,19 @@ export const AttractionTypeLabels: Record<TripPointType, string> = {
   music: "Muzyka",
   other: "Inne",
 };
+
+export interface EditTripRequest {
+  name: string;
+  numberOfTravelers: number;
+  startDate: string;
+  endDate: string;
+  destinationPlace: {
+    name: string;
+    country: string;
+    city: string;
+    latitude: number;
+    longitude: number;
+  }
+  budget: number;
+  currencyCode: string;
+}

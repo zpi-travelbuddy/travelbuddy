@@ -5,6 +5,7 @@ import {
   TripResponse,
   TripSummary,
   TripViewModel,
+  EditTripRequest,
 } from "@/types/Trip";
 import { getMoneyWithCurrency } from "@/utils/CurrencyUtils";
 import { formatDateRange } from "@/utils/TimeUtils";
@@ -98,22 +99,25 @@ export function convertTripRequestToTripResponse(
   };
 }
 
-export function convertTripResponseToTripRequest(
+export function convertTripResponseToEditTripRequest(
   response: TripResponse,
   destination: Place,
-): TripRequest {
-  const tripRequest: TripRequest = {
-    id: response.id,
+): EditTripRequest {
+  const editTripRequest: EditTripRequest = {
     name: response.name,
     numberOfTravelers: response.numberOfTravelers,
     startDate: response.startDate,
     endDate: response.endDate,
-    destinationPlace: JSON.parse(JSON.stringify(destination)),
+    destinationPlace: {
+      name: destination.name || "",
+      country: destination.country || "",
+      city: destination.city || "",
+      latitude: destination.latitude || 0,
+      longitude: destination.longitude || 0,
+    },
     budget: response.budget,
     currencyCode: response.currencyCode,
-    categoryProfileId: response.categoryProfileId,
-    conditionProfileId: response.conditionProfileId,
   };
 
-  return tripRequest;
+  return editTripRequest;
 }

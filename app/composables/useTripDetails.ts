@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { TripResponse, TripSummary, TripRequest } from "@/types/Trip";
+import { TripResponse, TripSummary, TripRequest, EditTripRequest } from "@/types/Trip";
 import { useAuth } from "@/app/ctx";
 import { API_TRIPS } from "@/constants/Endpoints";
 
@@ -65,7 +65,8 @@ export interface UseApiOptions {
 }
 
 export const useEditTripDetails = (
-  trip: TripRequest,
+  id: string,
+  request: EditTripRequest,
   options: UseApiOptions = { immediate: true },
 ) => {
   const { api } = useAuth();
@@ -79,16 +80,17 @@ export const useEditTripDetails = (
     setSuccess(null);
 
     try {
-      const { id, ...tripData } = trip;
-      await api!.put(`${API_TRIPS}/${id}`, tripData);
+      console.log("Trip request: " + JSON.stringify(request));
+      await api!.put(`${API_TRIPS}/${id}`, request);
       setSuccess(true);
     } catch (err: any) {
+      console.log(JSON.stringify(err))
       setError(JSON.stringify(err) || "Wystąpił błąd");
       setSuccess(false);
     } finally {
       setLoading(false);
     }
-  }, [api, trip]);
+  }, [api, request]);
 
   useEffect(() => {
     if (options.immediate) {
