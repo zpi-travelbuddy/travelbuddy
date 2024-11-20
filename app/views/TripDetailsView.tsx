@@ -37,6 +37,8 @@ const TripDetailsView = () => {
     refetch: tripRefetch,
   } = useTripDetails(trip_id as string);
 
+  console.log(tripDetails?.destinationId)
+
   const {
     placeDetails: destinationDetails,
     loading: destinationLoading,
@@ -55,7 +57,7 @@ const TripDetailsView = () => {
   const { showSnackbar } = useSnackbar();
 
   useEffect(() => {
-    if (tripDetails) {
+    if (tripDetails && destinationDetails) {
       setTripViewModel(
         convertTripResponseToViewModel(
           tripDetails,

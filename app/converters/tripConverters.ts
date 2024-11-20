@@ -8,9 +8,7 @@ import {
   EditTripRequest,
   APITrip,
   Trip,
-  TripDetails,
 } from "@/types/Trip";
-import { PlaceDetails } from "@/types/Place";
 import { getMoneyWithCurrency } from "@/utils/CurrencyUtils";
 import {
   formatDateFromISO,

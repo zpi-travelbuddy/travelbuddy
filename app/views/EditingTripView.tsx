@@ -170,6 +170,11 @@ const EditTripView = () => {
   }, [tripDetails, destinationDetails]);
 
   useEffect(() => {
+    setEditTripRequest((prev) => ({
+      ...prev,
+      startDate: formatDateToISO(dateRange.startDate),
+      endDate: formatDateToISO(dateRange.endDate),
+    }));
     setDateRangeText(formatDateRange(dateRange.startDate, dateRange.endDate));
   }, [dateRange]);
 
@@ -235,11 +240,6 @@ const EditTripView = () => {
 
 
     try {
-      setEditTripRequest((prev) => ({
-        ...prev,
-        startDate: formatDateToISO(dateRange.startDate),
-        endDate: formatDateToISO(dateRange.endDate),
-      }));
       await editTrip();
     } catch (error) {
       showSnackbar("Błąd podczas zapisywania wycieczki!", "error");

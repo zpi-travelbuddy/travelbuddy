@@ -14,10 +14,8 @@ const usePlaceDetails = (placeId: string | undefined) => {
   const fetchPlaceDetails = useCallback(async () => {
     if (!placeId) return;
     try {
-      setLoading(true);
-      setError(null);
-
       const response = await api!.get<PlaceDetails>(`/places/${placeId}`);
+      console.log(response.data)
       setPlaceDetails(response.data);
     } catch (err: any) {
       if (err.response && err.response.status === 404) {
@@ -25,20 +23,23 @@ const usePlaceDetails = (placeId: string | undefined) => {
       } else {
         setError("Wystąpił błąd podczas pobierania danych miejsca.");
       }
-    } finally {
-      setLoading(false);
     }
   }, [api, placeId]);
 
+  const refetch = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    await fetchPlaceDetails();
+    setLoading(false);
+  }, [fetchPlaceDetails]);
+
   useEffect(() => {
     if (placeId) {
-      fetchPlaceDetails();
-    } else {
-      setLoading(false);
-    }
-  }, [placeId, fetchPlaceDetails]);
+      refetch();
+    } 
+  }, [placeId, refetch]);
 
-  return { placeDetails, loading, error, refetch: fetchPlaceDetails };
+  return { placeDetails, loading, error, refetch };
 };
 
 export default usePlaceDetails;
