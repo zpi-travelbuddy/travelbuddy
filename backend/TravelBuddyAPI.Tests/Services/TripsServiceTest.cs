@@ -39,24 +39,16 @@ public class TripsServiceTest
     [Fact]
     public async Task CreateTripAsync_ValidRequest_ShouldCreateTrip()
     {
-        var destination = new PlaceRequestDTO()
-        {
-            ProviderId = Guid.NewGuid().ToString(),
-            Name = "Test Place",
-            Country = "Test Country",
-            City = "Test City",
-            Latitude = 50.0m,
-            Longitude = 20.0m,
-        };
+        var destinationProviderId = Guid.NewGuid().ToString();
 
         _mockNBPService.Setup(x => x.GetRateAsync(It.IsAny<string>(), It.IsAny<DateOnly?>())).ReturnsAsync(4.5m);
-        _mockPlacesService.Setup(x => x.AddPlaceAsync(It.IsAny<PlaceRequestDTO>())).ReturnsAsync(new PlaceDetailsDTO() { Id = Guid.NewGuid(), ProviderId = destination.ProviderId });
-        _mockPlacesService.Setup(x => x.GetProviderPlaceAsync(It.IsAny<string>())).ReturnsAsync(new ProviderPlace(){ ProviderId = destination.ProviderId });
+        _mockPlacesService.Setup(x => x.AddPlaceAsync(It.IsAny<PlaceRequestDTO>())).ReturnsAsync(new PlaceDetailsDTO() { Id = Guid.NewGuid(), ProviderId = destinationProviderId });
+        _mockPlacesService.Setup(x => x.GetProviderPlaceAsync(It.IsAny<string>())).ReturnsAsync(new ProviderPlace(){ ProviderId = destinationProviderId });
 
         var tripRequest = new TripRequestDTO
         {
             Name = "Test Trip",
-            DestinationPlace = destination,
+            DestinationProviderId = destinationProviderId,
             CurrencyCode = "USD",
             StartDate = DateOnly.FromDateTime(DateTime.Now),
             EndDate = DateOnly.FromDateTime(DateTime.Now + TimeSpan.FromDays(7)),
@@ -119,22 +111,14 @@ public class TripsServiceTest
     [Fact]
     public async Task CreateTripAsync_InvalidCurrencyCode_ShouldThrowInvalidOperationException()
     {
-        var destination = new PlaceRequestDTO()
-        {
-            ProviderId = Guid.NewGuid().ToString(),
-            Name = "Test Place",
-            Country = "Test Country",
-            City = "Test City",
-            Latitude = 50.0m,
-            Longitude = 20.0m,
-        };
+        var destinationProviderId = Guid.NewGuid().ToString();
 
         _mockNBPService.Setup(x => x.GetRateAsync(It.IsAny<string>(), It.IsAny<DateOnly?>())).ReturnsAsync((decimal?)null);
 
         var tripRequest = new TripRequestDTO
         {
             Name = "Test Trip",
-            DestinationPlace = destination,
+            DestinationProviderId = destinationProviderId,
             CurrencyCode = "INVALID",
             StartDate = DateOnly.FromDateTime(DateTime.Now),
             EndDate = DateOnly.FromDateTime(DateTime.Now + TimeSpan.FromDays(7)),
@@ -230,20 +214,12 @@ public class TripsServiceTest
             NumberOfTravelers = 3,
             CurrencyCode = "USD",
             Budget = 2000m,
-            DestinationPlace = new PlaceRequestDTO
-            {
-                ProviderId = Guid.NewGuid().ToString(),
-                Name = "Test Place",
-                Country = "Test Country",
-                City = "Test City",
-                Latitude = 50.0m,
-                Longitude = 20.0m,
-            }
+            DestinationProviderId = Guid.NewGuid().ToString(),
         };
 
         _mockNBPService.Setup(x => x.GetRateAsync(It.IsAny<string>(), It.IsAny<DateOnly?>())).ReturnsAsync(4.5m);
-        _mockPlacesService.Setup(x => x.AddPlaceAsync(It.IsAny<PlaceRequestDTO>())).ReturnsAsync(new PlaceDetailsDTO() { Id = Guid.NewGuid(), ProviderId = tripRequest.DestinationPlace.ProviderId });
-        _mockPlacesService.Setup(x => x.GetProviderPlaceAsync(It.IsAny<string>())).ReturnsAsync(new ProviderPlace(){ ProviderId = tripRequest.DestinationPlace.ProviderId });
+        _mockPlacesService.Setup(x => x.AddPlaceAsync(It.IsAny<PlaceRequestDTO>())).ReturnsAsync(new PlaceDetailsDTO() { Id = Guid.NewGuid(), ProviderId = tripRequest.DestinationProviderId });
+        _mockPlacesService.Setup(x => x.GetProviderPlaceAsync(It.IsAny<string>())).ReturnsAsync(new ProviderPlace(){ ProviderId = tripRequest.DestinationProviderId });
 
         // Act
         var result = await _tripsService.EditTripAsync(userId, tripId, tripRequest);
@@ -302,20 +278,12 @@ public class TripsServiceTest
             NumberOfTravelers = 3,
             CurrencyCode = "USD",
             Budget = 2000m,
-            DestinationPlace = new PlaceRequestDTO
-            {
-                ProviderId = Guid.NewGuid().ToString(),
-                Name = "Test Place",
-                Country = "Test Country",
-                City = "Test City",
-                Latitude = 50.0m,
-                Longitude = 20.0m,
-            }
+            DestinationProviderId = Guid.NewGuid().ToString(),
         };
 
         _mockNBPService.Setup(x => x.GetRateAsync(It.IsAny<string>(), It.IsAny<DateOnly?>())).ReturnsAsync(4.5m);
-        _mockPlacesService.Setup(x => x.AddPlaceAsync(It.IsAny<PlaceRequestDTO>())).ReturnsAsync(new PlaceDetailsDTO() { Id = Guid.NewGuid(), ProviderId = tripRequest.DestinationPlace.ProviderId });
-        _mockPlacesService.Setup(x => x.GetProviderPlaceAsync(It.IsAny<string>())).ReturnsAsync(new ProviderPlace(){ ProviderId = tripRequest.DestinationPlace.ProviderId });
+        _mockPlacesService.Setup(x => x.AddPlaceAsync(It.IsAny<PlaceRequestDTO>())).ReturnsAsync(new PlaceDetailsDTO() { Id = Guid.NewGuid(), ProviderId = tripRequest.DestinationProviderId });
+        _mockPlacesService.Setup(x => x.GetProviderPlaceAsync(It.IsAny<string>())).ReturnsAsync(new ProviderPlace(){ ProviderId = tripRequest.DestinationProviderId });
 
         // Act
         var result = await _tripsService.EditTripAsync(userId, tripId, tripRequest);
@@ -348,15 +316,7 @@ public class TripsServiceTest
             NumberOfTravelers = 3,
             CurrencyCode = "USD",
             Budget = 2000m,
-            DestinationPlace = new PlaceRequestDTO
-            {
-                ProviderId = Guid.NewGuid().ToString(),
-                Name = "Test Place",
-                Country = "Test Country",
-                City = "Test City",
-                Latitude = 50.0m,
-                Longitude = 20.0m,
-            }
+            DestinationProviderId = Guid.NewGuid().ToString(),
         };
 
         // Act & Assert
@@ -400,15 +360,7 @@ public class TripsServiceTest
             NumberOfTravelers = 3,
             CurrencyCode = "PLN",
             Budget = 2000m,
-            DestinationPlace = new PlaceRequestDTO
-            {
-                ProviderId = Guid.NewGuid().ToString(),
-                Name = "Test Place",
-                Country = "Test Country",
-                City = "Test City",
-                Latitude = 50.0m,
-                Longitude = 20.0m,
-            }
+            DestinationProviderId = Guid.NewGuid().ToString(),
         };
 
         _mockNBPService.Setup(x => x.GetRateAsync(It.IsAny<string>(), It.IsAny<DateOnly?>())).ReturnsAsync((decimal?)null);
@@ -454,15 +406,7 @@ public class TripsServiceTest
             NumberOfTravelers = 3,
             CurrencyCode = "USD",
             Budget = 2000m,
-            DestinationPlace = new PlaceRequestDTO
-            {
-                ProviderId = Guid.NewGuid().ToString(),
-                Name = "Test Place",
-                Country = "Test Country",
-                City = "Test City",
-                Latitude = 50.0m,
-                Longitude = 20.0m,
-            }
+            DestinationProviderId = Guid.NewGuid().ToString(),
         };
 
         // Act & Assert
@@ -506,15 +450,7 @@ public class TripsServiceTest
             NumberOfTravelers = 3,
             CurrencyCode = "USD",
             Budget = 2000m,
-            DestinationPlace = new PlaceRequestDTO
-            {
-                ProviderId = Guid.NewGuid().ToString(),
-                Name = "Test Place",
-                Country = "Test Country",
-                City = "Test City",
-                Latitude = 50.0m,
-                Longitude = 20.0m,
-            }
+            DestinationProviderId = Guid.NewGuid().ToString(),
         };
 
         // Act & Assert
