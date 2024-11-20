@@ -29,7 +29,7 @@ public class TransferPointsService(TravelBuddyDbContext dbContext, IGeoapifyServ
         public const string NullLatitudeOrLongitude = "Latitude or Longitude cannot be null when mode is present.";
         public const string InvalidTransferPointTimeConflict = "Cannot provide seconds when mode is present.";
         public const string TripPointAlreadyConnected = "Trip point is already connected to a transfer point.";
-        public const string TransferPointTimeOutOfRange = "Transfer point time must be between 0 and 86400 seconds.";
+        public const string TransferPointTimeOutOfRange = "Transfer point time must be between 0 exclusive and 86400 exclusive seconds.";
     }
 
     public async Task<TransferPointOverviewDTO> CreateTransferPointAsync(string userId, TransferPointRequestDTO transferPoint)
@@ -192,6 +192,11 @@ public class TransferPointsService(TravelBuddyDbContext dbContext, IGeoapifyServ
                 existingTransferPoint.Mode = transferPoint.Mode;
                 existingTransferPoint.TransferTime = await _geoapifyService.GetRouteTimeAsync((existingTransferPoint.FromTripPoint!.Place!.Latitude.Value, existingTransferPoint.FromTripPoint.Place.Longitude.Value), (existingTransferPoint.ToTripPoint!.Place!.Latitude.Value, existingTransferPoint.ToTripPoint.Place.Longitude.Value), transferPoint.Mode!.Value)
                     ?? throw new InvalidOperationException(ErrorMessage.InvalidTransferPointTime);
+            }
+
+            if(existingTransferPoint.TransferTime.TotalSeconds >= SecondsInDay  || existingTransferPoint.TransferTime.TotalSeconds <= 0)
+            {
+                throw new InvalidOperationException(ErrorMessage.TransferPointTimeOutOfRange);
             }
 
             var validationContext = new ValidationContext(existingTransferPoint);
