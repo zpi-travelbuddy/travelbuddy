@@ -16,8 +16,8 @@ public class TransferPointsService(TravelBuddyDbContext dbContext, IGeoapifyServ
 
     public static class ErrorMessage
     {
-        public const string EmptyRequest = "Request cannot be empty.";
-        public const string SameTripPoints = "From and To trip points cannot be the same.";
+        public const string EmptyRequest = "The request cannot be empty.";
+        public const string SameTripPoints = "The 'From' and 'To' trip points cannot be the same.";
         public const string TransferPointNotFound = "Transfer point not found.";
         public const string TripDayNotFound = "Trip day not found.";
         public const string TripPointNotFoundInTripDay = "Trip points not found in the trip day.";
@@ -28,8 +28,9 @@ public class TransferPointsService(TravelBuddyDbContext dbContext, IGeoapifyServ
         public const string EditTransferPoint = "An error occurred while editing a transfer point:";
         public const string NullLatitudeOrLongitude = "Latitude or Longitude cannot be null when mode is present.";
         public const string InvalidTransferPointTimeConflict = "Cannot provide seconds when mode is present.";
-        public const string TripPointAlreadyConnected = "Trip point is already connected to a transfer point.";
-        public const string TransferPointTimeOutOfRange = "Transfer point time must be between 0 exclusive and 86400 exclusive seconds.";
+        public const string TripPointAlreadyConnected = "The trip point is already connected to a transfer point.";
+        public const string TransferPointTimeOutOfRange = "Transfer point time must be between 0 (exclusive) and 86400 (exclusive) seconds.";
+        public const string FromTripPointMustBeBeforeToTripPoint = "The 'From' trip point must end before the 'To' trip point starts.";
     }
 
     public async Task<TransferPointOverviewDTO> CreateTransferPointAsync(string userId, TransferPointRequestDTO transferPoint)
@@ -70,6 +71,11 @@ public class TransferPointsService(TravelBuddyDbContext dbContext, IGeoapifyServ
             if (tripDay.TripPoints == null || fromTripPoint == null || toTripPoint == null || fromTripPoint.Place == null || toTripPoint.Place == null)
             {
                 throw new InvalidOperationException(ErrorMessage.TripPointNotFoundInTripDay);
+            }
+
+            if(fromTripPoint.EndTime >= toTripPoint.StartTime)
+            {
+                throw new InvalidOperationException(ErrorMessage.InvalidTransferPointTime);
             }
 
             TransferPoint newTranserPoint = new()
