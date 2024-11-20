@@ -28,13 +28,14 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
         public const string CreateTrip = "An error occurred while creating a trip:";
         public const string EditTrip = "An error occurred while editing a trip:";
         public const string RetriveExchangeRate = "An error occurred while retrieving exchange rate.";
-        public const string TripNotFound = "Trip with the specified ID does not exist.";
+        public const string TripNotFound = "Trip with the specified Id does not exist.";
         public const string TripWithoutDays = "Trip does not have any days.";
-        public const string TripDayNotFound = "Trip day with the specified ID does not exist.";
+        public const string TripDayNotFound = "Trip day with the specified Id does not exist.";
         public const string TooManyDecimalPlaces = "Budget must have at most 2 decimal places.";
         public const string DeleteTrip = "An error occurred while deleting a trip:";
         public const string CurrencyChangeNotAllowed = "Currency code cannot be changed.";
         public const string ProviderPlaceNotFound = "Provider place with the specified Id does not exist.";
+        public const string DestinationProviderIdIsNull = "Destination provider Id cannot be null.";
     }
 
     public async Task<TripDetailsDTO> CreateTripAsync(string userId, TripRequestDTO trip)
@@ -55,8 +56,8 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
 
             decimal exchangeRate = await _nbpService.GetRateAsync(trip?.CurrencyCode ?? string.Empty) ?? throw new InvalidOperationException(ErrorMessage.RetriveExchangeRate);
 
-            _ = trip!.DestinationPlace ?? throw new InvalidOperationException();
-            Guid destinationId = await GetDestinationId(trip?.DestinationPlace?.ProviderId ?? string.Empty) ?? await AddDestinationAsync(trip!.DestinationPlace);
+            _ = trip?.DestinationProviderId ?? throw new InvalidOperationException(ErrorMessage.DestinationProviderIdIsNull);
+            Guid destinationId = await GetDestinationId(trip.DestinationProviderId) ?? await AddDestinationAsync(trip.DestinationProviderId);
 
             Trip newTrip = new()
             {
@@ -104,9 +105,10 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
         return id;
     }
 
-    private async Task<Guid> AddDestinationAsync(PlaceRequestDTO destination)
+    private async Task<Guid> AddDestinationAsync(string providerId)
     {
-        var newDestination = await _placesService.AddPlaceAsync(destination);
+        PlaceRequestDTO placeRequest = new(){ ProviderId = providerId};
+        var newDestination = await _placesService.AddPlaceAsync(placeRequest);
         return newDestination.Id;
     }
 
@@ -232,8 +234,8 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
                 existingTrip.EndDate = trip.EndDate;
             }
 
-            _ = trip!.DestinationPlace ?? throw new InvalidOperationException();
-            Guid destinationId = await GetDestinationId(trip?.DestinationPlace?.ProviderId ?? string.Empty) ?? await AddDestinationAsync(trip!.DestinationPlace);
+            _ = trip?.DestinationProviderId ?? throw new InvalidOperationException(ErrorMessage.DestinationProviderIdIsNull);
+            Guid destinationId = await GetDestinationId(trip.DestinationProviderId) ?? await AddDestinationAsync(trip.DestinationProviderId);
 
             existingTrip.Name = trip!.Name;
             existingTrip.NumberOfTravelers = trip.NumberOfTravelers;
