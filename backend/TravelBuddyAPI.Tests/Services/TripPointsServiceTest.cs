@@ -80,6 +80,12 @@ public class TripPointsServiceTest : IDisposable
         _mockGeoapifyService.Setup(s => s.GetPlaceDetailsAsync(It.IsAny<string>()))
             .ReturnsAsync(place);
 
+        _mockPlacesService.Setup(s => s.AddPlaceAsync(It.IsAny<PlaceRequestDTO>()))
+            .ReturnsAsync(new PlaceDetailsDTO { Id = place.Id, Name = place.Name, City = place.City, Country = place.Country });
+
+        _mockPlacesService.Setup(s => s.GetProviderPlaceAsync(It.IsAny<string>()))
+            .ReturnsAsync(place);
+
 
         // Act
         var result = await _tripPointsService.CreateTripPointAsync(userId, tripPointRequest);
