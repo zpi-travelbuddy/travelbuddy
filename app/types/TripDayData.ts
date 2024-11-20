@@ -6,6 +6,8 @@ export interface TripPointCompact {
   tripDayId: string;
   startTime: string;
   endTime: string;
+  latitude?: number;
+  longitude?: number;
 }
 
 export interface CreateTripPointRequest {

@@ -80,9 +80,13 @@ const CreatingTripPointSelector: React.FC<BottomSheetComponentProps> = ({
                   <TouchableOpacity
                     key={index}
                     style={styles.option}
-                    onPress={() => {
-                      option.onPress();
-                    }}
+                    onPress={
+                      option.disabled
+                        ? undefined
+                        : () => {
+                            option.onPress();
+                          }
+                    }
                   >
                     <IconComponent
                       source={option.icon}
@@ -95,7 +99,9 @@ const CreatingTripPointSelector: React.FC<BottomSheetComponentProps> = ({
                       backgroundColor={
                         option.label === label
                           ? theme.colors.primary
-                          : theme.colors.secondaryContainer
+                          : option.disabled
+                            ? "#ccc"
+                            : theme.colors.secondaryContainer
                       }
                     />
                     <Text style={styles.optionLabel}>{option.label}</Text>

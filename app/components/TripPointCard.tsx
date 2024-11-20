@@ -1,4 +1,4 @@
-import { TripPointCompact } from "@/types/data";
+import { TripPointCompact } from "@/types/TripDayData";
 import { StyleSheet, Dimensions } from "react-native";
 import { Card, useTheme } from "react-native-paper";
 import { formatTimeFromString, formatTimeRange } from "@/utils/TimeUtils";

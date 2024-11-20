@@ -115,39 +115,43 @@ const TripDayView = () => {
   const [isTripPointSheetVisible, setIsTripPointSheetVisible] =
     useState<boolean>(false);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
-  console.log(isVisible);
-  const options: Option[] = [
-    {
-      icon: CREATING_TRIP_POINT_ICON,
-      label: "Utwórz",
-      onPress: () => {
-        router.push({
-          pathname: `/trips/details/${trip_id}/day/${day_id}/tripPoints/create`,
-          params: {
-            date: new Date(tripDay?.date as string).toLocaleDateString(),
-          },
-        });
-        setIsVisible(VisibilityState.None);
+
+  const options: Option[] = useMemo(
+    () => [
+      {
+        icon: CREATING_TRIP_POINT_ICON,
+        label: "Utwórz",
+        onPress: () => {
+          router.push({
+            pathname: `/trips/details/${trip_id}/day/${day_id}/tripPoints/create`,
+            params: {
+              date: new Date(tripDay?.date as string).toLocaleDateString(),
+            },
+          });
+          setIsVisible(VisibilityState.None);
+        },
       },
-    },
-    {
-      icon: SEARCH_TRIP_POINT_ICON,
-      label: "Wyszukaj",
-      onPress: () => {
-        router.push("/explore");
-        setIsVisible(VisibilityState.None);
+      {
+        icon: SEARCH_TRIP_POINT_ICON,
+        label: "Wyszukaj",
+        onPress: () => {
+          router.push("/explore");
+          setIsVisible(VisibilityState.None);
+        },
       },
-    },
-    {
-      icon: RECOMMENDATION_ICON,
-      label: "Rekomendacje",
-      onPress: () => {
-        setIsVisible(VisibilityState.None);
+      {
+        icon: RECOMMENDATION_ICON,
+        label: "Rekomendacje",
+        onPress: () => {
+          setIsVisible(VisibilityState.None);
+        },
       },
-    },
-  ];
+    ],
+    [setIsVisible],
+  );
 
   const [loadingOverlay, setLoadingOverlay] = useState<boolean>(false);
+
   const [selectedFromToTripPointId, setSelectedFromToTripPointId] = useState<{
     fromTripPointId: string;
     toTripPointId: string;
@@ -165,6 +169,7 @@ const TripDayView = () => {
   }, [transferPointMap, selectedFromToTripPointId]);
 
   const [extendedView, setExtendedView] = useState<boolean>(false);
+
   const dynamicLabel = useMemo(() => {
     if (extendedView) return "Ręcznie";
     if ("mode" in selectedTransferPointData) {
@@ -187,39 +192,12 @@ const TripDayView = () => {
     }, [refetchDayData, router, refresh]),
   );
 
-  const undoChange = () => {
-    console.log("undo");
-  };
-
-  const onCancel = () => {
-    undoChange();
-    onSelectorClose();
-  };
-
-  const onSave = useCallback(
-    async (minutes: number | null) => {
-      if (minutes === null) return;
-      const newTransferPoint: Omit<TransferPoint, "id"> = {
-        tripDayId: day_id as string,
-        seconds: minutes * 60,
-        fromTripPointId: selectedTransferPointData.fromTripPointId as string,
-        toTripPointId: selectedTransferPointData.toTripPointId as string,
-      };
-      const transferPointId =
-        "id" in selectedTransferPointData
-          ? selectedTransferPointData.id
-          : undefined;
-      try {
-        setLoadingOverlay(true);
-        await updateTransferPoint(newTransferPoint, transferPointId);
-        await refetchNoLoadingDayData();
-      } catch (error: any) {
-        showSnackbar("Wystąpił błąd", "error");
-      } finally {
-        setLoadingOverlay(false);
-      }
+  const getTripPoint = useCallback(
+    (tripPointId: string): TripPointCompact | null => {
+      const tripPoint = tripPoints.find((point) => point.id === tripPointId);
+      return tripPoint || null;
     },
-    [selectedTransferPointData],
+    [tripPoints],
   );
 
   const updateTransferPoint = async (
@@ -363,13 +341,20 @@ const TripDayView = () => {
         setLoadingOverlay(false);
       }
     },
-    [selectedTransferPointData],
+    [
+      selectedTransferPointData,
+      setExtendedView,
+      setLoadingOverlay,
+      updateTransferPoint,
+      refetchNoLoadingDayData,
+      showSnackbar,
+    ],
   );
 
   const handleManualTransferEdit = useCallback(() => {
     setExtendedView(true);
     setIsVisible(VisibilityState.Transfer);
-  }, []);
+  }, [setExtendedView, setIsVisible]);
 
   const deleteTransferPoint = useCallback(async () => {
     if ("id" in selectedTransferPointData) {
@@ -384,29 +369,52 @@ const TripDayView = () => {
       }
     }
     onSelectorClose();
-  }, [selectedTransferPointData]);
+  }, [
+    selectedTransferPointData,
+    setLoadingOverlay,
+    refetchNoLoadingDayData,
+    showSnackbar,
+  ]);
 
-  const transferPointOptions: Option[] = useMemo(
-    () => [
+  const transferPointOptions: Option[] = useMemo(() => {
+    const previousTransferPoint = getTripPoint(
+      selectedTransferPointData.fromTripPointId as string,
+    );
+
+    const nextTransferPoint = getTripPoint(
+      selectedTransferPointData.toTripPointId as string,
+    );
+
+    const disableAutomaticTransferTime =
+      previousTransferPoint?.latitude === null ||
+      previousTransferPoint?.longitude === null ||
+      nextTransferPoint?.latitude === null ||
+      nextTransferPoint?.longitude === null;
+
+    return [
       {
         icon: CAR_ICON,
         label: "Samochód",
         onPress: () => handleChangeTransferType(TransferType.Car),
+        disabled: disableAutomaticTransferTime,
       },
       {
         icon: MOTORBIKE_ICON,
         label: "Motocykl",
         onPress: () => handleChangeTransferType(TransferType.Motorbike),
+        disabled: disableAutomaticTransferTime,
       },
       {
         icon: BICYCLE_ICON,
         label: "Rower",
         onPress: () => handleChangeTransferType(TransferType.Bicycle),
+        disabled: disableAutomaticTransferTime,
       },
       {
         icon: WALK_ICON,
         label: "Chód",
         onPress: () => handleChangeTransferType(TransferType.Walk),
+        disabled: disableAutomaticTransferTime,
       },
       {
         icon: NON_STANDARD_TRANSFER_ICON,
@@ -418,9 +426,13 @@ const TripDayView = () => {
         label: "Usuń",
         onPress: deleteTransferPoint,
       },
-    ],
-    [handleChangeTransferType, handleManualTransferEdit, deleteTransferPoint],
-  );
+    ];
+  }, [
+    selectedTransferPointData,
+    handleChangeTransferType,
+    handleManualTransferEdit,
+    deleteTransferPoint,
+  ]);
 
   const handleTripPointPress = () => {
     console.log("Trip point pressed");
@@ -429,20 +441,26 @@ const TripDayView = () => {
   const handleTripPointLongPress = (tripPoint: TripPointCompact) => {
     console.log("Trip point long pressed");
     setSelectedTripPoint(tripPoint);
-    setIsVisible(VisibilityState.TripPoint);
+    setIsVisible(VisibilityState.None);
+    setIsTripPointSheetVisible(true);
   };
 
-  const handleTransferPointPress = (
-    fromTripPointId: string,
-    toTripPointId: string,
-  ) => {
-    const transferPoint = transferPointMap.get(fromTripPointId);
-    setSelectedFromToTripPointId({ fromTripPointId, toTripPointId });
-    if (transferPoint && transferPoint.mode === null) {
-      setExtendedView(true);
-    }
-    setIsVisible(VisibilityState.Transfer);
-  };
+  const handleTransferPointPress = useCallback(
+    (fromTripPointId: string, toTripPointId: string) => {
+      const transferPoint = transferPointMap.get(fromTripPointId);
+      setSelectedFromToTripPointId({ fromTripPointId, toTripPointId });
+      if (transferPoint && transferPoint.mode === null) {
+        setExtendedView(true);
+      }
+      setIsVisible(VisibilityState.Transfer);
+    },
+    [
+      transferPointMap,
+      setIsVisible,
+      setExtendedView,
+      setSelectedFromToTripPointId,
+    ],
+  );
 
   const sortedTripPoints = useMemo(() => {
     return [...tripPoints].sort((a, b) => {
@@ -450,31 +468,32 @@ const TripDayView = () => {
     });
   }, [tripPoints]);
 
-  const renderTransferPoint = (
-    fromTripPoint: TripPointCompact,
-    index: number,
-  ) => {
-    if (index === tripPoints.length - 1) {
-      return null;
-    }
-    const transferPoint = transferPointMap.get(fromTripPoint.id);
-    const toTripPointId = tripPoints[index + 1].id;
-    return (
-      <TransferPointNode
-        onPress={() =>
-          handleTransferPointPress(fromTripPoint.id, toTripPointId)
-        }
-        transferPoint={transferPoint}
-      />
-    );
-  };
+  const renderTransferPoint = useCallback(
+    (fromTripPoint: TripPointCompact, index: number) => {
+      if (index === sortedTripPoints.length - 1) {
+        return null;
+      }
 
-  const onSelectorClose = () => {
-    console.log("Selector - close");
+      const transferPoint = transferPointMap.get(fromTripPoint.id);
+      const toTripPointId = sortedTripPoints[index + 1].id;
+
+      return (
+        <TransferPointNode
+          onPress={() =>
+            handleTransferPointPress(fromTripPoint.id, toTripPointId)
+          }
+          transferPoint={transferPoint}
+        />
+      );
+    },
+    [sortedTripPoints, transferPointMap, handleTransferPointPress],
+  );
+
+  const onSelectorClose = useCallback(() => {
     setIsVisible(VisibilityState.None);
     setExtendedView(false);
     setSelectedFromToTripPointId(null);
-  };
+  }, [setIsVisible, setExtendedView, setSelectedFromToTripPointId]);
 
   const hideModal = () => {
     setIsModalVisible(false);
@@ -523,6 +542,7 @@ const TripDayView = () => {
   const hideAll = () => {
     console.log("Hide all");
     setIsVisible(VisibilityState.None);
+    setIsTripPointSheetVisible(false);
     setIsModalVisible(false);
   };
 

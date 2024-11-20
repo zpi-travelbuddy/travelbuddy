@@ -5,6 +5,8 @@ export interface TripPointCompact {
   name: string;
   startTime: string;
   endTime: string;
+  latitude: number | null;
+  longitude: number | null;
 }
 
 export interface CreateTripPointRequest {
@@ -54,6 +56,7 @@ export interface Option {
   icon: string;
   label: string;
   onPress: () => void;
+  disabled?: boolean;
 }
 
 export const TransferTypeLabels = {
