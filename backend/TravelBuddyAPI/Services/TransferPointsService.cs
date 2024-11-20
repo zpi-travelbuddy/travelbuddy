@@ -24,6 +24,7 @@ public class TransferPointsService(TravelBuddyDbContext dbContext, IGeoapifyServ
         public const string CreateTransferPoint = "An error occurred while creating a transfer point:";
         public const string DeleteTransferPoint = "An error occurred while deleting a transfer point:";
         public const string EditTransferPoint = "An error occurred while editing a transfer point:";
+        public const string NullLatitudeOrLongitude = "Latitude or Longitude cannot be null when mode is present.";
     }
 
     public async Task<TransferPointOverviewDTO> CreateTransferPointAsync(string userId, TransferPointRequestDTO transferPoint)
@@ -61,11 +62,8 @@ public class TransferPointsService(TravelBuddyDbContext dbContext, IGeoapifyServ
             {
                 Id = Guid.NewGuid(),
                 TripDayId = transferPoint.TripDayId,
-                StartTime = transferPoint.StartTime,
                 FromTripPointId = transferPoint.FromTripPointId,
-                ToTripPointId = transferPoint.ToTripPointId,
-                Mode = transferPoint.Mode,
-                Type = transferPoint.Type
+                ToTripPointId = transferPoint.ToTripPointId
             };
 
             if(!((transferPoint.Seconds == null) ^ (transferPoint.Mode == null)))
@@ -75,10 +73,17 @@ public class TransferPointsService(TravelBuddyDbContext dbContext, IGeoapifyServ
             else if(transferPoint.Seconds.HasValue)
             {
                 newTranserPoint.TransferTime = TimeSpan.FromSeconds(transferPoint.Seconds.Value);
+                newTranserPoint.Mode = null;
             }
             else
             {
-                newTranserPoint.TransferTime = await _geoapifyService.GetRouteTimeAsync((fromTripPoint.Place!.Latitude,fromTripPoint.Place.Longitude), (toTripPoint.Place!.Latitude, toTripPoint.Place.Longitude), transferPoint.Mode!.Value)
+                if(fromTripPoint.Place.Latitude == null || fromTripPoint.Place.Longitude == null || toTripPoint.Place.Latitude == null || toTripPoint.Place.Longitude == null)
+                {
+                    throw new InvalidOperationException(ErrorMessage.NullLatitudeOrLongitude);
+                }
+                
+                newTranserPoint.Mode = transferPoint.Mode;
+                newTranserPoint.TransferTime = await _geoapifyService.GetRouteTimeAsync((fromTripPoint.Place!.Latitude.Value, fromTripPoint.Place.Longitude.Value), (toTripPoint.Place!.Latitude.Value, toTripPoint.Place.Longitude.Value), transferPoint.Mode!.Value)
                     ?? throw new InvalidOperationException(ErrorMessage.InvalidTransferPointTime);
             }
 
@@ -92,12 +97,10 @@ public class TransferPointsService(TravelBuddyDbContext dbContext, IGeoapifyServ
             {
                 Id = newTranserPoint.Id,
                 TripDayId = newTranserPoint.TripDayId,
-                StartTime = newTranserPoint.StartTime,
                 Seconds = (int)newTranserPoint.TransferTime.TotalSeconds,
                 FromTripPointId = newTranserPoint.FromTripPointId,
                 ToTripPointId = newTranserPoint.ToTripPointId,
                 Mode = newTranserPoint.Mode,
-                Type = newTranserPoint.Type
             };
         }
         catch (Exception e) when (e is ArgumentNullException || e is InvalidOperationException || e is ArgumentException || e is HttpRequestException || e is ValidationException)
@@ -151,10 +154,6 @@ public class TransferPointsService(TravelBuddyDbContext dbContext, IGeoapifyServ
                 throw new InvalidOperationException(ErrorMessage.TransferPointNotFound);
             }
 
-            existingTransferPoint.StartTime = transferPoint.StartTime;
-            existingTransferPoint.Mode = transferPoint.Mode;
-            existingTransferPoint.Type = transferPoint.Type;
-
             if (!((transferPoint.Seconds == null) ^ (transferPoint.Mode == null)))
             {
                 throw new InvalidOperationException(ErrorMessage.InvalidTransferPointTime);
@@ -162,10 +161,17 @@ public class TransferPointsService(TravelBuddyDbContext dbContext, IGeoapifyServ
             else if (transferPoint.Seconds.HasValue)
             {
                 existingTransferPoint.TransferTime = TimeSpan.FromSeconds(transferPoint.Seconds.Value);
+                existingTransferPoint.Mode = null;
             }
             else
             {
-                existingTransferPoint.TransferTime = await _geoapifyService.GetRouteTimeAsync((existingTransferPoint.FromTripPoint!.Place!.Latitude, existingTransferPoint.FromTripPoint.Place.Longitude), (existingTransferPoint.ToTripPoint!.Place!.Latitude, existingTransferPoint.ToTripPoint.Place.Longitude), transferPoint.Mode!.Value)
+                if(existingTransferPoint.FromTripPoint!.Place!.Latitude == null || existingTransferPoint.FromTripPoint.Place.Longitude == null || existingTransferPoint!.ToTripPoint!.Place!.Latitude == null || existingTransferPoint!.ToTripPoint!.Place.Longitude == null)
+                {
+                    throw new InvalidOperationException(ErrorMessage.NullLatitudeOrLongitude);
+                }
+
+                existingTransferPoint.Mode = transferPoint.Mode;
+                existingTransferPoint.TransferTime = await _geoapifyService.GetRouteTimeAsync((existingTransferPoint.FromTripPoint!.Place!.Latitude.Value, existingTransferPoint.FromTripPoint.Place.Longitude.Value), (existingTransferPoint.ToTripPoint!.Place!.Latitude.Value, existingTransferPoint.ToTripPoint.Place.Longitude.Value), transferPoint.Mode!.Value)
                     ?? throw new InvalidOperationException(ErrorMessage.InvalidTransferPointTime);
             }
 

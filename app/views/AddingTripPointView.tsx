@@ -33,7 +33,7 @@ import LoadingView from "./LoadingView";
 import { useSnackbar } from "@/context/SnackbarContext";
 import useTripDetails from "@/composables/useTripDetails";
 import usePlaceDetails from "@/composables/usePlace";
-import { create } from "react-test-renderer";
+
 
 const { height, width } = Dimensions.get("window");
 
@@ -46,6 +46,8 @@ const AddingTripPointView = () => {
   const params = useLocalSearchParams();
   const { day_id } = params;
   const trip_id: string = "77b6b9bd-99d8-4b56-b74d-ed69c3a1238a";
+
+  const { date } = useLocalSearchParams();
 
   useAnimatedKeyboard();
 
@@ -398,7 +400,7 @@ const AddingTripPointView = () => {
             )}
 
             <TextInput
-              mode="outlined"
+              mode="outlined"                                  
               style={styles.textInput}
               label="Szerokość geograficzna"
               value={latitudeText}
@@ -477,7 +479,7 @@ const AddingTripPointView = () => {
               style={styles.textInput}
               label="Data"
               left={<TextInput.Icon icon={CALENDAR_ICON} />}
-              value={startTime.toLocaleDateString()}
+              value={date as string}
               placeholder={comment}
               editable={false}
               disabled={true}

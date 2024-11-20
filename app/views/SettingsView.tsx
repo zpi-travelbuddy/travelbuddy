@@ -209,12 +209,12 @@ const SettingsView = () => {
           Czy na pewno chcesz się wylogować?
         </Text>
         <ActionTextButtons
-          onCancel={handleDismissLogoutModal}
-          onConfirm={logout}
-          cancelButtonLabel="Nie"
-          confirmButtonLabel="Tak"
-          confirmIcon={undefined}
-          cancelIcon={undefined}
+          onAction1={handleDismissLogoutModal}
+          onAction2={logout}
+          action1ButtonLabel="Nie"
+          action2ButtonLabel="Tak"
+          action1Icon={undefined}
+          action2Icon={undefined}
         />
       </CustomModal>
     </GestureHandlerRootView>

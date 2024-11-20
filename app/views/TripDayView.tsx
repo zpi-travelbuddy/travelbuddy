@@ -4,7 +4,7 @@ import { TransferPointNode } from "@/components/TransferPointNode";
 import { useRouter, useLocalSearchParams, useFocusEffect } from "expo-router";
 import { MD3ThemeExtended } from "@/constants/Themes";
 import {
-  TripPoint,
+  TripPointCompact,
   TransferPoint,
   TransferTypeLabels,
   TransferType,
@@ -13,7 +13,6 @@ import { useTheme, FAB, Text, TextInput } from "react-native-paper";
 import React, {
   Fragment,
   useCallback,
-  useEffect,
   useMemo,
   useState,
 } from "react";
@@ -32,41 +31,11 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import CreatingTripPointSelector from "@/components/CreatingTripPointSelector";
 import ActionButtons from "@/components/ActionButtons";
 import { Option } from "@/types/data";
+import useTripDayDetails from "@/composables/useTripDay";
+import LoadingView from "./LoadingView";
+import { useSnackbar } from "@/context/SnackbarContext";
 
 const { width } = Dimensions.get("window");
-
-const tripPoints: TripPoint[] = [
-  {
-    id: "1",
-    name: "Muzeum",
-    fromTime: "13:00",
-    toTime: "14:00",
-  },
-  {
-    id: "2",
-    name: "Zamek",
-    fromTime: "12:00",
-    toTime: "13:00",
-  },
-  {
-    id: "3",
-    name: "Katedra",
-    fromTime: "14:00",
-    toTime: "15:00",
-  },
-  {
-    id: "4",
-    name: "Rynek",
-    fromTime: "16:00",
-    toTime: "17:00",
-  },
-  {
-    id: "5",
-    name: "Park",
-    fromTime: "18:00",
-    toTime: "19:00",
-  },
-];
 
 const TripDayView = () => {
   const theme = useTheme();
@@ -76,15 +45,29 @@ const TripDayView = () => {
 
   const { trip_id, day_id, refresh } = params;
 
+  const { showSnackbar } = useSnackbar();
+
+  const {
+    transferPoints,
+    tripPoints,
+    tripDay,
+    loading,
+    error,
+    refetch: refetchDayData,
+  } = useTripDayDetails(day_id as string);
+
   const options: Option[] = [
     {
       icon: CREATING_TRIP_POINT_ICON,
       label: "Utwórz",
       onPress: () => {
         console.log("go to creating trip point");
-        router.push(
-          `/(auth)/(tabs)/trips/details/${trip_id}/day/${day_id}/tripPoints/create`,
-        );
+        router.push({
+          pathname: `/(auth)/(tabs)/trips/details/${trip_id}/day/${day_id}/tripPoints/create`,
+          params: {
+            date: new Date(tripDay?.date as string).toLocaleDateString(),
+          },
+        });
         setIsVisible(false);
       },
     },
@@ -120,36 +103,12 @@ const TripDayView = () => {
     TransferPoint | undefined
   >(undefined);
 
-  const [transferPoints, setTransferPoints] = useState<TransferPoint[]>([
-    {
-      id: "1",
-      fromTripPointId: "2",
-      toTripPointId: "3",
-      type: "walk",
-      duration: 110,
-    },
-    {
-      id: "id1",
-      fromTripPointId: "1",
-      toTripPointId: "2",
-      type: "empty",
-      duration: 0,
-    },
-    {
-      id: "id2",
-      fromTripPointId: "3",
-      toTripPointId: "4",
-      type: "empty",
-      duration: 0,
-    },
-    {
-      id: "id3",
-      fromTripPointId: "4",
-      toTripPointId: "5",
-      type: "empty",
-      duration: 0,
-    },
-  ]);
+  useFocusEffect(
+    useCallback(() => {
+      refetchDayData();
+      console.log("REFRESH");
+    }, [refetchDayData]),
+  );
 
   // Future refreshing after adding TripPoint - but first to connecting retrieving day data from backend
 
@@ -168,7 +127,7 @@ const TripDayView = () => {
 
   const undoChange = () => {
     setSelectedTransferPoint(previousTransfer);
-    if (previousTransfer) handleChangeTransferType(previousTransfer.type);
+    if (previousTransfer) handleChangeTransferType(previousTransfer.mode);
   };
 
   const onCancel = () => {
@@ -211,11 +170,12 @@ const TripDayView = () => {
     isVisibleTrigger: boolean = false,
   ) => {
     if (selectedTransferPoint) {
-      setTransferPoints(
-        transferPoints.map((point) =>
-          point.id === selectedTransferPoint.id ? { ...point, type } : point,
-        ),
-      );
+      // setTransferPoints(
+      //   transferPoints.map((point) =>
+      //     point.id === selectedTransferPoint.id ? { ...point, type } : point,
+      //   ),
+      // );
+      // To implement after connecting trip day to backend
     }
     setIsVisible(isVisibleTrigger);
     if (!isVisibleTrigger) setExtendedView(undefined);
@@ -273,8 +233,8 @@ const TripDayView = () => {
   const handleTransferPointPress = (transferPoint: TransferPoint) => {
     setSelectedOptions(transferPointOptions);
     setSelectedTransferPoint(transferPoint);
-    setDynamicLabel(TransferTypeLabels[transferPoint.type]);
-    if (transferPoint.type === "manual") {
+    setDynamicLabel(TransferTypeLabels[transferPoint.mode]);
+    if (transferPoint.mode === "manual") {
       setExtendedView(<ExampleExtendedView />);
     }
     setIsVisible(true);
@@ -292,11 +252,14 @@ const TripDayView = () => {
 
   const sortedTripPoints = useMemo(() => {
     return [...tripPoints].sort((a, b) => {
-      return a.fromTime.localeCompare(b.fromTime);
+      return a.startTime.localeCompare(b.startTime);
     });
   }, [tripPoints]);
 
-  const renderTransferPoint = (fromTripPoint: TripPoint, index: number) => {
+  const renderTransferPoint = (
+    fromTripPoint: TripPointCompact,
+    index: number,
+  ) => {
     if (index === tripPoints.length - 1) {
       return null;
     }
@@ -316,7 +279,7 @@ const TripDayView = () => {
   const deleteTransferPoint = () => {
     if (selectedTransferPoint) {
       selectedTransferPoint.duration = 0;
-      selectedTransferPoint.type = "empty";
+      selectedTransferPoint.mode = "empty";
     }
     onSelectorClose();
   };
@@ -328,6 +291,16 @@ const TripDayView = () => {
     setPreviousTransfer(undefined);
   };
 
+  if (loading) {
+    return <LoadingView />;
+  }
+
+  if (error) {
+    router.back();
+    showSnackbar(error?.toString() || "Unknown error", "error");
+    return null;
+  }
+
   return (
     <>
       <GestureHandlerRootView>
@@ -335,18 +308,28 @@ const TripDayView = () => {
           style={style.container}
           contentContainerStyle={style.containerContent}
         >
-          <View style={{ height: 40 }} />
-          {sortedTripPoints.map((fromTripPoint, index) => (
-            <Fragment key={fromTripPoint.id}>
-              <TripPointCard
-                onPress={handleTripPointPress}
-                onLongPress={handleTripPointLongPress}
-                tripPoint={fromTripPoint}
-              />
-              {renderTransferPoint(fromTripPoint, index)}
-            </Fragment>
-          ))}
-          <View style={{ height: 100 }} />
+          {tripPoints.length === 0 ? (
+            <View style={style.emptyDayContainer}>
+              <Text style={style.emptyDayText}>
+                Ten dzień jest jeszcze pusty - dodaj punkty wycieczki
+              </Text>
+            </View>
+          ) : (
+            <>
+              <View style={{ height: 40 }} />
+              {sortedTripPoints.map((fromTripPoint, index) => (
+                <Fragment key={fromTripPoint.id}>
+                  <TripPointCard
+                    onPress={handleTripPointPress}
+                    onLongPress={handleTripPointLongPress}
+                    tripPoint={fromTripPoint}
+                  />
+                  {renderTransferPoint(fromTripPoint, index)}
+                </Fragment>
+              ))}
+              <View style={{ height: 100 }} />
+            </>
+          )}
         </ScrollView>
         <FAB
           icon="plus"
@@ -377,9 +360,23 @@ const createStyles = (theme: MD3ThemeExtended) =>
     },
     containerContent: {
       alignItems: "center",
+      flexGrow: 1,
     },
     verticalSpace: {
       height: 40,
+    },
+    emptyDayText: {
+      ...theme.fonts.bodyLarge,
+      color: theme.colors.onSurface,
+      textAlign: "center",
+      marginHorizontal: 0.1 * width,
+    },
+    emptyDayContainer: {
+      height: "100%",
+      backgroundColor: theme.colors.surface,
+      alignItems: "center",
+      justifyContent: "center",
+      flex: 1,
     },
     fab: {
       position: "absolute",

@@ -1,11 +1,15 @@
 import { Button, Card } from "react-native-paper";
 import { StyleSheet, Image, View } from "react-native";
-import { useRouter } from "expo-router";
 import { truncateText } from "@/utils/TextUtils";
+import { Place } from "@/types/Place";
 
-export function PlaceCard({ place }: { place: PlaceView }) {
-  const { id, title, subtitle, imageUrl } = place;
-  const router = useRouter();
+interface PlaceCardProps {
+  place: Place;
+  handleAddPress: () => void;
+}
+
+export function PlaceCard({ place, handleAddPress }: PlaceCardProps) {
+  const { id, title, subtitle } = place;
 
   const onDetailsPress = () => {
     console.log("Go to attraction's details", id);
@@ -14,16 +18,15 @@ export function PlaceCard({ place }: { place: PlaceView }) {
 
   const onAddPress = () => {
     console.log("Go to adding attraction to trip.", id);
-    // router.push(...);
+    handleAddPress();
   };
   return (
     <Card mode="outlined">
       <View style={styles.headerContainer}>
         <Card.Title
-          title={truncateText(title, 25)}
-          subtitle={truncateText(subtitle, 25)}
+          title={truncateText(title, 50)}
+          subtitle={truncateText(subtitle, 50)}
         />
-        {imageUrl && <Image source={{ uri: imageUrl }} style={styles.image} />}
       </View>
       <Card.Actions>
         <Button
@@ -47,13 +50,5 @@ const styles = StyleSheet.create({
   },
   headerContainer: {
     position: "relative",
-  },
-  image: {
-    position: "absolute",
-    top: 8,
-    right: 8,
-    width: 100,
-    height: 60,
-    borderRadius: 20,
   },
 });

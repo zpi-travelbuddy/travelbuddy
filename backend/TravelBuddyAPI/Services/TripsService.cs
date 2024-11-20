@@ -295,7 +295,8 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
         var day = await _dbContext.TripDays
             .Where(p => p.Id == tripDayId && p.Trip!.UserId == userId)
             .Include(p => p.Trip)
-            .Include(p => p.TripPoints)
+            .Include(p => p.TripPoints!)
+                .ThenInclude(tp => tp.Place)
             .Include(p => p.TransferPoints)
             .FirstOrDefaultAsync();
 
@@ -318,7 +319,9 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
             Name = tp.Name,
             TripDayId = tp.TripDayId,
             StartTime = tp.StartTime,
-            EndTime = tp.EndTime
+            EndTime = tp.EndTime,
+            Latitude = tp.Place?.Latitude,
+            Longitude = tp.Place?.Longitude
         }).ToList();
 
         dayDetails.TransferPoints = day.TransferPoints!.Select(tp => new TransferPointOverviewDTO
@@ -326,9 +329,7 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
             Id = tp.Id,
             TripDayId = tp.TripDayId,
             Seconds = (int?)tp.TransferTime.TotalSeconds,
-            StartTime = tp.StartTime,
             Mode = tp.Mode,
-            Type = tp.Type,
             FromTripPointId = tp.FromTripPointId,
             ToTripPointId = tp.ToTripPointId
         }).ToList();
