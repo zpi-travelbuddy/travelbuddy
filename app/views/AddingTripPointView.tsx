@@ -31,6 +31,7 @@ import useTripDetails from "@/composables/useTripDetails";
 import usePlaceDetails from "@/composables/usePlace";
 import { useAuth } from "@/app/ctx";
 import { API_ADDING_TRIP_POINT } from "@/constants/Endpoints";
+import { useNavigationData } from "@/context/NavigationDataContext";
 
 
 const { height, width } = Dimensions.get("window");
@@ -40,6 +41,7 @@ const AddingTripPointView = () => {
   const styles = useMemo(() => createStyles(theme), [theme]);
   const router = useRouter();
   const { showSnackbar } = useSnackbar();
+  const { setData } = useNavigationData();
 
   const params = useLocalSearchParams();
   const { day_id } = params;
@@ -219,7 +221,10 @@ const AddingTripPointView = () => {
 
       showSnackbar("Punkt wycieczki zapisany!");
       console.log("Response: " + JSON.stringify(response.data));
-      router.back();
+      setData({ refresh: true })
+      setTimeout(() => {
+        router.back();
+      }, 0);
     } catch (err: any) {
       console.error("Błąd podczas zapisywania punktu: ", JSON.stringify(err.response.data));
       setErrors((prev) => ({

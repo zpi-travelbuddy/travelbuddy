@@ -1,8 +1,7 @@
 import { useAuth } from "@/app/ctx";
 import { API_ADDING_TRIP_POINT } from "@/constants/Endpoints";
 import { CreateTripPointRequest, TripPointResponse } from "@/types/data";
-import { delay } from "@/utils/TimeUtils";
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 
 // Maybe for future refactor
 export const useCreateTripPoint = () => {
@@ -22,7 +21,6 @@ export const useCreateTripPoint = () => {
         API_ADDING_TRIP_POINT,
         request,
       );
-      await delay(2000);
       console.log("Response: " + JSON.stringify(response))
       setData(response.data as TripPointResponse);
     } catch (err: any) {

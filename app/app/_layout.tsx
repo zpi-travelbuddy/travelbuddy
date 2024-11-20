@@ -13,6 +13,7 @@ import { useMemo } from "react";
 import * as SplashScreen from "expo-splash-screen";
 import { AuthProvider } from "./ctx";
 import { SnackbarProvider } from "@/context/SnackbarContext";
+import { NavigationDataProvider } from "@/context/NavigationDataContext";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -50,14 +51,16 @@ export default function RootLayout() {
   return (
     <AuthProvider>
       <PaperProvider theme={theme}>
-        <SnackbarProvider>
-          <Portal.Host>
-            <StatusBar />
-            <View style={styles.container}>
-              <Slot />
-            </View>
-          </Portal.Host>
-        </SnackbarProvider>
+        <NavigationDataProvider>
+          <SnackbarProvider>
+            <Portal.Host>
+              <StatusBar />
+              <View style={styles.container}>
+                <Slot />
+              </View>
+            </Portal.Host>
+          </SnackbarProvider>
+        </NavigationDataProvider>
       </PaperProvider>
     </AuthProvider>
   );

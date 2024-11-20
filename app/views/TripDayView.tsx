@@ -36,6 +36,7 @@ import useTripDayDetails from "@/composables/useTripDay";
 import LoadingView from "./LoadingView";
 import { useSnackbar } from "@/context/SnackbarContext";
 import { getTimeWithoutSeconds } from "@/utils/TimeUtils";
+import { useNavigationData } from "@/context/NavigationDataContext";
 
 const { width } = Dimensions.get("window");
 
@@ -48,6 +49,7 @@ const TripDayView = () => {
   const { trip_id, day_id } = params;
 
   const { showSnackbar } = useSnackbar();
+  const { setData, data } = useNavigationData();
 
   const {
     transferPoints,
@@ -112,9 +114,14 @@ const TripDayView = () => {
 
   useFocusEffect(
     useCallback(() => {
-      refetchDayData();
-    }, [refetchDayData]),
+      if(data?.refresh){ 
+        refetchDayData()
+        setData(null)
+      }
+    }, [refetchDayData, data]),
   );
+
+  useEffect(() => {console.log("Data: " + JSON.stringify(data))}, [data]);
 
   const handleTextChange = (text: string) => {
     const numericText = text.replace(/[^0-9]/g, "");
