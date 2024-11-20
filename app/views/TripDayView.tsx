@@ -45,7 +45,7 @@ const TripDayView = () => {
   const router = useRouter();
   const params = useLocalSearchParams();
 
-  const { trip_id, day_id, refresh } = params;
+  const { trip_id, day_id } = params;
 
   const { showSnackbar } = useSnackbar();
 
@@ -98,7 +98,6 @@ const TripDayView = () => {
   ];
 
   const [isVisible, setIsVisible] = useState<boolean>(false);
-  const [refreshing, setRefreshing] = useState<boolean>(false);
   const [dynamicLabel, setDynamicLabel] = useState<string>("");
   const [estimatedTime, setEstimatedTime] = useState<number>(0);
   const [extendedView, setExtendedView] = useState<
@@ -114,18 +113,7 @@ const TripDayView = () => {
   useFocusEffect(
     useCallback(() => {
       refetchDayData();
-      console.log("REFRESH");
     }, [refetchDayData]),
-  );
-
-  // Future refreshing after adding TripPoint - but first to connecting retrieving day data from backend
-
-  useFocusEffect(
-    useCallback(() => {
-      // refetchDayData();
-      console.log("REFRESH");
-      // }, [refetch]);
-    }, []),
   );
 
   const handleTextChange = (text: string) => {
@@ -262,7 +250,7 @@ const TripDayView = () => {
     return [...tripPointsFormatted].sort((a, b) => {
       return a.startTime.localeCompare(b.startTime);
     });
-  }, [tripPoints]);
+  }, [tripPointsFormatted]);
 
   const renderTransferPoint = (
     fromTripPoint: TripPointCompact,

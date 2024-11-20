@@ -30,10 +30,12 @@ export function formatDateToPolish(date: Date | undefined): string {
   return date.toLocaleDateString("pl-PL");
 }
 
-export const formatTime = (date: Date): string => {
+export const formatTime = (date: Date, withSeconds: boolean = false): string => {
   const hours = date.getHours().toString().padStart(2, "0");
   const minutes = date.getMinutes().toString().padStart(2, "0");
-  return `${hours}:${minutes}`;
+  const seconds = date.getSeconds().toString().padStart(2, "0");
+  if (withSeconds) return `${hours}:${minutes}:${seconds}`;
+  else return `${hours}:${minutes}`;
 };
 
 export function formatDateRange(
@@ -115,8 +117,4 @@ export const formatToISODate = (date: Date): string => {
 
 export const getTimeWithoutSeconds = (time: string) => {
   return time.split(":").slice(0, 2).join(":");
-}
-
-export function delay(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
 }
