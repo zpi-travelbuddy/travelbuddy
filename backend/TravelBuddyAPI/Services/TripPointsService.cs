@@ -29,6 +29,7 @@ public class TripPointsService(TravelBuddyDbContext dbContext, INBPService nbpSe
         public const string DeleteTripPoint = "An error occurred while deleting a trip point.";
         public const string TripPointOverlap = "Trip point overlaps with another trip point.";
         public const string TooManyDecimalPlaces = "Predicted cost must have at most 2 decimal places.";
+        public const string ProviderPlaceNotFound = "Provider place with the specified Id does not exist.";
     }
 
     public async Task<TripPointDetailsDTO> CreateTripPointAsync(string userId, TripPointRequestDTO tripPoint)
@@ -61,7 +62,8 @@ public class TripPointsService(TravelBuddyDbContext dbContext, INBPService nbpSe
             if (tripPoint.PredictedCost * 100 % 1 != 0) throw new ArgumentException(ErrorMessage.TooManyDecimalPlaces);
 
             _ = tripPoint.Place ?? throw new InvalidOperationException(ErrorMessage.EmptyPlace);
-            Guid placeId = (await GetPlaceIdAsync(tripPoint.Place.ProviderId)) ?? (await _placesService.AddPlaceAsync(tripPoint.Place)).Id;
+
+            Guid placeId = (tripPoint.Place.ProviderId is not null ? await GetPlaceIdAsync(tripPoint.Place.ProviderId) : null) ?? (await _placesService.AddPlaceAsync(tripPoint.Place)).Id;
 
             ProviderPlace? providerPlace = await _dbContext.Places.OfType<ProviderPlace>().FirstOrDefaultAsync(pp => pp.Id == placeId);
             var openingHours = providerPlace?.GetOpenningHours(tripDay!.Date);
@@ -98,11 +100,13 @@ public class TripPointsService(TravelBuddyDbContext dbContext, INBPService nbpSe
         }
     }
 
-    private async Task<Guid?> GetPlaceIdAsync(string? providerId)
+    private async Task<Guid?> GetPlaceIdAsync(string providerId)
     {
+        var fetchedPlace = await _placesService.GetProviderPlaceAsync(providerId) ?? throw new InvalidOperationException(ErrorMessage.ProviderPlaceNotFound);
+
         return await _dbContext.Places
             .OfType<ProviderPlace>()
-            .Where(p => p.ProviderId == providerId)
+            .Where(p => p.ProviderId == fetchedPlace.ProviderId)
             .Select(p => (Guid?)p.Id)
             .FirstOrDefaultAsync();
     }
