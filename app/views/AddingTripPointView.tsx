@@ -10,6 +10,7 @@ import {
 } from "react-native-paper";
 import {
   addHoursToTheSameDate,
+  delay,
   formatDateToISO,
   formatDateToPolish,
   formatTime,
@@ -70,25 +71,9 @@ const AddingTripPointView = () => {
     data: createResponse,
   } = useCreateTripPoint();
 
+  
+  const [place, setPlace] = useState<Place>({} as Place);
   const [tripPointName, setTripPointName] = useState("");
-  const [place, setPlace] = useState<Place>({
-    country: "",
-    state: "",
-    city: "",
-    street: "",
-    houseNumber: "",
-    latitude: 0,
-    longitude: 0,
-    name: "",
-  } as Place);
-
-  useEffect(() => {
-    console.log(tripDetails);
-  }, [tripDetails]);
-
-  useEffect(() => {
-    console.log(destinationDetails);
-  }, [destinationDetails]);
 
   const [errors, setErrors] = useState<TripErrors>({});
   const [loading, setLoading] = useState<boolean>(false);
@@ -191,6 +176,11 @@ const AddingTripPointView = () => {
       }));
     }
 
+    setErrors((prev) => ({
+      ...prev,
+      ["api"]: "",
+    }))
+
     requiredFields.forEach(({ field, errorMessage }) => {
       const fieldValue = {
         tripPointName,
@@ -213,7 +203,7 @@ const AddingTripPointView = () => {
     console.log("hasErrors: " + hasErrors);
 
     if (!hasErrors) {
-      setPlace({
+      const placeToRequest = {
         name: tripPointName,
         country: country,
         state: state,
@@ -222,7 +212,7 @@ const AddingTripPointView = () => {
         houseNumber: houseNumber,
         latitude: latitude ? latitude : 0,
         longitude: longitude ? longitude : 0,
-      } as Place);
+      } as Place;
 
       let totalExpectedCost = expectedCost;
       if (costType === "perPerson") {
@@ -236,30 +226,27 @@ const AddingTripPointView = () => {
         name: tripPointName,
         comment: comment,
         tripDayId: day_id as string,
-        place: place,
+        place: placeToRequest,
         startTime: `${formatTime(startTime)}:00`,
         endTime: `${formatTime(endTime)}:00`,
         predictedCost: totalExpectedCost,
       };
 
-      console.log("Place: " + JSON.stringify(place));
+      setLoading(true);
+
+      console.log("Place: " + JSON.stringify(tripPointRequest.place));
 
       await createTripPoint(tripPointRequest);
 
-      if (!createResponse) {
-        console.log(JSON.stringify(createResponse))
-        console.log(JSON.stringify(createError))
-        showSnackbar("Wystąpił błąd przy dodawaniu punktu wycieczki");
+      if (errors.api) {
         return;
       }
 
       showSnackbar("Punkt wycieczki zapisany!");
-      console.log(JSON.stringify(createResponse));
       console.log("Punkt wycieczki zapisany!");
       router.back();
     } else {
       showSnackbar("Uzupełnij brakujące pola i popraw błędy!");
-      console.log(JSON.stringify(errors));
     }
   };
 
@@ -309,7 +296,7 @@ const AddingTripPointView = () => {
   }, [startTime, endTime]);
 
   if (loading) {
-    return <LoadingView />;
+    return <LoadingView transparent={true}/>;
   }
   
   return (

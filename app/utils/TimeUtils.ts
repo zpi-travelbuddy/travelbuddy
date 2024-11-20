@@ -113,7 +113,10 @@ export const formatToISODate = (date: Date): string => {
   return date.toISOString().split("T")[0];
 };
 
-
 export const getTimeWithoutSeconds = (time: string) => {
   return time.split(":").slice(0, 2).join(":");
+}
+
+export function delay(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }

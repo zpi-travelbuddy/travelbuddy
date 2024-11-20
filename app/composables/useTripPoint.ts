@@ -4,6 +4,7 @@ import { useAuth } from "@/app/ctx";
 import { API_ADDING_TRIP_POINT } from "@/constants/Endpoints";
 import { CreateTripPointRequest, TripPointResponse } from "@/types/data";
 import { TripErrors } from "@/types/Trip";
+import { delay } from "@/utils/TimeUtils";
 import { useState, useCallback, useEffect } from "react";
 
 export const useCreateTripPoint = () => {
@@ -18,15 +19,17 @@ export const useCreateTripPoint = () => {
       setLoading(true);
       setError(null);
       setData(null);
-      console.log(JSON.stringify(request));
+      console.log("Create trip point: " + JSON.stringify(request));
       const response = await api!.post<TripPointResponse>(
         API_ADDING_TRIP_POINT,
         request,
       );
-      setData(response.data);
+      console.log("Response: " + JSON.stringify(response))
+      setData(response.data as TripPointResponse);
     } catch (err: any) {
+      console.log("Error response: " + JSON.stringify(err.response.data))
       if (err.response && err.response.status === 400) {
-        setError("Nie dodano punktu wycieczki.");
+        setError("Nie dodano punktu wycieczki. " + err.response.data);
       } else {
         setError("Wystąpił błąd podczas dodawania punktu wycieczki.");
       }
