@@ -152,6 +152,12 @@ const AddingTripPointView = () => {
     setLoading(tripLoading || creatingLoading || destinationLoading || false);
   }, [tripLoading, creatingLoading, destinationLoading]);
 
+  useEffect(() => {
+    if (errors.api) {
+      showSnackbar(errors.api, "error");
+    }
+  }, [errors.api]);
+
   const requiredFields = [
     {
       field: "tripPointName",
@@ -301,11 +307,7 @@ const AddingTripPointView = () => {
   if (loading) {
     return <LoadingView />;
   }
-
-  if (errors.api) {
-    showSnackbar(errors.api, "error");
-  }
-
+  
   return (
     <>
       <GestureHandlerRootView>
