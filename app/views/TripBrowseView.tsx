@@ -107,39 +107,46 @@ const TripBrowseView = () => {
     }
   };
 
-  const fetchCurrentTrips = async () => {
+  const fetchTripsByType = async (
+    endpoint: string,
+    setTrips: (trips: Trip[]) => void,
+    errorFallback: () => void,
+  ) => {
     try {
-      const currentTrips: APITrip[] = (await api!.get(API_TRIPS_CURRENT)).data;
-      const parsedCurrentTrips = currentTrips.map(convertAPITripToTrip);
-      setCurrentTrips(parsedCurrentTrips);
+      const trips: APITrip[] = (await api!.get(endpoint)).data;
+      const parsedTrips = trips.map(convertAPITripToTrip);
+      setTrips(parsedTrips);
     } catch (error: any) {
       if (error.response && error.response.status === 404) {
-        setCurrentTrips([]);
+        errorFallback();
       } else {
-        console.error("Error fetching current trips", error.response.data);
+        console.error(
+          `Error fetching trips from ${endpoint}`,
+          error.response?.data || error,
+        );
       }
     }
   };
 
+  const fetchCurrentTrips = async () => {
+    await fetchTripsByType(API_TRIPS_CURRENT, setCurrentTrips, () =>
+      setCurrentTrips([]),
+    );
+  };
+
   const fetchPastTrips = async () => {
-    try {
-      const pastTrips: APITrip[] = (await api!.get(API_TRIPS_PAST)).data;
-      const parsedPastTrips = pastTrips.map(convertAPITripToTrip);
-      setPastTrips(parsedPastTrips);
-    } catch (error: any) {
-      if (error.response && error.response.status === 404) {
-        setCurrentTrips([]);
-      } else {
-        console.error("Error fetching current trips", error.response.data);
-      }
-    }
+    await fetchTripsByType(API_TRIPS_PAST, setPastTrips, () =>
+      setPastTrips([]),
+    );
   };
 
   const fetchTrips = async () => {
     setIsLoading(true);
-    await fetchCurrentTrips();
-    await fetchPastTrips();
-    setIsLoading(false);
+    try {
+      await Promise.all([fetchCurrentTrips(), fetchPastTrips()]);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   useEffect(() => {
