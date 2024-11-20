@@ -58,7 +58,6 @@ const SelectDestinationView = () => {
           query,
         },
       });
-      console.log(response.data);
       const parsedData = response.data.map((destination: APIDestination) => ({
         id: destination.providerId,
         name: destination.city || destination.name,

@@ -6,9 +6,19 @@ import {
   TripSummary,
   TripViewModel,
   EditTripRequest,
+  APITrip,
+  Trip,
+  TripDetails,
 } from "@/types/Trip";
+import { PlaceDetails } from "@/types/Place";
 import { getMoneyWithCurrency } from "@/utils/CurrencyUtils";
-import { formatDateRange } from "@/utils/TimeUtils";
+import {
+  formatDateFromISO,
+  formatDateRange,
+  formatTimeRange,
+} from "@/utils/TimeUtils";
+
+const RANDOM_IMAGE = "https://picsum.photos/891";
 
 // Temporary mocked functions
 function getCategoryProfileName(categoryProfileId: string | null): string {
@@ -122,3 +132,16 @@ export function convertTripResponseToEditTripRequest(
 
   return editTripRequest;
 }
+
+export const convertAPITripToTrip = (trip: APITrip): Trip => ({
+  id: trip.id,
+  title: trip.name,
+  subtitle: formatTimeRange(
+    formatDateFromISO(trip?.startDate),
+    formatDateFromISO(trip?.endDate),
+  ),
+  from: trip.startDate,
+  to: trip.endDate,
+  imageUri: RANDOM_IMAGE,
+  isArchived: false,
+});

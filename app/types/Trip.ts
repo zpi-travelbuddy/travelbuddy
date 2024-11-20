@@ -10,13 +10,24 @@ export interface TripRequest {
   budget: number;
   currencyCode: string;
   categoryProfileId: string | null;
-  conditionProfileId: string | null;
+  conditionProfileId: string | null; 
 }
 
-export interface TripDay {
+export interface APITrip {
   id: string;
-  tripId: string;
-  date: string;
+  name: string;
+  startDate: string;
+  endDate: string;
+}
+
+export interface Trip {
+  id: string;
+  title: string;
+  subtitle: string;
+  from: string;
+  to: string;
+  imageUri: string;
+  isArchived: boolean;
 }
 
 export interface TripDay {

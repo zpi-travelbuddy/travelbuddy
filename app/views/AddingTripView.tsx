@@ -146,7 +146,7 @@ const AddingTripView = () => {
     setIsLoading(true);
     try {
       await api!.post(API_TRIPS, tripData);
-      router.navigate("/trips");
+      router.navigate({ pathname: "/trips", params: { refresh: "true" } });
       showSnackbar("Zapisano wycieczkę!", "success");
     } catch (error: any) {
       console.error(error.response.data);

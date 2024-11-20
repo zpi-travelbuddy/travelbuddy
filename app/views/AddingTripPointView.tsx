@@ -24,12 +24,15 @@ import { useAnimatedKeyboard } from "react-native-reanimated";
 import TripPointTypePicker from "@/components/TripPointTypePicker";
 import { CreateTripPointRequest } from "@/types/data";
 import { Place } from "@/types/Place";
+import { useLocalSearchParams } from "expo-router";
 
 const { height, width } = Dimensions.get("window");
 
 const AddingTripPointView = () => {
   const theme = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
+
+  const { date } = useLocalSearchParams();
 
   useAnimatedKeyboard();
 
@@ -360,7 +363,7 @@ const AddingTripPointView = () => {
               style={styles.textInput}
               label="Data"
               left={<TextInput.Icon icon={CALENDAR_ICON} />}
-              value={startTime.toLocaleDateString()}
+              value={date as string}
               placeholder={comment}
               editable={false}
               disabled={true}

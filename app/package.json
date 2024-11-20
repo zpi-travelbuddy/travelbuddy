@@ -9,8 +9,8 @@
     "android:dev": "expo start --android --dev-client",
     "web": "expo start --web --go",
     "test": "jest --watchAll",
-    "build:dev": "dotenv -- eas build --platform android --profile development --local",
-    "build:prev": "dotenv -- eas build --platform android --profile preview --local",
+    "build:dev": "dotenv -e .env -e .env.development -- eas build --platform android --profile development --local",
+    "build:prev": "dotenv -e .env -e .env.preview -- eas build --platform android --profile preview --local",
     "build:prod": "dotenv -- eas build --platform android --profile production --local",
     "lint": "eslint .",
     "lint-fix": "eslint --fix .",
@@ -66,7 +66,8 @@
     "react-native-tab-view": "^3.0.0",
     "react-native-vector-icons": "^10.2.0",
     "react-native-web": "~0.19.10",
-    "use-debounce": "^10.0.4"
+    "use-debounce": "^10.0.4",
+    "expo-build-properties": "~0.12.5"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

@@ -1,3 +1,12 @@
+export interface APIPlace {
+  id: string | null;
+  providerId: string;
+  name?: string;
+  country?: string;
+  state?: string | null;
+  city?: string;
+}
+
 export interface Place {
   id: string;
   providerId: string;

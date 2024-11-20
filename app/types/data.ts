@@ -1,10 +1,10 @@
 import { Place } from "./Place";
 
-export interface TripPoint {
+export interface TripPointCompact {
   id: string;
   name: string;
-  fromTime: string;
-  toTime: string;
+  startTime: string;
+  endTime: string;
 }
 
 export interface CreateTripPointRequest {
@@ -14,6 +14,14 @@ export interface CreateTripPointRequest {
   predictedCost: number;
   startTime: string;
   endTime: string;
+}
+
+export interface TripDayResponse {
+  id: string;
+  tripId: string;
+  date: string;
+  transferPoints: TransferPoint[];
+  tripPoints: TripPointCompact[];
 }
 
 export type TransferType =
@@ -28,8 +36,8 @@ export interface TransferPoint {
   id: string;
   fromTripPointId: string;
   toTripPointId: string;
-  type: TransferType;
-  duration: number;
+  mode: TransferType;
+  duration: number; // in seconds
 }
 
 export interface Option {
