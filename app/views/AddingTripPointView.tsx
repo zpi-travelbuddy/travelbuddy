@@ -247,6 +247,8 @@ const AddingTripPointView = () => {
       await createTripPoint(tripPointRequest);
 
       if (!createResponse) {
+        console.log(JSON.stringify(createResponse))
+        console.log(JSON.stringify(createError))
         showSnackbar("Wystąpił błąd przy dodawaniu punktu wycieczki");
         return;
       }

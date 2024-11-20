@@ -13,6 +13,7 @@ import { useTheme, FAB, Text, TextInput } from "react-native-paper";
 import React, {
   Fragment,
   useCallback,
+  useEffect,
   useMemo,
   useState,
 } from "react";
@@ -34,6 +35,7 @@ import { Option } from "@/types/data";
 import useTripDayDetails from "@/composables/useTripDay";
 import LoadingView from "./LoadingView";
 import { useSnackbar } from "@/context/SnackbarContext";
+import { getTimeWithoutSeconds } from "@/utils/TimeUtils";
 
 const { width } = Dimensions.get("window");
 
@@ -55,6 +57,12 @@ const TripDayView = () => {
     error,
     refetch: refetchDayData,
   } = useTripDayDetails(day_id as string);
+
+  const [tripPointsFormatted, setTripPointsFormatted] = useState<TripPointCompact[]>([] as TripPointCompact[]);
+
+  useEffect(() => {
+    setTripPointsFormatted(tripPoints.map((tripPoint) => ({...tripPoint, startTime: getTimeWithoutSeconds(tripPoint.startTime), endTime: getTimeWithoutSeconds(tripPoint.endTime)} as TripPointCompact)))
+  }, [tripPoints])
 
   const options: Option[] = [
     {
@@ -251,7 +259,7 @@ const TripDayView = () => {
   }, [transferPoints]);
 
   const sortedTripPoints = useMemo(() => {
-    return [...tripPoints].sort((a, b) => {
+    return [...tripPointsFormatted].sort((a, b) => {
       return a.startTime.localeCompare(b.startTime);
     });
   }, [tripPoints]);
@@ -260,7 +268,7 @@ const TripDayView = () => {
     fromTripPoint: TripPointCompact,
     index: number,
   ) => {
-    if (index === tripPoints.length - 1) {
+    if (index === tripPointsFormatted.length - 1) {
       return null;
     }
 
