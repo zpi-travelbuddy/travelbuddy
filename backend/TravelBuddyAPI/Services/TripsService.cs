@@ -25,14 +25,14 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
         public const string EmptyRequest = "Request cannot be empty.";
         public const string StartDateAfterEndDate = "Start date cannot be after end date.";
         public const string StartDateInPast = "Start date cannot be in the past.";
-        public const string CreateTrip = "An error occurred while creating a trip:";
-        public const string EditTrip = "An error occurred while editing a trip:";
+        public const string CreateTrip = "An error occurred while creating a trip.";
+        public const string EditTrip = "An error occurred while editing a trip.";
         public const string RetriveExchangeRate = "An error occurred while retrieving exchange rate.";
         public const string TripNotFound = "Trip with the specified Id does not exist.";
         public const string TripWithoutDays = "Trip does not have any days.";
         public const string TripDayNotFound = "Trip day with the specified Id does not exist.";
         public const string TooManyDecimalPlaces = "Budget must have at most 2 decimal places.";
-        public const string DeleteTrip = "An error occurred while deleting a trip:";
+        public const string DeleteTrip = "An error occurred while deleting a trip.";
         public const string CurrencyChangeNotAllowed = "Currency code cannot be changed.";
         public const string ProviderPlaceNotFound = "Provider place with the specified Id does not exist.";
         public const string DestinationProviderIdIsNull = "Destination provider Id cannot be null.";

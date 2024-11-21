@@ -23,9 +23,9 @@ public class TransferPointsService(TravelBuddyDbContext dbContext, IGeoapifyServ
         public const string TripPointNotFoundInTripDay = "Trip points not found in the trip day.";
         public const string TripPointNotFoundInRequestBody = "Trip points not found in the request body.";
         public const string InvalidTransferPointTime = "Transfer point time is invalid.";
-        public const string CreateTransferPoint = "An error occurred while creating a transfer point:";
-        public const string DeleteTransferPoint = "An error occurred while deleting a transfer point:";
-        public const string EditTransferPoint = "An error occurred while editing a transfer point:";
+        public const string CreateTransferPoint = "An error occurred while creating a transfer point.";
+        public const string DeleteTransferPoint = "An error occurred while deleting a transfer point.";
+        public const string EditTransferPoint = "An error occurred while editing a transfer point.";
         public const string NullLatitudeOrLongitude = "Latitude or Longitude cannot be null when mode is present.";
         public const string InvalidTransferPointTimeConflict = "Cannot provide seconds when mode is present.";
         public const string TripPointAlreadyConnected = "The trip point is already connected to a transfer point.";
