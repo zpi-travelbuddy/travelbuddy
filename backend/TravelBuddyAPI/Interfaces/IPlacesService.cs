@@ -8,6 +8,11 @@ namespace TravelBuddyAPI.Interfaces;
 /// </summary>
 public interface IPlacesService
 {
+    public static class ErrorMessages
+    {
+        public const string IncorrectProviderPlaceId = "Could not find place with the given provider id.";
+    }
+
     /// <summary>
     /// Retrieves a list of destination overviews based on the provided query for autocomplete purposes.
     /// </summary>

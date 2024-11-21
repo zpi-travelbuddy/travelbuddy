@@ -7,6 +7,11 @@ namespace TravelBuddyAPI.Interfaces;
 /// </summary>
 public interface ICategoryProfilesService
 {
+    public static class ErrorMessage
+    {
+        public const string CategoryProfileNotFound = "Category profile not found.";
+    }
+
     /// <summary>
     /// Creates a new category profile.
     /// </summary>

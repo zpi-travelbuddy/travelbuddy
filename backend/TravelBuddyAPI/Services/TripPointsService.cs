@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using TravelBuddyAPI.Enums;
 using System.ComponentModel.DataAnnotations;
 using TravelBuddyAPI.DTOs.Place;
+using static TravelBuddyAPI.Interfaces.ITripPointsService;
 
 namespace TravelBuddyAPI.Services;
 
@@ -16,21 +17,6 @@ public class TripPointsService(TravelBuddyDbContext dbContext, INBPService nbpSe
     private readonly INBPService _nbpService = nbpService;
     private readonly IPlacesService _placesService = placesService;
     private readonly ITransferPointsService _transferPointService = transferPointsService;
-
-    public static class ErrorMessage
-    {
-        public const string TripDayNotFound = "Could not find trip day of given id.";
-        public const string TripDayInPast = "Cannot add trip point to past trip day.";
-        public const string StartTimeAfterEndTime = "Start time cannot be after end time.";
-        public const string RetriveExchangeRate = "Could not retrive exchange rate.";
-        public const string EmptyPlace = "Place cannot be empty.";
-        public const string CreateTripPoint = "An error occurred while creating a trip point.";
-        public const string TripPointNotFound = "Trip point not found.";
-        public const string DeleteTripPoint = "An error occurred while deleting a trip point.";
-        public const string TripPointOverlap = "Trip point overlaps with another trip point.";
-        public const string TooManyDecimalPlaces = "Predicted cost must have at most 2 decimal places.";
-        public const string ProviderPlaceNotFound = "Provider place with the specified Id does not exist.";
-    }
 
     public async Task<TripPointDetailsDTO> CreateTripPointAsync(string userId, TripPointRequestDTO tripPoint)
     {

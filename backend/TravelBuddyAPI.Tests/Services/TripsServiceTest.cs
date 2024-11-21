@@ -87,7 +87,7 @@ public class TripsServiceTest
 
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _tripsService.CreateTripAsync(userId, tripRequest));
 
-        Assert.Equal($"{TripsService.ErrorMessage.CreateTrip} {TripsService.ErrorMessage.StartDateAfterEndDate}", exception.Message);
+        Assert.Equal($"{ITripsService.ErrorMessage.CreateTrip} {ITripsService.ErrorMessage.StartDateAfterEndDate}", exception.Message);
     }
 
     [Fact]
@@ -105,7 +105,7 @@ public class TripsServiceTest
 
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _tripsService.CreateTripAsync(userId, tripRequest));
 
-        Assert.Equal($"{TripsService.ErrorMessage.CreateTrip} {TripsService.ErrorMessage.StartDateInPast}", exception.Message);
+        Assert.Equal($"{ITripsService.ErrorMessage.CreateTrip} {ITripsService.ErrorMessage.StartDateInPast}", exception.Message);
     }
 
     [Fact]
@@ -129,7 +129,7 @@ public class TripsServiceTest
 
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _tripsService.CreateTripAsync(userId, tripRequest));
 
-        Assert.Equal($"{TripsService.ErrorMessage.CreateTrip} {TripsService.ErrorMessage.RetriveExchangeRate}", exception.Message);
+        Assert.Equal($"{ITripsService.ErrorMessage.CreateTrip} {ITripsService.ErrorMessage.RetriveExchangeRate}", exception.Message);
     }
 
     [Fact]
@@ -175,7 +175,7 @@ public class TripsServiceTest
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _tripsService.DeleteTripAsync(userId, tripId));
-        Assert.Equal($"{TripsService.ErrorMessage.DeleteTrip} {TripsService.ErrorMessage.TripNotFound}", exception.Message);
+        Assert.Equal($"{ITripsService.ErrorMessage.DeleteTrip} {ITripsService.ErrorMessage.TripNotFound}", exception.Message);
     }
 
     [Fact]
@@ -321,7 +321,7 @@ public class TripsServiceTest
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _tripsService.EditTripAsync(userId, tripId, tripRequest));
-        Assert.Equal($"{TripsService.ErrorMessage.EditTrip} {TripsService.ErrorMessage.TripNotFound}", exception.Message);
+        Assert.Equal($"{ITripsService.ErrorMessage.EditTrip} {ITripsService.ErrorMessage.TripNotFound}", exception.Message);
     }
 
     [Fact]
@@ -367,7 +367,7 @@ public class TripsServiceTest
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _tripsService.EditTripAsync(userId, tripId, tripRequest));
-        Assert.Equal($"{TripsService.ErrorMessage.EditTrip} {TripsService.ErrorMessage.CurrencyChangeNotAllowed}", exception.Message);
+        Assert.Equal($"{ITripsService.ErrorMessage.EditTrip} {ITripsService.ErrorMessage.CurrencyChangeNotAllowed}", exception.Message);
     }
 
     [Fact]
@@ -411,7 +411,7 @@ public class TripsServiceTest
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _tripsService.EditTripAsync(userId, tripId, tripRequest));
-        Assert.Equal($"{TripsService.ErrorMessage.EditTrip} {TripsService.ErrorMessage.StartDateAfterEndDate}", exception.Message);
+        Assert.Equal($"{ITripsService.ErrorMessage.EditTrip} {ITripsService.ErrorMessage.StartDateAfterEndDate}", exception.Message);
     }
 
     [Fact]
@@ -455,6 +455,6 @@ public class TripsServiceTest
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _tripsService.EditTripAsync(userId, tripId, tripRequest));
-        Assert.Equal($"{TripsService.ErrorMessage.EditTrip} {TripsService.ErrorMessage.StartDateInPast}", exception.Message);
+        Assert.Equal($"{ITripsService.ErrorMessage.EditTrip} {ITripsService.ErrorMessage.StartDateInPast}", exception.Message);
     }
 }

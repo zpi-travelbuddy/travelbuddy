@@ -4,17 +4,13 @@ using TravelBuddyAPI.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using TravelBuddyAPI.Models;
 using TravelBuddyAPI.DTOs.PlaceCategory;
+using static TravelBuddyAPI.Interfaces.ICategoryProfilesService;
 
 namespace TravelBuddyAPI.Services;
 
 public class CategoryProfilesService(TravelBuddyDbContext dbContext) : ICategoryProfilesService
 {
     private readonly TravelBuddyDbContext _dbContext = dbContext;
-
-    public static class ErrorMessage
-    {
-        public const string CategoryProfileNotFound = "Category profile not found.";
-    }
 
     public Task<CategoryProfileDetailsDTO> CreateCategoryProfileAsync(string userId, CategoryProfileRequestDTO categoryProfile)
     {
