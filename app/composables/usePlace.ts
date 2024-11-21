@@ -15,7 +15,6 @@ const usePlaceDetails = (placeId: string | undefined) => {
     if (!placeId) return;
     try {
       const response = await api!.get<PlaceDetails>(`/places/${placeId}`);
-      console.log(response.data)
       setPlaceDetails(response.data);
     } catch (err: any) {
       if (err.response && err.response.status === 404) {

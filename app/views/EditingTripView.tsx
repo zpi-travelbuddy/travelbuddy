@@ -56,9 +56,7 @@ const EditTripView = () => {
   const router = useRouter();
   const { showSnackbar } = useSnackbar();
   const params = useLocalSearchParams();
-  const { trip_id, new_destination_id, new_destination_name } = params;
-
-  console.log(params)
+  const { trip_id, destinationId: new_destination_id, destinationName: new_destination_name } = params;
 
   const [editTripRequest, setEditTripRequest] = useState<EditTripRequest>({} as EditTripRequest)
 
@@ -180,14 +178,15 @@ const EditTripView = () => {
 
   useEffect(() => {
     if (editSuccess !== null) {
-      if (editSuccess) showSnackbar("Wycieczka została zapisana!", "success");
+      if (editSuccess){
+        showSnackbar("Wycieczka została zapisana!", "success");
+        // setData({refresh: true}) // after merging with main to refetch trips after change
+        router.back();
+      }
       else showSnackbar("Błąd przy zapisie wycieczki", "error");
     }
   }, [editSuccess]);
 
-  useEffect(() => {
-    console.log(editError);
-  }, [editError]);
 
   // =====================
   // SECTION: Functions
@@ -233,11 +232,9 @@ const EditTripView = () => {
     //   setErrors((prev) => ({...prev, conditionProfile: "Profil udogodnień jest wymagany."}))
     // }
     if (hasErrors) {
-      console.log("EditTripRequest: " + JSON.stringify(editTripRequest));
       showSnackbar("Proszę uzupełnić wszystkie wymagane pola!", "error");
       return;
     }
-
 
     try {
       await editTrip();
@@ -340,7 +337,7 @@ const EditTripView = () => {
               icon={MARKER_ICON}
               error={!!errors.destinationPlace}
             />
-            {errors.destination && (
+            {errors.destinationPlace && (
               <Text style={styles.textError}>{errors.destinationPlace}</Text>
             )}
 
@@ -432,13 +429,20 @@ const EditTripView = () => {
             onConfirm={({ startDate, endDate }) => {
               setOpen(false);
 
-              if (startDate && endDate) {
-                setDateRange({
-                  startDate: new Date(startDate),
-                  endDate: new Date(endDate),
-                });
+              if (startDate) {
+                if (endDate) {
+                  setDateRange({
+                    startDate: new Date(startDate),
+                    endDate: new Date(endDate),
+                  });
+                } else {
+                  setDateRange({
+                    startDate: new Date(startDate),
+                    endDate: new Date(startDate),
+                  });
+                }
               } else {
-                console.log("startDate i/lub endDate jest undefined");
+                console.log("Podany zakres dat jest nieprawidłowy!");
               }
             }}
             locale="pl"
