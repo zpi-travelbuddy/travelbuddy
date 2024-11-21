@@ -38,7 +38,7 @@ public class TransferPointsServiceTest
             Country = "CountryA", 
             ProviderId = "ProviderA", 
             Latitude = (decimal)40.7128, 
-            Longitude = (decimal)-74.0060 
+            Longitude = (decimal)-74.0060,
         };
         var toTripPointPlace = new ProviderPlace 
         { 
@@ -50,8 +50,8 @@ public class TransferPointsServiceTest
             Latitude = (decimal)40.7128, 
             Longitude = (decimal)-74.0060 
         };
-        var fromTripPoint = new TripPoint { Id = Guid.NewGuid(), Name = "From Point", Place = fromTripPointPlace };
-        var toTripPoint = new TripPoint { Id = Guid.NewGuid(), Name = "To Point", Place = toTripPointPlace };
+        var fromTripPoint = new TripPoint { Id = Guid.NewGuid(), Name = "From Point", Place = fromTripPointPlace, EndTime = new TimeOnly(12,0,0) };
+        var toTripPoint = new TripPoint { Id = Guid.NewGuid(), Name = "To Point", Place = toTripPointPlace, StartTime = new TimeOnly(13,0,0) };
         var tripDay = new TripDay 
         { 
             Id = Guid.NewGuid(), 
@@ -101,8 +101,8 @@ public class TransferPointsServiceTest
             Latitude = (decimal)40.7128, 
             Longitude = (decimal)-74.0060 
         };
-        var fromTripPoint = new TripPoint { Id = Guid.NewGuid(), Name = "From Point", Place = fromTripPointPlace };
-        var toTripPoint = new TripPoint { Id = Guid.NewGuid(), Name = "To Point", Place = toTripPointPlace };
+        var fromTripPoint = new TripPoint { Id = Guid.NewGuid(), Name = "From Point", Place = fromTripPointPlace, EndTime = new TimeOnly(12,0,0) };
+        var toTripPoint = new TripPoint { Id = Guid.NewGuid(), Name = "To Point", Place = toTripPointPlace, StartTime = new TimeOnly(13,0,0) };
         var tripDay = new TripDay 
         { 
             Id = Guid.NewGuid(), 
