@@ -37,6 +37,24 @@ const CreatingTripPointSelector: React.FC<BottomSheetComponentProps> = ({
 
   const keyboard = useAnimatedKeyboard();
 
+  const getButtonBackgroundColor = useCallback(
+    (option: Option) => {
+      if (option.isDelete) return theme.colors.errorContainer;
+      if (option.label === label) return theme.colors.primary;
+      return theme.colors.secondaryContainer;
+    },
+    [label],
+  );
+
+  const getButtonColor = useCallback(
+    (option: Option) => {
+      if (option.isDelete) return theme.colors.onErrorContainer;
+      if (option.label === label) return theme.colors.onPrimary;
+      return theme.colors.onSecondaryContainer;
+    },
+    [label],
+  );
+
   const animatedStyles = useAnimatedStyle(() => {
     return {
       marginBottom: keyboard.height.value,
@@ -80,6 +98,7 @@ const CreatingTripPointSelector: React.FC<BottomSheetComponentProps> = ({
                   <TouchableOpacity
                     key={index}
                     style={styles.option}
+                    activeOpacity={option.disabled ? 1 : 0.2}
                     onPress={
                       option.disabled
                         ? undefined
@@ -91,18 +110,9 @@ const CreatingTripPointSelector: React.FC<BottomSheetComponentProps> = ({
                     <IconComponent
                       source={option.icon}
                       iconSize={36}
-                      color={
-                        option.label === label
-                          ? theme.colors.onPrimary
-                          : theme.colors.onSecondaryContainer
-                      }
-                      backgroundColor={
-                        option.label === label
-                          ? theme.colors.primary
-                          : option.disabled
-                            ? "#ccc"
-                            : theme.colors.secondaryContainer
-                      }
+                      color={getButtonColor(option)}
+                      backgroundColor={getButtonBackgroundColor(option)}
+                      disabled={option.disabled}
                     />
                     <Text style={styles.optionLabel}>{option.label}</Text>
                   </TouchableOpacity>

@@ -57,6 +57,7 @@ export interface Option {
   label: string;
   onPress: () => void;
   disabled?: boolean;
+  isDelete?: boolean;
 }
 
 export const TransferTypeLabels = {

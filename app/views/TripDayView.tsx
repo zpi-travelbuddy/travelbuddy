@@ -200,21 +200,27 @@ const TripDayView = () => {
     [tripPoints],
   );
 
-  const updateTransferPoint = async (
-    transferPoint: Omit<TransferPoint, "id">,
-    transferPointId?: string,
-  ) => {
-    try {
-      if (transferPointId) {
-        await api?.put(`/transferPoints/${transferPointId}`, transferPoint);
-      } else {
-        await api?.post("/transferPoints", transferPoint);
+  const updateTransferPoint = useCallback(
+    async (
+      transferPoint: Omit<TransferPoint, "id">,
+      transferPointId?: string,
+    ) => {
+      try {
+        if (transferPointId) {
+          await api?.put(`/transferPoints/${transferPointId}`, transferPoint);
+        } else {
+          await api?.post("/transferPoints", transferPoint);
+        }
+      } catch (error: any) {
+        console.error(error.response);
+        showSnackbar(
+          error?.response?.data?.message || "Wystąpił błąd",
+          "error",
+        );
       }
-    } catch (error: any) {
-      console.error(error.response);
-      showSnackbar(error?.response?.data?.message || "Wystąpił błąd", "error");
-    }
-  };
+    },
+    [api, showSnackbar],
+  );
 
   const handleManualTransferSave = useCallback(
     async (minutes: number | null) => {
@@ -425,6 +431,7 @@ const TripDayView = () => {
         icon: DELETE_ICON,
         label: "Usuń",
         onPress: deleteTransferPoint,
+        isDelete: true,
       },
     ];
   }, [
