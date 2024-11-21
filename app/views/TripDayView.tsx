@@ -121,8 +121,6 @@ const TripDayView = () => {
     }, [refetchDayData, data]),
   );
 
-  useEffect(() => {console.log("Data: " + JSON.stringify(data))}, [data]);
-
   const handleTextChange = (text: string) => {
     const numericText = text.replace(/[^0-9]/g, "");
     setEstimatedTime(Number(numericText));

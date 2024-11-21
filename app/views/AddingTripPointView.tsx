@@ -222,9 +222,7 @@ const AddingTripPointView = () => {
       showSnackbar("Punkt wycieczki zapisany!");
       console.log("Response: " + JSON.stringify(response.data));
       setData({ refresh: true })
-      setTimeout(() => {
-        router.back();
-      }, 0);
+      router.back();
     } catch (err: any) {
       console.error("Błąd podczas zapisywania punktu: ", JSON.stringify(err.response.data));
       setErrors((prev) => ({
@@ -302,14 +300,6 @@ const AddingTripPointView = () => {
   const handleLongitudeChange = () => {
     handleCoordinateChange(longitudeText, setLongitude, "longitude", 180);
   };
-
-  useEffect(() => {
-    console.log("ExpectedCost: " + expectedCost);
-  }, [expectedCost]);
-
-  useEffect(() => {
-    console.log("Errors: " + JSON.stringify(errors));
-  }, [errors]);
 
   useEffect(() => {
     if (startTime.getTime() > endTime.getTime()) {
@@ -416,7 +406,7 @@ const AddingTripPointView = () => {
             )}
 
             <TextInput
-              mode="outlined"                                  
+              mode="outlined"
               style={styles.textInput}
               label="Szerokość geograficzna"
               value={latitudeText}
