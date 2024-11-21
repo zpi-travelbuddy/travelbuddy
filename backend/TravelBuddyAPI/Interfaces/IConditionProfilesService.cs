@@ -7,6 +7,11 @@ namespace TravelBuddyAPI.Interfaces;
 /// </summary>
 public interface IConditionProfilesService
 {
+    public static class ErrorMessage
+    {
+        public const string ConditionProfileNotFound = "Condition profile not found.";
+    }
+
     /// <summary>
     /// Creates a new condition profile for a user.
     /// </summary>

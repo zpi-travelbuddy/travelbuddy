@@ -6,6 +6,7 @@ using TravelBuddyAPI.DTOs.PlaceCondition;
 using TravelBuddyAPI.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using TravelBuddyAPI.Models;
+using static TravelBuddyAPI.Interfaces.IPlacesService;
 
 namespace TravelBuddyAPI.Services;
 
@@ -14,11 +15,6 @@ public class PlacesService(TravelBuddyDbContext dbContext, IGeoapifyService geoa
     private readonly TravelBuddyDbContext _dbContext = dbContext;
     private readonly IGeoapifyService _geoapifyService = geoapifyService;
     private readonly ITravelBuddyDbCache _dbCache = dbCache;
-
-    private static class ErrorMessages
-    {
-        public const string IncorrectProviderPlaceId = "Could not find place with the given provider id.";
-    }
 
     public async Task<PlaceDetailsDTO> AddPlaceAsync(PlaceRequestDTO place)
     {

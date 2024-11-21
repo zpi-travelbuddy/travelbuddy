@@ -4,17 +4,13 @@ using TravelBuddyAPI.Interfaces;
 using TravelBuddyAPI.Models;
 using Microsoft.EntityFrameworkCore;
 using TravelBuddyAPI.DTOs.PlaceCondition;
+using static TravelBuddyAPI.Interfaces.IConditionProfilesService;
 
 namespace TravelBuddyAPI.Services;
 
 public class ConditionProfilesService(TravelBuddyDbContext dbContext) : IConditionProfilesService
 {
     private readonly TravelBuddyDbContext _dbContext = dbContext;
-
-    public static class ErrorMessage
-    {
-        public const string ConditionProfileNotFound = "Condition profile not found.";
-    }
 
     public Task<ConditionProfileDetailsDTO> CreateConditionProfileAsync(string userId, ConditionProfileRequestDTO conditionProfile)
     {

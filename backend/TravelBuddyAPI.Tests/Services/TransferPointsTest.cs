@@ -146,7 +146,7 @@ public class TransferPointsServiceTest
 
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _transferPointsService.CreateTransferPointAsync(userId, transferPoint));
 
-        Assert.Equal($"{TransferPointsService.ErrorMessage.CreateTransferPoint} {TransferPointsService.ErrorMessage.EmptyRequest} (Parameter 'transferPoint')", exception.Message);
+        Assert.Equal($"{ITransferPointsService.ErrorMessage.CreateTransferPoint} {ITransferPointsService.ErrorMessage.EmptyRequest} (Parameter 'transferPoint')", exception.Message);
     }
     [Fact]
     public async Task CreateTransferPointAsync_SameTripPoints_ShouldThrowInvalidOperationException()
@@ -177,7 +177,7 @@ public class TransferPointsServiceTest
 
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _transferPointsService.CreateTransferPointAsync("testUser", transferPointDTO));
 
-        Assert.Equal($"{TransferPointsService.ErrorMessage.CreateTransferPoint} {TransferPointsService.ErrorMessage.SameTripPoints}", exception.Message);
+        Assert.Equal($"{ITransferPointsService.ErrorMessage.CreateTransferPoint} {ITransferPointsService.ErrorMessage.SameTripPoints}", exception.Message);
     }
 
     [Fact]
@@ -193,7 +193,7 @@ public class TransferPointsServiceTest
 
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _transferPointsService.CreateTransferPointAsync("testUser", transferPointDTO));
 
-        Assert.Equal($"{TransferPointsService.ErrorMessage.CreateTransferPoint} {TransferPointsService.ErrorMessage.TripDayNotFound}", exception.Message);
+        Assert.Equal($"{ITransferPointsService.ErrorMessage.CreateTransferPoint} {ITransferPointsService.ErrorMessage.TripDayNotFound}", exception.Message);
     }
 
     [Fact]
@@ -223,7 +223,7 @@ public class TransferPointsServiceTest
 
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _transferPointsService.CreateTransferPointAsync("testUser", transferPointDTO));
 
-        Assert.Equal($"{TransferPointsService.ErrorMessage.CreateTransferPoint} {TransferPointsService.ErrorMessage.TripPointNotFoundInTripDay}", exception.Message);
+        Assert.Equal($"{ITransferPointsService.ErrorMessage.CreateTransferPoint} {ITransferPointsService.ErrorMessage.TripPointNotFoundInTripDay}", exception.Message);
     }
 
 
@@ -354,7 +354,7 @@ public class TransferPointsServiceTest
 
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _transferPointsService.EditTransferPointAsync("testUser", Guid.NewGuid(), transferPointDTO));
 
-        Assert.Equal($"{TransferPointsService.ErrorMessage.EditTransferPoint} Transfer point not found.", exception.Message);
+        Assert.Equal($"{ITransferPointsService.ErrorMessage.EditTransferPoint} {ITransferPointsService.ErrorMessage.TransferPointNotFound}", exception.Message);
     }
 
     [Fact]
@@ -398,7 +398,7 @@ public class TransferPointsServiceTest
 
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _transferPointsService.EditTransferPointAsync("testUser", transferPoint.Id, transferPointDTO));
 
-        Assert.Equal($"{TransferPointsService.ErrorMessage.EditTransferPoint} {TransferPointsService.ErrorMessage.InvalidTransferPointTime}", exception.Message);
+        Assert.Equal($"{ITransferPointsService.ErrorMessage.EditTransferPoint} {ITransferPointsService.ErrorMessage.InvalidTransferPointTime}", exception.Message);
     }
 
     [Fact]
@@ -448,6 +448,6 @@ public class TransferPointsServiceTest
             await _transferPointsService.DeleteTransferPointAsync("testUser", nonExistentTransferPointId)
         );
 
-        Assert.Equal($"{TransferPointsService.ErrorMessage.DeleteTransferPoint} {TransferPointsService.ErrorMessage.TransferPointNotFound}", exception.Message);
+        Assert.Equal($"{ITransferPointsService.ErrorMessage.DeleteTransferPoint} {ITransferPointsService.ErrorMessage.TransferPointNotFound}", exception.Message);
     }
 }
