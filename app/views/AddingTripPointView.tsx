@@ -44,8 +44,7 @@ const AddingTripPointView = () => {
   const { setData } = useNavigationData();
 
   const params = useLocalSearchParams();
-  const { day_id } = params;
-  const trip_id: string = "77b6b9bd-99d8-4b56-b74d-ed69c3a1238a";
+  const { trip_id, day_id } = params;
 
   const { date } = useLocalSearchParams();
 
@@ -86,11 +85,10 @@ const AddingTripPointView = () => {
   const [city, setCity] = useState<string>("");
   const [houseNumber, setHouseNumber] = useState<string>("");
 
-  const [longitude, setLongitude] = useState<number>(0);
-  const [latitude, setLatitude] = useState<number>(0);
-
-  const [longitudeText, setLongitudeText] = useState<string>("0.00");
-  const [latitudeText, setLatitudeText] = useState<string>("0.00");
+  const [longitude, setLongitude] = useState<number | null>(null);
+  const [latitude, setLatitude] = useState<number | null>(null);
+  const [longitudeText, setLongitudeText] = useState<string>("");
+  const [latitudeText, setLatitudeText] = useState<string>("");
 
   const [isStartDatePickerVisible, setIsStartDatePickerVisible] =
     useState<boolean>(false);
@@ -246,8 +244,8 @@ const AddingTripPointView = () => {
         street: street,
         city: city,
         houseNumber: houseNumber,
-        latitude: latitude ? latitude : 0,
-        longitude: longitude ? longitude : 0,
+        latitude: latitude,
+        longitude: longitude,
       } as Place;
   
       let totalExpectedCost = expectedCost;
@@ -277,7 +275,7 @@ const AddingTripPointView = () => {
 
   const handleCoordinateChange = (
     coordinateText: string,
-    setCoordinate: React.Dispatch<React.SetStateAction<number>>,
+    setCoordinate: React.Dispatch<React.SetStateAction<number | null>>,
     setErrorField: keyof TripErrors,
     maxValue: number,
   ) => {
