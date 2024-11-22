@@ -9,6 +9,9 @@ namespace TravelBuddyAPI.DTOs.ConditionProfile;
 public class ConditionProfileDetailsDTO
 {
     [Required]
+    public Guid Id { get; set; }
+    
+    [Required]
     public string? Name { get; set; }
 
     [Required]
