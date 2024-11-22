@@ -10,6 +10,11 @@ public interface IConditionProfilesService
     public static class ErrorMessage
     {
         public const string ConditionProfileNotFound = "Condition profile not found.";
+        public const string ConditionProfileNameAlreadyExists = "A condition profile with the same name already exists.";
+        public const string TripUsesConditionProfile = "The condition profile is used by one or more trips.";
+        public const string CreatingConditionProfile = "An error occurred while creating a condition profile.";
+        public const string EditingConditionProfile = "An error occurred while editing a condition profile.";
+        public const string DeletingConditionProfile = "An error occurred while deleting a condition profile.";
     }
 
     /// <summary>
@@ -27,7 +32,7 @@ public interface IConditionProfilesService
     /// <param name="profileId">The ID of the condition profile to edit.</param>
     /// <param name="conditionProfile">The updated condition profile data.</param>
     /// <returns>A task that represents the asynchronous operation. The task result indicates whether the edit was successful.</returns>
-    Task<bool> EditConditionProfileAsync(string userId, Guid profileId, ConditionProfileRequestDTO conditionProfile);
+    Task<ConditionProfileDetailsDTO> EditConditionProfileAsync(string userId, Guid profileId, ConditionProfileRequestDTO conditionProfile);
 
     /// <summary>
     /// Deletes a condition profile for a user.

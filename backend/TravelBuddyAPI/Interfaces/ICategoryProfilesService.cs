@@ -10,6 +10,11 @@ public interface ICategoryProfilesService
     public static class ErrorMessage
     {
         public const string CategoryProfileNotFound = "Category profile not found.";
+        public const string CategoryProfileNameAlreadyExists = "A category profile with the same name already exists.";
+        public const string TripUsesCategoryProfile = "The category profile is used by one or more trips.";
+        public const string CreatingCategoryProfile = "An error occurred while creating a category profile.";
+        public const string EditingCategoryProfile = "An error occurred while editing a category profile.";
+        public const string DeletingCategoryProfile = "An error occurred while deleting a category profile.";
     }
 
     /// <summary>
@@ -25,7 +30,7 @@ public interface ICategoryProfilesService
     /// <param name="profileId">The ID of the profile to edit.</param>
     /// <param name="categoryProfile">The updated category profile data.</param>
     /// <returns>A task that represents the asynchronous operation. The task result indicates whether the edit was successful.</returns>
-    Task<bool> EditCategoryProfileAsync(string userId, Guid profileId, CategoryProfileRequestDTO categoryProfile);
+    Task<CategoryProfileDetailsDTO> EditCategoryProfileAsync(string userId, Guid profileId, CategoryProfileRequestDTO categoryProfile);
 
     /// <summary>
     /// Deletes a category profile.
