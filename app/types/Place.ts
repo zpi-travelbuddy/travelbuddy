@@ -6,15 +6,16 @@ export type PlaceViewModel = {
 };
 
 export interface Place {
+  providerId: string;
   categoryId?: string;
   name: string;
   country: string;
   state?: string;
   city: string;
-  street: string;
+  street?: string;
   houseNumber?: string;
-  latitude: number;
-  longitude: number;
+  latitude?: number;
+  longitude?: number;
 }
 
 export interface PlaceCondition {

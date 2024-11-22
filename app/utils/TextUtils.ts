@@ -1,4 +1,4 @@
-import { PlaceDetails } from "@/types/Place";
+import { Place, PlaceDetails } from "@/types/Place";
 
 export function formatAddress(place: PlaceDetails): string {
   if (!place) return "";
@@ -19,4 +19,9 @@ export const truncateText = (text: string, maxLength: number) => {
 export const displayTime = (time: string) => {
   if (time) return time;
   else return "Brak informacji";
+};
+
+export const getDisplayPlace = (place: Place | null) => {
+  if (place) return `${place.city}, ${place.country}`;
+  else return "";
 };

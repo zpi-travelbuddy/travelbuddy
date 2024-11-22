@@ -1,13 +1,5 @@
-import TripDetailsView from "@/views/TripDetailsView";
-import { useLocalSearchParams } from "expo-router";
-import { View, Text } from "react-native";
+import EditTripView from "@/views/EditingTripView";
 
 export default function Edit() {
-  const params = useLocalSearchParams();
-  const { trip_id } = params;
-  return (
-    <View>
-      <Text>TripEditView for ID: {trip_id}</Text>
-    </View>
-  );
+  return <EditTripView />;
 }
