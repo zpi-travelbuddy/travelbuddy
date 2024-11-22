@@ -72,7 +72,7 @@ public static class TripPointsEndpoints
         }
     }
 
-    private static async Task<Results<NoContent, NotFound<string>>> DeleteTripPointAsync(Guid id,ITripPointsService tripPointsService, HttpContext httpContext)
+    private static async Task<Results<NoContent, NotFound<string>>> DeleteTripPointAsync(Guid id, ITripPointsService tripPointsService, HttpContext httpContext)
     {
         try
         {
@@ -86,7 +86,7 @@ public static class TripPointsEndpoints
         }
     }
 
-    private static async Task<Results<Accepted<string>, NotFound<string>>> EditTripPointAsync(Guid id, TripPointRequestDTO tripPoint)
+    private static async Task<Results<Accepted<string>, NotFound<string>, BadRequest<string>>> EditTripPointAsync(Guid id, TripPointRequestDTO tripPoint)
     {
         await Task.CompletedTask;
         return TypedResults.NotFound("Not implemented");

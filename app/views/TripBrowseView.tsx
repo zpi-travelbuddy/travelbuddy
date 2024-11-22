@@ -1,20 +1,7 @@
 import { StyleSheet, View, Text, RefreshControl } from "react-native";
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { TripCard } from "@/components/TripCard";
-import {
-  router,
-  useFocusEffect,
-  useGlobalSearchParams,
-  useLocalSearchParams,
-  useNavigation,
-  useRouter,
-} from "expo-router";
+import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import {
   useTheme,
   FAB,
@@ -106,37 +93,60 @@ const TripBrowseView = () => {
     setSelectedTrip(null);
   };
 
-  const deleteTrip = (trip: Trip | null) => {
-    console.log(`Usuwanie wycieczki: ${trip?.title}`);
+  const deleteTrip = async (trip: Trip | null) => {
+    if (!trip) return;
+
+    console.log(`Usuwanie wycieczki: ${trip.title}`);
     hideModal();
-    showSnackbar("Usunięto wycieczkę!");
+    try {
+      await api!.delete(`/trips/${trip.id}`);
+      await fetchTrips();
+      showSnackbar("Usunięto wycieczkę!");
+    } catch (error: any) {
+      showSnackbar("Wystąpił błąd podczas usuwania wycieczki", "error");
+    }
+  };
+
+  const fetchTripsByType = async (
+    endpoint: string,
+    setTrips: (trips: Trip[]) => void,
+    errorFallback: () => void,
+  ) => {
+    try {
+      const trips: APITrip[] = (await api!.get(endpoint)).data;
+      const parsedTrips = trips.map(convertAPITripToTrip);
+      setTrips(parsedTrips);
+    } catch (error: any) {
+      if (error.response && error.response.status === 404) {
+        errorFallback();
+      } else {
+        console.error(
+          `Error fetching trips from ${endpoint}`,
+          error.response?.data || error,
+        );
+      }
+    }
   };
 
   const fetchCurrentTrips = async () => {
-    try {
-      const currentTrips: APITrip[] = (await api!.get(API_TRIPS_CURRENT)).data;
-      const parsedCurrentTrips = currentTrips.map(convertAPITripToTrip);
-      setCurrentTrips(parsedCurrentTrips);
-    } catch (error: any) {
-      console.error("Error fetching current trips", error.response.data);
-    }
+    await fetchTripsByType(API_TRIPS_CURRENT, setCurrentTrips, () =>
+      setCurrentTrips([]),
+    );
   };
 
   const fetchPastTrips = async () => {
-    try {
-      const pastTrips: APITrip[] = (await api!.get(API_TRIPS_PAST)).data;
-      const parsedPastTrips = pastTrips.map(convertAPITripToTrip);
-      setPastTrips(parsedPastTrips);
-    } catch (error: any) {
-      console.error("Error fetching past trips", error.response.data);
-    }
+    await fetchTripsByType(API_TRIPS_PAST, setPastTrips, () =>
+      setPastTrips([]),
+    );
   };
 
   const fetchTrips = async () => {
     setIsLoading(true);
-    await fetchCurrentTrips();
-    await fetchPastTrips();
-    setIsLoading(false);
+    try {
+      await Promise.all([fetchCurrentTrips(), fetchPastTrips()]);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   useEffect(() => {

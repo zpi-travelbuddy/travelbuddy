@@ -12,12 +12,7 @@ public class TransferPointRequestDTO
 
     public int? Seconds { get; set; }
 
-    [Required]
-    public TimeOnly StartTime { get; set; }
-
     public TransferMode? Mode { get; set; }
-
-    public TransferType? Type { get; set; }
 
     [Required]
     public Guid? FromTripPointId { get; set; }
