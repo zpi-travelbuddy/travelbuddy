@@ -147,7 +147,7 @@ const TripDayView = () => {
         },
       },
     ],
-    [setIsVisible],
+    [setIsVisible, tripDay, trip_id, day_id],
   );
 
   const [loadingOverlay, setLoadingOverlay] = useState<boolean>(false);
