@@ -87,6 +87,11 @@ public class FavouritesService(TravelBuddyDbContext dbContext) : IFavouritesServ
             throw new InvalidOperationException(IFavouritesService.ErrorMessage.CategoryProfileNotFound);
         }
 
+        if (favouriteProfiles.CategoryProfileId == null)
+        {
+            throw new InvalidOperationException(IFavouritesService.ErrorMessage.NoFavouriteConditionProfile);
+        }
+
         favouriteProfiles.CategoryProfileId = null;
         
         var validationContext = new ValidationContext(favouriteProfiles);
@@ -108,6 +113,11 @@ public class FavouritesService(TravelBuddyDbContext dbContext) : IFavouritesServ
         if (favouriteProfiles.ConditionProfileId != profileId)
         {
             throw new InvalidOperationException(IFavouritesService.ErrorMessage.ConditionProfileNotFound);
+        }
+
+        if (favouriteProfiles.ConditionProfileId == null)
+        {
+            throw new InvalidOperationException(IFavouritesService.ErrorMessage.NoFavouriteConditionProfile);
         }
 
         favouriteProfiles.ConditionProfileId = null;

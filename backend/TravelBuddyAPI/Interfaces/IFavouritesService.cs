@@ -12,6 +12,9 @@ public interface IFavouritesService
         public const string FavouritesProfilesNotFound = "Favourite profiles not found.";
         public const string CategoryProfileNotFound = "Category profile not found.";
         public const string ConditionProfileNotFound = "Condition profile not found.";
+        public const string NoFavouriteCategoryProfile = "Favourite category profile do not exist.";
+        public const string NoFavouriteConditionProfile = "Condition profile not found.";
+
     }
 
     /// <summary>
