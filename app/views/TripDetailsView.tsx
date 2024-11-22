@@ -15,7 +15,7 @@ import { CalendarDate } from "react-native-paper-dates/lib/typescript/Date/Calen
 import useTripDetails from "@/composables/useTripDetails";
 import { TripDay, TripViewModel } from "@/types/Trip";
 import { useSnackbar } from "@/context/SnackbarContext";
-import { convertTripDetailsToViewModel } from "@/converters/tripConverters";
+import { convertTripResponseToViewModel } from "@/converters/tripConverters";
 import usePlaceDetails from "@/composables/usePlace";
 import LoadingView from "./LoadingView";
 import { MD3ThemeExtended } from "@/constants/Themes";
@@ -68,14 +68,12 @@ const TripDetailsView = () => {
     tripSummary,
     loading: tripLoading,
     error: tripError,
-    refetch: refetchTrip,
   } = useTripDetails(trip_id as string);
 
   const {
     placeDetails: destinationDetails,
     loading: destinationLoading,
     error: destinationError,
-    refetch: refetchDestination,
   } = usePlaceDetails(tripDetails?.destinationId);
 
   const loading = useMemo(() => {
@@ -109,9 +107,9 @@ const TripDetailsView = () => {
   }, [navigation]);
 
   useEffect(() => {
-    if (tripDetails) {
+    if (tripDetails && destinationDetails) {
       setTripViewModel(
-        convertTripDetailsToViewModel(
+        convertTripResponseToViewModel(
           tripDetails,
           tripSummary,
           destinationDetails,

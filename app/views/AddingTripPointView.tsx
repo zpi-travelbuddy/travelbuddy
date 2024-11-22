@@ -31,8 +31,6 @@ import useTripDetails from "@/composables/useTripDetails";
 import usePlaceDetails from "@/composables/usePlace";
 import { useAuth } from "@/app/ctx";
 import { API_ADDING_TRIP_POINT } from "@/constants/Endpoints";
-import { useNavigationData } from "@/context/NavigationDataContext";
-
 
 const { height, width } = Dimensions.get("window");
 
@@ -41,7 +39,6 @@ const AddingTripPointView = () => {
   const styles = useMemo(() => createStyles(theme), [theme]);
   const router = useRouter();
   const { showSnackbar } = useSnackbar();
-  const { setData } = useNavigationData();
 
   const params = useLocalSearchParams();
   const { trip_id, day_id } = params;
@@ -50,7 +47,7 @@ const AddingTripPointView = () => {
 
   useAnimatedKeyboard();
 
-  const { api } = useAuth(); 
+  const { api } = useAuth();
 
   const {
     tripDetails,
@@ -121,7 +118,7 @@ const AddingTripPointView = () => {
   useEffect(() => {
     setErrors((prev) => ({
       ...prev,
-      ["api"]: tripError ||  destinationError || "",
+      ["api"]: tripError || destinationError || "",
     }));
   }, [tripError, destinationError]);
 
@@ -157,7 +154,7 @@ const AddingTripPointView = () => {
 
   const validateForm = () => {
     let hasErrors = false;
-  
+
     if (expectedCost === undefined || expectedCost < 0) {
       hasErrors = true;
       setErrors((prev) => ({
@@ -165,12 +162,12 @@ const AddingTripPointView = () => {
         ["expectedCost"]: "Przewidywany koszt jest wymagany",
       }));
     }
-  
+
     setErrors((prev) => ({
       ...prev,
       ["api"]: "",
     }));
-  
+
     requiredFields.forEach(({ field, errorMessage }) => {
       const fieldValue = {
         tripPointName,
@@ -180,7 +177,7 @@ const AddingTripPointView = () => {
         startTime,
         endTime,
       }[field];
-  
+
       if (!fieldValue) {
         setErrors((prev) => ({
           ...prev,
@@ -189,20 +186,24 @@ const AddingTripPointView = () => {
         hasErrors = true;
       }
     });
-  
+
     console.log("hasErrors: " + hasErrors);
     return hasErrors;
-  
-  }
+  };
 
   const handleErrorMessage = (errorData: any) => {
-    if (errorData === "An error occurred while creating a trip point. Trip point overlaps with another trip point.") {
+    if (
+      errorData ===
+      "An error occurred while creating a trip point. Trip point overlaps with another trip point."
+    ) {
       return "Punkt podróży nakłada się na inny punkt podróży";
     }
     return errorData;
-  }
+  };
 
-  const handleCreateRequest = async (tripPointRequest: CreateTripPointRequest) => {
+  const handleCreateRequest = async (
+    tripPointRequest: CreateTripPointRequest,
+  ) => {
     try {
       setLoading(true);
       console.log("Request: " + JSON.stringify(tripPointRequest));
@@ -219,19 +220,26 @@ const AddingTripPointView = () => {
 
       showSnackbar("Punkt wycieczki zapisany!");
       console.log("Response: " + JSON.stringify(response.data));
-      setData({ refresh: true })
       router.back();
+      router.setParams({
+        refresh: "true",
+      });
     } catch (err: any) {
-      console.error("Błąd podczas zapisywania punktu: ", JSON.stringify(err.response.data));
+      console.error(
+        "Błąd podczas zapisywania punktu: ",
+        JSON.stringify(err.response.data),
+      );
       setErrors((prev) => ({
         ...prev,
         ["api"]: err.response.data,
       }));
-      showSnackbar("Nie dodano punktu wycieczki. " + handleErrorMessage(err.response.data));
+      showSnackbar(
+        "Nie dodano punktu wycieczki. " + handleErrorMessage(err.response.data),
+      );
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   const onSave = async () => {
     setErrors((prev) => ({ ...prev, ["api"]: "" }));
@@ -247,7 +255,7 @@ const AddingTripPointView = () => {
         latitude: latitude,
         longitude: longitude,
       } as Place;
-  
+
       let totalExpectedCost = expectedCost;
       if (costType === "perPerson") {
         const numberOfTravelers = tripDetails
@@ -255,7 +263,7 @@ const AddingTripPointView = () => {
           : 1;
         totalExpectedCost = numberOfTravelers * expectedCost;
       }
-  
+
       const tripPointRequest: CreateTripPointRequest = {
         name: tripPointName,
         comment: comment,
@@ -265,13 +273,12 @@ const AddingTripPointView = () => {
         endTime: `${formatTime(endTime, true)}`,
         predictedCost: totalExpectedCost,
       };
-  
+
       handleCreateRequest(tripPointRequest);
     } else {
       showSnackbar("Uzupełnij brakujące pola i popraw błędy!");
     }
   };
-  
 
   const handleCoordinateChange = (
     coordinateText: string,
@@ -311,9 +318,9 @@ const AddingTripPointView = () => {
   }, [startTime, endTime]);
 
   if (loading) {
-    return <LoadingView transparent={true}/>;
+    return <LoadingView transparent={true} />;
   }
-  
+
   return (
     <>
       <GestureHandlerRootView>
@@ -442,7 +449,6 @@ const AddingTripPointView = () => {
             {errors.expectedCost && (
               <Text style={styles.textError}>{errors.expectedCost}</Text>
             )}
-
 
             <SegmentedButtons
               value={costType}

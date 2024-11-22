@@ -1,3 +1,18 @@
+import { Place } from "./Place";
+
+export interface TripRequest {
+  id?: string;
+  name: string;
+  numberOfTravelers: number;
+  startDate: string;
+  endDate: string;
+  destinationPlace: Place;
+  budget: number;
+  currencyCode: string;
+  categoryProfileId: string | null;
+  conditionProfileId: string | null; 
+}
+
 export interface APITrip {
   id: string;
   name: string;
@@ -33,7 +48,7 @@ export interface TripViewModel {
   conditionProfileName: string;
 }
 
-export interface TripDetails {
+export interface TripResponse {
   id: string;
   name: string;
   numberOfTravelers: number;
@@ -105,3 +120,20 @@ export const AttractionTypeLabels: Record<TripPointType, string> = {
   music: "Muzyka",
   other: "Inne",
 };
+
+export interface EditTripRequest {
+  name: string;
+  numberOfTravelers: number;
+  startDate: string;
+  endDate: string;
+  destinationPlace: {
+    providerId: string,
+    name?: string;
+    country?: string;
+    city?: string;
+    latitude?: number;
+    longitude?: number;
+  }
+  budget: number;
+  currencyCode: string;
+}

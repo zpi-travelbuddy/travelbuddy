@@ -9,21 +9,16 @@ export interface APIPlace {
 
 export interface Place {
   id: string;
-  title?: string;
-  subtitle?: string;
-  imageUrl?: string;
-}
-
-export interface Place {
+  providerId: string;
   categoryId?: string;
   name: string;
   country: string;
   state?: string;
   city: string;
-  street: string;
+  street?: string;
   houseNumber?: string;
-  latitude: number;
-  longitude: number;
+  latitude?: number;
+  longitude?: number;
 }
 
 export interface PlaceCondition {

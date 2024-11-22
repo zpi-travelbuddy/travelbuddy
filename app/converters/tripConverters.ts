@@ -1,10 +1,13 @@
-import { PlaceDetails } from "@/types/Place";
+import { Place, PlaceDetails } from "@/types/Place";
 import {
-  APITrip,
-  Trip,
-  TripDetails,
+  TripRequest,
+  TripDay,
+  TripResponse,
   TripSummary,
   TripViewModel,
+  EditTripRequest,
+  APITrip,
+  Trip,
 } from "@/types/Trip";
 import { getMoneyWithCurrency } from "@/utils/CurrencyUtils";
 import {
@@ -51,12 +54,14 @@ export const calculateTripSummary = (tripSummary: TripSummary) => {
   };
 };
 
-export function convertTripDetailsToViewModel(
-  tripDetails: TripDetails | undefined,
+export function convertTripResponseToViewModel(
+  tripDetails: TripResponse | undefined,
   tripSummary: TripSummary | undefined,
   destinationDetails: PlaceDetails | undefined,
 ): TripViewModel {
   if (!tripDetails) throw new Error("Trip details are undefined.");
+  if (!destinationDetails)
+    throw new Error("Destination details are undefined.");
   const { predictedSpendings, totalTripPoints } = tripSummary
     ? calculateTripSummary(tripSummary)
     : { predictedSpendings: 0, totalTripPoints: tripDetails.tripDays.length }; // temporary
@@ -79,6 +84,51 @@ export function convertTripDetailsToViewModel(
       tripDetails.conditionProfileId,
     ),
   };
+}
+
+export function convertTripRequestToTripResponse(
+  request: TripRequest,
+  id: string,
+  destinationId: string,
+  tripDays: TripDay[] = [],
+): TripResponse {
+  return {
+    id,
+    name: request.name,
+    numberOfTravelers: request.numberOfTravelers,
+    startDate: request.startDate,
+    endDate: request.endDate,
+    destinationId,
+    budget: request.budget,
+    currencyCode: request.currencyCode,
+    categoryProfileId: request.categoryProfileId,
+    conditionProfileId: request.conditionProfileId,
+    tripDays,
+  };
+}
+
+export function convertTripResponseToEditTripRequest(
+  response: TripResponse,
+  destination: Place,
+): EditTripRequest {
+  const editTripRequest: EditTripRequest = {
+    name: response.name,
+    numberOfTravelers: response.numberOfTravelers,
+    startDate: response.startDate,
+    endDate: response.endDate,
+    destinationPlace: {
+      providerId: destination.providerId || "",
+      name: destination.name || "",
+      country: destination.country || "",
+      city: destination.city || "",
+      latitude: destination.latitude || 0,
+      longitude: destination.longitude || 0,
+    },
+    budget: response.budget,
+    currencyCode: response.currencyCode,
+  };
+
+  return editTripRequest;
 }
 
 export const convertAPITripToTrip = (trip: APITrip): Trip => ({
