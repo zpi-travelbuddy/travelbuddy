@@ -4,14 +4,10 @@ import {
   TripSummary,
   TripViewModel,
   EditTripRequest,
-  TripResponse,
+  TripDetails,
 } from "@/types/Trip";
 import { getMoneyWithCurrency } from "@/utils/CurrencyUtils";
-import {
-  formatDateFromISO,
-  formatDateRange,
-  formatTimeRange,
-} from "@/utils/TimeUtils";
+import { formatDateFromISO, formatDateRange } from "@/utils/TimeUtils";
 
 const RANDOM_IMAGE = "https://picsum.photos/891";
 
@@ -102,7 +98,7 @@ export const convertTripsFromAPI = (
 };
 
 export function convertTripResponseToEditTripRequest(
-  response: TripResponse,
+  response: TripDetails,
   destination: Place,
 ): EditTripRequest {
   const editTripRequest: EditTripRequest = {

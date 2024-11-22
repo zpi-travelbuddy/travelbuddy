@@ -139,7 +139,7 @@ const AddingTripView = () => {
       endDate: range.endDate
         ? formatDateToISO(range.endDate)
         : formatDateToISO(range.startDate),
-      destinationPlace: { providerId: destinationId },
+      destinationProviderId: destinationId,
       budget,
       currencyCode: currency,
     };

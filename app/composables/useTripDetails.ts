@@ -5,7 +5,7 @@ import { useAuth } from "@/app/ctx";
 import { API_TRIPS } from "@/constants/Endpoints";
 
 const useTripDetails = (tripId: string | null) => {
-  const [tripDetails, setTripDetails] = useState<TripResponse | undefined>(
+  const [tripDetails, setTripDetails] = useState<TripDetails | undefined>(
     undefined,
   );
   const [tripSummary, setTripSummary] = useState<TripSummary | undefined>(
