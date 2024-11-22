@@ -3,31 +3,40 @@ using TravelBuddyAPI.DTOs.Currency;
 using TravelBuddyAPI.DTOs.PlaceCategory;
 using TravelBuddyAPI.DTOs.PlaceCondition;
 using TravelBuddyAPI.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace TravelBuddyAPI.Services;
 
-public class AvailableOptionsService(ITravelBuddyDbCache dbCache, INBPService nbpService) : IAvailableOptionsService
+public class AvailableOptionsService(ITravelBuddyDbCache dbCache, INBPService nbpService, TravelBuddyDbContext dbContext) : IAvailableOptionsService
 {
     private readonly ITravelBuddyDbCache _dbCache = dbCache;
     private readonly INBPService _nbpService = nbpService;
+    private readonly TravelBuddyDbContext _dbContext = dbContext;
 
-    public Task<List<PlaceCategoryDTO>> GetAvailableCategoriesAsync()
+    public async Task<List<PlaceCategoryNodeDTO>> GetAvailableCategoriesAsync()
     {
-        throw new NotImplementedException();
+        return await _dbCache.GetCategoryTreeDTOAsync();
     }
 
-    public Task<List<PlaceConditionDTO>> GetAvailableConditionsAsync()
+    public async Task<List<PlaceConditionNodeDTO>> GetAvailableConditionsAsync()
     {
-        throw new NotImplementedException();
+        return await _dbCache.GetConditionTreeDTOAsync();
     }
 
-    public Task<List<CurrencyDTO>> GetAvailableCurrenciesAsync()
+    public async Task<List<CurrencyDTO>> GetAvailableCurrenciesAsync()
     {
-        throw new NotImplementedException();
+        return await _nbpService.GetCurrenciesAsync();
     }
 
-    public Task<List<PlaceCategoryDTO>> GetAvailableSupercategoriesAsync()
+    public async Task<List<PlaceCategoryDTO>> GetAvailableSupercategoriesAsync()
     {
-        throw new NotImplementedException();
+        return await _dbContext.PlaceCategories
+            .Where(c => c.SuperCategoryId == null)
+            .Select(c => new PlaceCategoryDTO
+            {
+                Id = c.Id,
+                Name = c.Name
+            })
+            .ToListAsync();
     }
 }

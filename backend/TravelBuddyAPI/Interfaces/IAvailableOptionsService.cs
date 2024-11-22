@@ -25,11 +25,11 @@ public interface IAvailableOptionsService
     /// Retrieves a list of available categories.
     /// </summary>
     /// <returns>A task that represents the asynchronous operation. The task result contains a list of <see cref="PlaceCategoryDTO"/>.</returns>
-    Task<List<PlaceCategoryDTO>> GetAvailableCategoriesAsync();
+    Task<List<PlaceCategoryNodeDTO>> GetAvailableCategoriesAsync();
 
     /// <summary>
     /// Retrieves a list of available conditions.
     /// </summary>
     /// <returns>A task that represents the asynchronous operation. The task result contains a list of <see cref="PlaceConditionDTO"/>.</returns>
-    Task<List<PlaceConditionDTO>> GetAvailableConditionsAsync();
+    Task<List<PlaceConditionNodeDTO>> GetAvailableConditionsAsync();
 }
