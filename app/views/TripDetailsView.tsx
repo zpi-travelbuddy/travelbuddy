@@ -68,16 +68,12 @@ const TripDetailsView = () => {
     tripSummary,
     loading: tripLoading,
     error: tripError,
-    refetch: refetchTrip,
   } = useTripDetails(trip_id as string);
-
-  console.log(tripDetails?.destinationId)
 
   const {
     placeDetails: destinationDetails,
     loading: destinationLoading,
     error: destinationError,
-    refetch: refetchDestination,
   } = usePlaceDetails(tripDetails?.destinationId);
 
   const loading = useMemo(() => {

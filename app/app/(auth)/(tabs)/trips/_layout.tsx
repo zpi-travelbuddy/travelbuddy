@@ -25,7 +25,7 @@ export default function StackLayout() {
       />
       <Stack.Screen
         name="edit/[trip_id]"
-        options={{ title: "Edytowanie dnia wycieczki" }}
+        options={{ title: "Edytowanie wycieczki" }}
       />
     </Stack>
   );

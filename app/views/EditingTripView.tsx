@@ -56,22 +56,26 @@ const EditTripView = () => {
   const router = useRouter();
   const { showSnackbar } = useSnackbar();
   const params = useLocalSearchParams();
-  const { trip_id, destinationId: new_destination_id, destinationName: new_destination_name } = params;
+  const {
+    trip_id,
+    destinationId: new_destination_id,
+    destinationName: new_destination_name,
+  } = params;
 
-  const [editTripRequest, setEditTripRequest] = useState<EditTripRequest>({} as EditTripRequest)
+  const [editTripRequest, setEditTripRequest] = useState<EditTripRequest>(
+    {} as EditTripRequest,
+  );
 
   const {
     tripDetails,
     loading: tripLoading,
     error: tripError,
-    refetch: tripRefetch,
   } = useTripDetails(trip_id as string);
 
   const {
     placeDetails: destinationDetails,
     loading: destinationLoading,
     error: destinationError,
-    refetch: destinationRefetch,
   } = usePlaceDetails(tripDetails?.destinationId);
 
   const {
@@ -79,7 +83,9 @@ const EditTripView = () => {
     loading: editTripLoading,
     error: editError,
     success: editSuccess,
-  } = useEditTripDetails(trip_id as string, editTripRequest, { immediate: false });
+  } = useEditTripDetails(trip_id as string, editTripRequest, {
+    immediate: false,
+  });
 
   // =====================
   // SECTION: useState variables
@@ -131,15 +137,16 @@ const EditTripView = () => {
   // =====================
 
   useEffect(() => {
-    if (destinationDetails && !new_destination_id){
-      setDestinationName(getDisplayPlace(destinationDetails))
+    if (destinationDetails && !new_destination_id) {
+      setDestinationName(getDisplayPlace(destinationDetails));
     } else if (new_destination_id && new_destination_name) {
       setDestinationName(new_destination_name as string);
-      setEditTripRequest((prev) => ({...prev, destinationPlace: { providerId: new_destination_id as string }}))
-    } else console.log("ERRRRROR")
-
-  },[destinationDetails, new_destination_id]) 
-  
+      setEditTripRequest((prev) => ({
+        ...prev,
+        destinationPlace: { providerId: new_destination_id as string },
+      }));
+    } else console.log("ERRRRROR");
+  }, [destinationDetails, new_destination_id]);
 
   useEffect(() => {
     setError(tripError || destinationError || "");
@@ -178,15 +185,15 @@ const EditTripView = () => {
 
   useEffect(() => {
     if (editSuccess !== null) {
-      if (editSuccess){
+      if (editSuccess) {
         showSnackbar("Wycieczka została zapisana!", "success");
-        // setData({refresh: true}) // after merging with main to refetch trips after change
         router.back();
-      }
-      else showSnackbar("Błąd przy zapisie wycieczki", "error");
+        router.setParams({
+          refresh: "true",
+        });
+      } else showSnackbar("Błąd przy zapisie wycieczki", "error");
     }
-  }, [editSuccess]);
-
+  }, [router, editSuccess]);
 
   // =====================
   // SECTION: Functions
@@ -199,34 +206,52 @@ const EditTripView = () => {
     }
 
     let hasErrors = false;
-    if (!editTripRequest.name){
+    if (!editTripRequest.name) {
       hasErrors = true;
-      setErrors((prev) => ({...prev, name: "Nazwa wycieczki jest wymagana."}))
-    }    
-    if (!dateRange.startDate){
-      hasErrors = true;
-      setErrors((prev) => ({...prev, startDate: "Termin wycieczki jest wymagany."}))
+      setErrors((prev) => ({
+        ...prev,
+        name: "Nazwa wycieczki jest wymagana.",
+      }));
     }
-    if (!editTripRequest.destinationPlace.providerId){
+    if (!dateRange.startDate) {
       hasErrors = true;
-      setErrors((prev) => ({...prev, providerId: "Cel wycieczki jest wymagany."}))
-    }   
-    if (!numberOfPeople){
+      setErrors((prev) => ({
+        ...prev,
+        startDate: "Termin wycieczki jest wymagany.",
+      }));
+    }
+    if (!editTripRequest.destinationPlace.providerId) {
       hasErrors = true;
-      setErrors((prev) => ({...prev, numberOfTravelers: "Liczba osób jest wymagana."}))
+      setErrors((prev) => ({
+        ...prev,
+        providerId: "Cel wycieczki jest wymagany.",
+      }));
+    }
+    if (!numberOfPeople) {
+      hasErrors = true;
+      setErrors((prev) => ({
+        ...prev,
+        numberOfTravelers: "Liczba osób jest wymagana.",
+      }));
     } else if (editTripRequest.numberOfTravelers < 1) {
       hasErrors = true;
-      setErrors((prev) => ({...prev, numberOfTravelers: "Liczba osób musi dodatnia."}))
+      setErrors((prev) => ({
+        ...prev,
+        numberOfTravelers: "Liczba osób musi dodatnia.",
+      }));
     }
-    if (!editTripRequest.budget){
+    if (!editTripRequest.budget) {
       hasErrors = true;
-      setErrors((prev) => ({...prev, budget: "Kwota budżetu jest wymagana."}))
-    }   
+      setErrors((prev) => ({
+        ...prev,
+        budget: "Kwota budżetu jest wymagana.",
+      }));
+    }
     // if (!editTripRequest.categoryProfileId){
     //   hasErrors = true;
     //   setErrors((prev) => ({...prev, categoryProfile: "Profil preferencji jest wymagany."}))
     // }
-   
+
     // if (!editTripRequest.conditionProfileId){
     //   hasErrors = true;
     //   setErrors((prev) => ({...prev, conditionProfile: "Profil udogodnień jest wymagany."}))
@@ -254,11 +279,10 @@ const EditTripView = () => {
   const validateNumberOfPeople = () => {
     const numericValue = numberOfPeople.replace(/[^0-9]/g, "");
     const parsedValue = parseInt(numericValue, 10);
-    if (!isNaN(parsedValue) && parsedValue > 0){
+    if (!isNaN(parsedValue) && parsedValue > 0) {
       setNumberOfPeople(parsedValue.toString());
       handleChange("numberOfTravelers")(parsedValue);
-    }
-    else {
+    } else {
       setNumberOfPeople("");
       handleChange("numberOfTravelers")(0);
     }
@@ -393,7 +417,6 @@ const EditTripView = () => {
             {errors.conditionProfile && (
               <Text style={styles.textError}>{errors.conditionProfile}</Text>
             )}
-  
 
             <CustomModal visible={visible} onDismiss={() => setVisible(false)}>
               <FlatList

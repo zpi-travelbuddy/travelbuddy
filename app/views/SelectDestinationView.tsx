@@ -28,7 +28,10 @@ const DestinationCard = ({ destination }: { destination: Destination }) => {
 
   const handleSelect = () => {
     router.back();
-    router.setParams({ destinationId: id, destinationName: `${name}, ${country}` });
+    router.setParams({
+      destinationId: id,
+      destinationName: `${name}, ${country}`,
+    });
   };
 
   return (
