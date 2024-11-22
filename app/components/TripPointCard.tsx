@@ -1,4 +1,4 @@
-import { TripPoint } from "@/types/data";
+import { TripPointCompact } from "@/types/data";
 import { StyleSheet, Dimensions } from "react-native";
 import { Card, useTheme } from "react-native-paper";
 import { formatTimeRange } from "@/utils/TimeUtils";
@@ -19,9 +19,9 @@ export const TripPointCard = ({
   const theme = useTheme();
   const style = createStyles(theme);
 
-  const { name, fromTime, toTime } = tripPoint;
+  const { name, startTime, endTime } = tripPoint;
 
-  const timeRange = formatTimeRange(fromTime, toTime);
+  const timeRange = formatTimeRange(startTime, endTime);
 
   return (
     <Card
