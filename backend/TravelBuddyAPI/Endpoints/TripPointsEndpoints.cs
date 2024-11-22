@@ -39,10 +39,16 @@ public static class TripPointsEndpoints
         return app;
     }
 
-    private static async Task<Results<Ok<List<PlaceCategoryDTO>>, NotFound<string>>> GetAvailableSupercategoriesAsync()
+    private static async Task<Results<Ok<List<PlaceCategoryDTO>>, NotFound<string>>> GetAvailableSupercategoriesAsync(IAvailableOptionsService availableOptionsService)
     {
-        await Task.CompletedTask;
-        return TypedResults.NotFound("Not implemented");
+        var supercategories = await availableOptionsService.GetAvailableSupercategoriesAsync();
+
+        if (supercategories is not null && supercategories.Count > 0)
+        {
+            return TypedResults.Ok(supercategories);
+        }
+
+        return TypedResults.NotFound("Available supercategories not found");
     }
 
     private static async Task<Results<Ok<List<TripPointReviewOverviewDTO>>, NotFound<string>>> GetTripPointsReviewsAsync()
