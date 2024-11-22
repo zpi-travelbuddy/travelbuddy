@@ -21,7 +21,6 @@ export function formatDateToISO(date: Date | undefined): string {
 }
 
 export function formatDateFromISO(date: string | undefined): string {
-  console.log(date);
   if (!date) return "";
   return date.split("-").reverse().join(".");
 }

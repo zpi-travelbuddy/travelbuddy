@@ -19,6 +19,7 @@ const usePlaceDetails = (placeId: string | undefined) => {
 
       const response = await api!.get<PlaceDetails>(`/places/${placeId}`);
       setPlaceDetails(response.data);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       if (err.response && err.response.status === 404) {
         setError("Miejsce nie zostało znalezione.");

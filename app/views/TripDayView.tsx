@@ -39,7 +39,8 @@ const TripDayView = () => {
   const router = useRouter();
   const params = useLocalSearchParams();
 
-  const { trip_id, day_id } = params;
+  const { trip_id } = params;
+  const day_id = "83744af6-cf1d-4c13-9a0d-a682e7fe2e53";
 
   const { showSnackbar } = useSnackbar();
 

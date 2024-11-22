@@ -7,11 +7,12 @@ export interface PlaceCompact {
   city: string;
 }
 
-export interface Destination {
+export interface PlaceViewModel {
+  providerId: string;
   id: string;
-  name: string;
-  country: string;
-  state: string;
+  title?: string;
+  subtitle?: string;
+  imageUrl?: string;
 }
 
 export interface Place {

@@ -60,8 +60,8 @@ export interface TripDayDetails {
 
 export interface TransferPoint {
   id: string;
+  tripDayId: string;
   seconds?: number;
-  startTime: string;
   mode?: TransferType;
   fromTripPointId: string;
   toTripPointId: string;
@@ -70,7 +70,6 @@ export interface TransferPoint {
 export interface CreateTransferPointRequest {
   tripDayId: string;
   seconds: number;
-  startTime: string;
   mode: TransferType;
   fromTripPointId: string;
   toTripPointId: string;
