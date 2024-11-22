@@ -60,7 +60,7 @@ const AddingTripView = () => {
   const { showSnackbar } = useSnackbar();
 
   const [tripName, setTripName] = useState("");
-  const [budget, setBudget] = useState<number | undefined>();
+  const [budget, setBudget] = useState<number>(0);
   const [isOpen, setOpen] = useState(false);
   const [dateRangeText, setDateRangeText] = useState("");
   const [numberOfPeople, setNumberOfPeople] = useState("");
@@ -138,7 +138,7 @@ const AddingTripView = () => {
       endDate: range.endDate
         ? formatDateToISO(range.endDate)
         : formatDateToISO(range.startDate),
-      destinationPlace: { providerId: destinationId },
+      destinationProviderId: destinationId,
       budget,
       currencyCode: currency,
     };
