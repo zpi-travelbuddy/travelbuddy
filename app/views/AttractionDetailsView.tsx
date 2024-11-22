@@ -1,5 +1,5 @@
 import { StyleSheet, View, Image, Dimensions, ScrollView } from "react-native";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useTheme, Text } from "react-native-paper";
 import { ADD_ICON, DEFAULT_ICON_SIZE, LOCATION_ICON } from "@/constants/Icons";
 import ActionButtons from "@/components/ActionButtons";
@@ -8,7 +8,7 @@ import { displayCost, displayTime, formatAddress } from "@/utils/TextUtils";
 import StarRatingDisplayComponent from "@/components/StarRatingDisplayComponent";
 import IconComponent from "@/components/IconComponent";
 import { AttractionTypeIcons, AttractionTypeLabels } from "@/types/Trip";
-import usePlaceDetails from "@/composables/usePlace";
+import { useAttractionDetails } from "@/composables/usePlace";
 import LoadingView from "./LoadingView";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useSnackbar } from "@/context/SnackbarContext";
@@ -26,7 +26,11 @@ const AttractionDetailsView = () => {
   const params = useLocalSearchParams();
   const { place_id } = params;
 
-  const { placeDetails, loading, error } = usePlaceDetails(place_id as string);
+  const { placeDetails, loading, error } = useAttractionDetails(
+    place_id as string,
+  );
+
+  useEffect(() => console.log(JSON.stringify(placeDetails)), [placeDetails]);
 
   if (loading) {
     return <LoadingView />;
@@ -79,7 +83,7 @@ const AttractionDetailsView = () => {
               placeConditions={placeDetails.conditions}
               style={styles.space}
               iconColor={theme.colors.onSurface}
-            ></ConditionIcons>
+            />
 
             <Text style={styles.doubleSpace} variant="bodySmall">
               Średni koszt na osobę

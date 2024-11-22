@@ -21,13 +21,11 @@ const ConditionIcons: React.FC<ConditionIconsProps> = ({
   const theme = useTheme() as MD3ThemeExtended;
   const styles = createStyles(theme, iconColor);
 
-  const [conditions, setConditions] = useState<Condition[]>([
-    "wheelchair",
-    "dogs",
-  ]);
+  const [conditions, setConditions] = useState<string[]>([]);
 
   useEffect(() => {
-    setConditions(convertConditions(placeConditions));
+    setConditions(convertConditions([...placeConditions]));
+    
   }, [placeConditions]);
 
   if (conditions.length === 0)
@@ -36,11 +34,16 @@ const ConditionIcons: React.FC<ConditionIconsProps> = ({
         <Text style={styles.text}>Brak</Text>
       </>
     );
-  return (
-    <>
-      <IconRow style={style} iconColor={iconColor} icons={conditions}></IconRow>
-    </>
-  );
+  else
+    return (
+      <>
+        <IconRow
+          style={style}
+          iconColor={iconColor}
+          icons={conditions}
+        ></IconRow>
+      </>
+    );
 };
 
 export default ConditionIcons;

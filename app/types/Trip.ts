@@ -102,7 +102,15 @@ export type Condition =
   | "wheelchair"
   | "dogs"
   | "vegetarian"
-  | "vegan";
+  | "vegan"
+  | "no-dogs"
+  | "halal"
+  | "kosher"
+  | "organic"
+  | "gluten_free"
+  | "sugar_free"
+  | "egg_free"
+  | "soy_free";
 
 export const ConditionList: Condition[] = [
   "internet_access",
@@ -110,6 +118,13 @@ export const ConditionList: Condition[] = [
   "dogs",
   "vegetarian",
   "vegan",
+  "no-dogs",
+  "halal",
+  "kosher",
+  "organic",
+  "sugar_free",
+  "egg_free",
+  "soy_free",
 ];
 
 export const AttractionTypeIcons: Record<TripPointType, string> = {

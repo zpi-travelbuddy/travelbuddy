@@ -1,4 +1,4 @@
-import { PlaceCategory, PlaceCondition, PlaceDetails } from "@/types/Place";
+import { PlaceCondition, PlaceDetails } from "@/types/Place";
 import { Condition, ConditionList, TripPointType } from "@/types/Trip";
 import { getConditions } from "@/utils/ConditionsUtils";
 
@@ -35,10 +35,28 @@ const getAttractionType = (place: PlaceDetails) => {
   return "other" as TripPointType;
 };
 
-export const convertConditions = (placeConditions: PlaceCondition[]) => {
+const ConditionIconMap: Partial<Record<Condition, string>> = {
+  wheelchair: "human-wheelchair",
+  internet_access: "wifi",
+  dogs: "dog-side",
+  vegetarian: "food-drumstick-off",
+  vegan: "leaf",
+  "no-dogs": "dog-side-off",
+  halal: "food-halal",
+  kosher: "food-kosher",
+  organic: "bio",
+  egg_free: "egg-off-outline",
+};
+
+export const convertConditions = (
+  placeConditions?: PlaceCondition[],
+): string[] => {
+  if (!placeConditions) return [];
+
   return placeConditions
     .map((condition) => condition.name)
     .filter((name): name is Condition =>
       ConditionList.includes(name as Condition),
-    );
+    )
+    .map((conditionName) => ConditionIconMap[conditionName as Condition] || "");
 };
