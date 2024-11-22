@@ -143,7 +143,7 @@ const EditTripView = () => {
       setDestinationName(new_destination_name as string);
       setEditTripRequest((prev) => ({
         ...prev,
-        destinationPlace: { providerId: new_destination_id as string },
+        destinationProviderId: new_destination_id as string,
       }));
     } else console.log("ERRRRROR");
   }, [destinationDetails, new_destination_id]);
@@ -200,9 +200,9 @@ const EditTripView = () => {
   // =====================
 
   const saveTrip = async () => {
-    if (!editTripRequest.destinationPlace.providerId) {
+    if (!editTripRequest.destinationProviderId) {
       showSnackbar("Błąd z celem wycieczki!", "error");
-      console.error(editTripRequest.destinationPlace.providerId);
+      console.error(editTripRequest.destinationProviderId);
     }
 
     let hasErrors = false;
@@ -220,7 +220,7 @@ const EditTripView = () => {
         startDate: "Termin wycieczki jest wymagany.",
       }));
     }
-    if (!editTripRequest.destinationPlace.providerId) {
+    if (!editTripRequest.destinationProviderId) {
       hasErrors = true;
       setErrors((prev) => ({
         ...prev,

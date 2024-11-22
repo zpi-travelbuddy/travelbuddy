@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect, useCallback } from "react";
-import { TripResponse, TripSummary, TripRequest, EditTripRequest } from "@/types/Trip";
+import { TripSummary, EditTripRequest, TripDetails } from "@/types/Trip";
 import { useAuth } from "@/app/ctx";
 import { API_TRIPS } from "@/constants/Endpoints";
 
@@ -17,7 +18,7 @@ const useTripDetails = (tripId: string | null) => {
 
   const fetchTripDetails = useCallback(async () => {
     try {
-      const response = await api!.get<TripResponse>(`/trips/${tripId}`);
+      const response = await api!.get<TripDetails>(`/trips/${tripId}`);
       setTripDetails(response.data);
     } catch (err: any) {
       if (err.response && err.response.status === 404) {
@@ -80,11 +81,11 @@ export const useEditTripDetails = (
     setSuccess(null);
 
     try {
-      console.log("Trip request: " + JSON.stringify(request));
+      console.log("Request: " + JSON.stringify(request));
       await api!.put(`${API_TRIPS}/${id}`, request);
       setSuccess(true);
     } catch (err: any) {
-      console.log(JSON.stringify(err))
+      console.log("Error: " + JSON.stringify(err));
       setError(JSON.stringify(err) || "Wystąpił błąd");
       setSuccess(false);
     } finally {

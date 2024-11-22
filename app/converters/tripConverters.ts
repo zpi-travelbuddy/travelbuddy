@@ -110,30 +110,10 @@ export function convertTripResponseToEditTripRequest(
     numberOfTravelers: response.numberOfTravelers,
     startDate: response.startDate,
     endDate: response.endDate,
-    destinationPlace: {
-      providerId: destination.providerId || "",
-      name: destination.name || "",
-      country: destination.country || "",
-      city: destination.city || "",
-      latitude: destination.latitude || 0,
-      longitude: destination.longitude || 0,
-    },
+    destinationProviderId: destination.providerId || "",
     budget: response.budget,
     currencyCode: response.currencyCode,
   };
 
   return editTripRequest;
 }
-
-export const convertAPITripToTrip = (trip: APITrip): Trip => ({
-  id: trip.id,
-  title: trip.name,
-  subtitle: formatTimeRange(
-    formatDateFromISO(trip?.startDate),
-    formatDateFromISO(trip?.endDate),
-  ),
-  from: trip.startDate,
-  to: trip.endDate,
-  imageUri: RANDOM_IMAGE,
-  isArchived: false,
-});

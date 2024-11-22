@@ -1,35 +1,3 @@
-// import { Place } from "./Place";
-
-// export interface TripRequest {
-//   id?: string;
-//   name: string;
-//   numberOfTravelers: number;
-//   startDate: string;
-//   endDate: string;
-//   destinationPlace: Place;
-//   budget: number;
-//   currencyCode: string;
-//   categoryProfileId: string | null;
-//   conditionProfileId: string | null;
-// }
-
-// export interface APITrip {
-//   id: string;
-//   name: string;
-//   startDate: string;
-//   endDate: string;
-// }
-
-// export interface Trip {
-//   id: string;
-//   title: string;
-//   subtitle: string;
-//   from: string;
-//   to: string;
-//   imageUri: string;
-//   isArchived: boolean;
-// }
-
 export interface TripDay {
   id: string;
   tripId: string;
@@ -57,7 +25,7 @@ export interface TripViewModel {
   conditionProfileName: string;
 }
 
-export interface TripResponse {
+export interface TripDetails {
   id: string;
   name: string;
   numberOfTravelers: number;
@@ -136,14 +104,7 @@ export interface EditTripRequest {
   numberOfTravelers: number;
   startDate: string;
   endDate: string;
-  destinationPlace: {
-    providerId: string;
-    name?: string;
-    country?: string;
-    city?: string;
-    latitude?: number;
-    longitude?: number;
-  };
+  destinationProviderId: string;
   budget: number;
   currencyCode: string;
 }

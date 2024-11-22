@@ -10,7 +10,6 @@ import {
 } from "react-native-paper";
 import {
   addHoursToTheSameDay,
-  formatToISODate,
   formatTime,
   roundToNearestQuarterHour,
 } from "@/utils/TimeUtils";
@@ -23,7 +22,7 @@ import { AttractionTypeLabels, TripErrors, TripPointType } from "@/types/Trip";
 import { CALENDAR_ICON } from "@/constants/Icons";
 import { useAnimatedKeyboard } from "react-native-reanimated";
 import TripPointTypePicker from "@/components/TripPointTypePicker";
-import { CreateTripPointRequest } from "@/types/TripDayData";
+import { CreateTripPointRequest, TripPointDetails } from "@/types/TripDayData";
 import { Place } from "@/types/Place";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import LoadingView from "./LoadingView";
@@ -32,7 +31,6 @@ import useTripDetails from "@/composables/useTripDetails";
 import usePlaceDetails from "@/composables/usePlace";
 import { useAuth } from "@/app/ctx";
 import { API_ADDING_TRIP_POINT } from "@/constants/Endpoints";
-import { TripPointResponse } from "@/types/data";
 
 const { height, width } = Dimensions.get("window");
 
@@ -210,7 +208,7 @@ const AddingTripPointView = () => {
       setLoading(true);
       console.log("Request: " + JSON.stringify(tripPointRequest));
 
-      const response = await api!.post<TripPointResponse>(
+      const response = await api!.post<TripPointDetails>(
         API_ADDING_TRIP_POINT,
         tripPointRequest,
       );

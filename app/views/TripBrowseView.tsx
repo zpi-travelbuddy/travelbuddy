@@ -111,12 +111,13 @@ const TripBrowseView = () => {
 
   const fetchTripsByType = async (
     endpoint: string,
-    setTrips: (trips: Trip[]) => void,
+    setTrips: (trips: TripCompact[]) => void,
     errorFallback: () => void,
   ) => {
     try {
-      const trips: APITrip[] = (await api!.get(endpoint)).data;
-      const parsedTrips = trips.map(convertAPITripToTrip);
+      const trips: TripCompact[] = (await api!.get(endpoint)).data;
+      const isArchived = endpoint === API_TRIPS_PAST;
+      const parsedTrips = convertTripsFromAPI(trips, isArchived);
       setTrips(parsedTrips);
     } catch (error: any) {
       if (error.response && error.response.status === 404) {
