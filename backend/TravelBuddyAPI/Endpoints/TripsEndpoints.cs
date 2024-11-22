@@ -6,6 +6,7 @@ using TravelBuddyAPI.DTOs.Place;
 using TravelBuddyAPI.DTOs.Currency;
 using TravelBuddyAPI.Interfaces;
 using System.Security.Claims;
+using TravelBuddyAPI.Services;
 
 namespace TravelBuddyAPI.Endpoints;
 
@@ -59,10 +60,13 @@ public static class TripsEndpoints
 
     private static async Task<Results<Ok<List<CurrencyDTO>>, NotFound<string>>> GetAvailableCurrenciesAsync(INBPService nbpService)
     {
-        try {
+        try
+        {
             var currencies = await nbpService.GetCurrenciesAsync();
             return TypedResults.Ok(currencies);
-        } catch (InvalidOperationException ex) {
+        }
+        catch (InvalidOperationException ex)
+        {
             return TypedResults.NotFound(ex.Message);
         }
     }
@@ -88,12 +92,13 @@ public static class TripsEndpoints
     private static async Task<Results<Ok<List<PlaceOverviewDTO>>, NotFound<string>>> GetAutocompleteDestinationsAsync(string query, IPlacesService placesService)
     {
         var places = await placesService.GetAutocompleteDestinationsAsync(query);
-        
+
         if (places.Count != 0)
         {
             return TypedResults.Ok(places);
         }
-        else {
+        else
+        {
             return TypedResults.NotFound("No places found");
         }
     }
@@ -113,19 +118,23 @@ public static class TripsEndpoints
     }
 
     private static async Task<Results<Ok<TripDetailsDTO>, NotFound<string>>> GetTripDetailsAsync(Guid id, ITripsService tripsService, HttpContext httpContext)
-   {
-        try {
+    {
+        try
+        {
             var userId = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new InvalidOperationException("User not found");
             var tripDetails = await tripsService.GetTripDetailsAsync(userId, id);
             return TypedResults.Ok(tripDetails);
-        } catch (ArgumentException ex) {
+        }
+        catch (ArgumentException ex)
+        {
             return TypedResults.NotFound(ex.Message);
         }
     }
 
     private static async Task<Results<Ok<List<TripOverviewDTO>>, NotFound<string>>> GetCurrentTripsAsync(ITripsService tripsService, HttpContext httpContext)
     {
-        try {
+        try
+        {
             var userId = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new InvalidOperationException("User not found");
             var trips = await tripsService.GetCurrentTripsAsync(userId);
             return trips.Count > 0 ? TypedResults.Ok(trips) : TypedResults.NotFound("No current trips found.");
@@ -138,7 +147,8 @@ public static class TripsEndpoints
 
     private static async Task<Results<Ok<List<TripOverviewDTO>>, NotFound<string>>> GetPastTripsAsync(ITripsService tripsService, HttpContext httpContext)
     {
-        try {
+        try
+        {
             var userId = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new InvalidOperationException("User not found");
             var trips = await tripsService.GetPastTripsAsync(userId);
             return trips.Count > 0 ? TypedResults.Ok(trips) : TypedResults.NotFound("No past trips found.");
@@ -149,35 +159,48 @@ public static class TripsEndpoints
         }
     }
 
-    private static async Task<Results<Accepted<string>, NotFound<string>>> EditTripAsync(Guid id, TripRequestDTO trip, HttpContext httpContext, ITripsService tripsService)
+    private static async Task<Results<Accepted<string>, NotFound<string>, BadRequest<string>>> EditTripAsync(Guid id, TripRequestDTO trip, HttpContext httpContext, ITripsService tripsService)
     {
-        try {
+        try
+        {
             var userId = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new InvalidOperationException("User not found");
             await tripsService.EditTripAsync(userId, id, trip);
             return TypedResults.Accepted($"/trips/{id}", "Trip edited successfully");
-        } catch (InvalidOperationException ex) {
+        }
+        catch (InvalidOperationException ex) when (ex.Message.Contains(ITripsService.ErrorMessage.TripNotFound))
+        {
             return TypedResults.NotFound(ex.Message);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return TypedResults.BadRequest(ex.Message);
         }
     }
 
     private static async Task<Results<Created<TripDetailsDTO>, BadRequest<string>>> CreateTripAsync(TripRequestDTO trip, ITripsService tripsService, HttpContext httpContext)
     {
-        try {
+        try
+        {
             var userId = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new InvalidOperationException("User not found");
             var tripDetails = await tripsService.CreateTripAsync(userId, trip);
             return TypedResults.Created($"/trips/{tripDetails.Id}", tripDetails);
-        } catch (InvalidOperationException ex) {
+        }
+        catch (InvalidOperationException ex)
+        {
             return TypedResults.BadRequest(ex.Message);
         }
     }
 
     private static async Task<Results<Ok<TripDayDetailsDTO>, NotFound<string>>> GetTripDayDetailsAsync(Guid id, ITripsService tripsService, HttpContext httpContext)
     {
-        try {
+        try
+        {
             var userId = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new InvalidOperationException("User not found");
             var dayDetails = await tripsService.GetTripDayDetailsAsync(userId, id);
             return TypedResults.Ok(dayDetails);
-        } catch (ArgumentException ex) {
+        }
+        catch (ArgumentException ex)
+        {
             return TypedResults.NotFound(ex.Message);
         }
     }

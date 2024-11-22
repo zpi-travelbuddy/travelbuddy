@@ -21,38 +21,51 @@ public static class TransferPointsEndpoints
             .WithName("EditTransferPoint");
 
         group.MapDelete("/{id}", DeleteTransferPointAsync)
-            .WithName("DeleteTransferPoint");  
+            .WithName("DeleteTransferPoint");
     }
 
-    private static async Task<Results<Created<TransferPointOverviewDTO>,BadRequest<string>>> CreateTransferPointAsync(TransferPointRequestDTO transferPoint, ITransferPointsService transferPointsService, HttpContext httpContext)
+    private static async Task<Results<Created<TransferPointOverviewDTO>, BadRequest<string>>> CreateTransferPointAsync(TransferPointRequestDTO transferPoint, ITransferPointsService transferPointsService, HttpContext httpContext)
     {
-        try {
+        try
+        {
             var userId = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new InvalidOperationException("User not found");
             var transferPointDetails = await transferPointsService.CreateTransferPointAsync(userId, transferPoint);
             return TypedResults.Created($"/transferPoints/{transferPointDetails}", transferPointDetails);
-        } catch (InvalidOperationException ex) {
+        }
+        catch (InvalidOperationException ex)
+        {
             return TypedResults.BadRequest(ex.Message);
         }
     }
 
-    private static async Task<Results<Accepted<string>,NotFound<string>>> EditTransferPointAsync(Guid id, TransferPointRequestDTO transferPoint, ITransferPointsService transferPointsService, HttpContext httpContext)
+    private static async Task<Results<Accepted<string>, NotFound<string>, BadRequest<string>>> EditTransferPointAsync(Guid id, TransferPointRequestDTO transferPoint, ITransferPointsService transferPointsService, HttpContext httpContext)
     {
-        try {
+        try
+        {
             var userId = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new InvalidOperationException("User not found");
             var transferPointEdited = await transferPointsService.EditTransferPointAsync(userId, id, transferPoint) ? "Transfer point edited successfully" : throw new InvalidOperationException("Failed to edit transfer point");
             return TypedResults.Accepted($"/transferPoints/{transferPointEdited}", transferPointEdited);
-        } catch (InvalidOperationException ex) {
+        }
+        catch (InvalidOperationException ex) when (ex.Message.Contains(ITransferPointsService.ErrorMessage.TransferPointNotFound))
+        {
             return TypedResults.NotFound(ex.Message);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return TypedResults.BadRequest(ex.Message);
         }
     }
 
-    private static async Task<Results<NoContent,NotFound<string>>> DeleteTransferPointAsync(Guid id, ITransferPointsService transferPointsService, HttpContext httpContext)
+    private static async Task<Results<NoContent, NotFound<string>>> DeleteTransferPointAsync(Guid id, ITransferPointsService transferPointsService, HttpContext httpContext)
     {
-        try {
+        try
+        {
             var userId = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new InvalidOperationException("User not found");
             var transferPointDeleted = await transferPointsService.DeleteTransferPointAsync(userId, id) ? "Transfer point edited successfully" : throw new InvalidOperationException("Failed to edit transfer point");
             return TypedResults.NoContent();
-        } catch (InvalidOperationException ex) {
+        }
+        catch (InvalidOperationException ex)
+        {
             return TypedResults.NotFound(ex.Message);
         }
     }

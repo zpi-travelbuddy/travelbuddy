@@ -80,6 +80,12 @@ public class TripPointsServiceTest : IDisposable
         _mockGeoapifyService.Setup(s => s.GetPlaceDetailsAsync(It.IsAny<string>()))
             .ReturnsAsync(place);
 
+        _mockPlacesService.Setup(s => s.AddPlaceAsync(It.IsAny<PlaceRequestDTO>()))
+            .ReturnsAsync(new PlaceDetailsDTO { Id = place.Id, Name = place.Name, City = place.City, Country = place.Country });
+
+        _mockPlacesService.Setup(s => s.GetProviderPlaceAsync(It.IsAny<string>()))
+            .ReturnsAsync(place);
+
 
         // Act
         var result = await _tripPointsService.CreateTripPointAsync(userId, tripPointRequest);
@@ -108,7 +114,7 @@ public class TripPointsServiceTest : IDisposable
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _tripPointsService.CreateTripPointAsync(userId, tripPointRequest));
-        Assert.Equal("An error occurred while creating a trip point. Could not find trip day of given id.", exception.Message);
+        Assert.Equal($"{ITripPointsService.ErrorMessage.CreateTripPoint} {ITripPointsService.ErrorMessage.TripDayNotFound}", exception.Message);
     }
 
     [Fact]
@@ -143,7 +149,7 @@ public class TripPointsServiceTest : IDisposable
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _tripPointsService.CreateTripPointAsync(userId, tripPointRequest));
-        Assert.Equal("An error occurred while creating a trip point. Start time cannot be after end time.", exception.Message);
+        Assert.Equal($"{ITripPointsService.ErrorMessage.CreateTripPoint} {ITripPointsService.ErrorMessage.StartTimeAfterEndTime}", exception.Message);
     }
 
     [Fact]
@@ -178,7 +184,7 @@ public class TripPointsServiceTest : IDisposable
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _tripPointsService.CreateTripPointAsync(userId, tripPointRequest));
-        Assert.Equal("An error occurred while creating a trip point. Could not retrive exchange rate.", exception.Message);
+        Assert.Equal($"{ITripPointsService.ErrorMessage.CreateTripPoint} {ITripPointsService.ErrorMessage.RetriveExchangeRate}", exception.Message);
     }
 
     [Fact]
@@ -213,7 +219,7 @@ public class TripPointsServiceTest : IDisposable
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _tripPointsService.CreateTripPointAsync(userId, tripPointRequest));
-        Assert.Equal("An error occurred while creating a trip point. Place cannot be empty.", exception.Message);
+        Assert.Equal($"{ITripPointsService.ErrorMessage.CreateTripPoint} {ITripPointsService.ErrorMessage.EmptyPlace}", exception.Message);
     }
 
     [Fact]
@@ -266,7 +272,7 @@ public class TripPointsServiceTest : IDisposable
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _tripPointsService.DeleteTripPointAsync(userId, tripPointId));
-        Assert.Equal($"{TripPointsService.ErrorMessage.DeleteTripPoint} {TripPointsService.ErrorMessage.TripPointNotFound}", exception.Message);
+        Assert.Equal($"{ITripPointsService.ErrorMessage.DeleteTripPoint} {ITripPointsService.ErrorMessage.TripPointNotFound}", exception.Message);
     }
 
     [Fact]
@@ -314,7 +320,7 @@ public class TripPointsServiceTest : IDisposable
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _tripPointsService.CreateTripPointAsync(userId, tripPointRequest));
-        Assert.Equal("An error occurred while creating a trip point. Trip point overlaps with another trip point.", exception.Message);
+        Assert.Equal($"{ITripPointsService.ErrorMessage.CreateTripPoint} {ITripPointsService.ErrorMessage.TripPointOverlap}", exception.Message);
     }
 
     public void Dispose()

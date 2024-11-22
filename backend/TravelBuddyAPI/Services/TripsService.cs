@@ -8,6 +8,7 @@ using TravelBuddyAPI.DTOs.TripDay;
 using TravelBuddyAPI.DTOs.TripPoint;
 using TravelBuddyAPI.Interfaces;
 using TravelBuddyAPI.Models;
+using static TravelBuddyAPI.Interfaces.ITripsService;
 
 namespace TravelBuddyAPI.Services;
 
@@ -19,23 +20,6 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
     private readonly ICategoryProfilesService _categoryProfileService = categoryProfilesService;
     private readonly IConditionProfilesService _conditionProfileService = conditionProfilesService;
     private readonly ITripPointsService _tripPointsService = tripPointsService;
-
-    public static class ErrorMessage
-    {
-        public const string EmptyRequest = "Request cannot be empty.";
-        public const string StartDateAfterEndDate = "Start date cannot be after end date.";
-        public const string StartDateInPast = "Start date cannot be in the past.";
-        public const string CreateTrip = "An error occurred while creating a trip:";
-        public const string EditTrip = "An error occurred while editing a trip:";
-        public const string RetriveExchangeRate = "An error occurred while retrieving exchange rate.";
-        public const string TripNotFound = "Trip with the specified ID does not exist.";
-        public const string TripWithoutDays = "Trip does not have any days.";
-        public const string TripDayNotFound = "Trip day with the specified ID does not exist.";
-        public const string TooManyDecimalPlaces = "Budget must have at most 2 decimal places.";
-        public const string DeleteTrip = "An error occurred while deleting a trip:";
-        public const string CurrencyChangeNotAllowed = "Currency code cannot be changed.";
-        public const string ProviderPlaceNotFound = "Provider place with the specified Id does not exist.";
-    }
 
     public async Task<TripDetailsDTO> CreateTripAsync(string userId, TripRequestDTO trip)
     {
@@ -55,8 +39,8 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
 
             decimal exchangeRate = await _nbpService.GetRateAsync(trip?.CurrencyCode ?? string.Empty) ?? throw new InvalidOperationException(ErrorMessage.RetriveExchangeRate);
 
-            _ = trip!.DestinationPlace ?? throw new InvalidOperationException();
-            Guid destinationId = await GetDestinationId(trip?.DestinationPlace?.ProviderId ?? string.Empty) ?? await AddDestinationAsync(trip!.DestinationPlace);
+            _ = trip?.DestinationProviderId ?? throw new InvalidOperationException(ErrorMessage.DestinationProviderIdIsNull);
+            Guid destinationId = await GetDestinationId(trip.DestinationProviderId) ?? await AddDestinationAsync(trip.DestinationProviderId);
 
             Trip newTrip = new()
             {
@@ -104,9 +88,10 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
         return id;
     }
 
-    private async Task<Guid> AddDestinationAsync(PlaceRequestDTO destination)
+    private async Task<Guid> AddDestinationAsync(string providerId)
     {
-        var newDestination = await _placesService.AddPlaceAsync(destination);
+        PlaceRequestDTO placeRequest = new(){ ProviderId = providerId};
+        var newDestination = await _placesService.AddPlaceAsync(placeRequest);
         return newDestination.Id;
     }
 
@@ -232,8 +217,8 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
                 existingTrip.EndDate = trip.EndDate;
             }
 
-            _ = trip!.DestinationPlace ?? throw new InvalidOperationException();
-            Guid destinationId = await GetDestinationId(trip?.DestinationPlace?.ProviderId ?? string.Empty) ?? await AddDestinationAsync(trip!.DestinationPlace);
+            _ = trip?.DestinationProviderId ?? throw new InvalidOperationException(ErrorMessage.DestinationProviderIdIsNull);
+            Guid destinationId = await GetDestinationId(trip.DestinationProviderId) ?? await AddDestinationAsync(trip.DestinationProviderId);
 
             existingTrip.Name = trip!.Name;
             existingTrip.NumberOfTravelers = trip.NumberOfTravelers;

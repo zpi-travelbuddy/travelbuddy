@@ -4,6 +4,9 @@ export const DELETE_ICON = "delete";
 
 export const CHECK_CIRCLE_ICON = "check-circle-outline";
 
+// Menu
+export const MENU_ICON = "dots-vertical";
+
 // NavBar icons
 export const TRIPS_ICON = "car";
 export const EXPLORE_ICON = "compass-outline";

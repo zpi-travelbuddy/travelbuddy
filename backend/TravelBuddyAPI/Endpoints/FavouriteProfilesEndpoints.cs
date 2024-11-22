@@ -28,32 +28,32 @@ public static class FavouriteProfilesEndpoints
 
         return app;
     }
-    
+
     private static async Task<Results<Ok<FavouriteProfilesDTO>, NotFound<string>>> GetFavouriteProfilesAsync()
     {
         await Task.CompletedTask;
         return TypedResults.NotFound("Not implemented");
     }
 
-    private static async Task<Results<NoContent, NotFound<string>>> RemoveConditionProfileFromFavouritesAsync(Guid id)
+    private static async Task<Results<NoContent, NotFound<string>, BadRequest<string>>> RemoveConditionProfileFromFavouritesAsync(Guid id)
     {
         await Task.CompletedTask;
         return TypedResults.NotFound("Not implemented");
     }
 
-    private static async Task<Results<Created<FavouriteProfilesDTO>, BadRequest<string>>> AddConditionProfileToFavouritesAsync(Guid id)
+    private static async Task<Results<Created<FavouriteProfilesDTO>, NotFound<string>, BadRequest<string>>> AddConditionProfileToFavouritesAsync(Guid id)
     {
         await Task.CompletedTask;
         return TypedResults.BadRequest("Not implemented");
     }
 
-    private static async Task<Results<NoContent, NotFound<string>>> RemoveCategoryProfileFromFavouritesAsync(Guid id)
+    private static async Task<Results<NoContent, NotFound<string>, BadRequest<string>>> RemoveCategoryProfileFromFavouritesAsync(Guid id)
     {
         await Task.CompletedTask;
         return TypedResults.NotFound("Not implemented");
     }
 
-    private static async Task<Results<Created<FavouriteProfilesDTO>, BadRequest<string>>> AddCategoryProfileToFavouritesAsync(Guid id)
+    private static async Task<Results<Created<FavouriteProfilesDTO>, NotFound<string>, BadRequest<string>>> AddCategoryProfileToFavouritesAsync(Guid id)
     {
         await Task.CompletedTask;
         return TypedResults.BadRequest("Not implemented");

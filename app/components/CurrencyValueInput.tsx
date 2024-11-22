@@ -31,8 +31,8 @@ const CurrencyValueInput = ({
   const theme = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
-  const [displayBudget, setDisplayBudget] = useState<string>(
-    budget ? budget.toFixed(2) : "0,00",
+  const [displayBudget, setDisplayBudget] = useState(
+    budget ? budget.toFixed(2) : "0.00",
   );
 
   const handleChange = (value: string) => {

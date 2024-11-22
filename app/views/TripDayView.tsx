@@ -1,4 +1,4 @@
-import { Dimensions, ScrollView, StyleSheet, View, Text } from "react-native";
+import { Dimensions, ScrollView, StyleSheet, View } from "react-native";
 import { TripPointCard } from "@/components/TripPointCard";
 import { TransferPointNode } from "@/components/TransferPointNode";
 import { useRouter, useLocalSearchParams, useFocusEffect } from "expo-router";
@@ -9,8 +9,14 @@ import {
   TransferTypeLabels,
   TransferType,
 } from "@/types/data";
-import { useTheme, FAB, TextInput } from "react-native-paper";
-import React, { Fragment, useCallback, useMemo, useState } from "react";
+import { useTheme, FAB, Text, TextInput } from "react-native-paper";
+import React, {
+  Fragment,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import {
   BUS_ICON,
   CAR_ICON,
@@ -29,6 +35,8 @@ import { Option } from "@/types/data";
 import useTripDayDetails from "@/composables/useTripDay";
 import LoadingView from "./LoadingView";
 import { useSnackbar } from "@/context/SnackbarContext";
+import { getTimeWithoutSeconds } from "@/utils/TimeUtils";
+import { useNavigationData } from "@/context/NavigationDataContext";
 
 const { width } = Dimensions.get("window");
 
@@ -41,6 +49,7 @@ const TripDayView = () => {
   const { trip_id, day_id } = params;
 
   const { showSnackbar } = useSnackbar();
+  const { setData, data } = useNavigationData();
 
   const {
     transferPoints,
@@ -50,6 +59,12 @@ const TripDayView = () => {
     error,
     refetch: refetchDayData,
   } = useTripDayDetails(day_id as string);
+
+  const [tripPointsFormatted, setTripPointsFormatted] = useState<TripPointCompact[]>([] as TripPointCompact[]);
+
+  useEffect(() => {
+    setTripPointsFormatted(tripPoints.map((tripPoint) => ({...tripPoint, startTime: getTimeWithoutSeconds(tripPoint.startTime), endTime: getTimeWithoutSeconds(tripPoint.endTime)} as TripPointCompact)))
+  }, [tripPoints])
 
   const options: Option[] = [
     {
@@ -99,9 +114,11 @@ const TripDayView = () => {
 
   useFocusEffect(
     useCallback(() => {
-      refetchDayData();
-      console.log("REFRESH");
-    }, [refetchDayData]),
+      if(data?.refresh){ 
+        refetchDayData()
+        setData(null)
+      }
+    }, [refetchDayData, data]),
   );
 
   const handleTextChange = (text: string) => {
@@ -235,16 +252,16 @@ const TripDayView = () => {
   }, [transferPoints]);
 
   const sortedTripPoints = useMemo(() => {
-    return [...tripPoints].sort((a, b) => {
+    return [...tripPointsFormatted].sort((a, b) => {
       return a.startTime.localeCompare(b.startTime);
     });
-  }, [tripPoints]);
+  }, [tripPointsFormatted]);
 
   const renderTransferPoint = (
     fromTripPoint: TripPointCompact,
     index: number,
   ) => {
-    if (index === tripPoints.length - 1) {
+    if (index === tripPointsFormatted.length - 1) {
       return null;
     }
 
