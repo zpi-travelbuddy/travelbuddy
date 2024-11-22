@@ -7,6 +7,13 @@ namespace TravelBuddyAPI.Interfaces;
 /// </summary>
 public interface IFavouritesService
 {
+    public static class ErrorMessage
+    {
+        public const string FavouritesProfilesNotFound = "Favourite profiles not found.";
+        public const string CategoryProfileNotFound = "Category profile not found.";
+        public const string ConditionProfileNotFound = "Condition profile not found.";
+    }
+
     /// <summary>
     /// Adds a category profile to the user's favourites.
     /// </summary>

@@ -1,37 +1,138 @@
+using System.ComponentModel.DataAnnotations;
+using System.Data.Entity;
 using TravelBuddyAPI.Data;
 using TravelBuddyAPI.DTOs.FavouriteProfiles;
 using TravelBuddyAPI.Interfaces;
+using TravelBuddyAPI.Models;
 
 namespace TravelBuddyAPI.Services;
 
-public class FavouritesService(TravelBuddyDbContext dbContext, ITravelBuddyDbCache dbCache) : IFavouritesService
+public class FavouritesService(TravelBuddyDbContext dbContext) : IFavouritesService
 {
     private readonly TravelBuddyDbContext _dbContext = dbContext;
-    private readonly ITravelBuddyDbCache _dbCache = dbCache;
 
 
-    public Task<FavouriteProfilesDTO> AddCategoryProfileToFavouritesAsync(string userId, Guid profileId)
+    public async Task<FavouriteProfilesDTO> AddCategoryProfileToFavouritesAsync(string userId, Guid profileId)
     {
-        throw new NotImplementedException();
+        CategoryProfile categoryProfile = await _dbContext.CategoryProfiles
+            .Where(cp => cp.Id == profileId && cp.UserId == userId)
+            .FirstOrDefaultAsync() ?? throw new InvalidOperationException(IFavouritesService.ErrorMessage.CategoryProfileNotFound);
+
+        FavouriteProfiles favouriteProfiles = await _dbContext.Favourites
+            .Where(f => f.UserId == userId)
+            .FirstOrDefaultAsync() ?? await CreateFavouriteProfilesAsync(userId);
+
+        favouriteProfiles.CategoryProfileId = categoryProfile.Id;
+
+        var validationContext = new ValidationContext(favouriteProfiles);
+        Validator.ValidateObject(favouriteProfiles, validationContext, validateAllProperties: true);
+
+        _dbContext.Favourites.Update(favouriteProfiles);
+        await _dbContext.SaveChangesAsync();
+
+        return new FavouriteProfilesDTO
+        {
+            CategoryProfileId = favouriteProfiles.CategoryProfileId,
+            ConditionProfileId = favouriteProfiles.ConditionProfileId
+        };
     }
 
-    public Task<FavouriteProfilesDTO> AddConditionProfileToFavouritesAsync(string userId, Guid profileId)
+    public async Task<FavouriteProfilesDTO> AddConditionProfileToFavouritesAsync(string userId, Guid profileId)
     {
-        throw new NotImplementedException();
+        ConditionProfile conditionProfile = await _dbContext.ConditionProfiles
+            .Where(cp => cp.Id == profileId && cp.UserId == userId)
+            .FirstOrDefaultAsync() ?? throw new InvalidOperationException(IFavouritesService.ErrorMessage.ConditionProfileNotFound);
+
+        FavouriteProfiles favouriteProfiles = await _dbContext.Favourites
+            .Where(f => f.UserId == userId)
+            .FirstOrDefaultAsync() ?? await CreateFavouriteProfilesAsync(userId);
+
+        favouriteProfiles.ConditionProfileId = conditionProfile.Id;
+
+        var validationContext = new ValidationContext(favouriteProfiles);
+        Validator.ValidateObject(favouriteProfiles, validationContext, validateAllProperties: true);
+
+        _dbContext.Favourites.Update(favouriteProfiles);
+        await _dbContext.SaveChangesAsync();
+
+        return new FavouriteProfilesDTO
+        {
+            CategoryProfileId = favouriteProfiles.CategoryProfileId,
+            ConditionProfileId = favouriteProfiles.ConditionProfileId
+        };
     }
 
-    public Task<FavouriteProfilesDTO> GetFavouriteProfilesAsync(string userId)
+    public async Task<FavouriteProfilesDTO> GetFavouriteProfilesAsync(string userId)
     {
-        throw new NotImplementedException();
+        FavouriteProfiles favouriteProfiles = await _dbContext.Favourites
+            .Where(f => f.UserId == userId)
+            .FirstOrDefaultAsync() ?? throw new InvalidOperationException(IFavouritesService.ErrorMessage.FavouritesProfilesNotFound);
+
+        return new FavouriteProfilesDTO{
+            CategoryProfileId = favouriteProfiles.CategoryProfileId,
+            ConditionProfileId = favouriteProfiles.ConditionProfileId
+        };
+
     }
 
-    public Task<bool> RemoveCategoryProfileFromFavouritesAsync(string userId, Guid profileId)
+    public async Task<bool> RemoveCategoryProfileFromFavouritesAsync(string userId, Guid profileId)
     {
-        throw new NotImplementedException();
+        FavouriteProfiles favouriteProfiles = await _dbContext.Favourites
+            .Where(f => f.UserId == userId)
+            .Include(f => f.CategoryProfile)
+            .FirstOrDefaultAsync() ?? throw new InvalidOperationException(IFavouritesService.ErrorMessage.FavouritesProfilesNotFound);
+
+        if (favouriteProfiles.CategoryProfileId != profileId)
+        {
+            throw new InvalidOperationException(IFavouritesService.ErrorMessage.CategoryProfileNotFound);
+        }
+
+        favouriteProfiles.CategoryProfileId = null;
+        
+        var validationContext = new ValidationContext(favouriteProfiles);
+        Validator.ValidateObject(favouriteProfiles, validationContext, validateAllProperties: true);
+
+        _dbContext.Favourites.Update(favouriteProfiles);
+        await _dbContext.SaveChangesAsync();
+
+        return true;
     }
 
-    public Task<bool> RemoveConditionProfileFromFavouritesAsync(string userId, Guid profileId)
+    public async Task<bool> RemoveConditionProfileFromFavouritesAsync(string userId, Guid profileId)
     {
-        throw new NotImplementedException();
+        FavouriteProfiles favouriteProfiles = await _dbContext.Favourites
+            .Where(f => f.UserId == userId)
+            .Include(f => f.ConditionProfile)
+            .FirstOrDefaultAsync() ?? throw new InvalidOperationException(IFavouritesService.ErrorMessage.FavouritesProfilesNotFound);
+
+        if (favouriteProfiles.ConditionProfileId != profileId)
+        {
+            throw new InvalidOperationException(IFavouritesService.ErrorMessage.ConditionProfileNotFound);
+        }
+
+        favouriteProfiles.ConditionProfileId = null;
+        
+        var validationContext = new ValidationContext(favouriteProfiles);
+        Validator.ValidateObject(favouriteProfiles, validationContext, validateAllProperties: true);
+
+        _dbContext.Favourites.Update(favouriteProfiles);
+        await _dbContext.SaveChangesAsync();
+
+        return true;
+    }
+
+    private async Task<FavouriteProfiles> CreateFavouriteProfilesAsync(string userId)
+    {
+        FavouriteProfiles favouriteProfiles = new FavouriteProfiles
+        {
+            UserId = userId,
+            CategoryProfileId = null,
+            ConditionProfileId = null
+        };
+
+        _dbContext.Favourites.Add(favouriteProfiles);
+        await _dbContext.SaveChangesAsync();
+
+        return favouriteProfiles;
     }
 }
