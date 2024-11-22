@@ -126,14 +126,7 @@ export interface EditTripRequest {
   numberOfTravelers: number;
   startDate: string;
   endDate: string;
-  destinationPlace: {
-    providerId: string,
-    name?: string;
-    country?: string;
-    city?: string;
-    latitude?: number;
-    longitude?: number;
-  }
+  destinationProviderId: string;
   budget: number;
   currencyCode: string;
 }
