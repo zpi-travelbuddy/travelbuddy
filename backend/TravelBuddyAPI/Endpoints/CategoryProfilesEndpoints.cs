@@ -3,6 +3,7 @@ using TravelBuddyAPI.Models;
 using TravelBuddyAPI.DTOs.CategoryProfile;
 using Microsoft.AspNetCore.Http.HttpResults;
 using TravelBuddyAPI.DTOs.PlaceCategory;
+using TravelBuddyAPI.Interfaces;
 
 namespace TravelBuddyAPI.Endpoints;
 
@@ -33,10 +34,16 @@ public static class CategoryProfilesEndpoints
         return app;
     }
 
-    private static async Task<Results<Ok<List<PlaceCategoryDTO>>, NotFound<string>>> GetAvailableCategoriesAsync()
+    private static async Task<Results<Ok<List<PlaceCategoryNodeDTO>>, NotFound<string>>> GetAvailableCategoriesAsync(IAvailableOptionsService availableOptionsService)
     {
-        await Task.CompletedTask;
-        return TypedResults.NotFound("test");
+        var categories = await availableOptionsService.GetAvailableCategoriesAsync();
+
+        if (categories is not null && categories.Count > 0)
+        {
+            return TypedResults.Ok(categories);
+        }
+
+        return TypedResults.NotFound("Available categories not found");
     }
 
     private static async Task<Results<Ok<List<CategoryProfileOverviewDTO>>, NotFound<string>>> GetAvailableCategoryProfilesAsync()
