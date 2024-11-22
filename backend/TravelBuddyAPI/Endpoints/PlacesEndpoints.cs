@@ -17,6 +17,9 @@ public static class PlacesEndpoints
         group.MapGet("/autocomplete", GetAutocompletePlacesAsync)
             .WithName("GetAutocompletePlaces");
 
+        group.MapGet("/provider/{providerId}", GetProviderPlaceDetailsAsync)
+            .WithName("GetProviderPlaceDetails");
+
         return app;
     }
 
@@ -41,6 +44,18 @@ public static class PlacesEndpoints
             return TypedResults.Ok(placeDetails);
         }
         catch (InvalidOperationException ex)
+        {
+            return TypedResults.NotFound(ex.Message);
+        }
+    }
+
+    private static async Task<Results<Ok<PlaceDetailsDTO>, NotFound<string>>> GetProviderPlaceDetailsAsync(string providerId, IPlacesService placesService)
+    {
+        try {
+            var placeDetails = await placesService.GetPlaceDetailsAsync(providerId);
+            return TypedResults.Ok(placeDetails);
+        }
+        catch (ArgumentException ex)
         {
             return TypedResults.NotFound(ex.Message);
         }
