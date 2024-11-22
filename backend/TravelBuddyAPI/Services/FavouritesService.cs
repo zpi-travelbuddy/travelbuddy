@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-using System.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 using TravelBuddyAPI.Data;
 using TravelBuddyAPI.DTOs.FavouriteProfiles;
 using TravelBuddyAPI.Interfaces;
