@@ -93,7 +93,7 @@ public class ConditionProfilesService(TravelBuddyDbContext dbContext) : IConditi
         }
     }
 
-    public async Task<ConditionProfileDetailsDTO> EditConditionProfileAsync(string userId, Guid profileId, ConditionProfileRequestDTO conditionProfile)
+    public async Task<bool> EditConditionProfileAsync(string userId, Guid profileId, ConditionProfileRequestDTO conditionProfile)
     {
         try
         {
@@ -112,7 +112,7 @@ public class ConditionProfilesService(TravelBuddyDbContext dbContext) : IConditi
             _dbContext.ConditionProfiles.Update(existingConditionProfile);
             await _dbContext.SaveChangesAsync();
 
-            return await GetConditionProfileDetailsAsync(userId, profileId);
+            return true;
         }
         catch (InvalidOperationException e)
         {

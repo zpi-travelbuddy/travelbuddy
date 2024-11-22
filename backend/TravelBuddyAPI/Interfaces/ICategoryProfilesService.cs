@@ -30,7 +30,7 @@ public interface ICategoryProfilesService
     /// <param name="profileId">The ID of the profile to edit.</param>
     /// <param name="categoryProfile">The updated category profile data.</param>
     /// <returns>A task that represents the asynchronous operation. The task result indicates whether the edit was successful.</returns>
-    Task<CategoryProfileDetailsDTO> EditCategoryProfileAsync(string userId, Guid profileId, CategoryProfileRequestDTO categoryProfile);
+    Task<bool> EditCategoryProfileAsync(string userId, Guid profileId, CategoryProfileRequestDTO categoryProfile);
 
     /// <summary>
     /// Deletes a category profile.

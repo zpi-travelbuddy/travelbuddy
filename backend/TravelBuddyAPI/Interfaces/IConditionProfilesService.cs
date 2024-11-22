@@ -32,7 +32,7 @@ public interface IConditionProfilesService
     /// <param name="profileId">The ID of the condition profile to edit.</param>
     /// <param name="conditionProfile">The updated condition profile data.</param>
     /// <returns>A task that represents the asynchronous operation. The task result indicates whether the edit was successful.</returns>
-    Task<ConditionProfileDetailsDTO> EditConditionProfileAsync(string userId, Guid profileId, ConditionProfileRequestDTO conditionProfile);
+    Task<bool> EditConditionProfileAsync(string userId, Guid profileId, ConditionProfileRequestDTO conditionProfile);
 
     /// <summary>
     /// Deletes a condition profile for a user.

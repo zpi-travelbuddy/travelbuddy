@@ -90,7 +90,7 @@ public class CategoryProfilesService(TravelBuddyDbContext dbContext) : ICategory
         }
     }
 
-    public async Task<CategoryProfileDetailsDTO> EditCategoryProfileAsync(string userId, Guid profileId, CategoryProfileRequestDTO categoryProfile)
+    public async Task<bool> EditCategoryProfileAsync(string userId, Guid profileId, CategoryProfileRequestDTO categoryProfile)
     {
         try
         {
@@ -109,7 +109,7 @@ public class CategoryProfilesService(TravelBuddyDbContext dbContext) : ICategory
             _dbContext.CategoryProfiles.Update(existingCategoryProfile);
             await _dbContext.SaveChangesAsync();
 
-            return await GetCategoryProfileDetailsAsync(userId, profileId);
+            return true;
         }
         catch (InvalidOperationException e)
         {
