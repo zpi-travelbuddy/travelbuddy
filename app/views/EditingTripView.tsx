@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   StyleSheet,
   View,
@@ -6,58 +7,103 @@ import {
   ScrollView,
   FlatList,
 } from "react-native";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useTheme, MD3Theme, TextInput, Text } from "react-native-paper";
 import {
   DatePickerModal,
   pl,
   registerTranslation,
 } from "react-native-paper-dates";
-import { formatDateRange, formatToISODate } from "@/utils/TimeUtils";
+import {
+  formatDateRange,
+  formatDateToISO,
+  getISOToday,
+} from "@/utils/TimeUtils";
 import CurrencyValueInput from "@/components/CurrencyValueInput";
 import CustomModal from "@/components/CustomModal";
 import { RenderItem } from "@/components/RenderItem";
 import ActionButtons from "@/components/ActionButtons";
 import ClickableInput from "@/components/ClickableInput";
-import { TripDay, TripDetails } from "@/types/Trip";
+import { TripErrors, EditTripRequest } from "@/types/Trip";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import useTripDetails, {
+  useEditTripDetails,
+} from "@/composables/useTripDetails";
+import { useSnackbar } from "@/context/SnackbarContext";
+import LoadingView from "./LoadingView";
+import { CALENDAR_ICON, MARKER_ICON } from "@/constants/Icons";
+import {
+  useGetCategoryProfiles,
+  useGetConditionProfiles,
+} from "@/composables/useProfiles";
+import usePlaceDetails from "@/composables/usePlace";
+import { convertTripResponseToEditTripRequest } from "@/converters/tripConverters";
+import { Place } from "@/types/Place";
+import { getDisplayPlace } from "@/utils/TextUtils";
+import { Profile, ProfileType } from "@/types/Profile";
 
 const { height, width } = Dimensions.get("window");
 
 registerTranslation("pl", pl);
 
-const editedTrip: TripDetails = {
-  id: "77b6b9bd-99d8-4b56-b74d-ed69c3a1238a",
-  name: "Wycieczka do Londynu",
-  numberOfTravelers: 3,
-  startDate: "2025-11-10",
-  endDate: "2025-11-15",
-  destinationId: "eb2a3de6-8998-4a3c-992c-9e4fd76ef027",
-  budget: 6000,
-  currencyCode: "USD",
-  categoryProfileId: "null",
-  conditionProfileId: "null",
-  tripDays: [] as TripDay[],
-};
-
 const EditTripView = () => {
-  interface Profile {
-    id: string;
-    name: string;
-  }
-
-  type ProfileType = "Category" | "Condition";
+  // =====================
+  // SECTION: Hook calls (API or logic hooks)
+  // =====================
 
   const theme = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
+  const router = useRouter();
+  const { showSnackbar } = useSnackbar();
+  const params = useLocalSearchParams();
+  const {
+    trip_id,
+    destinationId: new_destination_id,
+    destinationName: new_destination_name,
+  } = params;
 
-  const [trip, setTrip] = useState<TripDetails>(editedTrip);
+  const [editTripRequest, setEditTripRequest] = useState<EditTripRequest>(
+    {} as EditTripRequest,
+  );
+
+  const {
+    tripDetails,
+    loading: tripLoading,
+    error: tripError,
+  } = useTripDetails(trip_id as string);
+
+  const {
+    placeDetails: destinationDetails,
+    loading: destinationLoading,
+    error: destinationError,
+  } = usePlaceDetails(tripDetails?.destinationId);
+
+  const {
+    editTrip,
+    loading: editTripLoading,
+    error: editError,
+    success: editSuccess,
+  } = useEditTripDetails(trip_id as string, editTripRequest, {
+    immediate: false,
+  });
+
+  // =====================
+  // SECTION: useState variables
+  // =====================
+
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const [errors, setErrors] = useState<TripErrors>({});
+  const [numberOfPeople, setNumberOfPeople] = useState<string>("");
+  const [destinationName, setDestinationName] = useState<string>("");
 
   const [dateRange, setDateRange] = useState<{
     startDate: Date;
     endDate: Date;
   }>({
-    startDate: new Date(trip.startDate),
-    endDate: new Date(trip.endDate),
+    startDate: new Date(),
+    endDate: new Date(),
   });
 
   const [dateRangeText, setDateRangeText] = useState<string>(
@@ -67,223 +113,377 @@ const EditTripView = () => {
   const [isOpen, setOpen] = useState<boolean>(false);
   const [visible, setVisible] = useState<boolean>(false);
 
-  const [selectedCategoryProfile, setSelectedCategoryProfile] =
-    useState<Profile>({ id: "null", name: "Zwiedzanie i jedzenie" });
+  const [categoryProfileId, setCategoryProfileId] = useState<string | null>(
+    null,
+  );
+  const [conditionProfileId, setConditionProfileId] = useState<string | null>(
+    null,
+  );
 
-  const [selectedConditionProfile, setSelectedConditionProfile] =
-    useState<Profile>({ id: "null", name: "Potrzebuję internetu dla psa" });
+  const [profileType, setProfileType] = useState<ProfileType>("Category");
 
   const [categoryProfiles, setCategoryProfiles] = useState<Profile[]>([
     { id: "1", name: "Profile1" },
-    { id: "null", name: "Zwiedzanie i jedzenie" },
+    { id: "2", name: "Zwiedzanie i jedzenie" },
   ]);
 
   const [conditionProfiles, setConditionProfiles] = useState<Profile[]>([
     { id: "11", name: "Profile11" },
-    { id: "null", name: "Potrzebuję internetu dla psa" },
+    { id: "22", name: "Potrzebuję internetu dla psa" },
   ]);
 
-  const renderProfileContent = useCallback(
-    (item: { id: string; name: string }) => item.name,
-    [],
-  );
+  // =====================
+  // SECTION: useEffect hooks
+  // =====================
 
-  const renderCategoryProfile = ({ item }: { item: Profile }) => (
-    <RenderItem
-      item={item}
-      isSelected={selectedCategoryProfile.id === item.id}
-      onSelect={() => {
-        setSelectedCategoryProfile(item);
-        setTrip((prevTrip: TripDetails) => ({
-          ...prevTrip,
-          categoryProfileId: item.id,
-        }));
-      }}
-      renderContent={renderProfileContent}
-    />
-  );
+  useEffect(() => {
+    if (destinationDetails && !new_destination_id) {
+      setDestinationName(getDisplayPlace(destinationDetails));
+    } else if (new_destination_id && new_destination_name) {
+      setDestinationName(new_destination_name as string);
+      setEditTripRequest((prev) => ({
+        ...prev,
+        destinationPlace: { providerId: new_destination_id as string },
+      }));
+    } else console.log("ERRRRROR");
+  }, [destinationDetails, new_destination_id]);
 
-  const renderConditionProfile = ({ item }: { item: Profile }) => (
-    <RenderItem
-      item={item}
-      isSelected={selectedConditionProfile.id === item.id}
-      onSelect={() => {
-        setSelectedCategoryProfile(item);
-        setTrip((prevTrip: TripDetails) => ({
-          ...prevTrip,
-          conditionProfileId: item.id,
-        }));
-      }}
-      renderContent={renderProfileContent}
-    />
-  );
-  const [selectedProfileType, setSelectedProfileType] =
-    useState<ProfileType>("Category");
+  useEffect(() => {
+    setError(tripError || destinationError || "");
+  }, [tripError, destinationError, editError]);
 
-  const showModal = (type: ProfileType) => {
-    setSelectedProfileType(type);
-    setVisible(true);
-  };
+  useEffect(() => {
+    setLoading(tripLoading || destinationLoading || editTripLoading || false);
+  }, [tripLoading, destinationLoading, editTripLoading]);
 
-  const hideModal = () => setVisible(false);
+  useEffect(() => {
+    if (tripDetails && destinationDetails) {
+      setEditTripRequest(
+        convertTripResponseToEditTripRequest(
+          tripDetails,
+          destinationDetails as Place,
+        ),
+      );
+      setNumberOfPeople(tripDetails.numberOfTravelers.toString());
+      setDateRange({
+        startDate: new Date(tripDetails.startDate),
+        endDate: new Date(tripDetails.endDate),
+      });
+      setCategoryProfileId("null");
+      setConditionProfileId("null");
+    }
+  }, [tripDetails, destinationDetails]);
 
-  const onDismiss = useCallback(() => {
-    setOpen(false);
-  }, []);
+  useEffect(() => {
+    setEditTripRequest((prev) => ({
+      ...prev,
+      startDate: formatDateToISO(dateRange.startDate),
+      endDate: formatDateToISO(dateRange.endDate),
+    }));
+    setDateRangeText(formatDateRange(dateRange.startDate, dateRange.endDate));
+  }, [dateRange]);
 
-  const onConfirm = useCallback(
-    ({
-      startDate,
-      endDate,
-    }: {
-      startDate: Date | undefined;
-      endDate: Date | undefined;
-    }) => {
-      setOpen(false);
-      if (startDate && endDate) {
-        setDateRange({ startDate, endDate });
-        setDateRangeText(formatDateRange(startDate, endDate));
-        setTrip((prevTrip: TripDetails) => ({
-          ...prevTrip,
-          startDate: formatToISODate(startDate),
-          endDate: formatToISODate(endDate),
-        }));
-      }
-    },
-    [],
-  );
+  useEffect(() => {
+    if (editSuccess !== null) {
+      if (editSuccess) {
+        showSnackbar("Wycieczka została zapisana!", "success");
+        router.back();
+        router.setParams({
+          refresh: "true",
+        });
+      } else showSnackbar("Błąd przy zapisie wycieczki", "error");
+    }
+  }, [router, editSuccess]);
 
-  const onSaveTrip = () => {
-    if (
-      !trip.id ||
-      !trip.name ||
-      !trip.destinationId ||
-      !trip.startDate ||
-      !trip.endDate ||
-      !trip.numberOfTravelers ||
-      !trip.budget ||
-      !trip.categoryProfileId ||
-      !trip.conditionProfileId ||
-      !trip.currencyCode
-    ) {
-      console.log("Brak wymaganych danych!");
+  // =====================
+  // SECTION: Functions
+  // =====================
+
+  const saveTrip = async () => {
+    if (!editTripRequest.destinationPlace.providerId) {
+      showSnackbar("Błąd z celem wycieczki!", "error");
+      console.error(editTripRequest.destinationPlace.providerId);
+    }
+
+    let hasErrors = false;
+    if (!editTripRequest.name) {
+      hasErrors = true;
+      setErrors((prev) => ({
+        ...prev,
+        name: "Nazwa wycieczki jest wymagana.",
+      }));
+    }
+    if (!dateRange.startDate) {
+      hasErrors = true;
+      setErrors((prev) => ({
+        ...prev,
+        startDate: "Termin wycieczki jest wymagany.",
+      }));
+    }
+    if (!editTripRequest.destinationPlace.providerId) {
+      hasErrors = true;
+      setErrors((prev) => ({
+        ...prev,
+        providerId: "Cel wycieczki jest wymagany.",
+      }));
+    }
+    if (!numberOfPeople) {
+      hasErrors = true;
+      setErrors((prev) => ({
+        ...prev,
+        numberOfTravelers: "Liczba osób jest wymagana.",
+      }));
+    } else if (editTripRequest.numberOfTravelers < 1) {
+      hasErrors = true;
+      setErrors((prev) => ({
+        ...prev,
+        numberOfTravelers: "Liczba osób musi dodatnia.",
+      }));
+    }
+    if (!editTripRequest.budget) {
+      hasErrors = true;
+      setErrors((prev) => ({
+        ...prev,
+        budget: "Kwota budżetu jest wymagana.",
+      }));
+    }
+    // if (!editTripRequest.categoryProfileId){
+    //   hasErrors = true;
+    //   setErrors((prev) => ({...prev, categoryProfile: "Profil preferencji jest wymagany."}))
+    // }
+
+    // if (!editTripRequest.conditionProfileId){
+    //   hasErrors = true;
+    //   setErrors((prev) => ({...prev, conditionProfile: "Profil udogodnień jest wymagany."}))
+    // }
+    if (hasErrors) {
+      showSnackbar("Proszę uzupełnić wszystkie wymagane pola!", "error");
       return;
     }
 
-    console.log("Zapisany obiekt wycieczki:", trip);
+    try {
+      await editTrip();
+    } catch (error) {
+      showSnackbar("Błąd podczas zapisywania wycieczki!", "error");
+      console.error(error);
+    }
   };
 
-  const handleTextChange = (text: string) => {
-    const numericText = text.replace(/[^0-9]/g, "");
-
-    setTrip((prevTrip) => ({
-      ...prevTrip,
-      numberOfTravelers: parseInt(numericText) || 0,
-    }));
+  const handleChange = (field: keyof TripErrors = "", clearError = true) => {
+    return (value: any) => {
+      setEditTripRequest((prev) => ({ ...prev, [field]: value }));
+      if (clearError && field) setErrors((prev) => ({ ...prev, [field]: "" }));
+    };
   };
+
+  const validateNumberOfPeople = () => {
+    const numericValue = numberOfPeople.replace(/[^0-9]/g, "");
+    const parsedValue = parseInt(numericValue, 10);
+    if (!isNaN(parsedValue) && parsedValue > 0) {
+      setNumberOfPeople(parsedValue.toString());
+      handleChange("numberOfTravelers")(parsedValue);
+    } else {
+      setNumberOfPeople("");
+      handleChange("numberOfTravelers")(0);
+    }
+  };
+
+  const getProfileName = (profileType: ProfileType, id: string | null) => {
+    if (id) {
+      let profiles;
+      if (profileType === "Category") profiles = categoryProfiles;
+      else if (profileType === "Condition") profiles = conditionProfiles;
+      else throw new Error();
+      const profile = profiles.find((p) => p.id === id);
+      return profile ? profile.name : "Brak";
+    } else return "Brak";
+  };
+
+  const handleProfileSelection = useCallback(
+    (profile: Profile) => {
+      if (profileType === "Category") setCategoryProfileId(profile.id);
+      else setConditionProfileId(profile.id);
+    },
+    [profileType],
+  );
+
+  // =====================
+  // SECTION: Return JSX (UI rendering)
+  // =====================
+
+  if (loading) {
+    return <LoadingView />;
+  }
+
+  if (error) {
+    router.back();
+    showSnackbar(error?.toString(), "error");
+    return null;
+  }
+
   return (
-    <ScrollView style={styles.scrollView}>
-      <View style={styles.container}>
-        <Image
-          source={{
-            uri: "https://upload.wikimedia.org/wikipedia/commons/1/1a/Big_Ben..JPG",
-          }}
-          style={styles.image}
-          resizeMode="cover"
-        />
-        <TextInput
-          mode="outlined"
-          style={styles.textInput}
-          label="Nazwa"
-          value={trip.name}
-          placeholder="Wprowadź nazwę wycieczki"
-          onChangeText={(text) =>
-            setTrip((prevTrip) => ({ ...prevTrip, name: text }))
-          }
-        />
-
-        <ClickableInput
-          label="Termin wycieczki"
-          value={formatDateRange(
-            new Date(trip.startDate),
-            new Date(trip.endDate),
-          )}
-          onPress={() => setOpen(true)}
-          icon="calendar"
-        />
-
-        <DatePickerModal
-          mode="range"
-          visible={isOpen}
-          onDismiss={onDismiss}
-          startDate={new Date(trip.startDate)}
-          endDate={new Date(trip.endDate)}
-          onConfirm={onConfirm}
-          locale="pl"
-        />
-
-        <TextInput
-          mode="outlined"
-          style={styles.textInput}
-          label="Cel wycieczki"
-          value={trip.destinationId}
-          placeholder="Podaj miejsce wycieczki"
-          onChangeText={(text) =>
-            setTrip((prevTrip) => ({ ...prevTrip, destination: text }))
-          }
-        />
-
-        <TextInput
-          mode="outlined"
-          style={styles.textInput}
-          label="Liczba osób"
-          value={trip.numberOfTravelers.toString()}
-          onChangeText={handleTextChange}
-          keyboardType="numeric"
-        />
-
-        <CurrencyValueInput />
-
-        <ClickableInput
-          label="Profil preferencji"
-          value={selectedCategoryProfile.name}
-          onPress={() => showModal("Category")}
-        />
-
-        <ClickableInput
-          label="Profil udogodnień"
-          value={selectedConditionProfile.name}
-          onPress={() => showModal("Condition")}
-        />
-
-        <CustomModal visible={visible} onDismiss={hideModal}>
-          <FlatList
-            data={
-              selectedProfileType === "Category"
-                ? categoryProfiles
-                : conditionProfiles
-            }
-            renderItem={
-              selectedProfileType === "Category"
-                ? renderCategoryProfile
-                : renderConditionProfile
-            }
-            keyExtractor={(item) => item.id}
-            ItemSeparatorComponent={() => <View />}
-            ListEmptyComponent={<Text>Brak dostępnych profili</Text>}
+    <>
+      <ScrollView style={styles.scrollView}>
+        <View style={styles.container}>
+          <Image
+            source={{
+              uri: "https://upload.wikimedia.org/wikipedia/commons/1/1a/Big_Ben..JPG",
+            }}
+            style={styles.image}
+            resizeMode="cover"
           />
-        </CustomModal>
-      </View>
+          <View style={styles.form}>
+            <TextInput
+              mode="outlined"
+              style={styles.textInput}
+              label="Nazwa"
+              value={editTripRequest.name}
+              onChangeText={handleChange("name")}
+              error={!!errors.name}
+            />
+            {errors.name && <Text style={styles.textError}>{errors.name}</Text>}
 
-      <ActionButtons
-        onAction1={() => console.log("Anulowanie")}
-        onAction2={onSaveTrip}
-        action1ButtonLabel="Anuluj"
-        action2ButtonLabel="Zapisz"
-        action1Icon={undefined}
-        action2Icon={undefined}
-      />
-    </ScrollView>
+            <ClickableInput
+              label="Termin wycieczki"
+              value={dateRangeText}
+              onPress={() => setOpen(true)}
+              icon={CALENDAR_ICON}
+              error={!!errors.range && !dateRange.startDate}
+            />
+            {errors.range && !dateRange.startDate && (
+              <Text style={styles.textError}>{errors.range}</Text>
+            )}
+
+            <ClickableInput
+              label="Cel wycieczki"
+              value={destinationName}
+              onPress={() => router.push("/trips/add/destination")}
+              icon={MARKER_ICON}
+              error={!!errors.destinationPlace}
+            />
+            {errors.destinationPlace && (
+              <Text style={styles.textError}>{errors.destinationPlace}</Text>
+            )}
+
+            <TextInput
+              mode="outlined"
+              style={styles.textInput}
+              label="Liczba osób"
+              value={numberOfPeople}
+              onChangeText={setNumberOfPeople}
+              onEndEditing={validateNumberOfPeople}
+              keyboardType="numeric"
+              error={!!errors.numberOfTravelers}
+            />
+            {errors.numberOfTravelers && (
+              <Text style={styles.textError}>{errors.numberOfTravelers}</Text>
+            )}
+
+            <CurrencyValueInput
+              budget={editTripRequest.budget}
+              currency={editTripRequest.currencyCode}
+              handleBudgetChange={handleChange("budget")}
+              disable={true}
+              error={!!errors.budget}
+            />
+            {errors.budget && (
+              <Text style={styles.textError}>{errors.budget}</Text>
+            )}
+
+            <ClickableInput
+              icon="account"
+              label="Profil preferencji"
+              value={getProfileName("Category", categoryProfileId)}
+              onPress={() => {
+                setProfileType("Category");
+                setVisible(true);
+              }}
+              error={!!errors.categoryProfile}
+            />
+            {errors.categoryProfile && (
+              <Text style={styles.textError}>{errors.categoryProfile}</Text>
+            )}
+
+            <ClickableInput
+              icon="account"
+              label="Profil udogodnień"
+              value={getProfileName("Condition", conditionProfileId)}
+              onPress={() => {
+                setProfileType("Condition");
+                setVisible(true);
+              }}
+              error={!!errors.conditionProfile}
+            />
+            {errors.conditionProfile && (
+              <Text style={styles.textError}>{errors.conditionProfile}</Text>
+            )}
+
+            <CustomModal visible={visible} onDismiss={() => setVisible(false)}>
+              <FlatList
+                data={
+                  profileType === "Category"
+                    ? categoryProfiles
+                    : conditionProfiles
+                }
+                renderItem={({ item }) => (
+                  <RenderItem
+                    item={item}
+                    isSelected={
+                      (profileType === "Category"
+                        ? categoryProfileId
+                        : conditionProfileId) === item.id
+                    }
+                    onSelect={handleProfileSelection}
+                    renderContent={(item) => item.name}
+                  />
+                )}
+                keyExtractor={(item) => item.id}
+                ItemSeparatorComponent={() => <View />}
+                ListEmptyComponent={<Text>Brak dostępnych profili</Text>}
+              />
+            </CustomModal>
+          </View>
+          <DatePickerModal
+            mode="range"
+            visible={isOpen}
+            onDismiss={() => setOpen(false)}
+            startDate={dateRange.startDate}
+            endDate={dateRange.endDate}
+            onConfirm={({ startDate, endDate }) => {
+              setOpen(false);
+
+              if (startDate) {
+                if (endDate) {
+                  setDateRange({
+                    startDate: new Date(startDate),
+                    endDate: new Date(endDate),
+                  });
+                } else {
+                  setDateRange({
+                    startDate: new Date(startDate),
+                    endDate: new Date(startDate),
+                  });
+                }
+              } else {
+                console.log("Podany zakres dat jest nieprawidłowy!");
+              }
+            }}
+            locale="pl"
+            validRange={{ startDate: getISOToday() }}
+            startWeekOnMonday
+          />
+        </View>
+
+        <ActionButtons
+          onAction1={router.back}
+          onAction2={saveTrip}
+          action1ButtonLabel="Anuluj"
+          action2ButtonLabel="Zapisz"
+          action1Icon={undefined}
+          action2Icon={undefined}
+        />
+      </ScrollView>
+    </>
   );
 };
 
@@ -302,31 +502,21 @@ const createStyles = (theme: MD3Theme) =>
       paddingBottom: 20,
       backgroundColor: theme.colors.surface,
     },
-    image: {
-      marginVertical: 25,
-      width: "100%",
-      height: height * 0.2,
+    form: {
+      flex: 1,
+      gap: 10,
+      alignItems: "center",
+      width: width,
     },
+    image: { marginVertical: 25, width: "100%", height: height * 0.2 },
     textInput: {
       width: "90%",
       height: 50,
-      marginVertical: 10,
       backgroundColor: theme.colors.surface,
     },
-    modal: {
-      backgroundColor: theme.colors.surface,
-      marginHorizontal: "10%",
-      padding: 20,
-      borderRadius: 10,
-      alignSelf: "center",
-    },
-    modalContent: {
-      fontSize: 16,
-      textAlign: "center",
-    },
-    modalText: {
-      fontSize: 16,
-      textAlign: "center",
-      marginBottom: 20,
+    textError: {
+      marginHorizontal: "5%",
+      color: theme.colors.error,
+      alignSelf: "flex-start",
     },
   });

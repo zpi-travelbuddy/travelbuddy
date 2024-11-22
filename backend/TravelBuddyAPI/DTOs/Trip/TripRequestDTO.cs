@@ -22,7 +22,7 @@ public class TripRequestDTO
     public DateOnly EndDate { get; set; }
 
     [Required]
-    public PlaceRequestDTO? DestinationPlace { get; set; }
+    public string? DestinationProviderId { get; set; }
 
     [Required]
     [Range(0, double.MaxValue, ErrorMessage = $"{nameof(Budget)} must be a positive number.")]

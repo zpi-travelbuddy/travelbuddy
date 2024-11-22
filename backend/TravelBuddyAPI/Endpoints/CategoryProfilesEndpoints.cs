@@ -57,7 +57,7 @@ public static class CategoryProfilesEndpoints
         return TypedResults.NotFound("Not implemented");
     }
 
-    private static async Task<Results<Accepted<string>, NotFound<string>>> EditCategoryProfileAsync(Guid id, CategoryProfileRequestDTO categoryProfile)
+    private static async Task<Results<Accepted<string>, NotFound<string>, BadRequest<string>>> EditCategoryProfileAsync(Guid id, CategoryProfileRequestDTO categoryProfile)
     {
         await Task.CompletedTask;
         return TypedResults.NotFound("Not implemented");

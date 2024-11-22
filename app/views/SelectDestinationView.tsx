@@ -19,7 +19,8 @@ import { useDebouncedCallback } from "use-debounce";
 import { router } from "expo-router";
 import { API_AUTOCOMPLETE_DESTINATION } from "@/constants/Endpoints";
 import { useAnimatedKeyboard } from "react-native-reanimated";
-import { Destination, PlaceCompact } from "@/types/Place";
+import { PlaceCompact } from "@/types/Place";
+import { Destination } from "@/types/Destination";
 
 const DestinationCard = ({ destination }: { destination: Destination }) => {
   const { id, name, country, state } = destination;
@@ -28,7 +29,10 @@ const DestinationCard = ({ destination }: { destination: Destination }) => {
 
   const handleSelect = () => {
     router.back();
-    router.setParams({ destinationId: id, destinationName: name });
+    router.setParams({
+      destinationId: id,
+      destinationName: `${name}, ${country}`,
+    });
   };
 
   return (

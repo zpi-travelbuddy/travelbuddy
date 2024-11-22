@@ -7,6 +7,25 @@ namespace TravelBuddyAPI.Interfaces;
 /// </summary>
 public interface ITransferPointsService
 {
+    public static class ErrorMessage
+    {
+        public const string EmptyRequest = "The request cannot be empty.";
+        public const string SameTripPoints = "The 'From' and 'To' trip points cannot be the same.";
+        public const string TransferPointNotFound = "Transfer point not found.";
+        public const string TripDayNotFound = "Trip day not found.";
+        public const string TripPointNotFoundInTripDay = "Trip points not found in the trip day.";
+        public const string TripPointNotFoundInRequestBody = "Trip points not found in the request body.";
+        public const string InvalidTransferPointTime = "Transfer point time is invalid.";
+        public const string CreateTransferPoint = "An error occurred while creating a transfer point.";
+        public const string DeleteTransferPoint = "An error occurred while deleting a transfer point.";
+        public const string EditTransferPoint = "An error occurred while editing a transfer point.";
+        public const string NullLatitudeOrLongitude = "Latitude or Longitude cannot be null when mode is present.";
+        public const string InvalidTransferPointTimeConflict = "Cannot provide seconds when mode is present.";
+        public const string TripPointAlreadyConnected = "The trip point is already connected to a transfer point.";
+        public const string TransferPointTimeOutOfRange = "Transfer point time must be between 0 (exclusive) and 86400 (exclusive) seconds.";
+        public const string FromTripPointMustBeBeforeToTripPoint = "The 'From' trip point must end before the 'To' trip point starts.";
+    }
+
     /// <summary>
     /// Creates a new transfer point.
     /// </summary>

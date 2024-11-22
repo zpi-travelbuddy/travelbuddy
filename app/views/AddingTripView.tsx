@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useCallback, useMemo, useState } from "react";
 import {
   StyleSheet,
@@ -68,20 +69,23 @@ const AddingTripView = () => {
   const [range, setRange] = useState<DateRange>({});
   const [errors, setErrors] = useState<TripErrors>({});
 
-  const [categoryProfile, setCategoryProfile] = useState<Profile | null>(null);
-  const [conditionProfile, setConditionProfile] = useState<Profile | null>(
+  const [categoryProfileId, setCategoryProfileId] = useState<string | null>(
+    null,
+  );
+  const [conditionProfileId, setConditionProfileId] = useState<string | null>(
     null,
   );
 
   const [profileType, setProfileType] = useState<ProfileType>("Category");
-  const preferenceProfiles = useMemo(
+
+  const categoryProfiles = useMemo(
     () => [
       { id: "1", name: "Profile1" },
       { id: "2", name: "Profile2" },
     ],
     [],
   );
-  const convenienceProfiles = useMemo(
+  const conditionProfiles = useMemo(
     () => [
       { id: "11", name: "Profile11" },
       { id: "22", name: "Profile22" },
@@ -91,9 +95,8 @@ const AddingTripView = () => {
 
   const handleProfileSelection = useCallback(
     (profile: Profile) => {
-      profileType === "Category"
-        ? setCategoryProfile(profile)
-        : setConditionProfile(profile);
+      if (profileType === "Category") setCategoryProfileId(profile.id);
+      else setConditionProfileId(profile.id);
     },
     [profileType],
   );
@@ -152,6 +155,17 @@ const AddingTripView = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const getProfileName = (profileType: ProfileType, id: string | null) => {
+    if (id) {
+      let profiles;
+      if (profileType === "Category") profiles = categoryProfiles;
+      else if (profileType === "Condition") profiles = conditionProfiles;
+      else throw new Error();
+      const profile = profiles.find((p) => p.id === id);
+      return profile ? profile.name : "Brak";
+    } else return "Brak";
   };
 
   return (
@@ -224,16 +238,18 @@ const AddingTripView = () => {
             )}
 
             <ClickableInput
+              icon="account"
               label="Profil preferencji"
-              value={categoryProfile?.name || "Brak"}
+              value={getProfileName("Category", categoryProfileId)}
               onPress={() => {
                 setProfileType("Category");
                 setVisible(true);
               }}
             />
             <ClickableInput
+              icon="account"
               label="Profil udogodnień"
-              value={conditionProfile?.name || "Brak"}
+              value={getProfileName("Condition", conditionProfileId)}
               onPress={() => {
                 setProfileType("Condition");
                 setVisible(true);
@@ -244,17 +260,16 @@ const AddingTripView = () => {
               <FlatList
                 data={
                   profileType === "Category"
-                    ? preferenceProfiles
-                    : convenienceProfiles
+                    ? categoryProfiles
+                    : conditionProfiles
                 }
                 renderItem={({ item }) => (
                   <RenderItem
                     item={item}
                     isSelected={
                       (profileType === "Category"
-                        ? categoryProfile
-                        : conditionProfile
-                      )?.id === item.id
+                        ? categoryProfileId
+                        : conditionProfileId) === item.id
                     }
                     onSelect={handleProfileSelection}
                     renderContent={(item) => item.name}

@@ -116,7 +116,7 @@ public class GeoapifyClient : IGeoapifyService
 
         if (!response.IsSuccessful || response.Content is null)
         {
-            throw new HttpRequestException($"Error retrieving autocomplete results: {response.Content}");
+            throw new HttpRequestException($"Error retrieving nearby places: {response.Content}");
         }
 
         var jsonResponse = JsonConvert.DeserializeObject<dynamic>(response.Content);
@@ -202,7 +202,7 @@ public class GeoapifyClient : IGeoapifyService
 
         if (!response.IsSuccessful || response.Content is null)
         {
-            throw new HttpRequestException($"Error retrieving route time: {response.Content}");
+            throw new HttpRequestException($"Error retrieving provider place details: {response.Content}");
         }
 
         var jsonResponse = JsonConvert.DeserializeObject<dynamic>(response.Content);

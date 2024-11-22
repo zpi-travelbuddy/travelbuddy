@@ -1,12 +1,17 @@
-import { PlaceDetails } from "@/types/Place";
+import { Place, PlaceDetails } from "@/types/Place";
 import {
   TripCompact,
-  TripDetails,
   TripSummary,
   TripViewModel,
+  EditTripRequest,
+  TripResponse,
 } from "@/types/Trip";
 import { getMoneyWithCurrency } from "@/utils/CurrencyUtils";
-import { formatDateFromISO, formatDateRange } from "@/utils/TimeUtils";
+import {
+  formatDateFromISO,
+  formatDateRange,
+  formatTimeRange,
+} from "@/utils/TimeUtils";
 
 const RANDOM_IMAGE = "https://picsum.photos/891";
 
@@ -50,12 +55,14 @@ export const calculateTripSummary = (tripSummary: TripSummary) => {
   };
 };
 
-export function convertTripDetailsToViewModel(
+export function convertTripResponseToViewModel(
   tripDetails: TripDetails | undefined,
   tripSummary: TripSummary | undefined,
   destinationDetails: PlaceDetails | undefined,
 ): TripViewModel {
   if (!tripDetails) throw new Error("Trip details are undefined.");
+  if (!destinationDetails)
+    throw new Error("Destination details are undefined.");
   const { predictedSpendings, totalTripPoints } = tripSummary
     ? calculateTripSummary(tripSummary)
     : { predictedSpendings: 0, totalTripPoints: tripDetails.tripDays.length }; // temporary
@@ -93,3 +100,40 @@ export const convertTripsFromAPI = (
     isArchived: isArchived,
   }));
 };
+
+export function convertTripResponseToEditTripRequest(
+  response: TripResponse,
+  destination: Place,
+): EditTripRequest {
+  const editTripRequest: EditTripRequest = {
+    name: response.name,
+    numberOfTravelers: response.numberOfTravelers,
+    startDate: response.startDate,
+    endDate: response.endDate,
+    destinationPlace: {
+      providerId: destination.providerId || "",
+      name: destination.name || "",
+      country: destination.country || "",
+      city: destination.city || "",
+      latitude: destination.latitude || 0,
+      longitude: destination.longitude || 0,
+    },
+    budget: response.budget,
+    currencyCode: response.currencyCode,
+  };
+
+  return editTripRequest;
+}
+
+export const convertAPITripToTrip = (trip: APITrip): Trip => ({
+  id: trip.id,
+  title: trip.name,
+  subtitle: formatTimeRange(
+    formatDateFromISO(trip?.startDate),
+    formatDateFromISO(trip?.endDate),
+  ),
+  from: trip.startDate,
+  to: trip.endDate,
+  imageUri: RANDOM_IMAGE,
+  isArchived: false,
+});

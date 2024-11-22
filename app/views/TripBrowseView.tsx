@@ -1,12 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { StyleSheet, View, Text, RefreshControl } from "react-native";
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { TripCard } from "@/components/TripCard";
 import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import {
@@ -102,36 +96,59 @@ const TripBrowseView = () => {
     setSelectedTrip(null);
   };
 
-  const deleteTrip = (trip: TripCompact | null) => {
+  const deleteTrip = async (trip: TripCompact | null) => {
+    if (!trip) return;
     console.log(`Usuwanie wycieczki: ${trip?.name}`);
     hideModal();
-    showSnackbar("Usunięto wycieczkę!");
+    try {
+      await api!.delete(`/trips/${trip.id}`);
+      await fetchTrips();
+      showSnackbar("Usunięto wycieczkę!");
+    } catch (error: any) {
+      showSnackbar("Wystąpił błąd podczas usuwania wycieczki", "error");
+    }
+  };
+
+  const fetchTripsByType = async (
+    endpoint: string,
+    setTrips: (trips: Trip[]) => void,
+    errorFallback: () => void,
+  ) => {
+    try {
+      const trips: APITrip[] = (await api!.get(endpoint)).data;
+      const parsedTrips = trips.map(convertAPITripToTrip);
+      setTrips(parsedTrips);
+    } catch (error: any) {
+      if (error.response && error.response.status === 404) {
+        errorFallback();
+      } else {
+        console.error(
+          `Error fetching trips from ${endpoint}`,
+          error.response?.data || error,
+        );
+      }
+    }
   };
 
   const fetchCurrentTrips = async () => {
-    try {
-      const currentTrips: TripCompact[] = (await api!.get(API_TRIPS_CURRENT))
-        .data;
-      setCurrentTrips(convertTripsFromAPI(currentTrips));
-    } catch (error: any) {
-      console.error("Error fetching current trips", error.response.data);
-    }
+    await fetchTripsByType(API_TRIPS_CURRENT, setCurrentTrips, () =>
+      setCurrentTrips([]),
+    );
   };
 
   const fetchPastTrips = async () => {
-    try {
-      const pastTrips: TripCompact[] = (await api!.get(API_TRIPS_PAST)).data;
-      setPastTrips(convertTripsFromAPI(pastTrips));
-    } catch (error: any) {
-      console.error("Error fetching past trips", error.response.data);
-    }
+    await fetchTripsByType(API_TRIPS_PAST, setPastTrips, () =>
+      setPastTrips([]),
+    );
   };
 
   const fetchTrips = async () => {
     setIsLoading(true);
-    await fetchCurrentTrips();
-    await fetchPastTrips();
-    setIsLoading(false);
+    try {
+      await Promise.all([fetchCurrentTrips(), fetchPastTrips()]);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   useEffect(() => {

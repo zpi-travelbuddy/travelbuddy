@@ -14,3 +14,8 @@ export const truncateText = (text: string = "", maxLength: number) => {
   if (!text) return "";
   return text.length > maxLength ? `${text.slice(0, maxLength)}...` : text;
 };
+
+export const getDisplayPlace = (place: Place | null) => {
+  if (place) return `${place.city}, ${place.country}`;
+  else return "";
+};

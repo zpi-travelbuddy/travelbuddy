@@ -11,6 +11,7 @@ import {
 import {
   addHoursToTheSameDay,
   formatToISODate,
+  formatTime,
   roundToNearestQuarterHour,
 } from "@/utils/TimeUtils";
 import CurrencyValueInput from "@/components/CurrencyValueInput";
@@ -24,34 +25,52 @@ import { useAnimatedKeyboard } from "react-native-reanimated";
 import TripPointTypePicker from "@/components/TripPointTypePicker";
 import { CreateTripPointRequest } from "@/types/TripDayData";
 import { Place } from "@/types/Place";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import LoadingView from "./LoadingView";
+import { useSnackbar } from "@/context/SnackbarContext";
+import useTripDetails from "@/composables/useTripDetails";
+import usePlaceDetails from "@/composables/usePlace";
+import { useAuth } from "@/app/ctx";
+import { API_ADDING_TRIP_POINT } from "@/constants/Endpoints";
+import { TripPointResponse } from "@/types/data";
 
 const { height, width } = Dimensions.get("window");
 
 const AddingTripPointView = () => {
   const theme = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
+  const router = useRouter();
+  const { showSnackbar } = useSnackbar();
+
+  const params = useLocalSearchParams();
+  const { trip_id, day_id } = params;
 
   const { date } = useLocalSearchParams();
 
   useAnimatedKeyboard();
 
+  const { api } = useAuth();
+
+  const {
+    tripDetails,
+    loading: tripLoading,
+    error: tripError,
+  } = useTripDetails(trip_id as string);
+
+  const {
+    placeDetails: destinationDetails,
+    loading: destinationLoading,
+    error: destinationError,
+  } = usePlaceDetails(tripDetails?.destinationId);
+
   const [tripPointName, setTripPointName] = useState("");
-  const [place, setPlace] = useState<Place>({
-    country: "",
-    state: "",
-    street: "",
-    houseNumber: "",
-    latitude: 0,
-    longitude: 0,
-    name: "",
-  } as Place);
 
   const [errors, setErrors] = useState<TripErrors>({});
+  const [loading, setLoading] = useState<boolean>(false);
 
   const [expectedCost, setExpectedCost] = useState<number>(0);
   const [costType, setCostType] = useState<string>("perPerson");
-  const selectedCurrency = "EUR";
+  const selectedCurrency = tripDetails ? tripDetails.currencyCode : "EUR";
   const [comment, setComment] = useState<string>("");
   const [tripPointType, setTripPointType] =
     useState<TripPointType>("attraction");
@@ -59,17 +78,16 @@ const AddingTripPointView = () => {
   const [endTime, setEndTime] = useState<Date>(
     addHoursToTheSameDay(startTime, 1),
   );
-  const [country, setCountry] = useState<string>(""); // Default value will be from trip destination
-  const [state, setState] = useState<string>(""); // Default value will be from trip destination
-  const [street, setStreet] = useState<string>(""); // Default value will be from trip destination
-  const [city, setCity] = useState<string>(""); // Default value will be from trip destination
-  const [houseNumber, setHouseNumber] = useState<string>(""); // Default value will be from trip destination
+  const [country, setCountry] = useState<string>("");
+  const [state, setState] = useState<string>("");
+  const [street, setStreet] = useState<string>("");
+  const [city, setCity] = useState<string>("");
+  const [houseNumber, setHouseNumber] = useState<string>("");
 
-  const [longitude, setLongitude] = useState<number>(0);
-  const [latitude, setLatitude] = useState<number>(0);
-
-  const [longitudeText, setLongitudeText] = useState<string>("0.00");
-  const [latitudeText, setLatitudeText] = useState<string>("0.00");
+  const [longitude, setLongitude] = useState<number | null>(null);
+  const [latitude, setLatitude] = useState<number | null>(null);
+  const [longitudeText, setLongitudeText] = useState<string>("");
+  const [latitudeText, setLatitudeText] = useState<string>("");
 
   const [isStartDatePickerVisible, setIsStartDatePickerVisible] =
     useState<boolean>(false);
@@ -89,6 +107,33 @@ const AddingTripPointView = () => {
     };
   };
 
+  useEffect(() => {
+    if (destinationDetails) {
+      setCountry(destinationDetails.country || "");
+      setState(destinationDetails.state || "");
+      setCity(destinationDetails.city || "");
+      setStreet(destinationDetails.street || "");
+      setHouseNumber(destinationDetails.houseNumber || "");
+    }
+  }, [destinationDetails]);
+
+  useEffect(() => {
+    setErrors((prev) => ({
+      ...prev,
+      ["api"]: tripError || destinationError || "",
+    }));
+  }, [tripError, destinationError]);
+
+  useEffect(() => {
+    setLoading(tripLoading || destinationLoading || false);
+  }, [tripLoading, destinationLoading]);
+
+  useEffect(() => {
+    if (errors.api) {
+      showSnackbar(errors.api, "error");
+    }
+  }, [errors.api]);
+
   const requiredFields = [
     {
       field: "tripPointName",
@@ -96,13 +141,9 @@ const AddingTripPointView = () => {
     },
     {
       field: "country",
-      errorMessage: "Państwo jest wymagane.",
+      errorMessage: "Nazwa państwa jest wymagana.",
     },
-    { field: "city", errorMessage: "Miasto jest wymagane." },
-    {
-      field: "predictedCost",
-      errorMessage: "Godzina rozpoczęcia jest wymagana.",
-    },
+    { field: "city", errorMessage: "Nazwa miasta jest wymagana." },
     {
       field: "startTime",
       errorMessage: "Godzina rozpoczęcia jest wymagana.",
@@ -113,14 +154,28 @@ const AddingTripPointView = () => {
     },
   ];
 
-  const onSave = () => {
+  const validateForm = () => {
     let hasErrors = false;
+
+    if (expectedCost === undefined || expectedCost < 0) {
+      hasErrors = true;
+      setErrors((prev) => ({
+        ...prev,
+        ["expectedCost"]: "Przewidywany koszt jest wymagany",
+      }));
+    }
+
+    setErrors((prev) => ({
+      ...prev,
+      ["api"]: "",
+    }));
 
     requiredFields.forEach(({ field, errorMessage }) => {
       const fieldValue = {
         tripPointName,
         country,
         city,
+        expectedCost,
         startTime,
         endTime,
       }[field];
@@ -134,37 +189,102 @@ const AddingTripPointView = () => {
       }
     });
 
+    console.log("hasErrors: " + hasErrors);
+    return hasErrors;
+  };
+
+  const handleErrorMessage = (errorData: any) => {
+    if (
+      errorData ===
+      "An error occurred while creating a trip point. Trip point overlaps with another trip point."
+    ) {
+      return "Punkt podróży nakłada się na inny punkt podróży";
+    }
+    return errorData;
+  };
+
+  const handleCreateRequest = async (
+    tripPointRequest: CreateTripPointRequest,
+  ) => {
+    try {
+      setLoading(true);
+      console.log("Request: " + JSON.stringify(tripPointRequest));
+
+      const response = await api!.post<TripPointResponse>(
+        API_ADDING_TRIP_POINT,
+        tripPointRequest,
+      );
+
+      if (!response) {
+        showSnackbar("Nie udało się dodać punktu wycieczki.");
+        return;
+      }
+
+      showSnackbar("Punkt wycieczki zapisany!");
+      console.log("Response: " + JSON.stringify(response.data));
+      router.back();
+      router.setParams({
+        refresh: "true",
+      });
+    } catch (err: any) {
+      console.error(
+        "Błąd podczas zapisywania punktu: ",
+        JSON.stringify(err.response.data),
+      );
+      setErrors((prev) => ({
+        ...prev,
+        ["api"]: err.response.data,
+      }));
+      showSnackbar(
+        "Nie dodano punktu wycieczki. " + handleErrorMessage(err.response.data),
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const onSave = async () => {
+    setErrors((prev) => ({ ...prev, ["api"]: "" }));
+    const hasErrors = validateForm();
     if (!hasErrors) {
-      setPlace({
+      const placeToRequest = {
+        name: tripPointName,
         country: country,
         state: state,
         street: street,
+        city: city,
         houseNumber: houseNumber,
-        latitude: latitude || 0,
-        longitude: longitude || 0,
-        name: "",
-      } as Place);
+        latitude: latitude,
+        longitude: longitude,
+      } as Place;
 
+      let totalExpectedCost = expectedCost;
       if (costType === "perPerson") {
-        // setPredictedCost(trip.numberOfTravelers * predictedCost);
+        const numberOfTravelers = tripDetails
+          ? tripDetails?.numberOfTravelers
+          : 1;
+        totalExpectedCost = numberOfTravelers * expectedCost;
       }
 
       const tripPointRequest: CreateTripPointRequest = {
         name: tripPointName,
-        startTime: formatToISODate(startTime),
-        endTime: formatToISODate(endTime),
-        place: place,
-        tripDayId: "",
-        predictedCost: 0,
+        comment: comment,
+        tripDayId: day_id as string,
+        place: placeToRequest,
+        startTime: `${formatTime(startTime, true)}`,
+        endTime: `${formatTime(endTime, true)}`,
+        predictedCost: totalExpectedCost,
       };
 
-      console.log("Punkt wycieczki zapisany!");
+      handleCreateRequest(tripPointRequest);
+    } else {
+      showSnackbar("Uzupełnij brakujące pola i popraw błędy!");
     }
   };
 
   const handleCoordinateChange = (
     coordinateText: string,
-    setCoordinate: React.Dispatch<React.SetStateAction<number>>,
+    setCoordinate: React.Dispatch<React.SetStateAction<number | null>>,
     setErrorField: keyof TripErrors,
     maxValue: number,
   ) => {
@@ -198,6 +318,10 @@ const AddingTripPointView = () => {
       setErrors((prev) => ({ ...prev, endTime: "" }));
     }
   }, [startTime, endTime]);
+
+  if (loading) {
+    return <LoadingView transparent={true} />;
+  }
 
   return (
     <>
@@ -321,8 +445,12 @@ const AddingTripPointView = () => {
               budget={expectedCost}
               currency={selectedCurrency}
               disable={true}
+              error={!!errors.expectedCost}
               handleBudgetChange={handleChange(setExpectedCost, "expectedCost")}
             />
+            {errors.expectedCost && (
+              <Text style={styles.textError}>{errors.expectedCost}</Text>
+            )}
 
             <SegmentedButtons
               value={costType}

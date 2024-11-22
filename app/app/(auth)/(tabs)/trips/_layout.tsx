@@ -23,6 +23,10 @@ export default function StackLayout() {
         name="details/[trip_id]/day/[day_id]/index"
         options={{ title: "Szczegóły dnia wycieczki" }}
       />
+      <Stack.Screen
+        name="edit/[trip_id]"
+        options={{ title: "Edytowanie wycieczki" }}
+      />
     </Stack>
   );
 }

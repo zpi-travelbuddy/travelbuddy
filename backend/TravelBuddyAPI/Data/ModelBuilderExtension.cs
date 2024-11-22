@@ -485,7 +485,7 @@ public static class ModelBuilderExtension
         var providerPlaces = new List<Place>
         {
             new ProviderPlace { Id = Guid.NewGuid(), Name = "Moszczanka", City = "Moszczanka", Country = "Poland", Latitude = 51.73196580m, Longitude = 17.76554860m, ProviderId = "51a37f38fefac33140592e652a0eb1dd4940f00103f9010828e50100000000c0020792030936332d3434302b706c", State = "Greater Poland Voivodeship"},
-            new ProviderPlace { Id = Guid.NewGuid(), Name = "Kaplica loretańska", City = "Raszkówek", Country = "Poland", Latitude = 51.73393750m, Longitude = 17.74069633m, ProviderId = "51429f46469ebd314059b810faa9f1dd4940f00102f901f7527713000000009203134b61706c696361206c6f72657461c584736b61", State = "Greater Poland Voivodeship"},
+            new ProviderPlace { Id = Guid.NewGuid(), Name = "Kaplica loretańska", ProviderId = "51429f46469ebd314059b810faa9f1dd4940f00102f901f7527713000000009203134b61706c696361206c6f72657461c584736b61"},
             new ProviderPlace { Id = Guid.NewGuid(), Name = "Bohaterom I wojny światowej i Poległym za Wolność Ojczyzny", City = "Raszków", Country = "Poland", Latitude = 51.71827680m, Longitude = 17.72748940m, ProviderId = "51c92fcdbe3cba31405921e7807ef0db4940f00103f901e5860fed0100000092033e426f68617465726f6d204920776f6a6e7920c59b776961746f77656a206920506f6c6567c582796d207a6120576f6c6e6fc59bc487204f6a637a797a6e79", State = "Greater Poland Voivodeship", Street = "Rynek", HouseNumber = "32"},
             new ProviderPlace { Id = Guid.NewGuid(), Name = "Jana Pawła II", City = "Raszków", Country = "Poland", Latitude = 51.7165523m, Longitude = 17.7274935m, ProviderId = "51768d96033dba314059315a59fcb7db4940f00103f901262f10ed0100000092030e4a616e6120506177c58261204949", State = "Greater Poland Voivodeship", Street = "Kościelna"},
             
@@ -573,13 +573,13 @@ public static class ModelBuilderExtension
 
         var transferPoints = new List<TransferPoint>
         {
-            new TransferPoint { Id = Guid.NewGuid(), TripDayId = tripDays[0].Id, TransferTime = new TimeSpan(0,14,21), StartTime = new TimeOnly(10,20,0),FromTripPointId = tripPoints[0].Id, ToTripPointId = tripPoints[1].Id, Mode = TransferMode.drive},
-            new TransferPoint { Id = Guid.NewGuid(), TripDayId = tripDays[0].Id, TransferTime = new TimeSpan(0,0,55), StartTime = new TimeOnly(12,00,0),FromTripPointId = tripPoints[2].Id, ToTripPointId = tripPoints[3].Id, Mode = TransferMode.motorcycle},
-            new TransferPoint { Id = Guid.NewGuid(), TripDayId = tripDays[0].Id, TransferTime = new TimeSpan(0,20,0), StartTime = new TimeOnly(13,00,0),FromTripPointId = tripPoints[3].Id, ToTripPointId = tripPoints[4].Id},
+            new TransferPoint { Id = Guid.NewGuid(), TripDayId = tripDays[0].Id, TransferTime = new TimeSpan(0,4,21), FromTripPointId = tripPoints[1].Id, ToTripPointId = tripPoints[2].Id, Mode = TransferMode.drive},
+            new TransferPoint { Id = Guid.NewGuid(), TripDayId = tripDays[0].Id, TransferTime = new TimeSpan(0,0,55), FromTripPointId = tripPoints[2].Id, ToTripPointId = tripPoints[3].Id, Mode = TransferMode.motorcycle},
+            new TransferPoint { Id = Guid.NewGuid(), TripDayId = tripDays[0].Id, TransferTime = new TimeSpan(0,20,0), FromTripPointId = tripPoints[3].Id, ToTripPointId = tripPoints[4].Id},
 
-            new TransferPoint { Id = Guid.NewGuid(), TripDayId = tripDays[1].Id, TransferTime = new TimeSpan(0,3,13), StartTime = new TimeOnly(12,40,0),FromTripPointId = tripPoints[5].Id, ToTripPointId = tripPoints[6].Id, Mode = TransferMode.bicycle},
-            new TransferPoint { Id = Guid.NewGuid(), TripDayId = tripDays[1].Id, TransferTime = new TimeSpan(0,8,18), StartTime = new TimeOnly(13,10,0),FromTripPointId = tripPoints[6].Id, ToTripPointId = tripPoints[7].Id, Mode = TransferMode.walk},
-            new TransferPoint { Id = Guid.NewGuid(), TripDayId = tripDays[1].Id, TransferTime = new TimeSpan(0,13,30), StartTime = new TimeOnly(15,30,0),FromTripPointId = tripPoints[7].Id, ToTripPointId = tripPoints[8].Id, Mode = TransferMode.approximated_transit},
+            new TransferPoint { Id = Guid.NewGuid(), TripDayId = tripDays[1].Id, TransferTime = new TimeSpan(0,3,13), FromTripPointId = tripPoints[5].Id, ToTripPointId = tripPoints[6].Id, Mode = TransferMode.bicycle},
+            new TransferPoint { Id = Guid.NewGuid(), TripDayId = tripDays[1].Id, TransferTime = new TimeSpan(0,8,18), FromTripPointId = tripPoints[6].Id, ToTripPointId = tripPoints[7].Id, Mode = TransferMode.walk},
+            new TransferPoint { Id = Guid.NewGuid(), TripDayId = tripDays[1].Id, TransferTime = new TimeSpan(0,13,30), FromTripPointId = tripPoints[7].Id, ToTripPointId = tripPoints[8].Id, Mode = TransferMode.walk},
         };
 
         modelBuilder.Entity<TransferPoint>().HasData(transferPoints);
