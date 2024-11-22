@@ -10,7 +10,7 @@ export interface TripRequest {
   budget: number;
   currencyCode: string;
   categoryProfileId: string | null;
-  conditionProfileId: string | null; 
+  conditionProfileId: string | null;
 }
 
 export interface APITrip {
@@ -142,13 +142,13 @@ export interface EditTripRequest {
   startDate: string;
   endDate: string;
   destinationPlace: {
-    providerId: string,
+    providerId: string;
     name?: string;
     country?: string;
     city?: string;
     latitude?: number;
     longitude?: number;
-  }
+  };
   budget: number;
   currencyCode: string;
 }

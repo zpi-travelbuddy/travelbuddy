@@ -12,7 +12,8 @@ export function displayCost(number: number): string {
   // else throw new Error("Cost cannot be negative number");
 }
 
-export const truncateText = (text: string, maxLength: number) => {
+export const truncateText = (text: string = "", maxLength: number) => {
+  if (!text) return "";
   return text.length > maxLength ? `${text.slice(0, maxLength)}...` : text;
 };
 

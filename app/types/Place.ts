@@ -1,9 +1,18 @@
-export type PlaceViewModel = {
+export interface PlaceCompact {
+  id: string;
+  providerId?: string;
+  name: string;
+  country: string;
+  state?: string;
+  city: string;
+}
+export interface PlaceViewModel {
+  providerId: string;
   id: string;
   title?: string;
   subtitle?: string;
   imageUrl?: string;
-};
+}
 
 export interface Place {
   providerId: string;

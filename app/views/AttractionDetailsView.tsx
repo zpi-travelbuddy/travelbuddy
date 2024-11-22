@@ -10,7 +10,7 @@ import IconComponent from "@/components/IconComponent";
 import { AttractionTypeIcons, AttractionTypeLabels } from "@/types/Trip";
 import usePlaceDetails from "@/composables/usePlace";
 import LoadingView from "./LoadingView";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useSnackbar } from "@/context/SnackbarContext";
 import ConditionIcons from "@/components/ConditionIcons";
 
@@ -23,11 +23,10 @@ const AttractionDetailsView = () => {
 
   const { showSnackbar } = useSnackbar();
 
-  // const params = useLocalSearchParams();
-  // const { id } = params;
-  const id = "eb2a3de6-8998-4a3c-992c-9e4fd76ef027";
+  const params = useLocalSearchParams();
+  const { place_id } = params;
 
-  const { placeDetails, loading, error } = usePlaceDetails(id);
+  const { placeDetails, loading, error } = usePlaceDetails(place_id as string);
 
   if (loading) {
     return <LoadingView />;
