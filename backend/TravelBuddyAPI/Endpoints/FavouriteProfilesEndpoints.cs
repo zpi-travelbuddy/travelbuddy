@@ -71,7 +71,7 @@ public static class FavouriteProfilesEndpoints
             var favouriteProfilesDTO = await favouritesService.AddConditionProfileToFavouritesAsync(userId, id);
             return TypedResults.Created($"/favourites/conditionProfile/{id}", favouriteProfilesDTO);
         }
-        catch (InvalidOperationException ex) when (ex.Message.Contains(IFavouritesService.ErrorMessage.CategoryProfileNotFound))
+        catch (InvalidOperationException ex) when (ex.Message.Contains(IFavouritesService.ErrorMessage.ConditionProfileNotFound))
         {
             return TypedResults.NotFound(ex.Message);
         }

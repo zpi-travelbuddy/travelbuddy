@@ -89,7 +89,7 @@ public class FavouritesService(TravelBuddyDbContext dbContext) : IFavouritesServ
 
         if (favouriteProfiles.CategoryProfileId == null)
         {
-            throw new InvalidOperationException(IFavouritesService.ErrorMessage.NoFavouriteConditionProfile);
+            throw new InvalidOperationException(IFavouritesService.ErrorMessage.NoFavouriteCategoryProfile);
         }
 
         favouriteProfiles.CategoryProfileId = null;
