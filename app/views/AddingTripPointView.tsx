@@ -24,7 +24,7 @@ import { useAnimatedKeyboard } from "react-native-reanimated";
 import TripPointTypePicker from "@/components/TripPointTypePicker";
 import { CreateTripPointRequest, TripPointResponse } from "@/types/data";
 import { Place } from "@/types/Place";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useGlobalSearchParams, useLocalSearchParams, useRouter } from "expo-router";
 import LoadingView from "./LoadingView";
 import { useSnackbar } from "@/context/SnackbarContext";
 import useTripDetails from "@/composables/useTripDetails";
@@ -41,9 +41,12 @@ const AddingTripPointView = () => {
   const { showSnackbar } = useSnackbar();
 
   const params = useLocalSearchParams();
-  const { trip_id, day_id } = params;
+  const { trip_id, day_id, date } = params;
+  const { attractionProviderId } = useGlobalSearchParams();
 
-  const { date } = useLocalSearchParams();
+  useEffect(() => {
+    console.log(attractionProviderId);
+  }, [attractionProviderId]);
 
   useAnimatedKeyboard();
 
@@ -59,7 +62,11 @@ const AddingTripPointView = () => {
     placeDetails: destinationDetails,
     loading: destinationLoading,
     error: destinationError,
-  } = usePlaceDetails(tripDetails?.destinationId);
+  } = usePlaceDetails(
+    attractionProviderId
+      ? (attractionProviderId as string)
+      : tripDetails?.destinationId,
+  );
 
   const [tripPointName, setTripPointName] = useState("");
 

@@ -4,7 +4,7 @@ import { truncateText } from "@/utils/TextUtils";
 import { Place } from "@/types/Place";
 
 interface PlaceCardProps {
-  place: Place;
+  place: PlaceViewModel;
   handleAddPress: () => void;
 }
 

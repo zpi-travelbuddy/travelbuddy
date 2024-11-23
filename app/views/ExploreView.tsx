@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import { View, StyleSheet, FlatList } from "react-native";
 import {
   Text,
@@ -18,6 +18,10 @@ import CustomModal from "@/components/CustomModal";
 import { RenderItem } from "@/components/RenderItem";
 import ActionTextButtons from "@/components/ActionTextButtons";
 import { truncateText } from "@/utils/TextUtils";
+import { useRouter } from "expo-router";
+import SingleDatePickerModal from "@/components/SingleDatePickerModal";
+import useTripDetails from "@/composables/useTripDetails";
+import { CalendarDate } from "react-native-paper-dates/lib/typescript/Date/Calendar";
 
 const convertPlace = (place: PlaceCompact): PlaceViewModel => {
   const subtitle = [place.city, place.state, place.country]
@@ -41,17 +45,38 @@ interface ExploreViewProps {
 const ExploreView = ({ tripId }: ExploreViewProps) => {
   const { api } = useAuth();
 
+  const router = useRouter();
+
   const [searchQuery, setSearchQuery] = useState("");
 
   const theme = useTheme() as MD3ThemeExtended;
   const styles = makeStyles(theme);
 
+  const [error, setError] = useState<string>("");
   const [places, setPlaces] = useState<PlaceViewModel[]>([]);
   const [currentTrips, setCurrentTrips] = useState<any[]>([]); // will change to Trips later (after trips browse merge)
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [tripModalVisible, setTripModalVisible] = useState(false);
+  const [isDateModalVisible, setIsDateModalVisible] = useState(false);
 
   const [selectedTripId, setSelectedTripId] = useState<string | null>(null);
+  const [selectedAttractionProviderId, setSelectedAttractionProviderId] =
+    useState<string | null>(null);
+
+  const {
+    tripDetails,
+    loading: tripLoading,
+    error: tripError,
+    refetch: tripFetch,
+  } = useTripDetails(selectedTripId as string, { immediate: false });
+
+  useEffect(() => {
+    setIsLoading(tripLoading);
+  }, [tripLoading]);
+
+  useEffect(() => {
+    setError(tripError || "");
+  }, [tripError]);
 
   useAnimatedKeyboard();
 
@@ -106,6 +131,10 @@ const ExploreView = ({ tripId }: ExploreViewProps) => {
   const handleConfirmTrip = () => {
     // logic for navigating to trip point add
     console.log("Navigating to trip point add for trip", selectedTripId);
+    if (selectedTripId && selectedAttractionProviderId) {
+      tripFetch();
+      setIsDateModalVisible(true);
+    }
   };
 
   const handleTripSelection = (item: any) => {
@@ -115,11 +144,9 @@ const ExploreView = ({ tripId }: ExploreViewProps) => {
 
   const handleAddPress = (place: PlaceViewModel) => {
     console.log("Selected place", place);
-    if (tripId) {
-      // logic for adding place to trip
-    } else {
-      setTripModalVisible(true);
-    }
+    setTripModalVisible(true);
+    setSelectedAttractionProviderId(place.providerId);
+
     // logic for navigating to trip point add
   };
 
@@ -158,6 +185,48 @@ const ExploreView = ({ tripId }: ExploreViewProps) => {
     }
   }, [tripId]);
 
+  const handleDismiss = useCallback(() => {
+    setIsDateModalVisible(false);
+  }, [setIsDateModalVisible]);
+
+  const dateToIdMap = useMemo(() => {
+    return new Map(
+      tripDetails?.tripDays.map((day: TripDay) => [day.date, day.id]) || [],
+    );
+  }, [tripDetails]);
+
+  const handleConfirm = useCallback(
+    ({ date }: { date: CalendarDate }) => {
+      setTripModalVisible(false);
+      const fixedDate = date as Date;
+      const formattedDate = fixedDate.toISOString().split("T")[0];
+      const tripDayId = dateToIdMap.get(formattedDate);
+      if (tripDetails?.id && tripDayId) {
+        console.log("Redirecting to day with id " + tripDayId);
+        console.log(
+          "Redirecting to adding trip point for attraction id " +
+            selectedAttractionProviderId,
+        );
+        setIsDateModalVisible(false);
+        router.push({
+          pathname: `/(auth)/(tabs)/trips/details/${tripDetails?.id}/day/${tripDayId}/tripPoints/create`,
+          params: {
+            date: formattedDate,
+            attractionProviderId: selectedAttractionProviderId,
+          },
+        });
+      } else {
+        console.error("Day not found");
+      }
+    },
+    [
+      setIsDateModalVisible,
+      selectedAttractionProviderId,
+      tripDetails,
+      dateToIdMap,
+    ],
+  );
+
   return (
     <>
       <View style={styles.container}>
@@ -186,6 +255,16 @@ const ExploreView = ({ tripId }: ExploreViewProps) => {
           contentContainerStyle={styles.contentContainer}
           ItemSeparatorComponent={() => <View style={styles.separator} />}
         />
+
+        {tripDetails && (
+          <SingleDatePickerModal
+            visible={isDateModalVisible}
+            startDate={tripDetails?.startDate}
+            endDate={tripDetails?.endDate}
+            onDismiss={handleDismiss}
+            onConfirm={handleConfirm}
+          />
+        )}
       </View>
       <CustomModal
         visible={tripModalVisible}
