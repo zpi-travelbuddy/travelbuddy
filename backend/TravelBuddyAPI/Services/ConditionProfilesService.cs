@@ -13,17 +13,6 @@ public class ConditionProfilesService(TravelBuddyDbContext dbContext) : IConditi
 {
     private readonly TravelBuddyDbContext _dbContext = dbContext;
 
-    // private async Task ValidateConditionProfileAsync(ConditionProfile conditionProfile)
-    // {
-    //     if (await _dbContext.ConditionProfiles.AnyAsync(cp => cp.Name == conditionProfile.Name))
-    //     {
-    //         throw new InvalidOperationException(ErrorMessage.ConditionProfileNameAlreadyExists);
-    //     }
-
-    //     var validationContext = new ValidationContext(conditionProfile);
-    //     Validator.ValidateObject(conditionProfile, validationContext);
-    // }
-
     public async Task<ConditionProfileDetailsDTO> CreateConditionProfileAsync(string userId, ConditionProfileRequestDTO conditionProfile)
     {
         var existingProfiles = await GetUserConditionProfilesAsync(userId);
@@ -136,6 +125,7 @@ public class ConditionProfilesService(TravelBuddyDbContext dbContext) : IConditi
 
         return new ConditionProfileDetailsDTO()
         {
+            Id = conditionProfile.Id,
             Name = conditionProfile.Name,
             Conditions = conditionProfile?.Conditions?
                 .Select(c => new PlaceConditionDTO()

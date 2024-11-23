@@ -13,17 +13,6 @@ public class CategoryProfilesService(TravelBuddyDbContext dbContext) : ICategory
 {
     private readonly TravelBuddyDbContext _dbContext = dbContext;
 
-    // private async Task ValidateCategoryProfileAsync(CategoryProfile categoryProfile)
-    // {
-    //     if (await _dbContext.CategoryProfiles.AnyAsync(cp => cp.Name == categoryProfile.Name))
-    //     {
-    //         throw new InvalidOperationException(ErrorMessage.CategoryProfileNameAlreadyExists);
-    //     }
-
-    //     var validationContext = new ValidationContext(categoryProfile);
-    //     Validator.ValidateObject(categoryProfile, validationContext);
-    // }
-
     public async Task<CategoryProfileDetailsDTO> CreateCategoryProfileAsync(string userId, CategoryProfileRequestDTO categoryProfile)
     {
         var categories = await _dbContext.PlaceCategories
@@ -133,6 +122,7 @@ public class CategoryProfilesService(TravelBuddyDbContext dbContext) : ICategory
 
         return new CategoryProfileDetailsDTO()
         {
+            Id = categoryProfile.Id,
             Name = categoryProfile.Name,
             Categories = categoryProfile?.Categories?
                 .Select(c => new PlaceCategoryDTO()
