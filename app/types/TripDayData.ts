@@ -81,6 +81,8 @@ export interface Option {
   icon: string;
   label: string;
   onPress: () => void;
+  disabled?: boolean;
+  isDelete?: boolean;
 }
 
 export enum TransferType {
