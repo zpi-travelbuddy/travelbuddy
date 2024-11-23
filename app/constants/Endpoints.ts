@@ -8,7 +8,7 @@ export const API_TRIPS_PAST = "/trips/past";
 export const API_ADDING_TRIP_POINT = `/tripPoints`;
 
 // Currency
-export const API_CURRENCY = "/nbp/currency";
+export const API_CURRENCY = "/trips/availableCurrencies";
 
 // Places
 export const API_PLACES_AUTOCOMPLETE = "/places/autocomplete";
