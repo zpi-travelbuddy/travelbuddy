@@ -250,9 +250,11 @@ const AddingTripPointView = () => {
       }
 
       showSnackbar("Punkt wycieczki zapisany!");
+      console.log(attractionProviderId);
       router.back();
       router.setParams({
         refresh: "true",
+        attractionProviderId: null,
       });
     } catch (err: any) {
       console.error(

@@ -183,7 +183,7 @@ const TripDetailsView = () => {
       if (tripDayId) {
         console.log("Redirecting to day with id " + tripDayId);
         setDateModalVisible(false);
-        router.navigate(`/trips/details/${trip_id}/day/${tripDayId}`);
+        router.push(`/trips/details/${trip_id}/day/${tripDayId}`);
       } else {
         console.error("Day not found");
       }
