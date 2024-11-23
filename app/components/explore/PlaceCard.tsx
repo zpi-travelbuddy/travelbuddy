@@ -1,31 +1,32 @@
 import { Button, Card } from "react-native-paper";
-import { StyleSheet, Image, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { truncateText } from "@/utils/TextUtils";
-import { Place } from "@/types/Place";
+import { PlaceViewModel } from "@/types/Place";
+import { useRouter } from "expo-router";
 
 interface PlaceCardProps {
-  place: Place;
+  place: PlaceViewModel;
   handleAddPress: () => void;
 }
 
 export function PlaceCard({ place, handleAddPress }: PlaceCardProps) {
-  const { id, title, subtitle } = place;
+  const router = useRouter();
 
   const onDetailsPress = () => {
-    console.log("Go to attraction's details", id);
-    // router.push(...);
+    console.log("Go to attraction's details", place.providerId);
+    router.push(`/explore/place/${place.providerId}`);
   };
 
   const onAddPress = () => {
-    console.log("Go to adding attraction to trip.", id);
+    console.log("Go to adding attraction to trip.", place.providerId);
     handleAddPress();
   };
   return (
     <Card mode="outlined">
       <View style={styles.headerContainer}>
         <Card.Title
-          title={truncateText(title, 50)}
-          subtitle={truncateText(subtitle, 50)}
+          title={truncateText(place.title, 50)}
+          subtitle={truncateText(place.subtitle, 50)}
         />
       </View>
       <Card.Actions>

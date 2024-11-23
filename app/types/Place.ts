@@ -1,14 +1,20 @@
-export interface APIPlace {
-  id: string | null;
+export interface PlaceCompact {
+  id: string;
+  providerId?: string;
+  name: string;
+  country: string;
+  state?: string;
+  city: string;
+}
+export interface PlaceViewModel {
   providerId: string;
-  name?: string;
-  country?: string;
-  state?: string | null;
-  city?: string;
+  id: string;
+  title?: string;
+  subtitle?: string;
+  imageUrl?: string;
 }
 
 export interface Place {
-  id: string;
   providerId: string;
   categoryId?: string;
   name: string;
@@ -31,11 +37,6 @@ export interface PlaceCategory {
   name: string;
 }
 
-export interface PlaceSuperCategory {
-  id: string;
-  name: string;
-}
-
 export interface PlaceDetails {
   id: string;
   providerId: string;
@@ -52,5 +53,5 @@ export interface PlaceDetails {
   averageRating: number;
   conditions: PlaceCondition[];
   categories: PlaceCategory[];
-  superCategory: PlaceSuperCategory;
+  superCategory: PlaceCategory;
 }

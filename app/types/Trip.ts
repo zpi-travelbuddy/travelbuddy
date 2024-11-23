@@ -10,7 +10,7 @@ export interface TripRequest {
   budget: number;
   currencyCode: string;
   categoryProfileId: string | null;
-  conditionProfileId: string | null; 
+  conditionProfileId: string | null;
 }
 
 export interface APITrip {
@@ -96,6 +96,36 @@ export type TripPointType =
   | "religion"
   | "music"
   | "other";
+
+export type Condition =
+  | "internet_access"
+  | "wheelchair"
+  | "dogs"
+  | "vegetarian"
+  | "vegan"
+  | "no-dogs"
+  | "halal"
+  | "kosher"
+  | "organic"
+  | "gluten_free"
+  | "sugar_free"
+  | "egg_free"
+  | "soy_free";
+
+export const ConditionList: Condition[] = [
+  "internet_access",
+  "wheelchair",
+  "dogs",
+  "vegetarian",
+  "vegan",
+  "no-dogs",
+  "halal",
+  "kosher",
+  "organic",
+  "sugar_free",
+  "egg_free",
+  "soy_free",
+];
 
 export const AttractionTypeIcons: Record<TripPointType, string> = {
   attraction: "camera",

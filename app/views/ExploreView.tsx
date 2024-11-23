@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useCallback, useEffect } from "react";
 import { View, StyleSheet, FlatList } from "react-native";
 import {
@@ -8,7 +9,7 @@ import {
 } from "react-native-paper";
 import { PlaceCard } from "@/components/explore/PlaceCard";
 import { MD3ThemeExtended } from "@/constants/Themes";
-import { APIPlace, Place } from "@/types/Place";
+import { PlaceViewModel, PlaceCompact } from "@/types/Place";
 import { useAnimatedKeyboard } from "react-native-reanimated";
 import { useDebouncedCallback } from "use-debounce";
 import { useAuth } from "@/app/ctx";
@@ -18,13 +19,14 @@ import { RenderItem } from "@/components/RenderItem";
 import ActionTextButtons from "@/components/ActionTextButtons";
 import { truncateText } from "@/utils/TextUtils";
 
-const convertPlace = (place: APIPlace): Place => {
+const convertPlace = (place: PlaceCompact): PlaceViewModel => {
   const subtitle = [place.city, place.state, place.country]
     .filter(Boolean)
     .join(", ");
 
   return {
-    id: place.providerId,
+    id: place.id,
+    providerId: place.providerId || "",
     title: place.name,
     subtitle: subtitle,
   };
@@ -44,7 +46,7 @@ const ExploreView = ({ tripId }: ExploreViewProps) => {
   const theme = useTheme() as MD3ThemeExtended;
   const styles = makeStyles(theme);
 
-  const [places, setPlaces] = useState<Place[]>([]);
+  const [places, setPlaces] = useState<PlaceViewModel[]>([]);
   const [currentTrips, setCurrentTrips] = useState<any[]>([]); // will change to Trips later (after trips browse merge)
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [tripModalVisible, setTripModalVisible] = useState(false);
@@ -61,8 +63,13 @@ const ExploreView = ({ tripId }: ExploreViewProps) => {
         },
       });
 
-      const parsedData = response.data.map(convertPlace) as Place[];
-      setPlaces(parsedData.filter((place) => place.title && place.subtitle));
+      const parsedData = response.data.map(convertPlace) as PlaceViewModel[];
+      setPlaces(
+        parsedData.filter(
+          (place) =>
+            place.title && place.subtitle && !place.providerId.includes("null"),
+        ),
+      );
     } catch (error: any) {
       console.error(error.response.data);
     }
@@ -106,7 +113,7 @@ const ExploreView = ({ tripId }: ExploreViewProps) => {
     console.log("Selected trip", item.id);
   };
 
-  const handleAddPress = (place: Place) => {
+  const handleAddPress = (place: PlaceViewModel) => {
     console.log("Selected place", place);
     if (tripId) {
       // logic for adding place to trip
@@ -134,7 +141,7 @@ const ExploreView = ({ tripId }: ExploreViewProps) => {
     );
   }, [searchQuery]);
 
-  const renderPlace = ({ item }: { item: Place }) => {
+  const renderPlace = ({ item }: { item: PlaceViewModel }) => {
     return (
       <PlaceCard
         place={item}
@@ -163,7 +170,7 @@ const ExploreView = ({ tripId }: ExploreViewProps) => {
         <FlatList
           data={places}
           renderItem={renderPlace}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item.providerId}
           ListEmptyComponent={
             isLoading ? (
               <ActivityIndicator
