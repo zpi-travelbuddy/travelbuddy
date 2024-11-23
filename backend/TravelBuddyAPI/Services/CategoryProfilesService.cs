@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using TravelBuddyAPI.Models;
 using TravelBuddyAPI.DTOs.PlaceCategory;
 using static TravelBuddyAPI.Interfaces.ICategoryProfilesService;
+using System.ComponentModel.DataAnnotations;
 
 namespace TravelBuddyAPI.Services;
 
@@ -12,19 +13,105 @@ public class CategoryProfilesService(TravelBuddyDbContext dbContext) : ICategory
 {
     private readonly TravelBuddyDbContext _dbContext = dbContext;
 
-    public Task<CategoryProfileDetailsDTO> CreateCategoryProfileAsync(string userId, CategoryProfileRequestDTO categoryProfile)
+    public async Task<CategoryProfileDetailsDTO> CreateCategoryProfileAsync(string userId, CategoryProfileRequestDTO categoryProfile)
     {
-        throw new NotImplementedException();
+        var categories = await _dbContext.PlaceCategories
+            .Where(c => categoryProfile.CategoryIds != null && categoryProfile.CategoryIds.Contains(c.Id))
+            .ToListAsync();
+
+        CategoryProfile newCategoryProfile = new()
+        {
+            Id = Guid.NewGuid(),
+            Name = categoryProfile.Name,
+            UserId = userId,
+            Categories = categories
+        };
+
+        try
+        {
+            if (await _dbContext.CategoryProfiles.AnyAsync(cp => cp.Name == categoryProfile.Name))
+            {
+                throw new InvalidOperationException(ErrorMessage.CategoryProfileNameAlreadyExists);
+            }
+
+            var validationContext = new ValidationContext(categoryProfile);
+            Validator.ValidateObject(categoryProfile, validationContext);
+        }
+        catch (Exception e) when (e is ValidationException || e is InvalidOperationException)
+        {
+            throw new InvalidOperationException($"{ErrorMessage.CreatingCategoryProfile} {e.Message}");
+        }
+
+        _dbContext.CategoryProfiles.Add(newCategoryProfile);
+        await _dbContext.SaveChangesAsync();
+
+        return await GetCategoryProfileDetailsAsync(userId, newCategoryProfile.Id);
     }
 
-    public Task<bool> DeleteCategoryProfileAsync(string userId, Guid profileId)
+    public async Task<bool> DeleteCategoryProfileAsync(string userId, Guid profileId)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var categoryProfile = await _dbContext.CategoryProfiles
+                        .FirstOrDefaultAsync(cp => cp.Id == profileId && cp.UserId == userId) ?? throw new InvalidOperationException(ErrorMessage.CategoryProfileNotFound);
+
+            var trips = await _dbContext.Trips
+                .Where(t => t.CategoryProfileId == profileId)
+                .ToListAsync();
+
+            var favouriteProfiles = await _dbContext.Favourites
+                .Where(fcp => fcp.UserId == userId)
+                .FirstOrDefaultAsync();
+
+            if (trips.Count != 0)
+            {
+                throw new InvalidOperationException(ErrorMessage.TripUsesCategoryProfile);
+            }
+
+            if (favouriteProfiles != null && favouriteProfiles.CategoryProfileId == profileId)
+            {
+                favouriteProfiles.CategoryProfileId = null;
+                _dbContext.Favourites.Update(favouriteProfiles);
+            }
+
+            _dbContext.CategoryProfiles.Remove(categoryProfile);
+            await _dbContext.SaveChangesAsync();
+
+            return true;
+        }
+        catch (InvalidOperationException e)
+        {
+            throw new InvalidOperationException($"{ErrorMessage.DeletingCategoryProfile} {e.Message}");
+        }
     }
 
-    public Task<bool> EditCategoryProfileAsync(string userId, Guid profileId, CategoryProfileRequestDTO categoryProfile)
+    public async Task<bool> EditCategoryProfileAsync(string userId, Guid profileId, CategoryProfileRequestDTO categoryProfile)
     {
-        throw new NotImplementedException();
+        try
+        {
+            CategoryProfile existingCategoryProfile = await _dbContext.CategoryProfiles
+                .Include(cp => cp.Categories)
+                .FirstOrDefaultAsync(cp => cp.Id == profileId && cp.UserId == userId) ?? throw new InvalidOperationException(ErrorMessage.CategoryProfileNotFound);
+
+            var categories = await _dbContext.PlaceCategories
+                .Where(c => categoryProfile.CategoryIds != null && categoryProfile.CategoryIds.Contains(c.Id))
+                .ToListAsync();
+
+            existingCategoryProfile.Name = categoryProfile.Name;
+            existingCategoryProfile.Categories = categories;
+
+            var validationContext = new ValidationContext(existingCategoryProfile);
+            Validator.ValidateObject(existingCategoryProfile, validationContext);
+
+            _dbContext.CategoryProfiles.Update(existingCategoryProfile);
+            await _dbContext.SaveChangesAsync();
+
+            return true;
+        }
+        catch (InvalidOperationException e)
+        {
+            throw new InvalidOperationException($"{ErrorMessage.EditingCategoryProfile} {e.Message}");
+        }
     }
 
     public async Task<CategoryProfileDetailsDTO> GetCategoryProfileDetailsAsync(string userId, Guid profileId)
@@ -35,6 +122,7 @@ public class CategoryProfilesService(TravelBuddyDbContext dbContext) : ICategory
 
         return new CategoryProfileDetailsDTO()
         {
+            Id = categoryProfile.Id,
             Name = categoryProfile.Name,
             Categories = categoryProfile?.Categories?
                 .Select(c => new PlaceCategoryDTO()
@@ -45,8 +133,17 @@ public class CategoryProfilesService(TravelBuddyDbContext dbContext) : ICategory
         };
     }
 
-    public Task<List<CategoryProfileOverviewDTO>> GetUserCategoryProfilesAsync(string userId)
+    public async Task<List<CategoryProfileOverviewDTO>> GetUserCategoryProfilesAsync(string userId)
     {
-        throw new NotImplementedException();
+        var categoryProfiles = await _dbContext.CategoryProfiles
+            .Where(cp => cp.UserId == userId)
+            .Select(cp => new CategoryProfileOverviewDTO()
+            {
+                Id = cp.Id,
+                Name = cp.Name,
+            })
+            .ToListAsync();
+
+        return categoryProfiles;
     }
 }

@@ -10,6 +10,11 @@ public interface IConditionProfilesService
     public static class ErrorMessage
     {
         public const string ConditionProfileNotFound = "Condition profile not found.";
+        public const string ConditionProfileNameAlreadyExists = "A condition profile with the same name already exists.";
+        public const string TripUsesConditionProfile = "The condition profile is used by one or more trips.";
+        public const string CreatingConditionProfile = "An error occurred while creating a condition profile.";
+        public const string EditingConditionProfile = "An error occurred while editing a condition profile.";
+        public const string DeletingConditionProfile = "An error occurred while deleting a condition profile.";
     }
 
     /// <summary>

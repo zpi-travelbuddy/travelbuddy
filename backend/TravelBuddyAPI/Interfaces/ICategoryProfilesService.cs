@@ -10,6 +10,11 @@ public interface ICategoryProfilesService
     public static class ErrorMessage
     {
         public const string CategoryProfileNotFound = "Category profile not found.";
+        public const string CategoryProfileNameAlreadyExists = "A category profile with the same name already exists.";
+        public const string TripUsesCategoryProfile = "The category profile is used by one or more trips.";
+        public const string CreatingCategoryProfile = "An error occurred while creating a category profile.";
+        public const string EditingCategoryProfile = "An error occurred while editing a category profile.";
+        public const string DeletingCategoryProfile = "An error occurred while deleting a category profile.";
     }
 
     /// <summary>

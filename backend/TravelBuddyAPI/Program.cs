@@ -136,7 +136,7 @@ namespace TravelBuddyAPI
 
             builder.Services.AddDbContext<TravelBuddyDbContext>(options =>
             {
-                options.UseSqlServer(databaseConnectionString, options => options.EnableRetryOnFailure());
+                options.UseSqlServer(databaseConnectionString);
             });
 
             var app = builder.Build();
