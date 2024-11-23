@@ -7,7 +7,7 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 import { MD3Theme, useTheme } from "react-native-paper";
-import { Option } from "@/types/data";
+import { Option } from "@/types/TripDayData";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 import { useAnimatedKeyboard } from "react-native-reanimated";
 import IconComponent from "./IconComponent";

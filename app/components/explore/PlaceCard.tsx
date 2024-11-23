@@ -2,6 +2,7 @@ import { Button, Card } from "react-native-paper";
 import { StyleSheet, View } from "react-native";
 import { truncateText } from "@/utils/TextUtils";
 import { PlaceViewModel } from "@/types/Place";
+
 import { useRouter } from "expo-router";
 
 interface PlaceCardProps {

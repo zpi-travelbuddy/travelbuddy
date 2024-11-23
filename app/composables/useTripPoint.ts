@@ -1,13 +1,13 @@
 import { useAuth } from "@/app/ctx";
 import { API_ADDING_TRIP_POINT } from "@/constants/Endpoints";
-import { CreateTripPointRequest, TripPointResponse } from "@/types/data";
+import { CreateTripPointRequest, TripPointDetails } from "@/types/TripDayData";
 import { useState, useCallback } from "react";
 
 // Maybe for future refactor
 export const useCreateTripPoint = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [data, setData] = useState<TripPointResponse | null>(null);
+  const [data, setData] = useState<TripPointDetails | null>(null);
 
   const { api } = useAuth();
 

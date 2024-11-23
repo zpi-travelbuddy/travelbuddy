@@ -8,7 +8,7 @@ import {
   TransferPoint,
   TransferTypeLabels,
   TransferType,
-} from "@/types/data";
+} from "@/types/TripDayData";
 import { useTheme, FAB, Text, TextInput } from "react-native-paper";
 import React, {
   Fragment,
@@ -33,11 +33,17 @@ import {
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import CreatingTripPointSelector from "@/components/CreatingTripPointSelector";
 import ActionButtons from "@/components/ActionButtons";
-import { Option } from "@/types/data";
+import { Option } from "@/types/TripDayData";
 import useTripDayDetails from "@/composables/useTripDay";
 import LoadingView from "./LoadingView";
 import { useSnackbar } from "@/context/SnackbarContext";
-import { formatTimeRange, getTimeWithoutSeconds } from "@/utils/TimeUtils";
+
+import {
+  convertFromSeconds,
+  convertToSeconds,
+  getTimeWithoutSeconds,
+  formatTimeRange,
+} from "@/utils/TimeUtils";
 import ActionTextButtons from "@/components/ActionTextButtons";
 import CustomModal from "@/components/CustomModal";
 import { useDeleteTripPoint } from "@/composables/useTripPoint";
@@ -164,7 +170,8 @@ const TripDayView = () => {
 
   const undoChange = () => {
     setSelectedTransferPoint(previousTransfer);
-    if (previousTransfer) handleChangeTransferType(previousTransfer.mode);
+    if (previousTransfer)
+      handleChangeTransferType(previousTransfer.mode || "manual");
   };
 
   const onCancel = () => {
@@ -174,7 +181,11 @@ const TripDayView = () => {
 
   const onSave = () => {
     console.log("Zapisz");
-    if (selectedTransferPoint) selectedTransferPoint.duration = estimatedTime;
+    if (selectedTransferPoint)
+      selectedTransferPoint.seconds = convertToSeconds(
+        estimatedTime,
+        "minutes",
+      );
     onSelectorClose();
   };
 
@@ -185,7 +196,10 @@ const TripDayView = () => {
         mode="outlined"
         style={styles.textInput}
         label="Minuty"
-        defaultValue={selectedTransferPoint?.duration.toString()}
+        defaultValue={convertFromSeconds(
+          selectedTransferPoint?.seconds || 0,
+          "minutes",
+        ).toString()}
         onChangeText={handleTextChange}
         keyboardType="numeric"
       ></TextInput>
@@ -270,7 +284,7 @@ const TripDayView = () => {
   const handleTransferPointPress = (transferPoint: TransferPoint) => {
     setSelectedOptions(transferPointOptions);
     setSelectedTransferPoint(transferPoint);
-    setDynamicLabel(TransferTypeLabels[transferPoint.mode]);
+    setDynamicLabel(TransferTypeLabels[transferPoint?.mode || "manual"]);
     if (transferPoint.mode === "manual") {
       setExtendedView(<ExampleExtendedView />);
     }
@@ -315,7 +329,7 @@ const TripDayView = () => {
 
   const deleteTransferPoint = () => {
     if (selectedTransferPoint) {
-      selectedTransferPoint.duration = 0;
+      selectedTransferPoint.seconds = 0;
       selectedTransferPoint.mode = "empty";
     }
     onSelectorClose();

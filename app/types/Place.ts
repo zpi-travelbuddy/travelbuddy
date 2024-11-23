@@ -6,6 +6,7 @@ export interface PlaceCompact {
   state?: string;
   city: string;
 }
+
 export interface PlaceViewModel {
   providerId: string;
   id: string;

@@ -77,6 +77,7 @@ const AddingTripView = () => {
   );
 
   const [profileType, setProfileType] = useState<ProfileType>("Category");
+
   const categoryProfiles = useMemo(
     () => [
       { id: "1", name: "Profile1" },

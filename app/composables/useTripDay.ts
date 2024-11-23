@@ -1,6 +1,10 @@
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/app/ctx";
-import { TransferPoint, TripPointCompact, TripDayResponse } from "@/types/data";
+import {
+  TransferPoint,
+  TripPointCompact,
+  TripDayDetails,
+} from "@/types/TripDayData";
 import { TripDay } from "@/types/Trip";
 
 const useTripDayDetails = (tripDayId: string | null) => {
@@ -14,7 +18,7 @@ const useTripDayDetails = (tripDayId: string | null) => {
 
   const fetchTripDayDetails = useCallback(async () => {
     try {
-      const response = await api!.get<TripDayResponse>(
+      const response = await api!.get<TripDayDetails>(
         `/trips/tripDay/${tripDayId}`,
       );
       console.log(JSON.stringify(response));
@@ -33,6 +37,7 @@ const useTripDayDetails = (tripDayId: string | null) => {
       );
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
+      console.log("Error: " + JSON.stringify(err.response));
       if (err.response && err.response.status === 404) {
         setError("Dzień wycieczki nie został znaleziony.");
       } else {

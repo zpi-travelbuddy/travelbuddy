@@ -1,4 +1,3 @@
-import { FieldType } from "@/types/auth";
 import { DateRange, TripErrors } from "@/types/Trip";
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

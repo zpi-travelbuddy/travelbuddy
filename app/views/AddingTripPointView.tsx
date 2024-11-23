@@ -9,7 +9,7 @@ import {
   SegmentedButtons,
 } from "react-native-paper";
 import {
-  addHoursToTheSameDate,
+  addHoursToTheSameDay,
   formatTime,
   roundToNearestQuarterHour,
 } from "@/utils/TimeUtils";
@@ -22,7 +22,7 @@ import { AttractionTypeLabels, TripErrors, TripPointType } from "@/types/Trip";
 import { CALENDAR_ICON } from "@/constants/Icons";
 import { useAnimatedKeyboard } from "react-native-reanimated";
 import TripPointTypePicker from "@/components/TripPointTypePicker";
-import { CreateTripPointRequest, TripPointResponse } from "@/types/data";
+import { CreateTripPointRequest, TripPointDetails } from "@/types/TripDayData";
 import { Place } from "@/types/Place";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import LoadingView from "./LoadingView";
@@ -74,7 +74,7 @@ const AddingTripPointView = () => {
     useState<TripPointType>("attraction");
   const [startTime, setStartTime] = useState<Date>(roundToNearestQuarterHour());
   const [endTime, setEndTime] = useState<Date>(
-    addHoursToTheSameDate(startTime, 1),
+    addHoursToTheSameDay(startTime, 1),
   );
   const [country, setCountry] = useState<string>("");
   const [state, setState] = useState<string>("");
@@ -207,7 +207,7 @@ const AddingTripPointView = () => {
     try {
       setLoading(true);
 
-      const response = await api!.post<TripPointResponse>(
+      const response = await api!.post<TripPointDetails>(
         API_ADDING_TRIP_POINT,
         tripPointRequest,
       );

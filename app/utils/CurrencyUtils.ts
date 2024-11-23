@@ -1,5 +1,3 @@
-import { TripResponse } from "@/types/Trip";
-
 export function formatMoneyToString(amount: number | undefined): string {
   if (amount === undefined || isNaN(amount)) return "";
   return amount

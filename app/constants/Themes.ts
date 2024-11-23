@@ -1,4 +1,3 @@
-import { ThemeProp } from "react-native-paper/lib/typescript/types";
 import { FontConfigs } from "@/constants/FontConfigs";
 import { Colors } from "@/constants/Colors";
 import { MD3LightTheme, MD3DarkTheme } from "react-native-paper";
