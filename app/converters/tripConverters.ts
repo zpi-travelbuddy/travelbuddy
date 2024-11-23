@@ -116,14 +116,7 @@ export function convertTripResponseToEditTripRequest(
     numberOfTravelers: response.numberOfTravelers,
     startDate: response.startDate,
     endDate: response.endDate,
-    destinationPlace: {
-      providerId: destination.providerId || "",
-      name: destination.name || "",
-      country: destination.country || "",
-      city: destination.city || "",
-      latitude: destination.latitude || 0,
-      longitude: destination.longitude || 0,
-    },
+    destinationProviderId: destination.providerId || "",
     budget: response.budget,
     currencyCode: response.currencyCode,
   };
