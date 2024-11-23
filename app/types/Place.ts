@@ -1,12 +1,19 @@
-export interface APIPlace {
-  id: string | null;
-  providerId: string;
-  name?: string;
-  country?: string;
-  state?: string | null;
-  city?: string;
+export interface PlaceCompact {
+  id: string;
+  providerId?: string;
+  name: string;
+  country: string;
+  state?: string;
+  city: string;
 }
 
+export interface PlaceViewModel {
+  providerId: string;
+  id: string;
+  title?: string;
+  subtitle?: string;
+  imageUrl?: string;
+}
 export interface Place {
   id: string;
   providerId: string;

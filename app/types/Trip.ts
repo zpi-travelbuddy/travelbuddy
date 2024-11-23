@@ -10,7 +10,7 @@ export interface TripRequest {
   budget: number;
   currencyCode: string;
   categoryProfileId: string | null;
-  conditionProfileId: string | null; 
+  conditionProfileId: string | null;
 }
 
 export interface APITrip {
