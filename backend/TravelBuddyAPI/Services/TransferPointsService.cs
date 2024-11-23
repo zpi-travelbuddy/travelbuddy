@@ -55,7 +55,7 @@ public class TransferPointsService(TravelBuddyDbContext dbContext, IGeoapifyServ
                 throw new InvalidOperationException(ErrorMessage.TripPointNotFoundInTripDay);
             }
 
-            if(fromTripPoint.EndTime >= toTripPoint.StartTime)
+            if(fromTripPoint.EndTime > toTripPoint.StartTime)
             {
                 throw new InvalidOperationException(ErrorMessage.InvalidTransferPointTime);
             }

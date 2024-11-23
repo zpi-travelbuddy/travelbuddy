@@ -46,9 +46,7 @@ const usePlaceDetails = (
   }, [fetchPlaceDetails]);
 
   useEffect(() => {
-    if (placeId) {
-      refetch();
-    }
+    if (placeId) refetch();
   }, [placeId, refetch]);
 
   return { placeDetails, loading, error, refetch };

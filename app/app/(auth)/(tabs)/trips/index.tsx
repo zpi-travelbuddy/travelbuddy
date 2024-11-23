@@ -1,7 +1,6 @@
 import React from "react";
-import TripBrowse from "@/views/TripBrowseView";
-import EditTripView from "@/views/EditingTripView";
+import TripBrowseView from "@/views/TripBrowseView";
 
 export default function Trips() {
-  return <TripBrowse />;
+  return <TripBrowseView />;
 }

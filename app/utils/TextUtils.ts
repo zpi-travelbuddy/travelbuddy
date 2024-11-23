@@ -2,6 +2,7 @@ import { Place, PlaceDetails } from "@/types/Place";
 
 export function formatAddress(place: PlaceDetails): string {
   if (!place) return "";
+
   return `${place.city}, ${place.country}`;
 }
 

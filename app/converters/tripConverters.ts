@@ -1,30 +1,27 @@
 import { Place, PlaceDetails } from "@/types/Place";
 import {
-  TripRequest,
-  TripDay,
-  TripResponse,
+  TripCompact,
   TripSummary,
   TripViewModel,
   EditTripRequest,
-  APITrip,
-  Trip,
+  TripDetails,
 } from "@/types/Trip";
 import { getMoneyWithCurrency } from "@/utils/CurrencyUtils";
-import {
-  formatDateFromISO,
-  formatDateRange,
-  formatTimeRange,
-} from "@/utils/TimeUtils";
+import { formatDateFromISO, formatDateRange } from "@/utils/TimeUtils";
 
 const RANDOM_IMAGE = "https://picsum.photos/891";
 
 // Temporary mocked functions
-function getCategoryProfileName(categoryProfileId: string | null): string {
+function getCategoryProfileName(
+  categoryProfileId?: string | null | undefined,
+): string {
   if (!categoryProfileId) return "";
   return "Zwiedzanie i jedzenie";
 }
 
-function getConditionProfileName(conditionProfileId: string | null): string {
+function getConditionProfileName(
+  conditionProfileId?: string | null | undefined,
+): string {
   if (!conditionProfileId) return "";
   return "Potrzebuję internetu dla psa";
 }
@@ -55,7 +52,7 @@ export const calculateTripSummary = (tripSummary: TripSummary) => {
 };
 
 export function convertTripResponseToViewModel(
-  tripDetails: TripResponse | undefined,
+  tripDetails: TripDetails | undefined,
   tripSummary: TripSummary | undefined,
   destinationDetails: PlaceDetails | undefined,
 ): TripViewModel {
@@ -79,36 +76,29 @@ export function convertTripResponseToViewModel(
       tripDetails.currencyCode,
     ),
     budget: getMoneyWithCurrency(tripDetails.budget, tripDetails.currencyCode),
-    categoryProfileName: getCategoryProfileName(tripDetails.categoryProfileId),
+    categoryProfileName: getCategoryProfileName(tripDetails?.categoryProfileId),
     conditionProfileName: getConditionProfileName(
-      tripDetails.conditionProfileId,
+      tripDetails?.conditionProfileId,
     ),
   };
 }
 
-export function convertTripRequestToTripResponse(
-  request: TripRequest,
-  id: string,
-  destinationId: string,
-  tripDays: TripDay[] = [],
-): TripResponse {
-  return {
-    id,
-    name: request.name,
-    numberOfTravelers: request.numberOfTravelers,
-    startDate: request.startDate,
-    endDate: request.endDate,
-    destinationId,
-    budget: request.budget,
-    currencyCode: request.currencyCode,
-    categoryProfileId: request.categoryProfileId,
-    conditionProfileId: request.conditionProfileId,
-    tripDays,
-  };
-}
+export const convertTripsFromAPI = (
+  trips: TripCompact[],
+  isArchived = false,
+): TripCompact[] => {
+  return trips.map((trip) => ({
+    id: trip.id,
+    name: trip.name,
+    startDate: formatDateFromISO(trip.startDate),
+    endDate: formatDateFromISO(trip.endDate),
+    imageUri: RANDOM_IMAGE,
+    isArchived: isArchived,
+  }));
+};
 
 export function convertTripResponseToEditTripRequest(
-  response: TripResponse,
+  response: TripDetails,
   destination: Place,
 ): EditTripRequest {
   const editTripRequest: EditTripRequest = {
@@ -123,16 +113,3 @@ export function convertTripResponseToEditTripRequest(
 
   return editTripRequest;
 }
-
-export const convertAPITripToTrip = (trip: APITrip): Trip => ({
-  id: trip.id,
-  title: trip.name,
-  subtitle: formatTimeRange(
-    formatDateFromISO(trip?.startDate),
-    formatDateFromISO(trip?.endDate),
-  ),
-  from: trip.startDate,
-  to: trip.endDate,
-  imageUri: RANDOM_IMAGE,
-  isArchived: false,
-});

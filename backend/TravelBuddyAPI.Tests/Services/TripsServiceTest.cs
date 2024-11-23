@@ -242,6 +242,8 @@ public class TripsServiceTest
     [InlineData(10, 20, -5, -1)]
     [InlineData(0, 1, 10, 12)]
     [InlineData(10, 12, -5, 0)]
+    [InlineData(-2, 5, 1, 0)]
+    [InlineData(-2, 5, 0, 10)]
     public async Task EditTripAsync_TripDatesChanged_ShouldManageTripDays(int startOffset, int endOffset, int newStartOffset, int newEndOffset)
     {
         // Arrange
@@ -455,6 +457,6 @@ public class TripsServiceTest
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _tripsService.EditTripAsync(userId, tripId, tripRequest));
-        Assert.Equal($"{ITripsService.ErrorMessage.EditTrip} {ITripsService.ErrorMessage.StartDateInPast}", exception.Message);
+        Assert.Equal($"{ITripsService.ErrorMessage.EditTrip} {ITripsService.ErrorMessage.AddTripDaysInPast}", exception.Message);
     }
 }

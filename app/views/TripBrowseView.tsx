@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { StyleSheet, View, Text, RefreshControl } from "react-native";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { TripCard } from "@/components/TripCard";
@@ -20,8 +21,9 @@ import { useSnackbar } from "@/context/SnackbarContext";
 import { useAuth } from "@/app/ctx";
 import { API_TRIPS_CURRENT, API_TRIPS_PAST } from "@/constants/Endpoints";
 import { useAnimatedKeyboard } from "react-native-reanimated";
-import { Trip, APITrip } from "@/types/Trip";
-import { convertAPITripToTrip } from "@/converters/tripConverters";
+import { TripCompact } from "@/types/Trip";
+import { formatTimeRange } from "@/utils/TimeUtils";
+import { convertTripsFromAPI } from "@/converters/tripConverters";
 
 type TripViewMode = "actual" | "archive";
 
@@ -43,11 +45,11 @@ const TripBrowseView = () => {
 
   const { showSnackbar } = useSnackbar();
 
-  const [currentTrips, setCurrentTrips] = useState<Trip[]>([]);
-  const [pastTrips, setPastTrips] = useState<Trip[]>([]);
+  const [currentTrips, setCurrentTrips] = useState<TripCompact[]>([]);
+  const [pastTrips, setPastTrips] = useState<TripCompact[]>([]);
   const [isVisible, setIsVisible] = useState<boolean>(false);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
-  const [selectedTrip, setSelectedTrip] = useState<Trip | null>(null);
+  const [selectedTrip, setSelectedTrip] = useState<TripCompact | null>(null);
 
   const [value, setValue] = useState<TripViewMode>("actual");
 
@@ -56,12 +58,13 @@ const TripBrowseView = () => {
 
     return tripsToFilter
       .filter((trip) =>
-        trip.title.toLowerCase().includes(searchQuery.toLowerCase()),
+        trip.name.toLowerCase().includes(searchQuery.toLowerCase()),
       )
       .sort((a, b) => {
-        if (a.from === b.from) return a.to.localeCompare(b.to);
+        if (a.startDate === b.startDate)
+          return a.endDate.localeCompare(b.endDate);
 
-        return a.from.localeCompare(b.from);
+        return a.startDate.localeCompare(b.startDate);
       });
   }, [value, searchQuery, currentTrips, pastTrips]);
 
@@ -70,12 +73,12 @@ const TripBrowseView = () => {
     flatListRef.current!.scrollToOffset({ animated: true, offset: 0 });
   };
 
-  const handlePress = (trip: Trip) => {
+  const handlePress = (trip: TripCompact) => {
     setIsVisible(false);
     router.push(`/trips/details/${trip.id}`);
   };
 
-  const handleLongPress = (trip: Trip) => {
+  const handleLongPress = (trip: TripCompact) => {
     setSelectedTrip(trip);
   };
 
@@ -93,10 +96,9 @@ const TripBrowseView = () => {
     setSelectedTrip(null);
   };
 
-  const deleteTrip = async (trip: Trip | null) => {
+  const deleteTrip = async (trip: TripCompact | null) => {
     if (!trip) return;
-
-    console.log(`Usuwanie wycieczki: ${trip.title}`);
+    console.log(`Usuwanie wycieczki: ${trip?.name}`);
     hideModal();
     try {
       await api!.delete(`/trips/${trip.id}`);
@@ -109,12 +111,13 @@ const TripBrowseView = () => {
 
   const fetchTripsByType = async (
     endpoint: string,
-    setTrips: (trips: Trip[]) => void,
+    setTrips: (trips: TripCompact[]) => void,
     errorFallback: () => void,
   ) => {
     try {
-      const trips: APITrip[] = (await api!.get(endpoint)).data;
-      const parsedTrips = trips.map(convertAPITripToTrip);
+      const trips: TripCompact[] = (await api!.get(endpoint)).data;
+      const isArchived = endpoint === API_TRIPS_PAST;
+      const parsedTrips = convertTripsFromAPI(trips, isArchived);
       setTrips(parsedTrips);
     } catch (error: any) {
       if (error.response && error.response.status === 404) {
@@ -178,11 +181,11 @@ const TripBrowseView = () => {
     }, [router, refresh]),
   );
 
-  const renderItem = ({ item }: { item: Trip }) => (
+  const renderItem = ({ item }: { item: TripCompact }) => (
     <TripCard
-      title={item.title}
-      subtitle={item.subtitle}
-      imageUri={item.imageUri}
+      title={item.name}
+      subtitle={formatTimeRange(item.startDate, item.endDate)}
+      imageUri={item.imageUri || ""}
       isArchived={item.isArchived}
       onPress={() => handlePress(item)}
       onLongPress={() => {
@@ -290,8 +293,13 @@ const TripBrowseView = () => {
               Czy na pewno chcesz usunąć tą wycieczkę?
             </Text>
             <View style={styles.modalContent}>
-              <Text style={styles.boldText}>{selectedTrip?.title}</Text>
-              <Text style={styles.modalSubtitle}>{selectedTrip?.subtitle}</Text>
+              <Text style={styles.boldText}>{selectedTrip?.name}</Text>
+              <Text style={styles.modalSubtitle}>
+                {formatTimeRange(
+                  selectedTrip?.startDate || "",
+                  selectedTrip?.endDate || "",
+                )}
+              </Text>
             </View>
             <ActionTextButtons
               onAction1={hideModal}

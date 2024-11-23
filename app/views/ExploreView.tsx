@@ -9,7 +9,7 @@ import {
 } from "react-native-paper";
 import { PlaceCard } from "@/components/explore/PlaceCard";
 import { MD3ThemeExtended } from "@/constants/Themes";
-import { PlaceViewModel, PlaceCompact } from "@/types/Place";
+import { PlaceCompact, PlaceViewModel } from "@/types/Place";
 import { useAnimatedKeyboard } from "react-native-reanimated";
 import { useDebouncedCallback } from "use-debounce";
 import { useAuth } from "@/app/ctx";
