@@ -22,6 +22,8 @@ import { useRouter } from "expo-router";
 import SingleDatePickerModal from "@/components/SingleDatePickerModal";
 import useTripDetails from "@/composables/useTripDetails";
 import { CalendarDate } from "react-native-paper-dates/lib/typescript/Date/Calendar";
+import { TripDay } from "@/types/Trip";
+import { useSnackbar } from "@/context/SnackbarContext";
 
 const convertPlace = (place: PlaceCompact): PlaceViewModel => {
   const subtitle = [place.city, place.state, place.country]
@@ -44,6 +46,7 @@ interface ExploreViewProps {
 // If we navigate from main menu -> we don't pass tripId and we have to select trip from modal
 const ExploreView = ({ tripId }: ExploreViewProps) => {
   const { api } = useAuth();
+  const { showSnackbar } = useSnackbar();
 
   const router = useRouter();
 
@@ -52,7 +55,6 @@ const ExploreView = ({ tripId }: ExploreViewProps) => {
   const theme = useTheme() as MD3ThemeExtended;
   const styles = makeStyles(theme);
 
-  const [error, setError] = useState<string>("");
   const [places, setPlaces] = useState<PlaceViewModel[]>([]);
   const [currentTrips, setCurrentTrips] = useState<any[]>([]); // will change to Trips later (after trips browse merge)
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -75,7 +77,7 @@ const ExploreView = ({ tripId }: ExploreViewProps) => {
   }, [tripLoading]);
 
   useEffect(() => {
-    setError(tripError || "");
+    if (tripError) showSnackbar(tripError);
   }, [tripError]);
 
   useAnimatedKeyboard();
