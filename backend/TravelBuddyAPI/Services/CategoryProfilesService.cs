@@ -13,16 +13,16 @@ public class CategoryProfilesService(TravelBuddyDbContext dbContext) : ICategory
 {
     private readonly TravelBuddyDbContext _dbContext = dbContext;
 
-    private async Task ValidateCategoryProfileAsync(CategoryProfile categoryProfile)
-    {
-        if (await _dbContext.CategoryProfiles.AnyAsync(cp => cp.Name == categoryProfile.Name))
-        {
-            throw new InvalidOperationException(ErrorMessage.CategoryProfileNameAlreadyExists);
-        }
+    // private async Task ValidateCategoryProfileAsync(CategoryProfile categoryProfile)
+    // {
+    //     if (await _dbContext.CategoryProfiles.AnyAsync(cp => cp.Name == categoryProfile.Name))
+    //     {
+    //         throw new InvalidOperationException(ErrorMessage.CategoryProfileNameAlreadyExists);
+    //     }
 
-        var validationContext = new ValidationContext(categoryProfile);
-        Validator.ValidateObject(categoryProfile, validationContext);
-    }
+    //     var validationContext = new ValidationContext(categoryProfile);
+    //     Validator.ValidateObject(categoryProfile, validationContext);
+    // }
 
     public async Task<CategoryProfileDetailsDTO> CreateCategoryProfileAsync(string userId, CategoryProfileRequestDTO categoryProfile)
     {
@@ -40,7 +40,13 @@ public class CategoryProfilesService(TravelBuddyDbContext dbContext) : ICategory
 
         try
         {
-            await ValidateCategoryProfileAsync(newCategoryProfile);
+            if (await _dbContext.CategoryProfiles.AnyAsync(cp => cp.Name == categoryProfile.Name))
+            {
+                throw new InvalidOperationException(ErrorMessage.CategoryProfileNameAlreadyExists);
+            }
+
+            var validationContext = new ValidationContext(categoryProfile);
+            Validator.ValidateObject(categoryProfile, validationContext);
         }
         catch (Exception e) when (e is ValidationException || e is InvalidOperationException)
         {
@@ -105,7 +111,9 @@ public class CategoryProfilesService(TravelBuddyDbContext dbContext) : ICategory
             existingCategoryProfile.Name = categoryProfile.Name;
             existingCategoryProfile.Categories = categories;
 
-            await ValidateCategoryProfileAsync(existingCategoryProfile);
+            var validationContext = new ValidationContext(existingCategoryProfile);
+            Validator.ValidateObject(existingCategoryProfile, validationContext);
+
             _dbContext.CategoryProfiles.Update(existingCategoryProfile);
             await _dbContext.SaveChangesAsync();
 

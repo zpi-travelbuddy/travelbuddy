@@ -13,16 +13,16 @@ public class ConditionProfilesService(TravelBuddyDbContext dbContext) : IConditi
 {
     private readonly TravelBuddyDbContext _dbContext = dbContext;
 
-    private async Task ValidateConditionProfileAsync(ConditionProfile conditionProfile)
-    {
-        if (await _dbContext.ConditionProfiles.AnyAsync(cp => cp.Name == conditionProfile.Name))
-        {
-            throw new InvalidOperationException(ErrorMessage.ConditionProfileNameAlreadyExists);
-        }
+    // private async Task ValidateConditionProfileAsync(ConditionProfile conditionProfile)
+    // {
+    //     if (await _dbContext.ConditionProfiles.AnyAsync(cp => cp.Name == conditionProfile.Name))
+    //     {
+    //         throw new InvalidOperationException(ErrorMessage.ConditionProfileNameAlreadyExists);
+    //     }
 
-        var validationContext = new ValidationContext(conditionProfile);
-        Validator.ValidateObject(conditionProfile, validationContext);
-    }
+    //     var validationContext = new ValidationContext(conditionProfile);
+    //     Validator.ValidateObject(conditionProfile, validationContext);
+    // }
 
     public async Task<ConditionProfileDetailsDTO> CreateConditionProfileAsync(string userId, ConditionProfileRequestDTO conditionProfile)
     {
@@ -42,7 +42,13 @@ public class ConditionProfilesService(TravelBuddyDbContext dbContext) : IConditi
 
         try
         {
-            await ValidateConditionProfileAsync(newConditionProfile);
+            if (await _dbContext.ConditionProfiles.AnyAsync(cp => cp.Name == conditionProfile.Name))
+            {
+                throw new InvalidOperationException(ErrorMessage.ConditionProfileNameAlreadyExists);
+            }
+
+            var validationContext = new ValidationContext(conditionProfile);
+            Validator.ValidateObject(conditionProfile, validationContext);
         }
         catch (Exception e) when (e is ValidationException || e is InvalidOperationException)
         {
@@ -108,7 +114,9 @@ public class ConditionProfilesService(TravelBuddyDbContext dbContext) : IConditi
             existingConditionProfile.Name = conditionProfile.Name;
             existingConditionProfile.Conditions = conditions;
 
-            await ValidateConditionProfileAsync(existingConditionProfile);
+            var validationContext = new ValidationContext(existingConditionProfile);
+            Validator.ValidateObject(existingConditionProfile, validationContext);
+
             _dbContext.ConditionProfiles.Update(existingConditionProfile);
             await _dbContext.SaveChangesAsync();
 
