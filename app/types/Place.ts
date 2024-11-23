@@ -38,11 +38,6 @@ export interface PlaceCategory {
   name: string;
 }
 
-export interface PlaceSuperCategory {
-  id: string;
-  name: string;
-}
-
 export interface PlaceDetails {
   id: string;
   providerId: string;
@@ -59,5 +54,5 @@ export interface PlaceDetails {
   averageRating: number;
   conditions: PlaceCondition[];
   categories: PlaceCategory[];
-  superCategory: PlaceSuperCategory;
+  superCategory: PlaceCategory;
 }

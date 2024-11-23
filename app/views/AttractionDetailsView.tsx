@@ -1,122 +1,125 @@
 import { StyleSheet, View, Image, Dimensions, ScrollView } from "react-native";
-import React, { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useTheme, Text } from "react-native-paper";
-import {
-  ADD_ICON,
-  DEFAULT_ICON_SIZE,
-  DOG_ICON,
-  HUMAN_DISABLE_ICON,
-  VEGAN_ICON,
-  LOCATION_ICON,
-} from "@/constants/Icons";
+import { ADD_ICON, DEFAULT_ICON_SIZE, LOCATION_ICON } from "@/constants/Icons";
 import ActionButtons from "@/components/ActionButtons";
 import { MD3ThemeExtended } from "@/constants/Themes";
-import { displayCost, formatAddress } from "@/utils/TextUtils";
+import { displayCost, displayTime, formatAddress } from "@/utils/TextUtils";
 import StarRatingDisplayComponent from "@/components/StarRatingDisplayComponent";
 import IconComponent from "@/components/IconComponent";
-import IconRow from "@/components/IconRow";
-import { formatMinutesInWords } from "@/utils/TimeUtils";
 import { AttractionTypeIcons, AttractionTypeLabels } from "@/types/Trip";
-import { AttractionViewModel } from "@/types/Attraction";
+import { useAttractionDetails } from "@/composables/usePlace";
+import LoadingView from "./LoadingView";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { useSnackbar } from "@/context/SnackbarContext";
+import ConditionIcons from "@/components/ConditionIcons";
 
 const { height, width } = Dimensions.get("window");
-
-const attraction: AttractionViewModel = {
-  name: "Wycieczka do Londynu",
-  address: {
-    street: "",
-    number: "",
-    city: "Londyn",
-    country: "Wielka Brytania",
-  },
-  attractionType: "park",
-  conveniences: [],
-  rating: 5,
-  averageCostPerPerson: 0,
-  averageVisitTime: 120,
-  latitude: 51.50861,
-  longitude: -0.163611,
-  imageUrl: "https://upload.wikimedia.org/wikipedia/commons/1/1a/Big_Ben..JPG",
-};
 
 const AttractionDetailsView = () => {
   const theme = useTheme() as MD3ThemeExtended;
   const styles = useMemo(() => createStyles(theme), [theme]);
+  const router = useRouter();
 
-  // const params = useLocalSearchParams();
-  // const { id } = params;
+  const { showSnackbar } = useSnackbar();
 
-  return (
-    <View style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        <Image
-          source={{
-            uri: attraction.imageUrl,
-          }}
-          style={styles.image}
-          resizeMode="cover"
-        />
-        <View style={styles.labelContainer}>
-          <Text variant="headlineSmall">{attraction.name}</Text>
-          <Text variant="titleSmall">{formatAddress(attraction.address)}</Text>
+  const params = useLocalSearchParams();
+  const { place_id } = params;
 
-          <StarRatingDisplayComponent
-            style={styles.starRatingPadding}
-            rating={attraction.rating}
+  const { placeDetails, loading, error } = useAttractionDetails(
+    place_id as string,
+  );
+
+  useEffect(() => console.log(JSON.stringify(placeDetails)), [placeDetails]);
+
+  if (loading) {
+    return <LoadingView />;
+  }
+
+  if (error) {
+    router.back();
+    showSnackbar(error?.toString() || "Unknown error", "error");
+    return null;
+  }
+
+  if (placeDetails) {
+    return (
+      <View style={styles.container}>
+        <ScrollView contentContainerStyle={styles.scrollContent}>
+          <Image
+            source={{
+              uri: "https://upload.wikimedia.org/wikipedia/commons/1/1a/Big_Ben..JPG",
+            }}
+            style={styles.image}
+            resizeMode="cover"
           />
+          <View style={styles.labelContainer}>
+            <Text variant="headlineSmall">{placeDetails.name}</Text>
+            <Text variant="titleSmall">{formatAddress(placeDetails)}</Text>
 
-          <Text variant="bodySmall">Rodzaj</Text>
-          <View style={styles.rowContainer}>
-            <IconComponent
-              source={AttractionTypeIcons[attraction.attractionType]}
-              iconSize={DEFAULT_ICON_SIZE}
-              color={theme.colors.onSurface}
-              backgroundColor={theme.colors.primaryContainer}
+            <StarRatingDisplayComponent
+              style={styles.starRatingPadding}
+              rating={placeDetails?.averageRating || 0.0}
             />
-            <Text style={styles.label}>
-              {AttractionTypeLabels[attraction.attractionType]}
+
+            <Text variant="bodySmall">Rodzaj</Text>
+            <View style={styles.rowContainer}>
+              <IconComponent
+                source={AttractionTypeIcons["attraction"]}
+                iconSize={DEFAULT_ICON_SIZE}
+                color={theme.colors.onSurface}
+                backgroundColor={theme.colors.primaryContainer}
+              />
+              <Text style={styles.label}>
+                {AttractionTypeLabels["attraction"]}
+              </Text>
+            </View>
+
+            <Text style={styles.doubleSpace} variant="bodySmall">
+              Udogodnienia
+            </Text>
+
+            <ConditionIcons
+              placeConditions={placeDetails.conditions}
+              style={styles.space}
+              iconColor={theme.colors.onSurface}
+            />
+
+            <Text style={styles.doubleSpace} variant="bodySmall">
+              Średni koszt na osobę
+            </Text>
+            <Text variant="titleSmall">
+              {displayCost(placeDetails.averageCostPerPerson)}
+            </Text>
+
+            <Text style={styles.doubleSpace} variant="bodySmall">
+              Średni czas pobytu
+            </Text>
+            <Text variant="titleSmall">
+              {displayTime(placeDetails.averageTimeSpent)}
             </Text>
           </View>
+        </ScrollView>
 
-          <Text style={styles.doubleSpace} variant="bodySmall">
-            Udogodnienia
-          </Text>
-          <IconRow
-            style={styles.space}
-            icons={[HUMAN_DISABLE_ICON, DOG_ICON, VEGAN_ICON]}
-            iconColor={theme.colors.onSurface}
-          />
-
-          <Text style={styles.doubleSpace} variant="bodySmall">
-            Średni koszt na osobę
-          </Text>
-          <Text variant="titleSmall">
-            {displayCost(attraction.averageCostPerPerson)}
-          </Text>
-
-          <Text style={styles.doubleSpace} variant="bodySmall">
-            Średni czas pobytu
-          </Text>
-          <Text variant="titleSmall">
-            {formatMinutesInWords(attraction.averageVisitTime)}
-          </Text>
-        </View>
-      </ScrollView>
-
-      <ActionButtons
-        onAction1={() => {
-          console.log("Opening Maps");
-        }}
-        action1ButtonLabel={"Mapa"}
-        onAction2={() => {
-          console.log("Adding to trip");
-        }}
-        action2ButtonLabel={"Dodaj"}
-        action1Icon={LOCATION_ICON}
-        action2Icon={ADD_ICON}
-      />
-    </View>
-  );
+        <ActionButtons
+          onAction1={() => {
+            console.log("Opening Maps");
+          }}
+          action1ButtonLabel={"Mapa"}
+          onAction2={() => {
+            console.log("Adding to trip");
+          }}
+          action2ButtonLabel={"Dodaj"}
+          action1Icon={LOCATION_ICON}
+          action2Icon={ADD_ICON}
+        />
+      </View>
+    );
+  } else {
+    router.back();
+    showSnackbar("Wystąpił błąd", "error");
+    return null;
+  }
 };
 
 export default AttractionDetailsView;

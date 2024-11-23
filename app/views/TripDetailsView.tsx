@@ -8,8 +8,17 @@ import React, {
 } from "react";
 import TripDetailLabel from "@/components/TripDetailLabel";
 import { FAB, Text, useTheme } from "react-native-paper";
-import { CALENDAR_ICON, DELETE_ICON } from "@/constants/Icons";
-import { router, useLocalSearchParams, useNavigation } from "expo-router";
+import {
+  CALENDAR_ICON,
+  DELETE_ICON,
+  EDIT_ICON_MATERIAL,
+} from "@/constants/Icons";
+import {
+  router,
+  useFocusEffect,
+  useLocalSearchParams,
+  useNavigation,
+} from "expo-router";
 import SingleDatePickerModal from "@/components/SingleDatePickerModal";
 import { CalendarDate } from "react-native-paper-dates/lib/typescript/Date/Calendar";
 import useTripDetails from "@/composables/useTripDetails";
@@ -57,23 +66,24 @@ const TripDetailsView = () => {
       showSnackbar("Wystąpił błąd podczas usuwania wycieczki", "error");
     }
   };
-  // ---
 
   const navigation = useNavigation();
 
-  const { trip_id } = useLocalSearchParams();
+  const { trip_id, refresh } = useLocalSearchParams();
 
   const {
     tripDetails,
     tripSummary,
     loading: tripLoading,
     error: tripError,
+    refetch: tripRefetch,
   } = useTripDetails(trip_id as string);
 
   const {
     placeDetails: destinationDetails,
     loading: destinationLoading,
     error: destinationError,
+    refetch: destinationRefetch,
   } = usePlaceDetails(tripDetails?.destinationId);
 
   const loading = useMemo(() => {
@@ -93,6 +103,14 @@ const TripDetailsView = () => {
           hasMenu: true,
           menuActions: [
             {
+              title: "Edytuj",
+              icon: EDIT_ICON_MATERIAL,
+              color: theme.colors.onSurface,
+              onPress: () => {
+                router.push(`/trips/edit/${trip_id}`);
+              },
+            },
+            {
               title: "Usuń",
               icon: DELETE_ICON,
               color: theme.colors.error,
@@ -105,6 +123,19 @@ const TripDetailsView = () => {
       ],
     });
   }, [navigation]);
+
+  useFocusEffect(
+    useCallback(() => {
+      const refreshOnFocus = async () => {
+        if (refresh && refresh === "true") {
+          router.setParams({ refresh: undefined });
+          await tripRefetch();
+          await destinationRefetch();
+        }
+      };
+      refreshOnFocus();
+    }, [router, refresh]),
+  );
 
   useEffect(() => {
     if (tripDetails && destinationDetails) {

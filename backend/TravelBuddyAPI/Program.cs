@@ -136,8 +136,7 @@ namespace TravelBuddyAPI
 
             builder.Services.AddDbContext<TravelBuddyDbContext>(options =>
             {
-                options.UseSqlServer(databaseConnectionString);
-
+                options.UseSqlServer(databaseConnectionString, options => options.EnableRetryOnFailure());
             });
 
             var app = builder.Build();
@@ -155,8 +154,6 @@ namespace TravelBuddyAPI
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
-
-            app.UseHttpsRedirection();
 
             app.UseAuthentication();
 

@@ -3,15 +3,19 @@ import { StyleSheet, View } from "react-native";
 import { truncateText } from "@/utils/TextUtils";
 import { PlaceViewModel } from "@/types/Place";
 
+import { useRouter } from "expo-router";
+
 interface PlaceCardProps {
   place: PlaceViewModel;
   handleAddPress: () => void;
 }
 
 export function PlaceCard({ place, handleAddPress }: PlaceCardProps) {
+  const router = useRouter();
+
   const onDetailsPress = () => {
     console.log("Go to attraction's details", place.providerId);
-    // router.push(...);
+    router.push(`/explore/place/${place.providerId}`);
   };
 
   const onAddPress = () => {

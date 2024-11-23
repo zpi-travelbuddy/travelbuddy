@@ -37,8 +37,8 @@ public class TripPointsService(TravelBuddyDbContext dbContext, INBPService nbpSe
 
             List<TripPoint> overlappingTripPoints = await _dbContext.TripPoints
                 .Where(tp => tp.TripDayId == tripPoint.TripDayId
-                    && ((tp.StartTime <= tripPoint.StartTime && tp.EndTime >= tripPoint.StartTime)
-                        || (tp.StartTime <= tripPoint.EndTime && tp.EndTime >= tripPoint.EndTime)))
+                    && ((tp.StartTime < tripPoint.StartTime && tp.EndTime > tripPoint.StartTime)
+                        || (tp.StartTime < tripPoint.EndTime && tp.EndTime > tripPoint.EndTime)))
                 .ToListAsync();
 
             if (overlappingTripPoints.Count != 0) throw new ArgumentException(ErrorMessage.TripPointOverlap);

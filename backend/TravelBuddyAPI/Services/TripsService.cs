@@ -26,15 +26,10 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
         try
         {
             using var transaction = await _dbContext.Database.BeginTransactionAsync();
+           
+            await ValidateTripRequest(userId, trip);
 
-            _ = trip ?? throw new ArgumentNullException(nameof(trip), ErrorMessage.EmptyRequest);
-
-            if (trip.StartDate > trip.EndDate) throw new ArgumentException(ErrorMessage.StartDateAfterEndDate);
             if (trip.StartDate < DateOnly.FromDateTime(DateTime.Now)) throw new ArgumentException(ErrorMessage.StartDateInPast);
-
-            if (trip.CategoryProfileId is not null) await _categoryProfileService.GetCategoryProfileDetailsAsync(userId, trip.CategoryProfileId.Value);
-            if (trip.ConditionProfileId is not null) await _conditionProfileService.GetConditionProfileDetailsAsync(userId, trip.ConditionProfileId.Value);
-
             if (trip.Budget * 100 % 1 != 0) throw new ArgumentException(ErrorMessage.TooManyDecimalPlaces);
 
             decimal exchangeRate = await _nbpService.GetRateAsync(trip?.CurrencyCode ?? string.Empty) ?? throw new InvalidOperationException(ErrorMessage.RetriveExchangeRate);
@@ -114,7 +109,6 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
         _ = trip ?? throw new ArgumentNullException(nameof(trip), ErrorMessage.EmptyRequest);
 
         if (trip.StartDate > trip.EndDate) throw new ArgumentException(ErrorMessage.StartDateAfterEndDate);
-        if (trip.StartDate < DateOnly.FromDateTime(DateTime.Now)) throw new ArgumentException(ErrorMessage.StartDateInPast);
 
         if (trip.CategoryProfileId is not null) await _categoryProfileService.GetCategoryProfileDetailsAsync(userId, trip.CategoryProfileId.Value);
         if (trip.ConditionProfileId is not null) await _conditionProfileService.GetConditionProfileDetailsAsync(userId, trip.ConditionProfileId.Value);
@@ -177,6 +171,9 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
                 .FirstOrDefaultAsync() ?? throw new InvalidOperationException(ErrorMessage.TripNotFound);
 
             await ValidateTripRequest(userId, trip);
+            if (existingTrip.EndDate < DateOnly.FromDateTime(DateTime.Today)) throw new ArgumentException(ErrorMessage.TripFinished);
+            if (trip.StartDate < existingTrip.StartDate && trip.StartDate < DateOnly.FromDateTime(DateTime.Today)) throw new ArgumentException(ErrorMessage.AddTripDaysInPast);
+
             if (existingTrip.CurrencyCode != trip.CurrencyCode) throw new InvalidOperationException(ErrorMessage.CurrencyChangeNotAllowed);
 
             if (existingTrip.Budget != trip.Budget * existingTrip.ExchangeRate)

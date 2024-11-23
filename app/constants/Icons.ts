@@ -1,4 +1,5 @@
 export const EDIT_ICON = "edit";
+export const EDIT_ICON_MATERIAL = "pencil";
 export const DETAILS_ICON = "info";
 export const DELETE_ICON = "delete";
 

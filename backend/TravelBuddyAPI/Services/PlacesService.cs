@@ -189,6 +189,51 @@ public class PlacesService(TravelBuddyDbContext dbContext, IGeoapifyService geoa
         return placeDetails;
     }
 
+    public async Task<PlaceDetailsDTO> GetPlaceDetailsAsync(string providerId)
+    {
+        ProviderPlace fetchedPlace = await GetProviderPlaceAsync(providerId) ?? throw new ArgumentException(ErrorMessages.IncorrectProviderPlaceId);
+
+        ProviderPlace? place = await _dbContext.Places
+            .OfType<ProviderPlace>()
+            .Where(p => p.ProviderId == fetchedPlace.ProviderId)
+            .Include(p => p.Categories)
+            .Include(p => p.Conditions)
+            .Include(p => p.Reviews)
+            .FirstOrDefaultAsync();
+
+        if (place is null)
+        {
+            return new PlaceDetailsDTO()
+            {
+                ProviderId = fetchedPlace?.ProviderId,
+                Name = fetchedPlace?.Name,
+                Country = fetchedPlace?.Country,
+                State = fetchedPlace?.State,
+                City = fetchedPlace?.City,
+                Street = fetchedPlace?.Street,
+                HouseNumber = fetchedPlace?.HouseNumber,
+                Latitude = fetchedPlace?.Latitude,
+                Longitude = fetchedPlace?.Longitude,
+                Categories = fetchedPlace?.Categories?
+                .Select(c => new PlaceCategoryDTO
+                {
+                    Id = c.Id,
+                    Name = c.Name,
+                }).ToList(),
+                Conditions = fetchedPlace?.Conditions?
+                .Select(c => new PlaceConditionDTO
+                {
+                    Id = c.Id,
+                    Name = c.Name,
+                }).ToList(),
+            };
+        }
+        else
+        {
+            return await GetPlaceDetailsAsync(place.Id);
+        }
+    }
+
     public async Task<ProviderPlace?> GetProviderPlaceAsync(string providerId)
     {
         return await _geoapifyService.GetPlaceDetailsAsync(providerId);

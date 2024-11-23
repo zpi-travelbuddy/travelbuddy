@@ -17,15 +17,12 @@ export const useCreateTripPoint = () => {
         setLoading(true);
         setError(null);
         setData(null);
-        console.log("Create trip point: " + JSON.stringify(request));
-        const response = await api!.post<TripPointDetails>(
+        const response = await api!.post<TripPointResponse>(
           API_ADDING_TRIP_POINT,
           request,
         );
-        console.log("Response: " + JSON.stringify(response));
-        setData(response.data as TripPointDetails);
+        setData(response.data as TripPointResponse);
       } catch (err: any) {
-        console.log("Error response: " + JSON.stringify(err.response.data));
         if (err.response && err.response.status === 400) {
           setError("Nie dodano punktu wycieczki. " + err.response.data);
         } else {
@@ -43,5 +40,38 @@ export const useCreateTripPoint = () => {
     loading,
     error,
     data,
+  };
+};
+
+export const useDeleteTripPoint = () => {
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const { api } = useAuth();
+
+  const deleteTripPoint = useCallback(
+    async (tripPointId: string | undefined) => {
+      if (!tripPointId) return;
+      try {
+        setLoading(true);
+        setError(null);
+        await api!.delete(`/tripPoints/${tripPointId}`);
+      } catch (err: any) {
+        if (err.response && err.response.status === 400) {
+          setError("Nie usunięto punktu wycieczki. " + err.response.data);
+        } else {
+          setError("Wystąpił błąd podczas usuwania punktu wycieczki.");
+        }
+      } finally {
+        setLoading(false);
+      }
+    },
+    [api, error],
+  );
+
+  return {
+    deleteTripPoint,
+    loading,
+    error,
   };
 };
