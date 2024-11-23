@@ -238,7 +238,6 @@ const AddingTripPointView = () => {
   ) => {
     try {
       setLoading(true);
-
       const response = await api!.post<TripPointDetails>(
         API_ADDING_TRIP_POINT,
         tripPointRequest,
@@ -250,7 +249,6 @@ const AddingTripPointView = () => {
       }
 
       showSnackbar("Punkt wycieczki zapisany!");
-      console.log(attractionProviderId);
       router.back();
       router.setParams({
         refresh: "true",

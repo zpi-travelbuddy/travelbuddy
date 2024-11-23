@@ -184,15 +184,13 @@ const EditTripView = () => {
   }, [dateRange]);
 
   useEffect(() => {
-    if (editSuccess !== null) {
-      if (editSuccess) {
-        showSnackbar("Wycieczka została zapisana!", "success");
-        router.back();
-        router.setParams({
-          refresh: "true",
-        });
-      } else showSnackbar("Błąd przy zapisie wycieczki", "error");
-    }
+    if (editSuccess) {
+      showSnackbar("Wycieczka została zapisana!", "success");
+      router.back();
+      router.setParams({
+        refresh: "true",
+      });
+    } else showSnackbar("Błąd przy zapisie wycieczki", "error");
   }, [router, editSuccess]);
 
   // =====================
