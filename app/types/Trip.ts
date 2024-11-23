@@ -97,6 +97,36 @@ export type TripPointType =
   | "music"
   | "other";
 
+export type Condition =
+  | "internet_access"
+  | "wheelchair"
+  | "dogs"
+  | "vegetarian"
+  | "vegan"
+  | "no-dogs"
+  | "halal"
+  | "kosher"
+  | "organic"
+  | "gluten_free"
+  | "sugar_free"
+  | "egg_free"
+  | "soy_free";
+
+export const ConditionList: Condition[] = [
+  "internet_access",
+  "wheelchair",
+  "dogs",
+  "vegetarian",
+  "vegan",
+  "no-dogs",
+  "halal",
+  "kosher",
+  "organic",
+  "sugar_free",
+  "egg_free",
+  "soy_free",
+];
+
 export const AttractionTypeIcons: Record<TripPointType, string> = {
   attraction: "camera",
   food: "silverware-fork-knife",

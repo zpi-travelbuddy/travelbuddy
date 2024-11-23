@@ -213,7 +213,6 @@ const AddingTripPointView = () => {
   ) => {
     try {
       setLoading(true);
-      console.log("Request: " + JSON.stringify(tripPointRequest));
 
       const response = await api!.post<TripPointResponse>(
         API_ADDING_TRIP_POINT,
@@ -226,7 +225,6 @@ const AddingTripPointView = () => {
       }
 
       showSnackbar("Punkt wycieczki zapisany!");
-      console.log("Response: " + JSON.stringify(response.data));
       router.back();
       router.setParams({
         refresh: "true",
@@ -246,6 +244,11 @@ const AddingTripPointView = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const onCancel = () => {
+    console.log("Anulowanie");
+    router.back();
   };
 
   const onSave = async () => {
@@ -528,7 +531,7 @@ const AddingTripPointView = () => {
           </View>
 
           <ActionButtons
-            onAction1={() => console.log("Anulowanie")}
+            onAction1={onCancel}
             action1ButtonLabel="Anuluj"
             action1Icon={undefined}
             onAction2={onSave}
