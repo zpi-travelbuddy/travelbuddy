@@ -14,6 +14,8 @@ public interface ITripsService
         public const string EmptyRequest = "Request cannot be empty.";
         public const string StartDateAfterEndDate = "Start date cannot be after end date.";
         public const string StartDateInPast = "Start date cannot be in the past.";
+        public const string AddTripDaysInPast = "Cannot add trip days in the past.";
+        public const string TripFinished = "Cannot edit finished trip.";
         public const string CreateTrip = "An error occurred while creating a trip.";
         public const string EditTrip = "An error occurred while editing a trip.";
         public const string RetriveExchangeRate = "An error occurred while retrieving exchange rate.";
