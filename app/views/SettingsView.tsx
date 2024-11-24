@@ -115,7 +115,7 @@ const SettingsView = () => {
     <GestureHandlerRootView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollView}>
         <View style={styles.content}>
-          <SettingListItem
+          {/* <SettingListItem
             title="Czcionka"
             rightComponent={() => (
               <Text style={styles.rightText}>
@@ -130,7 +130,7 @@ const SettingsView = () => {
                 selectedFontSize,
               )
             }
-          />
+          /> */}
           <SettingListItem
             title="Motyw"
             rightComponent={() => (
@@ -159,7 +159,7 @@ const SettingsView = () => {
             }}
           />
 
-          <Title style={styles.title}>Moje Statystyki</Title>
+          {/* <Title style={styles.title}>Moje Statystyki</Title>
           <SettingListItem
             title="Oceny atrakcji"
             rightComponent={() => <List.Icon icon="chevron-right" />}
@@ -180,7 +180,7 @@ const SettingsView = () => {
             onPress={() => {
               console.log("Statystyki wycieczek kliknięte");
             }}
-          />
+          /> */}
 
           <Title style={styles.title}>Preferencje i statystyki</Title>
           <SettingListItem
