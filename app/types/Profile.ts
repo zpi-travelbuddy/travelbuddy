@@ -16,5 +16,11 @@ export interface Category {
 }
 
 export interface ConditionProfile extends Profile {
-  conditions?: string[]; // to be updated;
+  conditions?: Condition[];
+}
+
+export interface Condition {
+  id: string;
+  name: string;
+  subConditions: Condition[];
 }

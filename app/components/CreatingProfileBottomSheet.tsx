@@ -1,16 +1,8 @@
 import React, { useRef, useEffect, useCallback, useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-} from "react-native";
+import { View, Text, StyleSheet, TouchableWithoutFeedback } from "react-native";
 import { MD3Theme, TextInput, useTheme } from "react-native-paper";
-import { Option } from "@/types/TripDayData";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 import { useAnimatedKeyboard } from "react-native-reanimated";
-import IconComponent from "./IconComponent";
 import ActionButtons from "./ActionButtons";
 
 interface BottomSheetComponentProps {

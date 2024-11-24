@@ -1,5 +1,5 @@
 import ProfileBrowseView from "@/views/profiles/ProfileBrowseView";
 
 export default function Profiles() {
-  return <ProfileBrowseView profileType="Category" />;
+  return <ProfileBrowseView profileType="Condition" />;
 }

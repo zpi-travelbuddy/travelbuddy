@@ -10,6 +10,7 @@ export const MENU_ICON = "dots-vertical";
 
 // Profiles
 export const PROFILE_ICON = "account-circle";
+export const STAR_ICON = "star";
 
 // NavBar icons
 export const TRIPS_ICON = "car";

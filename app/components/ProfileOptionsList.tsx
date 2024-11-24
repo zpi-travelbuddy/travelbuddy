@@ -3,7 +3,13 @@ import { FlatList, StyleSheet, Text, TouchableOpacity } from "react-native";
 import { Checkbox } from "react-native-paper";
 import { MD3ThemeExtended } from "@/constants/Themes";
 import { useTheme } from "react-native-paper";
-import { Category, CategoryProfile } from "@/types/Profile";
+import {
+  Category,
+  CategoryProfile,
+  Condition,
+  ConditionProfile,
+  ProfileType,
+} from "@/types/Profile";
 
 const categoryLabels: Record<string, string> = {
   activity: "Aktywności",
@@ -19,42 +25,56 @@ const categoryLabels: Record<string, string> = {
   catering: "Catering",
 };
 
-interface CategoryListProps {
-  categories: Category[];
-  profile?: CategoryProfile;
+interface ProfileListProps {
+  profileType: ProfileType;
+  profile?: CategoryProfile | ConditionProfile;
+  items: (Category | Condition)[];
 }
 
-const CategoryList: React.FC<CategoryListProps> = ({ categories, profile }) => {
-  const [selectedCategoriesIds, setSelectedCategoriesIds] = useState<string[]>([]);
+const ProfileOptionsList: React.FC<ProfileListProps> = ({
+  profileType,
+  profile,
+  items,
+}) => {
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const theme = useTheme();
   const styles = createStyles(theme as MD3ThemeExtended);
 
-  const toggleCategory = (id: string) => {
-    setSelectedCategoriesIds((prev) =>
+  // Funkcja do zaznaczania/odznaczania
+  const toggleSelection = (id: string) => {
+    setSelectedIds((prev) =>
       prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id],
     );
   };
 
+  // Ustawienie początkowego stanu na podstawie profilu
   useEffect(() => {
-    if (profile?.categories) {
-      setSelectedCategoriesIds(
-        profile.categories.map((category) => category.id),
-      );
+    if (profile) {
+      if (profileType === "Category" && "categories" in profile) {
+        setSelectedIds(
+          profile.categories?.map((category) => category.id) || [],
+        );
+      } else if (profileType === "Condition" && "conditions" in profile) {
+        setSelectedIds(
+          profile.conditions?.map((condition) => condition.id) || [],
+        );
+      }
     }
-  }, [profile]);
+  }, [profile, profileType]);
 
-  const renderItem = ({ item }: { item: Category }) => {
-    const isSelected = selectedCategoriesIds.includes(item.id);
-    const label = categoryLabels[item.name] || item.name;
+  const renderItem = ({ item }: { item: Category | Condition }) => {
+    const isSelected = selectedIds.includes(item.id);
+    const label =
+      profileType === "Category" ? categoryLabels[item.name] : item.name;
 
     return (
       <TouchableOpacity
         style={styles.item}
-        onPress={() => toggleCategory(item.id)}
+        onPress={() => toggleSelection(item.id)}
       >
         <Checkbox
           status={isSelected ? "checked" : "unchecked"}
-          onPress={() => toggleCategory(item.id)}
+          onPress={() => toggleSelection(item.id)}
           color={theme.colors.primary}
         />
         <Text style={styles.itemText}>{label}</Text>
@@ -64,7 +84,7 @@ const CategoryList: React.FC<CategoryListProps> = ({ categories, profile }) => {
 
   return (
     <FlatList
-      data={categories}
+      data={items} // Przekazujemy odpowiednią tablicę (categories lub conditions)
       renderItem={renderItem}
       keyExtractor={(item) => item.id}
       numColumns={2}
@@ -97,4 +117,4 @@ const createStyles = (theme: MD3ThemeExtended) =>
     },
   });
 
-export default CategoryList;
+export default ProfileOptionsList;

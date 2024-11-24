@@ -1,18 +1,18 @@
 import ActionTextButtons from "@/components/ActionTextButtons";
-import CategoryList from "@/components/CategoryList";
 import CustomModal from "@/components/CustomModal";
-import { EDIT_ICON_MATERIAL, DELETE_ICON } from "@/constants/Icons";
+import { DELETE_ICON } from "@/constants/Icons";
 import { MD3ThemeExtended } from "@/constants/Themes";
-import { Category, CategoryProfile } from "@/types/Profile";
 import {
-  router,
-  useLocalSearchParams,
-  useNavigation,
-  useRouter,
-} from "expo-router";
+  Category,
+  Condition,
+  CategoryProfile,
+  ProfileType,
+} from "@/types/Profile";
+import { useNavigation, useRouter } from "expo-router";
 import React, { useLayoutEffect, useState } from "react";
 import { SafeAreaView, StyleSheet, View } from "react-native";
 import { useTheme, Text } from "react-native-paper";
+import ProfileOptionsList from "@/components/ProfileOptionsList";
 
 const categories: Category[] = [
   { id: "1", name: "activity", subCategories: [] },
@@ -28,13 +28,25 @@ const categories: Category[] = [
   { id: "11", name: "catering", subCategories: [] },
 ];
 
-const ManageProfileCategoryView = () => {
+const conditions: Condition[] = [
+  { id: "1", name: "activity", subConditions: [] },
+];
+
+interface ManageProfileCategoryViewProps {
+  profileType: ProfileType;
+}
+
+const ManageProfileCategoryView: React.FC<ManageProfileCategoryViewProps> = ({
+  profileType,
+}) => {
   const theme = useTheme();
   const styles = createStyles(theme as MD3ThemeExtended);
   const navigation = useNavigation();
   const router = useRouter();
 
   // const { profile_id } = useLocalSearchParams();
+
+  // const { profile, loading, error, refetch } = useGetProfile(profileType, profile_id);
 
   const profile: CategoryProfile = {
     id: "123-456-789-000",
@@ -83,7 +95,11 @@ const ManageProfileCategoryView = () => {
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.text}> Preferencje: </Text>
-      <CategoryList categories={categories} profile={profile} />
+      <ProfileOptionsList
+        items={profileType === "Category" ? categories : conditions}
+        profile={profile}
+        profileType={profileType}
+      />
       <CustomModal visible={isModalVisible} onDismiss={hideModal}>
         <View>
           <Text style={styles.modalTitleText}>

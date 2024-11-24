@@ -1,5 +1,5 @@
 import ManageProfileCategoryView from "@/views/profiles/ManageProfileOptionsView";
 
 export default function Profiles() {
-  return <ManageProfileCategoryView profileType="Category" />;
+  return <ManageProfileCategoryView profileType="Condition" />;
 }

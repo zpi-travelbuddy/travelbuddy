@@ -6,41 +6,53 @@ import {
   Text,
   View,
 } from "react-native";
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { MD3ThemeExtended } from "@/constants/Themes";
 import { router } from "expo-router";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useTheme, FAB, MD3Theme } from "react-native-paper";
-import { useGetCategoryProfiles } from "@/composables/useProfiles";
-import { Profile } from "@/types/Profile";
+import { Profile, ProfileType } from "@/types/Profile";
 import ProfileCard from "@/components/ProfileCard";
-import BottomSheet from "@gorhom/bottom-sheet";
 import CreatingProfileBottonSheet from "@/components/CreatingProfileBottomSheet";
 
-const ProfileBrowseView = () => {
+interface ProfileBrowseViewProps {
+  profileType: ProfileType;
+}
+
+const ProfileBrowseView: React.FC<ProfileBrowseViewProps> = ({
+  profileType,
+}) => {
   const theme = useTheme();
   const styles = createStyles(theme as MD3ThemeExtended);
 
   const id = "123-456-789-000";
-  const loading = false;
 
   const [isBottomSheetVisible, setIsBottomSheetVisible] =
     useState<boolean>(false);
 
   const [refreshing, setRefreshing] = useState<boolean>(false);
-  const [favourites, setFavourites] = useState<Profile[]>([]);
+  const favourites: Profile[] = [];
+  const loading: boolean = false;
+  const [path, setPath] = useState<string>("");
 
-  //   const {
-  //     profiles,
-  //     loading,
-  //     error,
-  //     refetch: fetchCategoryProfiles,
-  //   } = useGetCategoryProfiles();
+  useEffect(() => {
+    if (profileType === "Category")
+      setPath(`/(auth)/(tabs)/settings/categoryProfiles/manage`);
+    else setPath(`/(auth)/(tabs)/settings/conditionProfiles/manage`);
+  }, [profileType]);
 
-  const profiles = [
+  // const { profiles, loading, error, refetch } = useDynamicProfiles(profileType);
+
+  const categoryProfiles = [
     { id: "123-456-789-000", name: "Zwiedzanie i jedzenie" },
     { id: "123-456-789-111", name: "Zamki i inne budowle" },
     { id: "123-456-789-222", name: "Parki i góry" },
+  ];
+
+  const conditionProfiles = [
+    { id: "123-456-789-000", name: "Internet dla psa" },
+    { id: "123-456-789-111", name: "Jebany weganizm" },
+    { id: "123-456-789-222", name: "Dla allaha" },
   ];
 
   const flatListRef = useRef<FlatList>(null);
@@ -55,9 +67,7 @@ const ProfileBrowseView = () => {
 
   const handleProfileClick = (profile: Profile) => {
     console.log("Clicked profile:", profile.name);
-    router.push(
-      `/(auth)/(tabs)/settings/categoryProfiles/manage/${profile.id}`,
-    );
+    router.push(`${path}/${profile.id}`);
   };
 
   const handleFABClick = () => {
@@ -66,7 +76,7 @@ const ProfileBrowseView = () => {
   };
 
   const handleSave = () => {
-    router.push(`/(auth)/(tabs)/settings/categoryProfiles/manage/1234`);
+    router.push(`${path}/1234`);
   };
 
   //   const onRefresh = useCallback(async () => {
@@ -80,7 +90,9 @@ const ProfileBrowseView = () => {
       <View style={styles.container}>
         <FlatList
           ref={flatListRef}
-          data={profiles}
+          data={
+            profileType === "Category" ? categoryProfiles : conditionProfiles
+          }
           renderItem={renderProfileCard}
           keyExtractor={(item, index) => index.toString()}
           contentContainerStyle={styles.flatListContent}
@@ -98,7 +110,9 @@ const ProfileBrowseView = () => {
               />
             ) : (
               <Text style={styles.emptyMessage}>
-                Nie masz jeszcze żadnych profili preferencji
+                {profileType === "Category"
+                  ? "Nie masz jeszcze żadnych profili preferencji"
+                  : "Nie masz jeszcze żadnych profili udogodnień"}
               </Text>
             )
           }

@@ -1,7 +1,7 @@
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity } from "react-native";
 import React from "react";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import { PROFILE_ICON } from "@/constants/Icons";
+import { PROFILE_ICON, STAR_ICON } from "@/constants/Icons";
 import { MD3ThemeExtended } from "@/constants/Themes";
 import { useTheme } from "react-native-paper";
 
@@ -32,7 +32,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
 
       {showStar && (
         <Icon
-          name="star"
+          name={STAR_ICON}
           size={28}
           color={theme.colors.onSurfaceVariant}
           style={styles.star}
