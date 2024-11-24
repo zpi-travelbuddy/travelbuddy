@@ -22,8 +22,8 @@ export const RECOMMENDATION_ICON = "star-outline";
 
 // Transfer type icons
 export const WALK_ICON = "walk";
-export const BUS_ICON = "bus";
-export const TRAIN_ICON = "train";
+export const BICYCLE_ICON = "bicycle";
+export const MOTORBIKE_ICON = "motorbike";
 export const CAR_ICON = "car";
 export const MANUAL_ICON = "hand";
 export const EMPTY_ICON = "plus";

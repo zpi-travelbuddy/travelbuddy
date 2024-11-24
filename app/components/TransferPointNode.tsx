@@ -5,27 +5,25 @@ import { DashedVerticalLine } from "./DashedVerticalLine";
 import { formatMinutes } from "@/utils/TimeUtils";
 import {
   WALK_ICON,
-  BUS_ICON,
+  BICYCLE_ICON,
   CAR_ICON,
   EMPTY_ICON,
-  TRAIN_ICON,
   NON_STANDARD_TRANSFER_ICON,
+  MOTORBIKE_ICON,
 } from "@/constants/Icons";
+import { useMemo } from "react";
 import { MD3ThemeExtended } from "@/constants/Themes";
 
 const VERTICAL_LINE_HEIGHT = 20;
 const ICON_SIZE = 40;
 
 // Defined in case the icon name is different than type name
-const TRANSFER_TYPE_MAP: {
-  [key in TransferType]: string;
-} = {
-  walk: WALK_ICON,
-  bus: BUS_ICON,
-  car: CAR_ICON,
-  train: TRAIN_ICON,
-  manual: NON_STANDARD_TRANSFER_ICON,
-  empty: EMPTY_ICON,
+const TRANSFER_TYPE_MAP = {
+  [TransferType.Car]: CAR_ICON,
+  [TransferType.Motorbike]: MOTORBIKE_ICON,
+  [TransferType.Bicycle]: BICYCLE_ICON,
+  [TransferType.Walk]: WALK_ICON,
+  null: NON_STANDARD_TRANSFER_ICON,
 };
 
 interface TransferPointNodeProps {
@@ -39,14 +37,18 @@ export const TransferPointNode = ({
   onPress,
   onPressEmpty,
 }: TransferPointNodeProps) => {
-  // change any to MD3ThemeExtended later
-  const theme = useTheme() as MD3ThemeExtended;
-  const style = createStyles(theme);
+  const theme = useTheme();
+  const style = createStyles(theme as MD3ThemeExtended);
 
-  const { mode, seconds: duration } = transferPoint || {};
+  const { mode, seconds } = transferPoint || {};
 
-  const icon = mode ? TRANSFER_TYPE_MAP[mode] : EMPTY_ICON;
-  const handlePress = mode ? onPress : onPressEmpty;
+  const minutes = useMemo(() => {
+    return seconds != null ? Math.round(seconds / 60) : null;
+  }, [seconds]);
+
+  const icon = transferPoint
+    ? TRANSFER_TYPE_MAP[mode as TransferType]
+    : EMPTY_ICON;
 
   return (
     <View style={style.wrapper}>
@@ -56,12 +58,12 @@ export const TransferPointNode = ({
         size={ICON_SIZE}
         style={style.iconButton}
         iconColor={theme.colors.onSurface}
-        onPress={handlePress}
+        onPress={onPress}
       />
       <DashedVerticalLine height={VERTICAL_LINE_HEIGHT} />
-      {duration ? (
+      {minutes != null ? (
         <Text numberOfLines={1} style={style.durationText}>
-          {formatMinutes(duration)}
+          {formatMinutes(minutes)}
         </Text>
       ) : null}
     </View>

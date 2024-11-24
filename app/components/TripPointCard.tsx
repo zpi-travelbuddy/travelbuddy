@@ -1,7 +1,7 @@
 import { TripPointCompact } from "@/types/TripDayData";
 import { StyleSheet, Dimensions } from "react-native";
 import { Card, useTheme } from "react-native-paper";
-import { formatTimeRange } from "@/utils/TimeUtils";
+import { formatTimeFromString, formatTimeRange } from "@/utils/TimeUtils";
 import { MD3ThemeExtended } from "@/constants/Themes";
 
 const { width } = Dimensions.get("window");
@@ -17,12 +17,15 @@ export const TripPointCard = ({
   onPress,
   onLongPress,
 }: TripPointCardProps) => {
-  const theme = useTheme() as MD3ThemeExtended;
-  const style = createStyles(theme);
+  const theme = useTheme();
+  const style = createStyles(theme as MD3ThemeExtended);
 
   const { name, startTime, endTime } = tripPoint;
 
-  const timeRange = formatTimeRange(startTime, endTime);
+  const timeRange = formatTimeRange(
+    formatTimeFromString(startTime),
+    formatTimeFromString(endTime),
+  );
 
   return (
     <Card

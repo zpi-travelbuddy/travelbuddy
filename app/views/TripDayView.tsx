@@ -1,7 +1,20 @@
+import {
+  Fragment,
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+  useEffect,
+} from "react";
 import { Dimensions, ScrollView, StyleSheet, View } from "react-native";
+import { useTheme, FAB, TextInput, Text } from "react-native-paper";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { useRouter, useLocalSearchParams, useFocusEffect } from "expo-router";
 import { TripPointCard } from "@/components/TripPointCard";
 import { TransferPointNode } from "@/components/TransferPointNode";
-import { useRouter, useLocalSearchParams, useFocusEffect } from "expo-router";
+import CreatingTripPointSelector from "@/components/CreatingTripPointSelector";
+import ActionButtons from "@/components/ActionButtons";
+import LoadingView from "./LoadingView";
 import { MD3ThemeExtended } from "@/constants/Themes";
 import {
   TripPointCompact,
@@ -9,16 +22,8 @@ import {
   TransferTypeLabels,
   TransferType,
 } from "@/types/TripDayData";
-import { useTheme, FAB, Text, TextInput } from "react-native-paper";
-import React, {
-  Fragment,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
 import {
-  BUS_ICON,
+  BICYCLE_ICON,
   CAR_ICON,
   CREATING_TRIP_POINT_ICON,
   DELETE_ICON,
@@ -27,16 +32,13 @@ import {
   NON_STANDARD_TRANSFER_ICON,
   RECOMMENDATION_ICON,
   SEARCH_TRIP_POINT_ICON,
-  TRAIN_ICON,
+  MOTORBIKE_ICON,
   WALK_ICON,
 } from "@/constants/Icons";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-import CreatingTripPointSelector from "@/components/CreatingTripPointSelector";
-import ActionButtons from "@/components/ActionButtons";
 import { Option } from "@/types/TripDayData";
 import useTripDayDetails from "@/composables/useTripDay";
-import LoadingView from "./LoadingView";
 import { useSnackbar } from "@/context/SnackbarContext";
+import { useAuth } from "@/app/ctx";
 
 import {
   convertFromSeconds,
@@ -51,17 +53,29 @@ import ActionMenuBottomSheet from "@/components/ActionMenu/ActionMenuBottomSheet
 
 const { width } = Dimensions.get("window");
 
+const MAX_TRANSFER_TIME = 1439; // 23h 59m
+
+enum VisibilityState {
+  None = "none",
+  TripPoint = "trip-point",
+  Transfer = "transfer",
+}
+
+type TransferPointData =
+  | TransferPoint
+  | { fromTripPointId: string; toTripPointId: string };
+
 const TripDayView = () => {
   const theme = useTheme();
   const styles = createStyles(theme as MD3ThemeExtended);
   const router = useRouter();
   const params = useLocalSearchParams();
-
+  const { api } = useAuth();
   const { trip_id, day_id, refresh } = params;
+  const { showSnackbar } = useSnackbar();
+
   const [selectedTripPoint, setSelectedTripPoint] =
     useState<TripPointCompact | null>(null);
-
-  const { showSnackbar } = useSnackbar();
 
   const {
     transferPoints,
@@ -70,6 +84,7 @@ const TripDayView = () => {
     loading: tripDayLoading,
     error: tripDayError,
     refetch: refetchDayData,
+    refetchNoLoading: refetchNoLoadingDayData,
   } = useTripDayDetails(day_id as string);
 
   const {
@@ -78,80 +93,94 @@ const TripDayView = () => {
     error: deleteTripPointError,
   } = useDeleteTripPoint();
 
-  const [loading, setLoading] = useState<boolean>(false);
-  useEffect(() => {
-    setLoading(tripDayLoading || deleteTripPointLoading);
+  const transferPointMap = useMemo(() => {
+    const map = new Map<string, TransferPoint>();
+    transferPoints.forEach((point) => {
+      map.set(point.fromTripPointId, point);
+    });
+    return map;
+  }, [transferPoints]);
+
+  const loading = useMemo(() => {
+    return tripDayLoading || deleteTripPointLoading;
   }, [tripDayLoading, deleteTripPointLoading]);
 
-  const [error, setError] = useState<string>("");
-  useEffect(() => {
-    setError(tripDayError || deleteTripPointError || "");
+  const error = useMemo(() => {
+    return tripDayError || deleteTripPointError;
   }, [tripDayError, deleteTripPointError]);
 
-  const [tripPointsFormatted, setTripPointsFormatted] = useState<
-    TripPointCompact[]
-  >([] as TripPointCompact[]);
-
-  useEffect(() => {
-    setTripPointsFormatted(
-      tripPoints.map(
-        (tripPoint) =>
-          ({
-            ...tripPoint,
-            startTime: getTimeWithoutSeconds(tripPoint.startTime),
-            endTime: getTimeWithoutSeconds(tripPoint.endTime),
-          }) as TripPointCompact,
-      ),
-    );
-  }, [tripPoints]);
-
-  const options: Option[] = [
-    {
-      icon: CREATING_TRIP_POINT_ICON,
-      label: "Utwórz",
-      onPress: () => {
-        setIsSelectorVisible(false);
-        console.log("go to creating trip point");
-        router.push({
-          pathname: `/(auth)/(tabs)/trips/details/${trip_id}/day/${day_id}/tripPoints/create`,
-          params: {
-            date: new Date(tripDay?.date as string).toLocaleDateString(),
-          },
-        });
-      },
-    },
-    {
-      icon: SEARCH_TRIP_POINT_ICON,
-      label: "Wyszukaj",
-      onPress: () => {
-        router.push("/explore");
-        setIsSelectorVisible(false);
-      },
-    },
-    {
-      icon: RECOMMENDATION_ICON,
-      label: "Rekomendacje",
-      onPress: () => {
-        console.log("go to recommendation");
-        setIsSelectorVisible(false);
-      },
-    },
-  ];
+  const [isVisible, setIsVisible] = useState<VisibilityState>(
+    VisibilityState.None,
+  );
+  const [isTripPointSheetVisible, setIsTripPointSheetVisible] =
+    useState<boolean>(false);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
-  const [isVisible, setIsVisible] = useState<boolean>(false);
-  const [isSelectorVisible, setIsSelectorVisible] = useState<boolean>(false);
 
-  const [dynamicLabel, setDynamicLabel] = useState<string>("");
-  const [estimatedTime, setEstimatedTime] = useState<number>(0);
-  const [extendedView, setExtendedView] = useState<
-    React.JSX.Element | undefined
-  >(undefined);
-  const [selectedTransferPoint, setSelectedTransferPoint] = useState<
-    TransferPoint | undefined
-  >(undefined);
-  const [previousTransfer, setPreviousTransfer] = useState<
-    TransferPoint | undefined
-  >(undefined);
+  const options: Option[] = useMemo(
+    () => [
+      {
+        icon: CREATING_TRIP_POINT_ICON,
+        label: "Utwórz",
+        onPress: () => {
+          router.push({
+            pathname: `/trips/details/${trip_id}/day/${day_id}/tripPoints/create`,
+            params: {
+              date: new Date(tripDay?.date as string).toLocaleDateString(),
+            },
+          });
+          setIsVisible(VisibilityState.None);
+        },
+      },
+      {
+        icon: SEARCH_TRIP_POINT_ICON,
+        label: "Wyszukaj",
+        onPress: () => {
+          router.push("/explore");
+          setIsVisible(VisibilityState.None);
+        },
+      },
+      {
+        icon: RECOMMENDATION_ICON,
+        label: "Rekomendacje",
+        onPress: () => {
+          setIsVisible(VisibilityState.None);
+        },
+      },
+    ],
+    [setIsVisible, tripDay, trip_id, day_id],
+  );
+
+  const [loadingOverlay, setLoadingOverlay] = useState<boolean>(false);
+
+  const [selectedFromToTripPointId, setSelectedFromToTripPointId] = useState<{
+    fromTripPointId: string;
+    toTripPointId: string;
+  } | null>(null);
+
+  const selectedTransferPointData = useMemo(() => {
+    const { fromTripPointId, toTripPointId } = selectedFromToTripPointId || {};
+    let transferPointData: TransferPointData | undefined = transferPointMap.get(
+      fromTripPointId as string,
+    );
+    if (!transferPointData) {
+      return { fromTripPointId, toTripPointId };
+    }
+    return transferPointData;
+  }, [transferPointMap, selectedFromToTripPointId]);
+
+  const [extendedView, setExtendedView] = useState<boolean>(false);
+
+  const dynamicLabel = useMemo(() => {
+    if (extendedView) return "Ręcznie";
+    if ("mode" in selectedTransferPointData) {
+      const mode =
+        selectedTransferPointData.mode != null
+          ? selectedTransferPointData.mode
+          : "null";
+      return TransferTypeLabels[mode];
+    }
+    return "Brak";
+  }, [selectedTransferPointData, extendedView]);
 
   useFocusEffect(
     useCallback(() => {
@@ -163,113 +192,254 @@ const TripDayView = () => {
     }, [refetchDayData, router, refresh]),
   );
 
-  const handleTextChange = (text: string) => {
-    const numericText = text.replace(/[^0-9]/g, "");
-    setEstimatedTime(Number(numericText));
-  };
-
-  const undoChange = () => {
-    setSelectedTransferPoint(previousTransfer);
-    if (previousTransfer)
-      handleChangeTransferType(previousTransfer.mode || "manual");
-  };
-
-  const onCancel = () => {
-    undoChange();
-    onSelectorClose();
-  };
-
-  const onSave = () => {
-    console.log("Zapisz");
-    if (selectedTransferPoint)
-      selectedTransferPoint.seconds = convertToSeconds(
-        estimatedTime,
-        "minutes",
-      );
-    onSelectorClose();
-  };
-
-  const ExampleExtendedView = () => (
-    <View style={styles.extendedView}>
-      <Text>Wpisz szacowany czas podróży:</Text>
-      <TextInput
-        mode="outlined"
-        style={styles.textInput}
-        label="Minuty"
-        defaultValue={convertFromSeconds(
-          selectedTransferPoint?.seconds || 0,
-          "minutes",
-        ).toString()}
-        onChangeText={handleTextChange}
-        keyboardType="numeric"
-      ></TextInput>
-      <ActionButtons
-        onAction1={onCancel}
-        action1ButtonLabel="Resetuj"
-        action1Icon={undefined}
-        onAction2={onSave}
-        action2ButtonLabel="Zapisz"
-        action2Icon={undefined}
-      />
-    </View>
+  const getTripPoint = useCallback(
+    (tripPointId: string): TripPointCompact | null => {
+      const tripPoint = tripPoints.find((point) => point.id === tripPointId);
+      return tripPoint || null;
+    },
+    [tripPoints],
   );
 
-  const handleChangeTransferType = (
-    type: TransferType,
-    isVisibleTrigger: boolean = false,
-  ) => {
-    if (selectedTransferPoint) {
-      // setTransferPoints(
-      //   transferPoints.map((point) =>
-      //     point.id === selectedTransferPoint.id ? { ...point, type } : point,
-      //   ),
-      // );
-      // To implement after connecting trip day to backend
+  const updateTransferPoint = useCallback(
+    async (
+      transferPoint: Omit<TransferPoint, "id">,
+      transferPointId?: string,
+    ) => {
+      try {
+        if (transferPointId) {
+          await api?.put(`/transferPoints/${transferPointId}`, transferPoint);
+        } else {
+          await api?.post("/transferPoints", transferPoint);
+        }
+      } catch (error: any) {
+        console.error(error.response);
+        showSnackbar(
+          error?.response?.data?.message || "Wystąpił błąd",
+          "error",
+        );
+      }
+    },
+    [api, showSnackbar],
+  );
+
+  const handleManualTransferSave = useCallback(
+    async (minutes: number | null) => {
+      if (minutes === null) return;
+      const newTransferPoint: Omit<TransferPoint, "id"> = {
+        tripDayId: day_id as string,
+        seconds: minutes * 60,
+        fromTripPointId: selectedTransferPointData.fromTripPointId as string,
+        toTripPointId: selectedTransferPointData.toTripPointId as string,
+      };
+      const transferPointId =
+        "id" in selectedTransferPointData
+          ? selectedTransferPointData.id
+          : undefined;
+      try {
+        setLoadingOverlay(true);
+        await updateTransferPoint(newTransferPoint, transferPointId);
+        await refetchNoLoadingDayData();
+      } catch (error: any) {
+        showSnackbar("Wystąpił błąd", "error");
+      } finally {
+        setLoadingOverlay(false);
+      }
+    },
+    [
+      selectedTransferPointData,
+      updateTransferPoint,
+      refetchNoLoadingDayData,
+      showSnackbar,
+    ],
+  );
+
+  const ExampleExtendedView = useCallback(
+    ({ seconds }: { seconds?: number | null }) => {
+      const initialDuration = useRef<number>(Math.floor((seconds || 0) / 60));
+      const [duration, setDuration] = useState<number | null>(null);
+      const [errorText, setErrorText] = useState<string | null>(null);
+
+      const onReset = () => {
+        setDuration(null);
+        setErrorText(null);
+      };
+
+      const handleTextChange = (text: string) => {
+        const numericText = text.replace(/[^0-9]/g, "");
+        const parsedDuration = Number(numericText);
+        if (parsedDuration > MAX_TRANSFER_TIME) {
+          setErrorText("Maksymalny czas to 23h 59m");
+          setDuration(MAX_TRANSFER_TIME);
+          return;
+        }
+        if (parsedDuration <= 0) {
+          setErrorText("Czas musi być większy od 0");
+          setDuration(null);
+          return;
+        }
+        setErrorText(null);
+        setDuration(Number(numericText));
+      };
+
+      const onSave = useCallback(() => {
+        if (duration === null) {
+          setErrorText("Wpisz czas");
+          return;
+        }
+        handleManualTransferSave(duration);
+      }, [handleManualTransferSave, duration]);
+
+      return (
+        <View style={styles.extendedView}>
+          <Text>Wpisz szacowany czas podróży:</Text>
+          <TextInput
+            mode="outlined"
+            style={styles.textInput}
+            label="Minuty"
+            value={duration === null ? "" : duration.toString()}
+            placeholder={initialDuration.current.toString()}
+            onChangeText={handleTextChange}
+            keyboardType="numeric"
+          />
+          <Text style={{ color: theme.colors.error }}>
+            {errorText ? errorText : " "}
+          </Text>
+          <ActionButtons
+            onAction1={onReset}
+            action1ButtonLabel="Resetuj"
+            onAction2={onSave}
+            action2ButtonLabel="Zapisz"
+            action1Icon={undefined}
+            action2Icon={undefined}
+          />
+        </View>
+      );
+    },
+    [handleManualTransferSave],
+  );
+
+  const handleChangeTransferType = useCallback(
+    async (type: TransferType) => {
+      setExtendedView(false);
+      if (
+        "mode" in selectedTransferPointData &&
+        selectedTransferPointData.mode === type
+      ) {
+        return;
+      }
+      const newTransferPoint: Omit<TransferPoint, "id"> = {
+        tripDayId: day_id as string,
+        mode: type,
+        fromTripPointId: selectedTransferPointData.fromTripPointId as string,
+        toTripPointId: selectedTransferPointData.toTripPointId as string,
+      };
+      const transferPointId =
+        "id" in selectedTransferPointData
+          ? selectedTransferPointData.id
+          : undefined;
+      try {
+        setLoadingOverlay(true);
+        await updateTransferPoint(newTransferPoint, transferPointId);
+        await refetchNoLoadingDayData();
+      } catch (error: any) {
+        showSnackbar("Wystąpił błąd", "error");
+      } finally {
+        setLoadingOverlay(false);
+      }
+    },
+    [
+      selectedTransferPointData,
+      setExtendedView,
+      setLoadingOverlay,
+      updateTransferPoint,
+      refetchNoLoadingDayData,
+      showSnackbar,
+    ],
+  );
+
+  const handleManualTransferEdit = useCallback(() => {
+    setExtendedView(true);
+    setIsVisible(VisibilityState.Transfer);
+  }, [setExtendedView, setIsVisible]);
+
+  const deleteTransferPoint = useCallback(async () => {
+    if ("id" in selectedTransferPointData) {
+      try {
+        setLoadingOverlay(true);
+        await api?.delete(`/transferPoints/${selectedTransferPointData.id}`);
+        await refetchNoLoadingDayData();
+      } catch (error: any) {
+        showSnackbar("Wystąpił błąd", "error");
+      } finally {
+        setLoadingOverlay(false);
+      }
     }
-    setIsSelectorVisible(isVisibleTrigger);
-    if (!isVisibleTrigger) setExtendedView(undefined);
-  };
+    onSelectorClose();
+  }, [
+    selectedTransferPointData,
+    setLoadingOverlay,
+    refetchNoLoadingDayData,
+    showSnackbar,
+  ]);
 
-  const handleManualTransferEdit = () => {
-    setExtendedView(<ExampleExtendedView />);
-    handleChangeTransferType("manual", true);
-    setDynamicLabel(TransferTypeLabels["manual"]);
-  };
+  const transferPointOptions: Option[] = useMemo(() => {
+    const previousTransferPoint = getTripPoint(
+      selectedTransferPointData.fromTripPointId as string,
+    );
 
-  const transferPointOptions: Option[] = [
-    {
-      icon: BUS_ICON,
-      label: "Autobus",
-      onPress: () => handleChangeTransferType("bus"),
-    },
-    {
-      icon: TRAIN_ICON,
-      label: "Pociąg",
-      onPress: () => handleChangeTransferType("train"),
-    },
-    {
-      icon: CAR_ICON,
-      label: "Samochód",
-      onPress: () => handleChangeTransferType("car"),
-    },
-    {
-      icon: WALK_ICON,
-      label: "Chód",
-      onPress: () => handleChangeTransferType("walk"),
-    },
-    {
-      icon: NON_STANDARD_TRANSFER_ICON,
-      label: "Ręcznie",
-      onPress: () => handleManualTransferEdit(),
-    },
-    {
-      icon: DELETE_ICON,
-      label: "Usuń",
-      onPress: () => deleteTransferPoint(),
-    },
-  ];
+    const nextTransferPoint = getTripPoint(
+      selectedTransferPointData.toTripPointId as string,
+    );
 
-  const [selectedOptions, setSelectedOptions] = useState<Option[]>(options);
+    const disableAutomaticTransferTime =
+      previousTransferPoint?.latitude === null ||
+      previousTransferPoint?.longitude === null ||
+      nextTransferPoint?.latitude === null ||
+      nextTransferPoint?.longitude === null;
+
+    return [
+      {
+        icon: CAR_ICON,
+        label: "Samochód",
+        onPress: () => handleChangeTransferType(TransferType.Car),
+        disabled: disableAutomaticTransferTime,
+      },
+      {
+        icon: MOTORBIKE_ICON,
+        label: "Motocykl",
+        onPress: () => handleChangeTransferType(TransferType.Motorbike),
+        disabled: disableAutomaticTransferTime,
+      },
+      {
+        icon: BICYCLE_ICON,
+        label: "Rower",
+        onPress: () => handleChangeTransferType(TransferType.Bicycle),
+        disabled: disableAutomaticTransferTime,
+      },
+      {
+        icon: WALK_ICON,
+        label: "Chód",
+        onPress: () => handleChangeTransferType(TransferType.Walk),
+        disabled: disableAutomaticTransferTime,
+      },
+      {
+        icon: NON_STANDARD_TRANSFER_ICON,
+        label: "Ręcznie",
+        onPress: handleManualTransferEdit,
+      },
+      {
+        icon: DELETE_ICON,
+        label: "Usuń",
+        onPress: deleteTransferPoint,
+        isDelete: true,
+      },
+    ];
+  }, [
+    selectedTransferPointData,
+    handleChangeTransferType,
+    handleManualTransferEdit,
+    deleteTransferPoint,
+  ]);
 
   const handleTripPointPress = () => {
     console.log("Trip point pressed");
@@ -278,69 +448,59 @@ const TripDayView = () => {
   const handleTripPointLongPress = (tripPoint: TripPointCompact) => {
     console.log("Trip point long pressed");
     setSelectedTripPoint(tripPoint);
-    setIsVisible(true);
+    setIsVisible(VisibilityState.None);
+    setIsTripPointSheetVisible(true);
   };
 
-  const handleTransferPointPress = (transferPoint: TransferPoint) => {
-    setSelectedOptions(transferPointOptions);
-    setSelectedTransferPoint(transferPoint);
-    setDynamicLabel(TransferTypeLabels[transferPoint?.mode || "manual"]);
-    if (transferPoint.mode === "manual") {
-      setExtendedView(<ExampleExtendedView />);
-    }
-    setIsSelectorVisible(true);
-    if (previousTransfer === undefined)
-      setPreviousTransfer({ ...transferPoint });
-  };
-
-  const transferPointMap = useMemo(() => {
-    const map = new Map();
-    transferPoints.forEach((point) => {
-      map.set(point.fromTripPointId, point);
-    });
-    return map;
-  }, [transferPoints]);
+  const handleTransferPointPress = useCallback(
+    (fromTripPointId: string, toTripPointId: string) => {
+      const transferPoint = transferPointMap.get(fromTripPointId);
+      setSelectedFromToTripPointId({ fromTripPointId, toTripPointId });
+      if (transferPoint && transferPoint.mode === null) {
+        setExtendedView(true);
+      }
+      setIsVisible(VisibilityState.Transfer);
+    },
+    [
+      transferPointMap,
+      setIsVisible,
+      setExtendedView,
+      setSelectedFromToTripPointId,
+    ],
+  );
 
   const sortedTripPoints = useMemo(() => {
-    return [...tripPointsFormatted].sort((a, b) => {
+    return [...tripPoints].sort((a, b) => {
       return a.startTime.localeCompare(b.startTime);
     });
-  }, [tripPointsFormatted]);
+  }, [tripPoints]);
 
-  const renderTransferPoint = (
-    fromTripPoint: TripPointCompact,
-    index: number,
-  ) => {
-    if (index === tripPointsFormatted.length - 1) {
-      return null;
-    }
+  const renderTransferPoint = useCallback(
+    (fromTripPoint: TripPointCompact, index: number) => {
+      if (index === sortedTripPoints.length - 1) {
+        return null;
+      }
 
-    const transferPoint: TransferPoint = transferPointMap.get(fromTripPoint.id);
+      const transferPoint = transferPointMap.get(fromTripPoint.id);
+      const toTripPointId = sortedTripPoints[index + 1].id;
 
-    return (
-      <TransferPointNode
-        onPress={() => {
-          handleTransferPointPress(transferPoint);
-        }}
-        transferPoint={transferPoint}
-      />
-    );
-  };
+      return (
+        <TransferPointNode
+          onPress={() =>
+            handleTransferPointPress(fromTripPoint.id, toTripPointId)
+          }
+          transferPoint={transferPoint}
+        />
+      );
+    },
+    [sortedTripPoints, transferPointMap, handleTransferPointPress],
+  );
 
-  const deleteTransferPoint = () => {
-    if (selectedTransferPoint) {
-      selectedTransferPoint.seconds = 0;
-      selectedTransferPoint.mode = "empty";
-    }
-    onSelectorClose();
-  };
-
-  const onSelectorClose = () => {
-    setIsSelectorVisible(false);
-    setDynamicLabel("");
-    setExtendedView(undefined);
-    setPreviousTransfer(undefined);
-  };
+  const onSelectorClose = useCallback(() => {
+    setIsVisible(VisibilityState.None);
+    setExtendedView(false);
+    setSelectedFromToTripPointId(null);
+  }, [setIsVisible, setExtendedView, setSelectedFromToTripPointId]);
 
   const hideModal = () => {
     setIsModalVisible(false);
@@ -348,7 +508,8 @@ const TripDayView = () => {
   };
 
   const onCloseBottomSheet = () => {
-    setIsVisible(false);
+    console.log("Close bottom sheet");
+    setIsTripPointSheetVisible(false);
     if (!isModalVisible) setSelectedTripPoint(null);
   };
 
@@ -360,7 +521,7 @@ const TripDayView = () => {
         icon: DETAILS_ICON,
         onPress: () => {
           console.log(`Nawiguj do szczegółów`);
-          setIsVisible(false);
+          setIsVisible(VisibilityState.None);
           // router.push(`/trips/details/${selectedTripPo.id}`);
         },
       },
@@ -369,7 +530,7 @@ const TripDayView = () => {
         icon: EDIT_ICON,
         onPress: () => {
           console.log(`Edytuj`);
-          setIsVisible(false);
+          setIsVisible(VisibilityState.None);
           // router.push(`/trips/edit/${selectedTrip.id}`);
         },
       },
@@ -379,15 +540,16 @@ const TripDayView = () => {
         onPress: () => {
           console.log(`Usuń`);
           setIsModalVisible(true);
-          setIsVisible(false);
+          setIsVisible(VisibilityState.None);
         },
       },
     ];
   }, [selectedTripPoint]);
 
   const hideAll = () => {
-    setIsModalVisible(false);
-    setIsSelectorVisible(false);
+    console.log("Hide all");
+    setIsVisible(VisibilityState.None);
+    setIsTripPointSheetVisible(false);
     setIsModalVisible(false);
   };
 
@@ -403,7 +565,7 @@ const TripDayView = () => {
 
   if (error) {
     router.back();
-    showSnackbar(error?.toString() || "Unknown error", "error");
+    showSnackbar(tripDayError?.toString() || "Unknown error", "error");
     return null;
   }
 
@@ -442,17 +604,31 @@ const TripDayView = () => {
           style={styles.fab}
           color={theme.colors.onPrimary}
           label="Dodaj"
-          onPress={() => {
-            setSelectedOptions(options);
-            setIsSelectorVisible(true);
-          }}
+          onPress={() => setIsVisible(VisibilityState.TripPoint)}
         />
         <CreatingTripPointSelector
-          options={selectedOptions}
-          isVisible={isSelectorVisible}
+          options={
+            isVisible === VisibilityState.TripPoint
+              ? options
+              : transferPointOptions
+          }
+          isVisible={
+            isVisible === VisibilityState.TripPoint ||
+            isVisible === VisibilityState.Transfer
+          }
           onClose={onSelectorClose}
           label={dynamicLabel}
-          extendedView={extendedView}
+          extendedView={
+            extendedView ? (
+              <ExampleExtendedView
+                seconds={
+                  "seconds" in selectedTransferPointData
+                    ? selectedTransferPointData.seconds
+                    : null
+                }
+              />
+            ) : undefined
+          }
         />
 
         <CustomModal visible={isModalVisible} onDismiss={hideModal}>
@@ -485,10 +661,11 @@ const TripDayView = () => {
             <Text style={styles.bottomSheetText}>Wybierz opcję</Text>
           )}
           actions={getActionsForSelectedTripPoint}
-          isVisible={isVisible}
+          isVisible={isTripPointSheetVisible}
           onClose={onCloseBottomSheet}
         />
       </GestureHandlerRootView>
+      <LoadingView show={loadingOverlay} />
     </>
   );
 };
