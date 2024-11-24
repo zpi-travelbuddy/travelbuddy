@@ -21,7 +21,7 @@ public static class TripPointsEndpoints
         group.MapPut("/{id}", EditTripPointAsync)
             .WithName("EditTripPoint");
 
-        group.MapPost("/submitReview", ReviewTripPointAsync)
+        group.MapPost("/submitReview/{tripPointId}", ReviewTripPointAsync)
             .WithName("SubmitTripPointReview");
 
         group.MapGet("/reviews", GetTripPointsReviewsAsync)
@@ -65,12 +65,12 @@ public static class TripPointsEndpoints
         }
     }
 
-    private static async Task<Results<Created<TripPointReviewDetailsDTO>, BadRequest<string>>> ReviewTripPointAsync(TripPointReviewRequestDTO tripPointReview, ITripPointsService tripPointsService, HttpContext httpContext)
+    private static async Task<Results<Created<TripPointReviewDetailsDTO>, BadRequest<string>>> ReviewTripPointAsync(Guid tripPointId, TripPointReviewRequestDTO tripPointReview, ITripPointsService tripPointsService, HttpContext httpContext)
     {
         try
         {
             var userId = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new InvalidOperationException("User not found");
-            var newTripPointReview = await tripPointsService.ReviewTripPointAsync(userId, tripPointReview.TripPointId, tripPointReview);
+            var newTripPointReview = await tripPointsService.ReviewTripPointAsync(userId, tripPointId, tripPointReview);
             return TypedResults.Created($"/tripPoints", newTripPointReview);
         }
         catch (InvalidOperationException ex)

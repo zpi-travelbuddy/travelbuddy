@@ -7,9 +7,6 @@ namespace TravelBuddyAPI.DTOs.TripPointReview;
 public class TripPointReviewRequestDTO
 {
     [Required]
-    public Guid TripPointId { get; set; }
-
-    [Required]
     public string? PlaceId { get; set; }
 
     [Range(0, double.MaxValue, ErrorMessage = $"{nameof(ActualCostPerPerson)} must be a positive number.")]

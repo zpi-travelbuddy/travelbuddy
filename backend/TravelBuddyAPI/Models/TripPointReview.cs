@@ -14,7 +14,6 @@ public class TripPointReview
     [Required]
     public string? UserId { get; set; }
 
-    [Required]
     public Guid? TripPointId { get; set; }
     public TripPoint? TripPoint { get; set; }
 

@@ -10,8 +10,7 @@ public class TripPointReviewDetailsDTO
     [Key]
     public Guid Id { get; set; }
 
-    [Required]
-    public Guid TripPointId { get; set; }
+    public Guid? TripPointId { get; set; }
 
     [RegularExpression(@"^[A-Z]{3}$", ErrorMessage = $"{nameof(CurrencyCode)} must be a valid 3-letter ISO 4217 code.")]
     public string? CurrencyCode { get; set; }
