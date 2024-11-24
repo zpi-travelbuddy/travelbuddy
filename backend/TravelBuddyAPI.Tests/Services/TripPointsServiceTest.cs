@@ -275,8 +275,36 @@ public class TripPointsServiceTest : IDisposable
         Assert.Equal($"{ITripPointsService.ErrorMessage.DeleteTripPoint} {ITripPointsService.ErrorMessage.TripPointNotFound}", exception.Message);
     }
 
-    [Fact]
-    public async Task CreateTripPointAsync_ThrowsArgumentException_WhenTripPointOverlaps()
+    [Theory]
+
+    [InlineData("12:00", "13:00", "12:30", "13:30")]
+    [InlineData("12:30", "13:30", "12:00", "13:00")]
+
+    [InlineData("12:00", "13:00", "11:30", "12:30")]
+    [InlineData("11:30", "12:30", "12:00", "13:00")]
+
+    [InlineData("12:00", "13:00", "12:00", "13:00")]
+
+    [InlineData("12:00", "12:00", "12:00", "12:00")]
+
+    [InlineData("12:00", "13:00", "11:30", "13:30")]
+    [InlineData("11:30", "13:30", "12:00", "13:00")]
+
+    [InlineData("12:00", "13:00", "12:30", "12:30")]
+    [InlineData("12:30", "12:30", "12:00", "13:00")]
+
+    [InlineData("12:00", "13:00", "12:25", "12:35")]
+    [InlineData("12:25", "12:35", "12:00", "13:00")]
+
+    [InlineData("12:00", "13:00", "12:00", "12:35")]
+    [InlineData("12:00", "12:35", "12:00", "13:00")]
+
+    [InlineData("12:00", "13:00", "11:30", "13:00")]
+    [InlineData("11:30", "13:00", "12:00", "13:00")]
+
+    [InlineData("12:00", "13:00", "12:30", "13:00")]
+    [InlineData("12:30", "13:00", "12:00", "13:00")]
+    public async Task CreateTripPointAsync_ThrowsArgumentException_WhenTripPointOverlaps(string existingStartTime, string existingEndTime, string newStartTime, string newEndTime)
     {
         // Arrange
         var userId = "user1";
@@ -286,8 +314,8 @@ public class TripPointsServiceTest : IDisposable
             Id = Guid.NewGuid(),
             TripDayId = tripDayId,
             Name = "Existing Trip Point",
-            StartTime = TimeOnly.Parse("10:00"),
-            EndTime = TimeOnly.Parse("12:00")
+            StartTime = TimeOnly.Parse(existingStartTime),
+            EndTime = TimeOnly.Parse(existingEndTime)
         };
 
         await _dbContext.TripPoints.AddAsync(existingTripPoint);
@@ -299,10 +327,22 @@ public class TripPointsServiceTest : IDisposable
             Name = "New Trip Point",
             Comment = "Test Comment",
             PredictedCost = 100,
-            StartTime = TimeOnly.Parse("10:30"),
-            EndTime = TimeOnly.Parse("13:00"),
+            StartTime = TimeOnly.Parse(newStartTime),
+            EndTime = TimeOnly.Parse(newEndTime),
             Place = new PlaceRequestDTO { ProviderId = "1", Name = "Test Place" }
         };
+
+        var place = new ProviderPlace
+        {
+            Id = Guid.NewGuid(),
+            Name = tripPointRequest.Place.Name,
+            ProviderId = tripPointRequest.Place.ProviderId,
+            City = tripPointRequest.Place.City,
+            Country = tripPointRequest.Place.Country
+        };
+
+        await _dbContext.Places.AddAsync(place);
+        await _dbContext.SaveChangesAsync();
 
         var trip = new Trip
         {
@@ -315,16 +355,34 @@ public class TripPointsServiceTest : IDisposable
         await _dbContext.Trips.AddAsync(trip);
         await _dbContext.SaveChangesAsync();
 
-        _mockNBPService.Setup(s => s.GetRateAsync(It.IsAny<string>(), It.IsAny<DateOnly>()))
+        _mockNBPService.Setup(s => s.GetRateAsync(It.IsAny<string>(), It.IsAny<DateOnly?>()))
             .ReturnsAsync(2.0m);
+
+        _mockGeoapifyService.Setup(s => s.GetPlaceDetailsAsync(It.IsAny<string>()))
+        .ReturnsAsync(place);
+
+        _mockPlacesService.Setup(s => s.AddPlaceAsync(It.IsAny<PlaceRequestDTO>()))
+            .ReturnsAsync(new PlaceDetailsDTO { Id = place.Id, Name = place.Name, City = place.City, Country = place.Country });
+
+        _mockPlacesService.Setup(s => s.GetProviderPlaceAsync(It.IsAny<string>()))
+            .ReturnsAsync(place);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _tripPointsService.CreateTripPointAsync(userId, tripPointRequest));
         Assert.Equal($"{ITripPointsService.ErrorMessage.CreateTripPoint} {ITripPointsService.ErrorMessage.TripPointOverlap}", exception.Message);
     }
 
-    [Fact]
-    public async Task CreateTripPointAsync_CreatesTripPoint_WhenTripPointStartsWhenOtherEnds()
+    [Theory]
+
+    [InlineData("12:00", "12:00", "12:00", "13:00")]
+    [InlineData("12:00", "13:00", "12:00", "12:00")]
+
+    [InlineData("12:00", "12:00", "11:00", "12:00")]
+    [InlineData("11:00", "12:00", "12:00", "12:00")]
+
+    [InlineData("12:00", "13:00", "13:00", "14:00")]
+    [InlineData("13:00", "14:00", "12:00", "13:00")]
+    public async Task CreateTripPointAsync_CreatesTripPoint_WhenTripPointStartsWhenOtherEnds(string existingStartTime, string existingEndTime, string newStartTime, string newEndTime)
     {
         // Arrange
         var userId = "user1";
@@ -334,8 +392,8 @@ public class TripPointsServiceTest : IDisposable
             Id = Guid.NewGuid(),
             TripDayId = tripDayId,
             Name = "Existing Trip Point",
-            StartTime = TimeOnly.Parse("10:00"),
-            EndTime = TimeOnly.Parse("12:00")
+            StartTime = TimeOnly.Parse(existingStartTime),
+            EndTime = TimeOnly.Parse(existingEndTime)
         };
 
         await _dbContext.TripPoints.AddAsync(existingTripPoint);
@@ -347,8 +405,8 @@ public class TripPointsServiceTest : IDisposable
             Name = "New Trip Point",
             Comment = "Test Comment",
             PredictedCost = 100,
-            StartTime = TimeOnly.Parse("12:00"),
-            EndTime = TimeOnly.Parse("12:00"),
+            StartTime = TimeOnly.Parse(newStartTime),
+            EndTime = TimeOnly.Parse(newEndTime),
             Place = new PlaceRequestDTO { ProviderId = "1", Name = "Test Place" }
         };
 
