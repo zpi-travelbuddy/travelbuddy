@@ -51,9 +51,8 @@ const AddingTripPointView = () => {
   const router = useRouter();
   const { showSnackbar } = useSnackbar();
 
-  const params = useLocalSearchParams();
-  const { trip_id, day_id, date } = params;
-  const { attractionProviderId } = useGlobalSearchParams();
+  const { trip_id, day_id, date, attractionProviderId } =
+    useLocalSearchParams();
 
   useEffect(() => {
     console.log(attractionProviderId);

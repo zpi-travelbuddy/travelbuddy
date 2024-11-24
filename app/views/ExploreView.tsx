@@ -18,7 +18,7 @@ import CustomModal from "@/components/CustomModal";
 import { RenderItem } from "@/components/RenderItem";
 import ActionTextButtons from "@/components/ActionTextButtons";
 import { truncateText } from "@/utils/TextUtils";
-import { useRouter } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
 import SingleDatePickerModal from "@/components/SingleDatePickerModal";
 import useTripDetails from "@/composables/useTripDetails";
 import { CalendarDate } from "react-native-paper-dates/lib/typescript/Date/Calendar";
@@ -181,11 +181,13 @@ const ExploreView = ({ tripId }: ExploreViewProps) => {
     );
   };
 
-  useEffect(() => {
-    if (!tripId) {
-      fetchCurrentTrips();
-    }
-  }, [tripId]);
+  useFocusEffect(
+    useCallback(() => {
+      if (!tripId) {
+        fetchCurrentTrips();
+      }
+    }, [tripId]),
+  );
 
   const handleDismiss = useCallback(() => {
     setIsDateModalVisible(false);
