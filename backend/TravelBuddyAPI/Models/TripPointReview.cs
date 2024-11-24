@@ -32,11 +32,8 @@ public class TripPointReview
     public decimal? ExchangeRate { get; set; }
 
     [Precision(18, 6)]
-    [Range(0, double.MaxValue, ErrorMessage = $"{nameof(ActualCost)} must be a positive number.")]
-    public decimal? ActualCost { get; set; }
-
-    [NotMapped]
-    public decimal? ActualCostPerPerson => ActualCost.HasValue && Trip is not null ? Math.Round(ActualCost.Value / Trip.NumberOfTravelers, 2) : null;
+    [Range(0, double.MaxValue, ErrorMessage = $"{nameof(ActualCostPerPerson)} must be a positive number.")]
+    public decimal? ActualCostPerPerson { get; set; }
 
     public TimeSpan? ActualTimeSpent { get; set; }
 

@@ -21,6 +21,10 @@ public interface ITripPointsService
         public const string TripPointOverlap = "Trip point overlaps with another trip point.";
         public const string TooManyDecimalPlaces = "Predicted cost must have at most 2 decimal places.";
         public const string ProviderPlaceNotFound = "Provider place with the specified Id does not exist.";
+        public const string TripPointReviewNotFound = "Could not find trip point review of given id.";
+        public const string TripPointReviewExists = "Trip point review already exists.";
+        public const string TripPointWrongStatus = "Trip point has an incorrect status: ";
+        public const string CreateTripPointReview = "An error occurred while creating a trip point review.";
     }
 
     /// <summary>

@@ -19,10 +19,9 @@ public class TripPointReviewDetailsDTO
     [Required]
     public Guid PlaceId { get; set; }
 
-    [Range(0, double.MaxValue, ErrorMessage = $"{nameof(ActualCost)} must be a positive number.")]
-    public decimal? ActualCost { get; set; }
-
+    [Range(0, double.MaxValue, ErrorMessage = $"{nameof(ActualCostPerPerson)} must be a positive number.")]
     public decimal? ActualCostPerPerson { get; set; }
+
     public TimeSpan? ActualTimeSpent { get; set; }
 
     [Range(0, 5)]
