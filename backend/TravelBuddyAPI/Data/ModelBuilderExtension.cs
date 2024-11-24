@@ -502,6 +502,11 @@ public static class ModelBuilderExtension
             new CustomPlace { Id = Guid.NewGuid(), Name = "Zalew", City = "Raszków", Country = "Poland", Latitude = 51.711806m, Longitude = 17.721194m},
             new CustomPlace { Id = Guid.NewGuid(), Name = "Kościół w parku", City = "Przybysławice", Country = "Poland", Latitude = 51.707396m, Longitude = 17.720968m},
             new CustomPlace { Id = Guid.NewGuid(), Name = "Parowóz TKi3-120", City = "Ostrów Wielkopolski", Country = "Poland", Latitude = 51.6514858m, Longitude = 17.810879178559084m},
+        
+
+            new CustomPlace { Id = Guid.NewGuid(), Name = "Zalew", City = "Raszków", Country = "Poland", Latitude = 51.711806m, Longitude = 17.721194m},
+            new CustomPlace { Id = Guid.NewGuid(), Name = "Kościół w parku", City = "Przybysławice", Country = "Poland", Latitude = 51.707396m, Longitude = 17.720968m},
+            new CustomPlace { Id = Guid.NewGuid(), Name = "Parowóz TKi3-120", City = "Ostrów Wielkopolski", Country = "Poland", Latitude = 51.6514858m, Longitude = 17.810879178559084m},
         };
 
         modelBuilder.Entity<CustomPlace>().HasData(CustomPlaces);
@@ -539,6 +544,7 @@ public static class ModelBuilderExtension
         var trips = new List<Trip>
         {
             new Trip { Id = Guid.NewGuid(), UserId = "c324c822-30c1-7029-7c4f-00799aadf54a", Name = "Wycieczka do Moszczanki", NumberOfTravelers = 1, StartDate = DateOnly.FromDateTime(new DateTime(2024, 12, 20)), EndDate = DateOnly.FromDateTime(new DateTime(2024, 12, 21)), DestinationId = providerPlaces[0].Id, Budget = 100, CurrencyCode = "PLN", ExchangeRate = 1},
+            new Trip { Id = Guid.NewGuid(), UserId = "c324c822-30c1-7029-7c4f-00799aadf54a", Name = "Wycieczka do Moszczanki", NumberOfTravelers = 1, StartDate = DateOnly.FromDateTime(new DateTime(2024, 11, 20)), EndDate = DateOnly.FromDateTime(new DateTime(2024, 11, 21)), DestinationId = providerPlaces[0].Id, Budget = 100, CurrencyCode = "PLN", ExchangeRate = 1},
         };
 
         modelBuilder.Entity<Trip>().HasData(trips);
@@ -548,6 +554,8 @@ public static class ModelBuilderExtension
         {
             new TripDay { Id = Guid.NewGuid(), TripId = trips[0].Id, Date = DateOnly.FromDateTime(new DateTime(2024, 12, 20))},
             new TripDay { Id = Guid.NewGuid(), TripId = trips[0].Id, Date = DateOnly.FromDateTime(new DateTime(2024, 12, 21))},
+            new TripDay { Id = Guid.NewGuid(), TripId = trips[1].Id, Date = DateOnly.FromDateTime(new DateTime(2024, 11, 20))},
+            new TripDay { Id = Guid.NewGuid(), TripId = trips[1].Id, Date = DateOnly.FromDateTime(new DateTime(2024, 11, 21))},
         };
 
         modelBuilder.Entity<TripDay>().HasData(tripDays);
@@ -564,7 +572,20 @@ public static class ModelBuilderExtension
             new TripPoint { Id = Guid.NewGuid(), Name = "Samolot MIG", Comment = "Czy to lata?", TripDayId = tripDays[1].Id, PredictedCost = 0, StartTime = new TimeOnly(12,30,0), EndTime = new TimeOnly(12,40,0), Status = 0, PlaceId = providerPlaces[4].Id, ExchangeRate = 1},
             new TripPoint { Id = Guid.NewGuid(), Name = "Pomnik 60 Pułku Piechoty", TripDayId = tripDays[1].Id, PredictedCost = 0, StartTime = new TimeOnly(13,0,0), EndTime = new TimeOnly(13,10,0), Status = 0, PlaceId = providerPlaces[5].Id, ExchangeRate = 1},
             new TripPoint { Id = Guid.NewGuid(), Name = "Bistro Bravo", Comment = "Czas na jedzonko", TripDayId = tripDays[1].Id, PredictedCost = 30, StartTime = new TimeOnly(14,0,0), EndTime = new TimeOnly(15,30,0), Status = 0, PlaceId = providerPlaces[6].Id, ExchangeRate = 1, OpeningTime = new TimeOnly(12,0,0), ClosingTime = new TimeOnly(0,0,0)},
-            new TripPoint { Id = Guid.NewGuid(), Name = "Parowóz TKi3-120", TripDayId = tripDays[1].Id, PredictedCost = 0, StartTime = new TimeOnly(16,30,0), EndTime = new TimeOnly(17,0,0), Status = 0, PlaceId = CustomPlaces[2].Id, ExchangeRate = 1}
+            new TripPoint { Id = Guid.NewGuid(), Name = "Parowóz TKi3-120", TripDayId = tripDays[1].Id, PredictedCost = 0, StartTime = new TimeOnly(16,30,0), EndTime = new TimeOnly(17,0,0), Status = 0, PlaceId = CustomPlaces[2].Id, ExchangeRate = 1},
+        
+
+
+            new TripPoint { Id = Guid.NewGuid(), Name = "Kaplica loretanska", TripDayId = tripDays[2].Id, PredictedCost = 0, StartTime = new TimeOnly(10,0,0), EndTime = new TimeOnly(10,20,0), Status = TripPointStatus.reviewPending, PlaceId = providerPlaces[1].Id, ExchangeRate = 1},
+            new TripPoint { Id = Guid.NewGuid(), Name = "Bohaterom I wojny światowej i Poległym za Wolność Ojczyzny", TripDayId = tripDays[2].Id, PredictedCost = 0, StartTime = new TimeOnly(11,0,0), EndTime = new TimeOnly(11,20,0), Status = TripPointStatus.reviewPending, PlaceId = providerPlaces[2].Id, ExchangeRate = 1},
+            new TripPoint { Id = Guid.NewGuid(), Name = "Jana Pawła II", TripDayId = tripDays[2].Id, PredictedCost = 0, StartTime = new TimeOnly(11,50,0), EndTime = new TimeOnly(12,00,0), Status = TripPointStatus.reviewPending, PlaceId = providerPlaces[3].Id, ExchangeRate = 1},
+            new TripPoint { Id = Guid.NewGuid(), Name = "Zalew", TripDayId = tripDays[2].Id, PredictedCost = 0, StartTime = new TimeOnly(12,30,0), EndTime = new TimeOnly(13,00,0), Status = TripPointStatus.reviewPending, PlaceId = CustomPlaces[3].Id, ExchangeRate = 1},
+            new TripPoint { Id = Guid.NewGuid(), Name = "Kościół w parku", TripDayId = tripDays[2].Id, PredictedCost = 0, StartTime = new TimeOnly(13,30,0), EndTime = new TimeOnly(14,00,0), Status = TripPointStatus.notVisited, PlaceId = CustomPlaces[4].Id, ExchangeRate = 1},
+
+            new TripPoint { Id = Guid.NewGuid(), Name = "Samolot MIG", Comment = "Czy to lata?", TripDayId = tripDays[3].Id, PredictedCost = 0, StartTime = new TimeOnly(12,30,0), EndTime = new TimeOnly(12,40,0), Status = TripPointStatus.reviewPending, PlaceId = providerPlaces[4].Id, ExchangeRate = 1},
+            new TripPoint { Id = Guid.NewGuid(), Name = "Pomnik 60 Pułku Piechoty", TripDayId = tripDays[3].Id, PredictedCost = 0, StartTime = new TimeOnly(13,0,0), EndTime = new TimeOnly(13,10,0), Status = TripPointStatus.reviewPending, PlaceId = providerPlaces[5].Id, ExchangeRate = 1},
+            new TripPoint { Id = Guid.NewGuid(), Name = "Bistro Bravo", Comment = "Czas na jedzonko", TripDayId = tripDays[3].Id, PredictedCost = 30, StartTime = new TimeOnly(14,0,0), EndTime = new TimeOnly(15,30,0), Status = TripPointStatus.reviewPending, PlaceId = providerPlaces[6].Id, ExchangeRate = 1, OpeningTime = new TimeOnly(12,0,0), ClosingTime = new TimeOnly(0,0,0)},
+            new TripPoint { Id = Guid.NewGuid(), Name = "Parowóz TKi3-120", TripDayId = tripDays[3].Id, PredictedCost = 0, StartTime = new TimeOnly(16,30,0), EndTime = new TimeOnly(17,0,0), Status = TripPointStatus.reviewPending, PlaceId = CustomPlaces[5].Id, ExchangeRate = 1}
         };
 
         modelBuilder.Entity<TripPoint>().HasData(tripPoints);
@@ -580,6 +601,16 @@ public static class ModelBuilderExtension
             new TransferPoint { Id = Guid.NewGuid(), TripDayId = tripDays[1].Id, TransferTime = new TimeSpan(0,3,13), FromTripPointId = tripPoints[5].Id, ToTripPointId = tripPoints[6].Id, Mode = TransferMode.bicycle},
             new TransferPoint { Id = Guid.NewGuid(), TripDayId = tripDays[1].Id, TransferTime = new TimeSpan(0,8,18), FromTripPointId = tripPoints[6].Id, ToTripPointId = tripPoints[7].Id, Mode = TransferMode.walk},
             new TransferPoint { Id = Guid.NewGuid(), TripDayId = tripDays[1].Id, TransferTime = new TimeSpan(0,13,30), FromTripPointId = tripPoints[7].Id, ToTripPointId = tripPoints[8].Id, Mode = TransferMode.walk},
+        
+        
+            new TransferPoint { Id = Guid.NewGuid(), TripDayId = tripDays[2].Id, TransferTime = new TimeSpan(0,4,21), FromTripPointId = tripPoints[10].Id, ToTripPointId = tripPoints[11].Id, Mode = TransferMode.drive},
+            new TransferPoint { Id = Guid.NewGuid(), TripDayId = tripDays[2].Id, TransferTime = new TimeSpan(0,0,55), FromTripPointId = tripPoints[11].Id, ToTripPointId = tripPoints[12].Id, Mode = TransferMode.motorcycle},
+            new TransferPoint { Id = Guid.NewGuid(), TripDayId = tripDays[2].Id, TransferTime = new TimeSpan(0,20,0), FromTripPointId = tripPoints[12].Id, ToTripPointId = tripPoints[13].Id},
+
+            new TransferPoint { Id = Guid.NewGuid(), TripDayId = tripDays[3].Id, TransferTime = new TimeSpan(0,3,13), FromTripPointId = tripPoints[14].Id, ToTripPointId = tripPoints[15].Id, Mode = TransferMode.bicycle},
+            new TransferPoint { Id = Guid.NewGuid(), TripDayId = tripDays[3].Id, TransferTime = new TimeSpan(0,8,18), FromTripPointId = tripPoints[15].Id, ToTripPointId = tripPoints[16].Id, Mode = TransferMode.walk},
+            new TransferPoint { Id = Guid.NewGuid(), TripDayId = tripDays[3].Id, TransferTime = new TimeSpan(0,13,30), FromTripPointId = tripPoints[16].Id, ToTripPointId = tripPoints[17].Id, Mode = TransferMode.walk},
+
         };
 
         modelBuilder.Entity<TransferPoint>().HasData(transferPoints);
