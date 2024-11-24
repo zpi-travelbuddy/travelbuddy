@@ -8,17 +8,19 @@ import {
   useFonts,
 } from "@expo-google-fonts/manrope";
 import { useEffect } from "react";
-import { useColorScheme, View, StyleSheet, StatusBar } from "react-native";
+import { View, StyleSheet, StatusBar } from "react-native";
+import useAppSettings from "@/hooks/useAppSettings";
 import { useMemo } from "react";
 import * as SplashScreen from "expo-splash-screen";
 import { AuthProvider } from "./ctx";
 import { SnackbarProvider } from "@/context/SnackbarContext";
 import { NavigationDataProvider } from "@/context/NavigationDataContext";
+import { AppSettingsProvider } from "@/context/AppSettingsContext";
 
 SplashScreen.preventAutoHideAsync();
 
-export default function RootLayout() {
-  const systemTheme = useColorScheme();
+function RootLayout() {
+  const { theme, contrast } = useAppSettings();
 
   const [loaded, error] = useFonts({
     Manrope_400Regular,
@@ -26,15 +28,21 @@ export default function RootLayout() {
     Manrope_700Bold,
   });
 
-  const theme = useMemo(() => {
-    switch (systemTheme) {
-      case "dark":
-        return Themes.darkTheme;
-      case "light":
-      default:
+  const appTheme = useMemo(() => {
+    if (theme === "light") {
+      if (contrast === "normal") {
         return Themes.lightTheme;
+      } else {
+        return Themes.lightHighContrastTheme;
+      }
+    } else {
+      if (contrast === "normal") {
+        return Themes.darkTheme;
+      } else {
+        return Themes.darkHighContrastTheme;
+      }
     }
-  }, [systemTheme]);
+  }, [theme, contrast]);
 
   useEffect(() => {
     if (loaded || error) {
@@ -46,25 +54,36 @@ export default function RootLayout() {
     return null;
   }
 
-  const styles = makeStyles(theme);
+  const styles = makeStyles(appTheme);
 
   return (
-    <AuthProvider>
-      <PaperProvider theme={theme}>
-        <NavigationDataProvider>
-          <SnackbarProvider>
-            <Portal.Host>
-              <StatusBar />
-              <View style={styles.container}>
-                <Slot />
-              </View>
-            </Portal.Host>
-          </SnackbarProvider>
-        </NavigationDataProvider>
-      </PaperProvider>
-    </AuthProvider>
+    <PaperProvider theme={appTheme}>
+      <NavigationDataProvider>
+        <SnackbarProvider>
+          <Portal.Host>
+            <StatusBar
+              backgroundColor={appTheme.colors.surface}
+              barStyle={theme === "dark" ? "light-content" : "dark-content"}
+            />
+            <View style={styles.container}>
+              <Slot />
+            </View>
+          </Portal.Host>
+        </SnackbarProvider>
+      </NavigationDataProvider>
+    </PaperProvider>
   );
 }
+
+export default () => {
+  return (
+    <AppSettingsProvider>
+      <AuthProvider>
+        <RootLayout />
+      </AuthProvider>
+    </AppSettingsProvider>
+  );
+};
 
 const makeStyles = (theme: MD3ThemeExtended) =>
   StyleSheet.create({
