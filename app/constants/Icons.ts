@@ -8,6 +8,9 @@ export const CHECK_CIRCLE_ICON = "check-circle-outline";
 // Menu
 export const MENU_ICON = "dots-vertical";
 
+// Profiles
+export const PROFILE_ICON = "account-circle";
+
 // NavBar icons
 export const TRIPS_ICON = "car";
 export const EXPLORE_ICON = "compass-outline";
