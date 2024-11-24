@@ -82,7 +82,7 @@ const SettingsBottomSheet: React.FC<SettingsBottomSheetProps> = ({
           <View style={[style, styles.bottomSheetContainer]} />
         )}
       >
-        <BottomSheetView>
+        <BottomSheetView style={styles.bottomSheetView}>
           <View style={styles.titleContainer}>
             <Text style={styles.bottomSheetTitle}>{title}</Text>
           </View>
@@ -124,6 +124,9 @@ const createStyles = (theme: MD3Theme) =>
     titleContainer: {
       padding: 16,
       justifyContent: "flex-start",
+    },
+    bottomSheetView: {
+      paddingBottom: 16,
     },
     bottomSheetTitle: {
       ...theme.fonts.titleMedium,
