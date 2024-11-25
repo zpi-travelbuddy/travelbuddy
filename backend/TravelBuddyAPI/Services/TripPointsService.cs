@@ -266,12 +266,11 @@ public class TripPointsService(TravelBuddyDbContext dbContext, INBPService nbpSe
                     && tp.TripDay.Trip.UserId == userId)
                 .FirstOrDefaultAsync() ?? throw new InvalidOperationException(ErrorMessage.TripPointNotFound);
 
-            if (tripPoint == null) throw new InvalidOperationException(ErrorMessage.TripPointNotFound);
             if (tripPointReview.ActualCostPerPerson * 100 % 1 != 0) throw new ArgumentException(ErrorMessage.TooManyDecimalPlaces);
             if (tripPoint.Review != null) throw new InvalidOperationException(ErrorMessage.TripPointReviewExists);
             if (tripPoint.Status != TripPointStatus.reviewPending) throw new InvalidOperationException($"{ErrorMessage.TripPointWrongStatus} {tripPoint.Status.ToString()}");
 
-            decimal? exchangeRate = tripPointReview.ActualCostPerPerson.HasValue ? await _nbpService.GetRateAsync(tripPoint?.TripDay?.Trip?.CurrencyCode ?? string.Empty) ?? throw new InvalidOperationException(ErrorMessage.RetriveExchangeRate) : null;
+            decimal? exchangeRate = tripPointReview.ActualCostPerPerson.HasValue ? (await _nbpService.GetRateAsync(tripPoint?.TripDay?.Trip?.CurrencyCode ?? string.Empty) ?? throw new InvalidOperationException(ErrorMessage.RetriveExchangeRate)) : null;
 
 
             TripPointReview newTripPointReview = new TripPointReview
