@@ -21,7 +21,7 @@ public static class TripPointsEndpoints
         group.MapPut("/{id}", EditTripPointAsync)
             .WithName("EditTripPoint");
 
-        group.MapPost("/submitReview", ReviewTripPointAsync)
+        group.MapPost("/submitReview/{tripPointId}", ReviewTripPointAsync)
             .WithName("SubmitTripPointReview");
 
         group.MapGet("/reviews", GetTripPointsReviewsAsync)
@@ -51,17 +51,32 @@ public static class TripPointsEndpoints
         return TypedResults.NotFound("Available supercategories not found");
     }
 
-    private static async Task<Results<Ok<List<TripPointReviewOverviewDTO>>, NotFound<string>>> GetTripPointsReviewsAsync()
+    private static async Task<Results<Ok<List<TripPointReviewOverviewDTO>>, NotFound<string>>> GetTripPointsReviewsAsync(ITripPointsService tripPointsService, HttpContext httpContext)
     {
-        await Task.CompletedTask;
-        return TypedResults.NotFound("Not implemented");
+        try
+        {
+            var userId = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new InvalidOperationException("User not found");
+            var TripPointsReview = await tripPointsService.GetTripPointsReviewsAsync(userId);
+            return TypedResults.Ok(TripPointsReview);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return TypedResults.NotFound(ex.Message);
+        }
     }
 
-    private static async Task<Results<Created<TripPointDetailsDTO>, BadRequest<string>>> ReviewTripPointAsync(TripPointReviewRequestDTO tripPointReview)
-
+    private static async Task<Results<Created<TripPointReviewDetailsDTO>, BadRequest<string>>> ReviewTripPointAsync(Guid tripPointId, TripPointReviewRequestDTO tripPointReview, ITripPointsService tripPointsService, HttpContext httpContext)
     {
-        await Task.CompletedTask;
-        return TypedResults.BadRequest("Not implemented");
+        try
+        {
+            var userId = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new InvalidOperationException("User not found");
+            var newTripPointReview = await tripPointsService.ReviewTripPointAsync(userId, tripPointId, tripPointReview);
+            return TypedResults.Created($"/tripPoints", newTripPointReview);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return TypedResults.BadRequest(ex.Message);
+        }
     }
 
     private static async Task<Results<Ok<TripPointDetailsDTO>, NotFound<string>>> GetTripPointDetailsAsync(Guid id, ITripPointsService tripPointsService, HttpContext httpContext)

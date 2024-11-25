@@ -210,9 +210,23 @@ public class TripPointsService(TravelBuddyDbContext dbContext, INBPService nbpSe
         };
     }
 
-    public Task<TripPointReviewDetailsDTO> GetTripPointReviewDetailsAsync(string userId, Guid tripPointReviewId)
+    public async Task<TripPointReviewDetailsDTO> GetTripPointReviewDetailsAsync(string userId, Guid tripPointReviewId)
     {
-        throw new NotImplementedException();
+        TripPointReview reviewTripPoint = await _dbContext.TripPointReviews
+            .Where(tpr => tpr.Id == tripPointReviewId
+                && tpr.UserId == userId)
+            .FirstOrDefaultAsync() ?? throw new InvalidOperationException(ErrorMessage.TripPointReviewNotFound);
+
+        return new TripPointReviewDetailsDTO
+        {
+            Id = reviewTripPoint.Id,
+            TripPointId = reviewTripPoint.TripPointId,
+            PlaceId = reviewTripPoint.PlaceId,
+            CurrencyCode = reviewTripPoint.CurrencyCode,
+            ActualCostPerPerson = reviewTripPoint.ActualCostPerPerson.HasValue && reviewTripPoint.ExchangeRate.HasValue ? Math.Round(reviewTripPoint.ActualCostPerPerson.Value / reviewTripPoint.ExchangeRate.Value, 2) : null,
+            ActualTimeSpent = reviewTripPoint.ActualTimeSpent,
+            Rating = reviewTripPoint.Rating
+        };
     }
 
     public Task<List<TripPointOverviewDTO>> GetTripPointsAsync(string userId, Guid tripDayId)
@@ -220,13 +234,73 @@ public class TripPointsService(TravelBuddyDbContext dbContext, INBPService nbpSe
         throw new NotImplementedException();
     }
 
-    public Task<List<TripPointReviewOverviewDTO>> GetTripPointsReviewsAsync(string userId)
+    public async Task<List<TripPointReviewOverviewDTO>> GetTripPointsReviewsAsync(string userId)
     {
-        throw new NotImplementedException();
+        var reviewTripPoints = await _dbContext.TripPointReviews
+            .Include(tpr => tpr.Place)
+            .Where(tpr => tpr.UserId == userId)
+            .ToListAsync() ?? new List<TripPointReview>();
+
+        return reviewTripPoints.Select(reviewTripPoint => new TripPointReviewOverviewDTO
+        {
+            Id = reviewTripPoint.Id,
+            TripPointId = reviewTripPoint.TripPointId,
+            PlaceId = reviewTripPoint.PlaceId,
+            PlaceName = reviewTripPoint.Place?.Name,
+            Rating = reviewTripPoint.Rating
+        }).ToList();
     }
 
-    public Task<TripPointReviewDetailsDTO> ReviewTripPointAsync(string userId, Guid tripPointId, TripPointReviewRequestDTO tripPointReview)
+    public async Task<TripPointReviewDetailsDTO> ReviewTripPointAsync(string userId, Guid tripPointId, TripPointReviewRequestDTO tripPointReview)
     {
-        throw new NotImplementedException();
+        try
+        {
+            TripPoint tripPoint = await _dbContext.TripPoints
+                .Include(tp => tp.TripDay)
+                    .ThenInclude(td => td != null ? td.Trip : null)
+                .Include(tp => tp.Place)
+                .Include(tp => tp.Review)
+                .Where(tp => tp.Id == tripPointId
+                    && tp.TripDay != null
+                    && tp.TripDay.Trip != null
+                    && tp.TripDay.Trip.UserId == userId)
+                .FirstOrDefaultAsync() ?? throw new InvalidOperationException(ErrorMessage.TripPointNotFound);
+
+            if (tripPointReview.ActualCostPerPerson * 100 % 1 != 0) throw new ArgumentException(ErrorMessage.TooManyDecimalPlaces);
+            if (tripPoint.Review != null) throw new InvalidOperationException(ErrorMessage.TripPointReviewExists);
+            if (tripPoint.Status != TripPointStatus.reviewPending) throw new InvalidOperationException($"{ErrorMessage.TripPointWrongStatus} {tripPoint.Status.ToString()}");
+
+            decimal? exchangeRate = tripPointReview.ActualCostPerPerson.HasValue ? (await _nbpService.GetRateAsync(tripPoint?.TripDay?.Trip?.CurrencyCode ?? string.Empty) ?? throw new InvalidOperationException(ErrorMessage.RetriveExchangeRate)) : null;
+
+
+            TripPointReview newTripPointReview = new TripPointReview
+            {
+                Id = Guid.NewGuid(),
+                UserId = userId,
+                TripPointId = tripPointId,
+                CurrencyCode = tripPoint!.TripDay?.Trip?.CurrencyCode,
+                PlaceId = tripPoint!.PlaceId,
+                ActualCostPerPerson = tripPointReview.ActualCostPerPerson.HasValue ? tripPointReview.ActualCostPerPerson * exchangeRate : null,
+                ExchangeRate = exchangeRate,
+                ActualTimeSpent = tripPointReview.ActualTimeSpent,
+                Rating = tripPointReview.Rating
+            };
+
+            tripPoint.Status = TripPointStatus.reviewCompleted;
+
+
+            var validationContext = new ValidationContext(newTripPointReview);
+            Validator.ValidateObject(newTripPointReview, validationContext, validateAllProperties: true);
+
+            await _dbContext.TripPointReviews.AddAsync(newTripPointReview);
+            _dbContext.TripPoints.Update(tripPoint);
+            await _dbContext.SaveChangesAsync();
+
+            return await GetTripPointReviewDetailsAsync(userId, newTripPointReview.Id);
+        }
+        catch (Exception e) when (e is ArgumentNullException || e is InvalidOperationException || e is ArgumentException || e is HttpRequestException || e is ValidationException)
+        {
+            throw new InvalidOperationException($"{ErrorMessage.CreateTripPointReview} {e.Message}");
+        }
     }
 }

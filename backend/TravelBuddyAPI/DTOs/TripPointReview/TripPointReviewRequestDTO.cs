@@ -6,17 +6,8 @@ namespace TravelBuddyAPI.DTOs.TripPointReview;
 [NotMapped]
 public class TripPointReviewRequestDTO
 {
-    [Required]
-    public Guid TripPointId { get; set; }
-
-    [Required]
-    public string? PlaceId { get; set; }
-
-    [Range(0, double.MaxValue, ErrorMessage = $"{nameof(ActualCost)} must be a positive number.")]
-    public decimal? ActualCost { get; set; }
-
-    [RegularExpression(@"^[A-Z]{3}$", ErrorMessage = $"{nameof(CurrencyCode)} must be a valid 3-letter ISO 4217 code.")]
-    public string? CurrencyCode { get; set; }
+    [Range(0, double.MaxValue, ErrorMessage = $"{nameof(ActualCostPerPerson)} must be a positive number.")]
+    public decimal? ActualCostPerPerson { get; set; }
 
     public TimeSpan? ActualTimeSpent { get; set; }
 
