@@ -9,9 +9,6 @@ public class TripPointReviewRequestDTO
     [Range(0, double.MaxValue, ErrorMessage = $"{nameof(ActualCostPerPerson)} must be a positive number.")]
     public decimal? ActualCostPerPerson { get; set; }
 
-    [RegularExpression(@"^[A-Z]{3}$", ErrorMessage = $"{nameof(CurrencyCode)} must be a valid 3-letter ISO 4217 code.")]
-    public string? CurrencyCode { get; set; }
-
     public TimeSpan? ActualTimeSpent { get; set; }
 
     [Range(0, 5)]
