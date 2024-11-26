@@ -248,7 +248,9 @@ const AddingTripPointView = () => {
       }
 
       showSnackbar("Punkt wycieczki zapisany!");
-      router.back();
+      if (attractionProviderId)
+        router.replace(`/(auth)/(tabs)/trips/details/${trip_id}/day/${day_id}`);
+      else router.back();
       router.setParams({
         refresh: "true",
         attractionProviderId: null,
