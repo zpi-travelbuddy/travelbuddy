@@ -1,6 +1,6 @@
 import ActionTextButtons from "@/components/ActionTextButtons";
 import CustomModal from "@/components/CustomModal";
-import { DELETE_ICON } from "@/constants/Icons";
+import { DELETE_ICON, STAR_ICON, STAR_OUTLINE_ICON } from "@/constants/Icons";
 import { MD3ThemeExtended } from "@/constants/Themes";
 import {
   Category,
@@ -48,6 +48,7 @@ const ManageProfileCategoryView: React.FC<ManageProfileCategoryViewProps> = ({
 
   // const { profile, loading, error, refetch } = useGetProfile(profileType, profile_id);
 
+
   const profile: CategoryProfile = {
     id: "123-456-789-000",
     name: "Zwiedzanie",
@@ -57,6 +58,8 @@ const ManageProfileCategoryView: React.FC<ManageProfileCategoryViewProps> = ({
       { id: "5", name: "leisure", subCategories: [] },
     ],
   };
+
+  const favouriteProfileId = "123-456-789-000";
 
   const [isModalVisible, setIsModalVisible] = useState(false);
 
@@ -71,8 +74,14 @@ const ManageProfileCategoryView: React.FC<ManageProfileCategoryViewProps> = ({
           hasMenu: true,
           menuActions: [
             {
-              title: "Ustaw jako domyślny",
-              icon: "star",
+              title:
+                profile.id === favouriteProfileId
+                  ? "Usuń z ulubionych"
+                  : "Ustaw jako ulubiony",
+              icon:
+                profile.id === favouriteProfileId
+                  ? STAR_OUTLINE_ICON
+                  : STAR_ICON,
               color: theme.colors.onSurface,
               onPress: () => {
                 console.log("Favourite");

@@ -11,6 +11,7 @@ export const MENU_ICON = "dots-vertical";
 // Profiles
 export const PROFILE_ICON = "account-circle";
 export const STAR_ICON = "star";
+export const STAR_OUTLINE_ICON = "star-outline";
 
 // NavBar icons
 export const TRIPS_ICON = "car";
@@ -22,7 +23,7 @@ export const CALENDAR_ICON = "calendar";
 
 export const CREATING_TRIP_POINT_ICON = "hammer-screwdriver";
 export const SEARCH_TRIP_POINT_ICON = "magnify";
-export const RECOMMENDATION_ICON = "star-outline";
+export const RECOMMENDATION_ICON = STAR_OUTLINE_ICON;
 
 // Transfer type icons
 export const WALK_ICON = "walk";

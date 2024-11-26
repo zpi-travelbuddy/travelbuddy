@@ -1,12 +1,12 @@
 import {
   ActivityIndicator,
   FlatList,
-  RefreshControl,
   StyleSheet,
   Text,
   View,
+  Keyboard,
 } from "react-native";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { MD3ThemeExtended } from "@/constants/Themes";
 import { router } from "expo-router";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -14,6 +14,10 @@ import { useTheme, FAB, MD3Theme } from "react-native-paper";
 import { Profile, ProfileType } from "@/types/Profile";
 import ProfileCard from "@/components/ProfileCard";
 import CreatingProfileBottonSheet from "@/components/CreatingProfileBottomSheet";
+import ActionMenuBottomSheet from "@/components/ActionMenu/ActionMenuBottomSheet";
+import { DELETE_ICON, STAR_OUTLINE_ICON, STAR_ICON } from "@/constants/Icons";
+import CustomModal from "@/components/CustomModal";
+import ActionTextButtons from "@/components/ActionTextButtons";
 
 interface ProfileBrowseViewProps {
   profileType: ProfileType;
@@ -25,13 +29,14 @@ const ProfileBrowseView: React.FC<ProfileBrowseViewProps> = ({
   const theme = useTheme();
   const styles = createStyles(theme as MD3ThemeExtended);
 
-  const id = "123-456-789-000";
-
   const [isBottomSheetVisible, setIsBottomSheetVisible] =
     useState<boolean>(false);
+  const [isActionMenuVisible, setIsActionMenuVisible] =
+    useState<boolean>(false);
+  const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
+  const [selectedProfile, setSelectedProfile] = useState<Profile | null>(null);
 
   const [refreshing, setRefreshing] = useState<boolean>(false);
-  const favourites: Profile[] = [];
   const loading: boolean = false;
   const [path, setPath] = useState<string>("");
 
@@ -55,19 +60,34 @@ const ProfileBrowseView: React.FC<ProfileBrowseViewProps> = ({
     { id: "123-456-789-222", name: "Dla allaha" },
   ];
 
+  const [favouriteProfileId, setFavouriteProfileId] =
+    useState<string>("123-456-789-000");
+
   const flatListRef = useRef<FlatList>(null);
 
   const renderProfileCard = ({ item }: { item: Profile }) => (
     <ProfileCard
       text={item.name}
-      showStar={favourites.some((item) => item.id === id)}
+      showStar={favouriteProfileId === item.id}
       onPress={() => handleProfileClick(item)}
+      onLongPress={() => handleProfileLongClick(item)}
     />
   );
 
   const handleProfileClick = (profile: Profile) => {
     console.log("Clicked profile:", profile.name);
     router.push(`${path}/${profile.id}`);
+  };
+
+  const handleProfileLongClick = (profile: Profile) => {
+    setSelectedProfile(profile);
+    console.log("Long clicked profile:", profile.name);
+    setIsActionMenuVisible(true);
+  };
+
+  const onCloseBottomSheet = () => {
+    setIsActionMenuVisible(false);
+    if (!isModalVisible) setSelectedProfile(null);
   };
 
   const handleFABClick = () => {
@@ -78,6 +98,49 @@ const ProfileBrowseView: React.FC<ProfileBrowseViewProps> = ({
   const handleSave = () => {
     router.push(`${path}/1234`);
   };
+
+  const deleteProfile = (selectedProfile: Profile | null) => {
+    hideModal();
+    if (selectedProfile) console.log(`Delete profile ${selectedProfile.name}`);
+  };
+
+  const showModal = () => {
+    setIsModalVisible(true);
+  };
+
+  const hideModal = () => {
+    setIsModalVisible(false);
+    setSelectedProfile(null);
+  };
+
+  const getActionsForSelectedProfile: Action[] = useMemo(() => {
+    if (!selectedProfile) return [];
+    return [
+      {
+        label:
+          selectedProfile.id === favouriteProfileId
+            ? "Usuń z ulubionych"
+            : "Ustaw jako ulubiony",
+        icon:
+          selectedProfile.id === favouriteProfileId
+            ? STAR_OUTLINE_ICON
+            : STAR_ICON,
+        onPress: () => {
+          console.log(`Ulubione`);
+          setIsActionMenuVisible(false);
+        },
+      },
+      {
+        label: "Usuń profil",
+        icon: DELETE_ICON,
+        onPress: () => {
+          console.log(`Usuń`);
+          setIsActionMenuVisible(false);
+          showModal();
+        },
+      },
+    ];
+  }, [selectedProfile]);
 
   //   const onRefresh = useCallback(async () => {
   //     setRefreshing(true);
@@ -124,12 +187,46 @@ const ProfileBrowseView: React.FC<ProfileBrowseViewProps> = ({
           label="Dodaj"
           onPress={handleFABClick}
         />
+        <CustomModal visible={isModalVisible} onDismiss={hideModal}>
+          <View>
+            <Text style={styles.modalTitleText}>
+              Czy na pewno chcesz usunąć ten profil?
+            </Text>
+            <View style={styles.modalContent}>
+              <Text style={styles.boldText}>{selectedProfile?.name}</Text>
+              <Text style={styles.modalSubtitle}>
+                {profileType === "Category"
+                  ? "Profil preferencji"
+                  : "Profil udogodnień"}
+              </Text>
+            </View>
+            <ActionTextButtons
+              onAction1={hideModal}
+              onAction2={() => deleteProfile(selectedProfile)}
+              action1ButtonLabel="Anuluj"
+              action2ButtonLabel="Usuń"
+              action1Icon={undefined}
+              action2Icon={undefined}
+            />
+          </View>
+        </CustomModal>
       </View>
       <CreatingProfileBottonSheet
         label="Wpisz nazwę nowego profilu"
         isVisible={isBottomSheetVisible}
-        onClose={() => setIsBottomSheetVisible(false)}
+        onClose={() => {
+          setIsBottomSheetVisible(false);
+          Keyboard.dismiss();
+        }}
         onSave={handleSave}
+      />
+      <ActionMenuBottomSheet
+        headerComponent={() => (
+          <Text style={styles.bottomSheetText}>Wybierz opcję</Text>
+        )}
+        actions={getActionsForSelectedProfile}
+        isVisible={isActionMenuVisible}
+        onClose={() => onCloseBottomSheet()}
       />
     </GestureHandlerRootView>
   );
@@ -167,4 +264,18 @@ const createStyles = (theme: MD3Theme) =>
       color: theme.colors.onSurface,
     },
     loadingIndicator: { margin: "auto" },
+    modalTitleText: {
+      ...theme.fonts.titleLarge,
+      color: theme.colors.onSurface,
+    },
+    modalContent: {
+      marginVertical: 20,
+    },
+    boldText: {
+      fontWeight: "bold",
+      color: theme.colors.onSurface,
+    },
+    modalSubtitle: {
+      color: theme.colors.onSurface,
+    },
   });

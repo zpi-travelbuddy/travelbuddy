@@ -9,18 +9,24 @@ interface ProfileCardProps {
   text: string;
   showStar?: boolean;
   onPress?: () => void;
+  onLongPress?: () => void;
 }
 
 const ProfileCard: React.FC<ProfileCardProps> = ({
   text,
   showStar = false,
   onPress,
+  onLongPress,
 }) => {
   const theme = useTheme();
   const styles = createStyles(theme as MD3ThemeExtended);
 
   return (
-    <TouchableOpacity style={styles.container} onPress={onPress}>
+    <TouchableOpacity
+      style={styles.container}
+      onPress={onPress}
+      onLongPress={onLongPress}
+    >
       <Icon
         name={PROFILE_ICON}
         size={32}
