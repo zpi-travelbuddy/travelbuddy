@@ -2,7 +2,10 @@ import React, { useRef, useEffect, useCallback, useState } from "react";
 import { View, Text, StyleSheet, TouchableWithoutFeedback } from "react-native";
 import { MD3Theme, TextInput, useTheme } from "react-native-paper";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
-import { useAnimatedKeyboard } from "react-native-reanimated";
+import Animated, {
+  useAnimatedKeyboard,
+  useAnimatedStyle,
+} from "react-native-reanimated";
 import ActionButtons from "./ActionButtons";
 
 interface BottomSheetComponentProps {
@@ -25,7 +28,7 @@ const CreatingProfileBottonSheet: React.FC<BottomSheetComponentProps> = ({
   const [profileName, setProfileName] = useState<string>("");
   const [error, setError] = useState<string>("");
 
-  useAnimatedKeyboard();
+  const keyboard = useAnimatedKeyboard();
 
   const handleAnimate = useCallback(
     (fromIndex: number, toIndex: number) => {
@@ -51,6 +54,12 @@ const CreatingProfileBottonSheet: React.FC<BottomSheetComponentProps> = ({
     }
   }, [isVisible]);
 
+  const animatedStyles = useAnimatedStyle(() => {
+    return {
+      marginBottom: keyboard.height.value,
+    };
+  });
+
   return (
     <>
       <BottomSheet
@@ -66,7 +75,7 @@ const CreatingProfileBottonSheet: React.FC<BottomSheetComponentProps> = ({
       >
         <BottomSheetView>
           {!!label && <Text style={styles.label}>{label}</Text>}
-          <View style={styles.contentContainer}>
+          <Animated.View style={[animatedStyles, styles.contentContainer]}>
             <TextInput
               style={styles.input}
               label="Nazwa profilu"
@@ -83,7 +92,7 @@ const CreatingProfileBottonSheet: React.FC<BottomSheetComponentProps> = ({
               action1Icon={undefined}
               action2Icon={undefined}
             />
-          </View>
+          </Animated.View>
         </BottomSheetView>
       </BottomSheet>
 
