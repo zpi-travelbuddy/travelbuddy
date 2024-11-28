@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.ComponentModel.DataAnnotations;
 using TravelBuddyAPI.Data;
 using TravelBuddyAPI.DTOs.TransferPoint;
@@ -53,6 +54,11 @@ public class TransferPointsService(TravelBuddyDbContext dbContext, IGeoapifyServ
             if (tripDay.TripPoints == null || fromTripPoint == null || toTripPoint == null || fromTripPoint.Place == null || toTripPoint.Place == null)
             {
                 throw new InvalidOperationException(ErrorMessage.TripPointNotFoundInTripDay);
+            }
+
+            if(tripDay.Date.ToDateTime(toTripPoint.StartTime) < DateTime.Now)
+            {
+                throw new InvalidOperationException(ErrorMessage.ToTripPointInThePastCreate);
             }
 
             if(fromTripPoint.EndTime > toTripPoint.StartTime)
@@ -123,12 +129,17 @@ public class TransferPointsService(TravelBuddyDbContext dbContext, IGeoapifyServ
             var transferPoint = await _dbContext.TransferPoints
                 .Where(tp => tp.Id == transferPointId && tp.TripDay != null && tp.TripDay.Trip != null && tp.TripDay.Trip.UserId == userId)
                 .Include(tp => tp.TripDay)
-                .ThenInclude(td => td!.Trip)
+                    .ThenInclude(td => td!.Trip)
+                .Include(tp => tp.ToTripPoint)
                 .FirstOrDefaultAsync();
 
             if (transferPoint == null)
             {
                 throw new InvalidOperationException(ErrorMessage.TransferPointNotFound);
+            }
+            if (_dbContext.Database.CurrentTransaction == null && transferPoint.TripDay!.Date.ToDateTime(transferPoint.ToTripPoint!.StartTime) < DateTime.Now)
+            {
+                throw new InvalidOperationException(ErrorMessage.ToTripPointInThePastDelete);
             }
 
             _dbContext.TransferPoints.Remove(transferPoint);
@@ -159,6 +170,11 @@ public class TransferPointsService(TravelBuddyDbContext dbContext, IGeoapifyServ
             if (existingTransferPoint == null)
             {
                 throw new InvalidOperationException(ErrorMessage.TransferPointNotFound);
+            }
+
+            if (_dbContext.Database.CurrentTransaction == null && existingTransferPoint.TripDay!.Date.ToDateTime(existingTransferPoint.ToTripPoint!.StartTime) < DateTime.Now)
+            {
+                throw new InvalidOperationException(ErrorMessage.ToTripPointInThePastEdit);
             }
 
             if (!((transferPoint.Seconds == null) ^ (transferPoint.Mode == null)))

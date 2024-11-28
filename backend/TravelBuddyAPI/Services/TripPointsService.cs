@@ -103,6 +103,16 @@ public class TripPointsService(TravelBuddyDbContext dbContext, INBPService nbpSe
         {
             using var transaction = await _dbContext.Database.BeginTransactionAsync();
 
+            var TripPoint = _dbContext.TripPoints
+                .Include(tp => tp.TripDay)
+                    .ThenInclude(td => td != null ? td.Trip : null)
+                .Where(tp => tp.Id == tripPointId
+                    && tp.TripDay != null
+                    && tp.Place != null
+                    && tp.TripDay.Trip != null
+                    && tp.TripDay.Trip.UserId == userId)
+                .FirstOrDefault() ?? throw new InvalidOperationException(ErrorMessage.TripPointNotFound); 
+
             await DeleteTripPointDuringTransactionAsync(userId, tripPointId);
 
             await transaction.CommitAsync();

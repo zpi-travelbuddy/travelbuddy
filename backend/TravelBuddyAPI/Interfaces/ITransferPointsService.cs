@@ -24,6 +24,9 @@ public interface ITransferPointsService
         public const string TripPointAlreadyConnected = "The trip point is already connected to a transfer point.";
         public const string TransferPointTimeOutOfRange = "Transfer point time must be between 0 (exclusive) and 86400 (exclusive) seconds.";
         public const string FromTripPointMustBeBeforeToTripPoint = "The 'From' trip point must end before the 'To' trip point starts.";
+        public const string ToTripPointInThePastCreate = "Cannot create transfer point when the 'To' trip point is in the past.";
+        public const string ToTripPointInThePastEdit = "Cannot edit transfer point when the 'To' trip point is in the past.";
+        public const string ToTripPointInThePastDelete = "Cannot remove transfer point when the 'To' trip point is in the past.";
     }
 
     /// <summary>
