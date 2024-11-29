@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import ActionTextButtons from "@/components/ActionTextButtons";
 import CustomModal from "@/components/CustomModal";
 import { DELETE_ICON, STAR_ICON, STAR_OUTLINE_ICON } from "@/constants/Icons";
@@ -10,9 +11,10 @@ import {
 } from "@/types/Profile";
 import { useNavigation, useRouter } from "expo-router";
 import React, { useLayoutEffect, useState } from "react";
-import { SafeAreaView, StyleSheet, View } from "react-native";
+import { SafeAreaView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { useTheme, Text } from "react-native-paper";
 import ProfileOptionsList from "@/components/ProfileOptionsList";
+import Icon from "react-native-vector-icons/MaterialIcons";
 
 const categories: Category[] = [
   { id: "1", name: "activity", subCategories: [] },
@@ -66,6 +68,10 @@ const ManageProfileCategoryView: React.FC<ManageProfileCategoryViewProps> = ({
 
   const showRemovalModal = () => setIsModalVisible(true);
 
+  const toggleFavourite = () => {
+    console.log("Toggle favourite");
+  }
+
   useLayoutEffect(() => {
     navigation.setOptions({
       actions: [
@@ -82,9 +88,7 @@ const ManageProfileCategoryView: React.FC<ManageProfileCategoryViewProps> = ({
                   ? STAR_OUTLINE_ICON
                   : STAR_ICON,
               color: theme.colors.onSurface,
-              onPress: () => {
-                console.log("Favourite");
-              },
+              onPress: toggleFavourite,
             },
             {
               title: "Usuń",
@@ -102,9 +106,13 @@ const ManageProfileCategoryView: React.FC<ManageProfileCategoryViewProps> = ({
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.text}>
-        {profileType === "Category" ? "Preferencje: " : "Udogodnienia"}
-      </Text>
+      <View style={styles.favouriteContainer}>
+        <Text style={styles.leftText}> {profileType === "Category" ? "Preferencje: " : "Udogodnienia"}</Text>
+        <TouchableOpacity style={styles.rightContainer} onPress={toggleFavourite}>
+          <Text style={styles.rightText}>Ulubiony</Text>
+          <Icon name={profile.id === favouriteProfileId ? STAR_ICON : STAR_OUTLINE_ICON} size={20} color={theme.colors.onSurface} />
+        </TouchableOpacity>
+      </View>
       <ProfileOptionsList
         items={profileType === "Category" ? categories : conditions}
         profile={profile}
@@ -136,6 +144,27 @@ const ManageProfileCategoryView: React.FC<ManageProfileCategoryViewProps> = ({
 
 const createStyles = (theme: MD3ThemeExtended) =>
   StyleSheet.create({
+    favouriteContainer: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      width: '100%',
+      padding: 10,
+      backgroundColor: theme.colors.surface,
+    },
+    leftText: {
+      ...theme.fonts.bodyLarge,
+      color: theme.colors.onSurface,
+    },
+    rightContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    rightText: {
+      ...theme.fonts.bodyLarge,
+      color: theme.colors.onSurface,
+      marginRight: 5,
+    },
     container: {
       flex: 1,
       backgroundColor: theme.colors.surface,
@@ -150,10 +179,6 @@ const createStyles = (theme: MD3ThemeExtended) =>
     },
     modalContent: {
       marginVertical: 20,
-    },
-    boldText: {
-      fontWeight: "bold",
-      color: theme.colors.onSurface,
     },
     modalSubtitle: {
       color: theme.colors.onSurface,

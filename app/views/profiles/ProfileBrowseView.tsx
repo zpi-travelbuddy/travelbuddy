@@ -15,7 +15,12 @@ import { Profile, ProfileType } from "@/types/Profile";
 import ProfileCard from "@/components/ProfileCard";
 import CreatingProfileBottonSheet from "@/components/CreatingProfileBottomSheet";
 import ActionMenuBottomSheet from "@/components/ActionMenu/ActionMenuBottomSheet";
-import { DELETE_ICON, STAR_OUTLINE_ICON, STAR_ICON } from "@/constants/Icons";
+import {
+  DELETE_ICON,
+  STAR_OUTLINE_ICON,
+  STAR_ICON,
+  ADD_ICON,
+} from "@/constants/Icons";
 import CustomModal from "@/components/CustomModal";
 import ActionTextButtons from "@/components/ActionTextButtons";
 
@@ -182,7 +187,7 @@ const ProfileBrowseView: React.FC<ProfileBrowseViewProps> = ({
         />
         <FAB
           style={styles.fab}
-          icon="plus"
+          icon={ADD_ICON}
           color={theme.colors.onPrimary}
           label="Dodaj"
           onPress={handleFABClick}
@@ -226,7 +231,7 @@ const ProfileBrowseView: React.FC<ProfileBrowseViewProps> = ({
         )}
         actions={getActionsForSelectedProfile}
         isVisible={isActionMenuVisible}
-        onClose={() => onCloseBottomSheet()}
+        onClose={onCloseBottomSheet}
       />
     </GestureHandlerRootView>
   );
