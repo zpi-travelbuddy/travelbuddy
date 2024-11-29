@@ -188,6 +188,7 @@ const SettingsView = () => {
             rightComponent={() => <List.Icon icon="chevron-right" />}
             onPress={() => {
               console.log("Profile preferencji kliknięte");
+              router.push(`/(auth)/(tabs)/settings/categoryProfiles`);
             }}
           />
           <SettingListItem
@@ -195,6 +196,7 @@ const SettingsView = () => {
             rightComponent={() => <List.Icon icon="chevron-right" />}
             onPress={() => {
               console.log("Profile udogodnień kliknięte");
+              router.push(`/(auth)/(tabs)/settings/conditionProfiles`);
             }}
           />
         </View>
