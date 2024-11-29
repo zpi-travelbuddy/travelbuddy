@@ -11,7 +11,7 @@ import ActionButtons from "./ActionButtons";
 interface BottomSheetComponentProps {
   isVisible: boolean;
   onClose: () => void;
-  onSave: () => void;
+  onSave: (name: string) => void;
   label?: string;
 }
 
@@ -41,8 +41,8 @@ const CreatingProfileBottonSheet: React.FC<BottomSheetComponentProps> = ({
     if (profileName) {
       onClose();
       setError("");
+      onSave(profileName);
       setProfileName("");
-      onSave();
     } else setError("Uzupełnij nazwę profilu!");
   };
 

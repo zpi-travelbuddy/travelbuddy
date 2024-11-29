@@ -24,3 +24,17 @@ export interface Condition {
   name: string;
   subConditions: Condition[];
 }
+
+export interface CreateProfileRequest {
+  name: string;
+  profileType: ProfileType;
+  conditionIds?: string[];
+  categoryIds?: string[];
+}
+
+export interface ProfileDetails {
+  id: string;
+  name: string;
+  categories?: Category[];
+  conditions?: Condition[];
+}

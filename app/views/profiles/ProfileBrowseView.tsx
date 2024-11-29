@@ -6,12 +6,23 @@ import {
   View,
   Keyboard,
 } from "react-native";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { MD3ThemeExtended } from "@/constants/Themes";
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useTheme, FAB, MD3Theme } from "react-native-paper";
-import { Profile, ProfileType } from "@/types/Profile";
+import {
+  CreateProfileRequest,
+  Profile,
+  ProfileDetails,
+  ProfileType,
+} from "@/types/Profile";
 import ProfileCard from "@/components/ProfileCard";
 import CreatingProfileBottonSheet from "@/components/CreatingProfileBottomSheet";
 import ActionMenuBottomSheet from "@/components/ActionMenu/ActionMenuBottomSheet";
@@ -23,6 +34,16 @@ import {
 } from "@/constants/Icons";
 import CustomModal from "@/components/CustomModal";
 import ActionTextButtons from "@/components/ActionTextButtons";
+import {
+  useDynamicProfiles,
+  useGetFavouriteProfiles,
+} from "@/composables/useProfiles";
+import { useSnackbar } from "@/context/SnackbarContext";
+import {
+  API_CATEGORY_PROFILES,
+  API_CONDITION_PROFILES,
+} from "@/constants/Endpoints";
+import { useAuth } from "@/app/ctx";
 
 interface ProfileBrowseViewProps {
   profileType: ProfileType;
@@ -33,6 +54,8 @@ const ProfileBrowseView: React.FC<ProfileBrowseViewProps> = ({
 }) => {
   const theme = useTheme();
   const styles = createStyles(theme as MD3ThemeExtended);
+  const { showSnackbar } = useSnackbar();
+  const { api } = useAuth();
 
   const [isBottomSheetVisible, setIsBottomSheetVisible] =
     useState<boolean>(false);
@@ -41,8 +64,6 @@ const ProfileBrowseView: React.FC<ProfileBrowseViewProps> = ({
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [selectedProfile, setSelectedProfile] = useState<Profile | null>(null);
 
-  const [refreshing, setRefreshing] = useState<boolean>(false);
-  const loading: boolean = false;
   const [path, setPath] = useState<string>("");
 
   useEffect(() => {
@@ -51,29 +72,48 @@ const ProfileBrowseView: React.FC<ProfileBrowseViewProps> = ({
     else setPath(`/(auth)/(tabs)/settings/conditionProfiles/manage`);
   }, [profileType]);
 
-  // const { profiles, loading, error, refetch } = useDynamicProfiles(profileType);
+  const {
+    profiles,
+    loading: loadingProfiles,
+    error: loadingProfilesError,
+    refetch,
+  } = useDynamicProfiles(profileType);
 
-  const categoryProfiles = [
-    { id: "123-456-789-000", name: "Zwiedzanie i jedzenie" },
-    { id: "123-456-789-111", name: "Zamki i inne budowle" },
-    { id: "123-456-789-222", name: "Parki i góry" },
-  ];
+  const {
+    favouriteProfiles,
+    loading: loadingFavouritesLoading,
+    error: loadingFavouritesError,
+    refetch: refetchFavourites,
+  } = useGetFavouriteProfiles();
 
-  const conditionProfiles = [
-    { id: "123-456-789-000", name: "Internet dla psa" },
-    { id: "123-456-789-111", name: "Weganizm" },
-    { id: "123-456-789-222", name: "Dla allaha" },
-  ];
+  useFocusEffect(
+    useCallback(() => {
+      refetch();
+      refetchFavourites();
+    }, [refetch, refetchFavourites, profileType]),
+  );
 
-  const [favouriteProfileId, setFavouriteProfileId] =
-    useState<string>("123-456-789-000");
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string>("");
+
+  useEffect(() => {
+    setLoading(loadingFavouritesLoading || loadingProfiles || false);
+  }, [loadingFavouritesLoading, loadingProfiles]);
+
+  useEffect(() => {
+    setError(loadingFavouritesError || loadingProfilesError || "");
+  }, [loadingFavouritesError, loadingProfilesError]);
+
+  useEffect(() => {
+    if (error) showSnackbar(error);
+  }, [error]);
 
   const flatListRef = useRef<FlatList>(null);
 
   const renderProfileCard = ({ item }: { item: Profile }) => (
     <ProfileCard
       text={item.name}
-      showStar={favouriteProfileId === item.id}
+      showStar={favouriteProfiles[profileType] === item.id}
       onPress={() => handleProfileClick(item)}
       onLongPress={() => handleProfileLongClick(item)}
     />
@@ -100,7 +140,13 @@ const ProfileBrowseView: React.FC<ProfileBrowseViewProps> = ({
     setIsBottomSheetVisible(true);
   };
 
-  const handleSave = () => {
+  const handleSave = async (name: string) => {
+    handleCreateProfile({
+      profileType: profileType,
+      name: name,
+      categoryIds: [],
+      conditionIds: [],
+    });
     router.push(`${path}/1234`);
   };
 
@@ -118,16 +164,42 @@ const ProfileBrowseView: React.FC<ProfileBrowseViewProps> = ({
     setSelectedProfile(null);
   };
 
+  const handleCreateProfile = async (request: CreateProfileRequest) => {
+    try {
+      setLoading(true);
+      const endpoint =
+        profileType === "Category"
+          ? API_CATEGORY_PROFILES
+          : API_CONDITION_PROFILES;
+      const response = await api!.post<ProfileDetails>(endpoint, request);
+
+      if (!response) {
+        showSnackbar("Nie udało się stworzyć profilu.");
+        return;
+      }
+
+      showSnackbar("Profil został utworzony!");
+    } catch (err: any) {
+      console.error(
+        "Błąd podczas zapisywania profilu: ",
+        JSON.stringify(err.response.data),
+      );
+      showSnackbar("Nie dodano profilu. " + JSON.stringify(err.response.data));
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const getActionsForSelectedProfile: Action[] = useMemo(() => {
     if (!selectedProfile) return [];
     return [
       {
         label:
-          selectedProfile.id === favouriteProfileId
+          selectedProfile.id === favouriteProfiles[profileType]
             ? "Usuń z ulubionych"
             : "Ustaw jako ulubiony",
         icon:
-          selectedProfile.id === favouriteProfileId
+          selectedProfile.id === favouriteProfiles[profileType]
             ? STAR_OUTLINE_ICON
             : STAR_ICON,
         onPress: () => {
@@ -147,27 +219,16 @@ const ProfileBrowseView: React.FC<ProfileBrowseViewProps> = ({
     ];
   }, [selectedProfile]);
 
-  //   const onRefresh = useCallback(async () => {
-  //     setRefreshing(true);
-  //     await fetchTrips();
-  //     setRefreshing(false);
-  //   }, []);
-
   return (
     <GestureHandlerRootView>
       <View style={styles.container}>
         <FlatList
           ref={flatListRef}
-          data={
-            profileType === "Category" ? categoryProfiles : conditionProfiles
-          }
+          data={profiles}
           renderItem={renderProfileCard}
           keyExtractor={(item, index) => index.toString()}
           contentContainerStyle={styles.flatListContent}
           showsVerticalScrollIndicator={false}
-          //   refreshControl={
-          // <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          //   }
           ListEmptyComponent={
             loading ? (
               <ActivityIndicator
@@ -177,11 +238,13 @@ const ProfileBrowseView: React.FC<ProfileBrowseViewProps> = ({
                 color={theme.colors.primary}
               />
             ) : (
-              <Text style={styles.emptyMessage}>
-                {profileType === "Category"
-                  ? "Nie masz jeszcze żadnych profili preferencji"
-                  : "Nie masz jeszcze żadnych profili udogodnień"}
-              </Text>
+              <View style={styles.emptyContainer}>
+                <Text style={styles.emptyMessage}>
+                  {profileType === "Category"
+                    ? "Nie masz jeszcze żadnych profili preferencji"
+                    : "Nie masz jeszcze żadnych profili udogodnień"}
+                </Text>
+              </View>
             )
           }
         />
@@ -263,7 +326,13 @@ const createStyles = (theme: MD3Theme) =>
       color: theme.colors.onSurface,
       ...theme.fonts.bodyMedium,
     },
+    emptyContainer: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+    },
     emptyMessage: {
+      ...theme.fonts.bodyLarge,
       textAlign: "center",
       marginTop: 20,
       color: theme.colors.onSurface,

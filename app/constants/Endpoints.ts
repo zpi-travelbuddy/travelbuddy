@@ -16,3 +16,4 @@ export const API_PLACES_AUTOCOMPLETE = "/places/autocomplete";
 // Profiles
 export const API_CATEGORY_PROFILES = "/categoryProfiles";
 export const API_CONDITION_PROFILES = "/conditionProfiles";
+export const API_FAVOURITE_PROFILES = "/favourites";
