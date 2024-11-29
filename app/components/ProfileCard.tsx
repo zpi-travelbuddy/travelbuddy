@@ -65,7 +65,7 @@ const createStyles = (theme: MD3ThemeExtended) =>
       marginRight: 20,
     },
     text: {
-      ...theme.fonts.bodyLarge,
+      ...theme.fonts.titleMedium,
       flex: 1,
       color: theme.colors.onSurface,
     },

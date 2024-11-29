@@ -56,7 +56,7 @@ const ProfileBrowseView: React.FC<ProfileBrowseViewProps> = ({
 
   const conditionProfiles = [
     { id: "123-456-789-000", name: "Internet dla psa" },
-    { id: "123-456-789-111", name: "Jebany weganizm" },
+    { id: "123-456-789-111", name: "Weganizm" },
     { id: "123-456-789-222", name: "Dla allaha" },
   ];
 

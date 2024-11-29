@@ -48,7 +48,6 @@ const ManageProfileCategoryView: React.FC<ManageProfileCategoryViewProps> = ({
 
   // const { profile, loading, error, refetch } = useGetProfile(profileType, profile_id);
 
-
   const profile: CategoryProfile = {
     id: "123-456-789-000",
     name: "Zwiedzanie",
@@ -103,7 +102,9 @@ const ManageProfileCategoryView: React.FC<ManageProfileCategoryViewProps> = ({
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.text}> Preferencje: </Text>
+      <Text style={styles.text}>
+        {profileType === "Category" ? "Preferencje: " : "Udogodnienia"}
+      </Text>
       <ProfileOptionsList
         items={profileType === "Category" ? categories : conditions}
         profile={profile}

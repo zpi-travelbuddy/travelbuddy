@@ -78,6 +78,7 @@ const CreatingProfileBottonSheet: React.FC<BottomSheetComponentProps> = ({
           <Animated.View style={[animatedStyles, styles.contentContainer]}>
             <TextInput
               style={styles.input}
+              mode="outlined"
               label="Nazwa profilu"
               value={profileName}
               onChangeText={setProfileName}
