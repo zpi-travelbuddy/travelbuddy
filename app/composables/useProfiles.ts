@@ -8,10 +8,13 @@ import {
 import {
   CategoryProfile,
   ConditionProfile,
+  EditProfileRequest,
   Profile,
+  ProfileRequest,
   ProfileType,
 } from "@/types/Profile";
 import { useState, useCallback, useEffect } from "react";
+import { UseApiOptions } from "./useTripDetails";
 
 interface UseGetProfilesResult<T> {
   profiles: T[];
@@ -200,4 +203,47 @@ export const useGetFavouriteProfiles = () => {
   }, [fetchProfiles]);
 
   return { favouriteProfiles, loading, error, refetch: fetchProfiles };
+};
+
+export const useEditProfile = (
+  editRequest: EditProfileRequest,
+  options: UseApiOptions = { immediate: true },
+) => {
+  const { api } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<boolean | null>(null);
+
+  const editProfile = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    setSuccess(null);
+
+    const { profileType, ...request } = editRequest;
+
+    const endpoint =
+      profileType === "Category"
+        ? `${API_CATEGORY_PROFILES}/${request.id}`
+        : `${API_CONDITION_PROFILES}/${request.id}`;
+
+    try {
+      console.log("Request: " + JSON.stringify(request));
+      await api!.put(endpoint, request);
+      setSuccess(true);
+    } catch (err: any) {
+      console.log("Error: " + JSON.stringify(err));
+      setError(JSON.stringify(err) || "Wystąpił błąd");
+      setSuccess(false);
+    } finally {
+      setLoading(false);
+    }
+  }, [api, editRequest]);
+
+  useEffect(() => {
+    if (options.immediate) {
+      editProfile();
+    }
+  }, [editProfile, options.immediate]);
+
+  return { editProfile, loading, error, success };
 };

@@ -18,7 +18,7 @@ import { router, useFocusEffect } from "expo-router";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useTheme, FAB, MD3Theme } from "react-native-paper";
 import {
-  CreateProfileRequest,
+  ProfileRequest,
   Profile,
   ProfileDetails,
   ProfileType,
@@ -145,7 +145,7 @@ const ProfileBrowseView: React.FC<ProfileBrowseViewProps> = ({
   };
 
   const handleCreateProfile = async (
-    request: CreateProfileRequest,
+    request: ProfileRequest,
     onSuccess?: (profile: ProfileDetails) => void,
   ): Promise<void> => {
     try {
@@ -181,6 +181,7 @@ const ProfileBrowseView: React.FC<ProfileBrowseViewProps> = ({
 
   const handleSave = useCallback(
     async (name: string) => {
+      setLoading(true);
       await handleCreateProfile(
         {
           profileType: profileType,
@@ -190,6 +191,7 @@ const ProfileBrowseView: React.FC<ProfileBrowseViewProps> = ({
         },
         (newProfile) => {
           router.push(`${path}/${newProfile.id}`);
+          setLoading(false);
         },
       );
     },

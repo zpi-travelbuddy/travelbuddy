@@ -25,11 +25,14 @@ export interface Condition {
   subConditions: Condition[];
 }
 
-export interface CreateProfileRequest {
+export interface ProfileRequest {
   name: string;
   profileType: ProfileType;
   conditionIds?: string[];
   categoryIds?: string[];
+}
+export interface EditProfileRequest extends ProfileRequest {
+  id: string;
 }
 
 export interface ProfileDetails {
