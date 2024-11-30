@@ -108,6 +108,10 @@ const ProfileBrowseView: React.FC<ProfileBrowseViewProps> = ({
     if (error) showSnackbar(error);
   }, [error]);
 
+  useEffect(() => {
+    if (selectedProfile) console.log(selectedProfile);
+  }, [selectedProfile]);
+
   const flatListRef = useRef<FlatList>(null);
 
   const renderProfileCard = ({ item }: { item: Profile }) => (
@@ -140,15 +144,57 @@ const ProfileBrowseView: React.FC<ProfileBrowseViewProps> = ({
     setIsBottomSheetVisible(true);
   };
 
-  const handleSave = async (name: string) => {
-    handleCreateProfile({
-      profileType: profileType,
-      name: name,
-      categoryIds: [],
-      conditionIds: [],
-    });
-    router.push(`${path}/1234`);
+  const handleCreateProfile = async (
+    request: CreateProfileRequest,
+    onSuccess?: (profile: ProfileDetails) => void,
+  ): Promise<void> => {
+    try {
+      setLoading(true);
+      const endpoint =
+        profileType === "Category"
+          ? API_CATEGORY_PROFILES
+          : API_CONDITION_PROFILES;
+
+      const response = await api!.post<ProfileDetails>(endpoint, request);
+
+      if (!response) {
+        showSnackbar("Nie udało się stworzyć profilu.");
+        return;
+      }
+
+      const newProfile = response.data;
+      setSelectedProfile(newProfile);
+      showSnackbar("Profil został utworzony!");
+
+      if (onSuccess) onSuccess(newProfile);
+
+    } catch (err: any) {
+      console.error(
+        "Błąd podczas zapisywania profilu: ",
+        JSON.stringify(err.response.data),
+      );
+      showSnackbar("Nie dodano profilu. " + JSON.stringify(err.response.data));
+    } finally {
+      setLoading(false);
+    }
   };
+
+  const handleSave = useCallback(
+    async (name: string) => {
+      await handleCreateProfile(
+        {
+          profileType: profileType,
+          name: name,
+          categoryIds: [],
+          conditionIds: [],
+        },
+        (newProfile) => {
+          router.push(`${path}/${newProfile.id}`);
+        },
+      );
+    },
+    [handleCreateProfile, router, path, profileType],
+  );
 
   const deleteProfile = (selectedProfile: Profile | null) => {
     hideModal();
@@ -162,32 +208,6 @@ const ProfileBrowseView: React.FC<ProfileBrowseViewProps> = ({
   const hideModal = () => {
     setIsModalVisible(false);
     setSelectedProfile(null);
-  };
-
-  const handleCreateProfile = async (request: CreateProfileRequest) => {
-    try {
-      setLoading(true);
-      const endpoint =
-        profileType === "Category"
-          ? API_CATEGORY_PROFILES
-          : API_CONDITION_PROFILES;
-      const response = await api!.post<ProfileDetails>(endpoint, request);
-
-      if (!response) {
-        showSnackbar("Nie udało się stworzyć profilu.");
-        return;
-      }
-
-      showSnackbar("Profil został utworzony!");
-    } catch (err: any) {
-      console.error(
-        "Błąd podczas zapisywania profilu: ",
-        JSON.stringify(err.response.data),
-      );
-      showSnackbar("Nie dodano profilu. " + JSON.stringify(err.response.data));
-    } finally {
-      setLoading(false);
-    }
   };
 
   const getActionsForSelectedProfile: Action[] = useMemo(() => {

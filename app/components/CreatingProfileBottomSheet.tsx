@@ -40,8 +40,8 @@ const CreatingProfileBottonSheet: React.FC<BottomSheetComponentProps> = ({
   const handleSave = () => {
     if (profileName) {
       onClose();
-      setError("");
       onSave(profileName);
+      setError("");
       setProfileName("");
     } else setError("Uzupełnij nazwę profilu!");
   };

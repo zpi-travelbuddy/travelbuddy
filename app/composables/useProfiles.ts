@@ -8,6 +8,7 @@ import {
 import {
   CategoryProfile,
   ConditionProfile,
+  Profile,
   ProfileType,
 } from "@/types/Profile";
 import { useState, useCallback, useEffect } from "react";
@@ -108,14 +109,14 @@ export const useDynamicProfiles = (profileType: ProfileType) => {
   return { profiles, loading, error, refetch };
 };
 
-interface UseProfileByIdResult<T> {
+interface UseProfileByIdResult<T extends Profile> {
   profile: T | null;
   loading: boolean;
   error: string | null;
   refetch: () => Promise<void>;
 }
 
-export const useGetProfile = <T>(
+export const useGetProfile = <T extends Profile>(
   profileType: ProfileType,
   id: string,
 ): UseProfileByIdResult<T> => {
@@ -138,6 +139,7 @@ export const useGetProfile = <T>(
       const response = await api!.get<T>(endpoint);
       setProfile(response.data);
     } catch (err: any) {
+      console.error(JSON.stringify(err.response));
       if (err.response && err.response.status === 404) {
         setError("Profil nie został znaleziony.");
       } else {
