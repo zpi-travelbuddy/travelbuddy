@@ -8,6 +8,7 @@ using TravelBuddyAPI.Enums;
 using System.ComponentModel.DataAnnotations;
 using TravelBuddyAPI.DTOs.Place;
 using static TravelBuddyAPI.Interfaces.ITripPointsService;
+using TravelBuddyAPI.DTOs.PlaceCategory;
 
 namespace TravelBuddyAPI.Services;
 
@@ -190,14 +191,23 @@ public class TripPointsService(TravelBuddyDbContext dbContext, INBPService nbpSe
             OpeningTime = tripPoint.OpeningTime,
             ClosingTime = tripPoint.ClosingTime,
             Status = tripPoint.Status,
-            PlaceId = tripPoint.Place!.Id,
             Place = tripPoint.Place != null ? new PlaceOverviewDTO
             {
                 Id = tripPoint.Place.Id,
                 ProviderId = tripPoint.Place is ProviderPlace providerPlace ? providerPlace.ProviderId : null,
                 Name = tripPoint.Place.Name,
                 Country = tripPoint.Place.Country,
-                City = tripPoint.Place.City
+                City = tripPoint.Place.City,
+                Street = tripPoint.Place.Street,
+                HouseNumber = tripPoint.Place.HouseNumber,
+                SuperCategory = tripPoint.Place is CustomPlace customPlace && customPlace.SuperCategoryId != null ? await _dbContext.PlaceCategories
+                    .Where(pc => pc.Id == customPlace.SuperCategoryId)
+                    .Select(pc => new PlaceCategoryDTO
+                    {
+                        Id = pc.Id,
+                        Name = pc.Name
+                    })
+                    .FirstOrDefaultAsync() : null
             } : null,
             Review = tripPoint.Review != null ? new TripPointReviewOverviewDTO
             {

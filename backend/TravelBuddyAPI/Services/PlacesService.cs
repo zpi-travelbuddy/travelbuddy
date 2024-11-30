@@ -61,8 +61,7 @@ public class PlacesService(TravelBuddyDbContext dbContext, IGeoapifyService geoa
         }
         else if (newPlace is CustomPlace customPlace)
         {
-            var categories = await _dbCache.GetCategoriesAsync();
-            customPlace.PlaceCategory = categories?.FirstOrDefault(c => c.Id == place.CategoryId);
+            customPlace.SuperCategoryId = place.SuperCategoryId;
         }
 
         var validationContext = new ValidationContext(newPlace);
@@ -131,6 +130,8 @@ public class PlacesService(TravelBuddyDbContext dbContext, IGeoapifyService geoa
                     Country = p.Country,
                     State = p.State,
                     City = p.City,
+                    Street = p.Street,
+                    HouseNumber = p.HouseNumber,
                 };
             }).ToList() ?? [];
     }
@@ -177,12 +178,16 @@ public class PlacesService(TravelBuddyDbContext dbContext, IGeoapifyService geoa
                     Name = c.Name,
                 }).ToList();
         }
-        else if (place is CustomPlace customPlace && customPlace.PlaceCategory is not null)
+        else if (place is CustomPlace customPlace && customPlace.SuperCategoryId is not null)
         {
+            PlaceCategory superCategory = await _dbContext.PlaceCategories
+                .Where(c => c.Id == customPlace.SuperCategoryId)
+                .FirstAsync();
+
             placeDetails.SuperCategory = new PlaceCategoryDTO
             {
-                Id = customPlace.PlaceCategory.Id,
-                Name = customPlace.PlaceCategory.Name,
+                Id = superCategory.Id,
+                Name = superCategory.Name,
             };
         }
 
