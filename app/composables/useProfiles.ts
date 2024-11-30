@@ -9,9 +9,7 @@ import {
   CategoryProfile,
   ConditionProfile,
   EditProfileRequest,
-  FavouriteProfileRequest,
   Profile,
-  ProfileRequest,
   ProfileType,
 } from "@/types/Profile";
 import { useState, useCallback, useEffect } from "react";
@@ -68,7 +66,7 @@ export const useDynamicProfiles = (profileType: ProfileType) => {
     refetch: refetchCategory,
   } = useGetProfiles<CategoryProfile>(
     API_CATEGORY_PROFILES,
-    "Profile kategorii nie zostały znalezione.",
+    "Profile preferencji nie zostały znalezione.",
   );
 
   const {
@@ -78,7 +76,7 @@ export const useDynamicProfiles = (profileType: ProfileType) => {
     refetch: refetchCondition,
   } = useGetProfiles<ConditionProfile>(
     API_CONDITION_PROFILES,
-    "Profile warunków nie zostały znalezione.",
+    "Profile udogodnień nie zostały znalezione.",
   );
 
   const [profiles, setProfiles] = useState<
@@ -189,7 +187,7 @@ export const useGetFavouriteProfiles = () => {
         Condition: response.data.conditionProfileId,
       });
     } catch (err: any) {
-      console.log(err.response.data);
+      console.error(err.response.data);
       if (err.response && err.response.status !== 404) {
         setError("Wystąpił błąd podczas pobierania ulubionych profili.");
       }
@@ -227,7 +225,6 @@ export const useEditProfile = (
         : `${API_CONDITION_PROFILES}/${request.id}`;
 
     try {
-      console.log("Request: " + JSON.stringify(request));
       await api!.put(endpoint, request);
       setSuccess(true);
     } catch (err: any) {
@@ -246,45 +243,3 @@ export const useEditProfile = (
 
   return { editProfile, loading, error, success };
 };
-
-// export const useAddFavouriteProfile = (
-//   request: FavouriteProfileRequest,
-//   options: UseApiOptions = { immediate: true },
-// ) => {
-//   const { api } = useAuth();
-//   const [loading, setLoading] = useState(false);
-//   const [error, setError] = useState<string | null>(null);
-//   const [success, setSuccess] = useState<boolean | null>(null);
-
-//   const addFavouriteProfile = useCallback(async () => {
-//     setLoading(true);
-//     setError(null);
-//     setSuccess(null);
-//     const { profileType, id } = request;
-
-//     const endpoint =
-//       profileType === "Category"
-//         ? `${API_FAVOURITE_PROFILES}/${API_CATEGORY_PROFILES}/${id}`
-//         : `${API_FAVOURITE_PROFILES}/${API_CONDITION_PROFILES}/${id}`;
-
-//     try {
-//       console.log("Request: " + JSON.stringify(request));
-//       await api!.post(endpoint, request);
-//       setSuccess(true);
-//     } catch (err: any) {
-//       console.log("Error: " + JSON.stringify(err));
-//       setError(JSON.stringify(err) || "Wystąpił błąd");
-//       setSuccess(false);
-//     } finally {
-//       setLoading(false);
-//     }
-//   }, [api, request]);
-
-//   useEffect(() => {
-//     if (options.immediate) {
-//       addFavouriteProfile();
-//     }
-//   }, [addFavouriteProfile, options.immediate]);
-
-//   return { addFavouriteProfile, loading, error, success };
-// };

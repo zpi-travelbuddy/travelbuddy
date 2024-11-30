@@ -217,7 +217,6 @@ const ProfileBrowseView: React.FC<ProfileBrowseViewProps> = ({
   const deleteProfile = async (selectedProfile: Profile | null) => {
     hideModal();
     if (selectedProfile) {
-      console.log(`Delete profile ${selectedProfile.name}`);
       const endpoint =
         profileType === "Category"
           ? `${API_CATEGORY_PROFILES}/${selectedProfile?.id}`
@@ -257,7 +256,6 @@ const ProfileBrowseView: React.FC<ProfileBrowseViewProps> = ({
             ? STAR_OUTLINE_ICON
             : STAR_ICON,
         onPress: async () => {
-          console.log(`Ulubione`);
           await toggleFavourite();
           setIsActionMenuVisible(false);
         },
@@ -266,7 +264,6 @@ const ProfileBrowseView: React.FC<ProfileBrowseViewProps> = ({
         label: "Usuń profil",
         icon: DELETE_ICON,
         onPress: () => {
-          console.log(`Usuń`);
           setIsActionMenuVisible(false);
           showModal();
         },

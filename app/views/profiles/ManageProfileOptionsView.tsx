@@ -57,7 +57,6 @@ const ManageProfileCategoryView: React.FC<ManageProfileCategoryViewProps> = ({
 
   const {
     favouriteProfiles,
-    loading: favouritesLoading,
     error: favouritesError,
     refetch: refetchFavourites,
   } = useGetFavouriteProfiles();
@@ -143,7 +142,7 @@ const ManageProfileCategoryView: React.FC<ManageProfileCategoryViewProps> = ({
         onPress: showRemovalModal,
       },
     ];
-  }, [profile?.id, favouriteProfiles, profileType, theme.colors, toggleFavourite, showRemovalModal, deleteProfile]);
+  }, [profile?.id, favouriteProfiles, profileType, toggleFavourite, showRemovalModal, deleteProfile]);
   
   useLayoutEffect(() => {
     navigation.setOptions({
