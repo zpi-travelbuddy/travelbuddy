@@ -1,77 +1,15 @@
-import React, { useEffect, useState } from "react";
-import { FlatList, StyleSheet, Text, TouchableOpacity } from "react-native";
+import React from "react";
+import { FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Checkbox } from "react-native-paper";
 import { MD3ThemeExtended } from "@/constants/Themes";
 import { useTheme } from "react-native-paper";
 import {
   Category,
-  CategoryProfile,
+  CATEGORY_LIST,
   Condition,
-  ConditionProfile,
+  CONDITION_LIST,
   ProfileType,
 } from "@/types/Profile";
-
-const categories: Category[] = [
-  {
-    id: "6a5b1b6d-a6f7-41fb-8277-00756aba33bb",
-    name: "activity",
-    subCategories: [],
-  },
-  {
-    id: "7c938f9f-4edb-427c-9820-d35cf87d029d",
-    name: "commercial",
-    subCategories: [],
-  },
-  {
-    id: "b313ba91-7573-434e-9b17-3afb7f14d2ac",
-    name: "entertainment",
-    subCategories: [],
-  },
-  {
-    id: "e1198615-570f-4b90-b9fc-5dbf87925416",
-    name: "heritage",
-    subCategories: [],
-  },
-  {
-    id: "077b8a92-baf0-4a35-894e-ea3942cb5412",
-    name: "leisure",
-    subCategories: [],
-  },
-  {
-    id: "4b94397a-d6d8-4811-9c00-5b1392618373",
-    name: "natural",
-    subCategories: [],
-  },
-  {
-    id: "d0ee8558-9c05-4bf8-a0a3-ad304a3762d3",
-    name: "national_park",
-    subCategories: [],
-  },
-  {
-    id: "5021f3f6-7922-4bc2-85a9-a0df2b49d1a9",
-    name: "tourism",
-    subCategories: [],
-  },
-  {
-    id: "ee552c9a-2a04-4618-9480-9da2e0652f23",
-    name: "religion",
-    subCategories: [],
-  },
-  {
-    id: "3a1a34f2-c8b6-4950-96ad-0c513a972ee9",
-    name: "sport",
-    subCategories: [],
-  },
-  {
-    id: "912c5bf7-21e7-4b63-a599-58ed6e860967",
-    name: "catering",
-    subCategories: [],
-  },
-];
-
-const conditions: Condition[] = [
-  { id: "1", name: "activity", subConditions: [] },
-];
 
 const categoryLabels: Record<string, string> = {
   activity: "Aktywności",
@@ -85,6 +23,27 @@ const categoryLabels: Record<string, string> = {
   religion: "Religia",
   sport: "Sport",
   catering: "Catering",
+};
+
+const conditionLabels: Record<string, string> = {
+  internet_access: "Dostęp do internetu",
+  kosher: "Koszerne",
+  egg_free: "Bez jajek",
+  sugar_free: "Bez cukru",
+  vegetarian: "Wegetariańskie",
+  access: "Dostęp",
+  organic: "Ekologiczne",
+  vegan: "Wegańskie",
+  dogs: "Psy dozwolone",
+  soy_free: "Bez soi",
+  no_dogs: "Bez psów",
+  halal: "Halal",
+  gluten_free: "Bez glutenu",
+  no_fee: "Bez opłat",
+  fee: "Płatne",
+  access_limited: "Ograniczony dostęp",
+  named: "Nazwane",
+  wheelchair: "Dostępne dla wózków",
 };
 
 interface ProfileListProps {
@@ -104,7 +63,9 @@ const ProfileOptionsList: React.FC<ProfileListProps> = ({
   const renderItem = ({ item }: { item: Category | Condition }) => {
     const isSelected = selectedIds.includes(item.id);
     const label =
-      profileType === "Category" ? categoryLabels[item.name] : item.name;
+      profileType === "Category"
+        ? categoryLabels[item.name] || item.name
+        : conditionLabels[item.name] || item.name;
 
     return (
       <TouchableOpacity style={styles.item} onPress={() => onChange(item.id)}>
@@ -113,14 +74,16 @@ const ProfileOptionsList: React.FC<ProfileListProps> = ({
           onPress={() => onChange(item.id)}
           color={theme.colors.primary}
         />
-        <Text style={styles.itemText}>{label}</Text>
+        <View style={styles.textContainer}>
+          <Text style={styles.itemText}>{label}</Text>
+        </View>
       </TouchableOpacity>
     );
   };
 
   return (
     <FlatList
-      data={profileType === "Category" ? categories : conditions}
+      data={profileType === "Category" ? CATEGORY_LIST : CONDITION_LIST}
       renderItem={renderItem}
       keyExtractor={(item) => item.id}
       numColumns={2}
@@ -146,10 +109,14 @@ const createStyles = (theme: MD3ThemeExtended) =>
       marginVertical: 10,
       flex: 1,
     },
+    textContainer: {
+      flex: 1,
+      marginLeft: 10,
+    },
     itemText: {
       ...theme.fonts.bodyLarge,
-      marginLeft: 10,
       color: theme.colors.onSurface,
+      flexWrap: "wrap",
     },
   });
 
