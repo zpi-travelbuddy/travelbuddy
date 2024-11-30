@@ -95,6 +95,10 @@ const ProfileBrowseView: React.FC<ProfileBrowseViewProps> = ({
     }, [refetch, refetchFavourites, profileType]),
   );
 
+  const sortedProfiles = useMemo(() => {
+    return profiles?.slice().sort((a, b) => a.name.localeCompare(b.name)) || [];
+  }, [profiles]);
+
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
 
@@ -276,7 +280,7 @@ const ProfileBrowseView: React.FC<ProfileBrowseViewProps> = ({
       <View style={styles.container}>
         <FlatList
           ref={flatListRef}
-          data={profiles}
+          data={sortedProfiles}
           renderItem={renderProfileCard}
           keyExtractor={(item, index) => index.toString()}
           contentContainerStyle={styles.flatListContent}
