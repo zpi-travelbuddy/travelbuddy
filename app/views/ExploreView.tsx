@@ -18,7 +18,7 @@ import CustomModal from "@/components/CustomModal";
 import { RenderItem } from "@/components/RenderItem";
 import ActionTextButtons from "@/components/ActionTextButtons";
 import { truncateText } from "@/utils/TextUtils";
-import { useFocusEffect, useRouter } from "expo-router";
+import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import SingleDatePickerModal from "@/components/SingleDatePickerModal";
 import useTripDetails from "@/composables/useTripDetails";
 import { CalendarDate } from "react-native-paper-dates/lib/typescript/Date/Calendar";
@@ -47,6 +47,7 @@ interface ExploreViewProps {
 const ExploreView = ({ tripId }: ExploreViewProps) => {
   const { api } = useAuth();
   const { showSnackbar } = useSnackbar();
+  const { trip_id, day_id, date } = useLocalSearchParams();
 
   const router = useRouter();
 
@@ -146,10 +147,18 @@ const ExploreView = ({ tripId }: ExploreViewProps) => {
 
   const handleAddPress = (place: PlaceViewModel) => {
     console.log("Selected place", place);
-    setTripModalVisible(true);
-    setSelectedAttractionProviderId(place.providerId);
-
-    // logic for navigating to trip point add
+    if (trip_id && day_id && date) {
+      router.push({
+        pathname: `/(auth)/(tabs)/trips/details/${trip_id}/day/${day_id}/tripPoints/create`,
+        params: {
+          date: date,
+          attractionProviderId: place.providerId,
+        },
+      });
+    } else {
+      setTripModalVisible(true);
+      setSelectedAttractionProviderId(place.providerId);
+    }
   };
 
   const EmptyListComponent = useCallback(() => {

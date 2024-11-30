@@ -124,7 +124,14 @@ const TripDayView = () => {
       icon: SEARCH_TRIP_POINT_ICON,
       label: "Wyszukaj",
       onPress: () => {
-        router.push("/explore");
+        router.push({
+          pathname: "/explore",
+          params: {
+            trip_id: trip_id,
+            day_id: day_id,
+            date: new Date(tripDay?.date as string).toLocaleDateString(),
+          },
+        });
         setIsSelectorVisible(false);
       },
     },
