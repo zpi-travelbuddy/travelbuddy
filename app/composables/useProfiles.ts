@@ -231,7 +231,6 @@ export const useEditProfile = (
       await api!.put(endpoint, request);
       setSuccess(true);
     } catch (err: any) {
-      console.log("Error: " + JSON.stringify(err));
       setError(JSON.stringify(err) || "Wystąpił błąd");
       setSuccess(false);
     } finally {

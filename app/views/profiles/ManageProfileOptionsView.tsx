@@ -18,8 +18,9 @@ import Icon from "react-native-vector-icons/MaterialIcons";
 import { useEditProfile, useGetFavouriteProfiles, useGetProfile } from "@/composables/useProfiles";
 import LoadingView from "../LoadingView";
 import { useSnackbar } from "@/context/SnackbarContext";
-import { API_FAVOURITE_CATEGORY_PROFILE, API_FAVOURITE_CONDITION_PROFILE } from "@/constants/Endpoints";
+import { API_CATEGORY_PROFILES, API_CONDITION_PROFILES, API_FAVOURITE_CATEGORY_PROFILE, API_FAVOURITE_CONDITION_PROFILE } from "@/constants/Endpoints";
 import { useAuth } from "@/app/ctx";
+import ActionButtons from "@/components/ActionButtons";
 
 interface ManageProfileCategoryViewProps {
   profileType: ProfileType;
@@ -50,7 +51,7 @@ const ManageProfileCategoryView: React.FC<ManageProfileCategoryViewProps> = ({
     return profileType === "Category"
       ? {...profile, profileType, categoryIds: selectedIds}
       : {...profile, profileType, conditionIds: selectedIds};
-  }, [profile?.id, profileType, selectedIds]);
+  }, [profile, profileType, selectedIds]);
 
   const {editProfile, loading: editLoading, error: editError} = useEditProfile(editRequest, {immediate: false})
 
@@ -106,14 +107,25 @@ const ManageProfileCategoryView: React.FC<ManageProfileCategoryViewProps> = ({
     setError(fetchError || editError || favouritesError || "")
   }, [fetchError, editError, favouritesError])
 
-  useEffect(() => {
-    const unsubscribe = navigation.addListener("beforeRemove", async (e) => {
-      e.preventDefault();
-      await editProfile();
-      navigation.dispatch(e.data.action);
-    });
-    return unsubscribe;
-  }, [navigation, selectedIds, editRequest]);
+  const deleteProfile = useCallback(async () => {
+    const endpoint =
+        profileType === "Category"
+          ? `${API_CATEGORY_PROFILES}/${profile?.id}`
+          : `${API_CONDITION_PROFILES}/${profile?.id}`;
+    try {
+        await api!.delete(endpoint, {});
+        hideModal();
+        navigation.goBack();
+    } catch (err: any) {
+        showSnackbar("Wystąpił błąd podczas usuwania profilu!", "error");
+    }
+}, [profile, profileType, hideModal, navigation]);
+
+  const handleEditProfile = async () => {
+    hideModal();
+    await editProfile();
+    navigation.goBack();
+  }
 
   const menuActions = useMemo(() => {
     const isFavourite = profile?.id === favouriteProfiles[profileType];
@@ -131,7 +143,7 @@ const ManageProfileCategoryView: React.FC<ManageProfileCategoryViewProps> = ({
         onPress: showRemovalModal,
       },
     ];
-  }, [profile?.id, favouriteProfiles, profileType, theme.colors, toggleFavourite, showRemovalModal]);
+  }, [profile?.id, favouriteProfiles, profileType, theme.colors, toggleFavourite, showRemovalModal, deleteProfile]);
   
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -168,6 +180,14 @@ const ManageProfileCategoryView: React.FC<ManageProfileCategoryViewProps> = ({
         profileType={profileType}
         onChange={onChange}
       />
+      <ActionButtons
+        onAction1={navigation.goBack}
+        action1ButtonLabel="Anuluj"
+        action1Icon={undefined}
+        onAction2={handleEditProfile}
+        action2ButtonLabel="Zapisz"
+        action2Icon={undefined}
+      />
       <CustomModal visible={isModalVisible} onDismiss={hideModal}>
         <View>
           <Text style={styles.modalTitleText}>
@@ -175,12 +195,7 @@ const ManageProfileCategoryView: React.FC<ManageProfileCategoryViewProps> = ({
           </Text>
           <ActionTextButtons
             onAction1={hideModal}
-            onAction2={() => {
-              console.log("Usuwanie profilu");
-              hideModal();
-              router.back();
-              router.setParams({ refresh: "true" });
-            }}
+            onAction2={deleteProfile}
             action1ButtonLabel="Anuluj"
             action2ButtonLabel="Usuń"
             action1Icon={undefined}

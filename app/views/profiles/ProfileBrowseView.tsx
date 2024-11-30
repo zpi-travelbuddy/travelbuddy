@@ -214,9 +214,25 @@ const ProfileBrowseView: React.FC<ProfileBrowseViewProps> = ({
     [handleCreateProfile, router, path, profileType],
   );
 
-  const deleteProfile = (selectedProfile: Profile | null) => {
+  const deleteProfile = async (selectedProfile: Profile | null) => {
     hideModal();
-    if (selectedProfile) console.log(`Delete profile ${selectedProfile.name}`);
+    if (selectedProfile) {
+      console.log(`Delete profile ${selectedProfile.name}`);
+      const endpoint =
+        profileType === "Category"
+          ? `${API_CATEGORY_PROFILES}/${selectedProfile?.id}`
+          : `${API_CONDITION_PROFILES}/${selectedProfile?.id}`;
+      setLoading(true);
+      try {
+        await api!.delete(endpoint, {});
+        await refetch();
+        showSnackbar("Pomyślnie usunięto profil!", "success");
+      } catch (err: any) {
+        showSnackbar("Wystąpił błąd podczas usuwania profilu!", "error");
+      } finally {
+        setLoading(false);
+      }
+    }
   };
 
   const showModal = () => {
