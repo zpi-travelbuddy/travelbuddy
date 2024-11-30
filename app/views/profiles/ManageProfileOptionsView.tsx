@@ -6,12 +6,11 @@ import { MD3ThemeExtended } from "@/constants/Themes";
 import {
   Category,
   Condition,
-  CategoryProfile,
   ProfileType,
   EditProfileRequest,
 } from "@/types/Profile";
 import { useFocusEffect, useLocalSearchParams, useNavigation, useRouter } from "expo-router";
-import React, { useCallback, useEffect, useLayoutEffect, useState } from "react";
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useState } from "react";
 import { SafeAreaView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { useTheme, Text } from "react-native-paper";
 import ProfileOptionsList from "@/components/ProfileOptionsList";
@@ -19,6 +18,8 @@ import Icon from "react-native-vector-icons/MaterialIcons";
 import { useEditProfile, useGetFavouriteProfiles, useGetProfile } from "@/composables/useProfiles";
 import LoadingView from "../LoadingView";
 import { useSnackbar } from "@/context/SnackbarContext";
+import { API_FAVOURITE_CATEGORY_PROFILE, API_FAVOURITE_CONDITION_PROFILE } from "@/constants/Endpoints";
+import { useAuth } from "@/app/ctx";
 
 interface ManageProfileCategoryViewProps {
   profileType: ProfileType;
@@ -35,13 +36,21 @@ const ManageProfileCategoryView: React.FC<ManageProfileCategoryViewProps> = ({
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [editRequest, setEditRequest] = useState<EditProfileRequest>({} as EditProfileRequest);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
 
   const { profile_id } = useLocalSearchParams();
 
+  const { api } = useAuth();
+
   const { profile, loading: fetchLoading, error: fetchError } = useGetProfile(profileType, profile_id as string);
+
+  const editRequest: EditProfileRequest = useMemo(() => {
+    if (!profile) return {} as EditProfileRequest;
+    return profileType === "Category"
+      ? {...profile, profileType, categoryIds: selectedIds}
+      : {...profile, profileType, conditionIds: selectedIds};
+  }, [profile?.id, profileType, selectedIds]);
 
   const {editProfile, loading: editLoading, error: editError} = useEditProfile(editRequest, {immediate: false})
 
@@ -75,27 +84,27 @@ const ManageProfileCategoryView: React.FC<ManageProfileCategoryViewProps> = ({
     }, [getSelectedItems]),
   );
 
-  const toggleFavourite = () => {
-    console.log("Toggle favourite");
-  }
+  const toggleFavourite = useCallback(async () => {
+    const endpoint =
+      profileType === "Category"
+        ? `${API_FAVOURITE_CATEGORY_PROFILE}/${profile?.id}`
+        : `${API_FAVOURITE_CONDITION_PROFILE}/${profile?.id}`;
+    try {
+      if (profile?.id === favouriteProfiles[profileType]) await api!.delete(endpoint, {});
+      else await api!.post(endpoint, {});
+    } catch (err: any) {
+      console.log(err.response.data);
+    }
+    await refetchFavourites();
+  }, [profile, favouriteProfiles, profileType]);
 
   useEffect(() => {
-    setLoading(fetchLoading || editLoading || favouritesLoading || false)
-  }, [fetchLoading, editLoading, favouritesLoading])
+    setLoading(fetchLoading || editLoading || false)
+  }, [fetchLoading, editLoading])
   
   useEffect(() => {
     setError(fetchError || editError || favouritesError || "")
   }, [fetchError, editError, favouritesError])
-
-  useEffect(() => {
-    if (profile) {
-      const updatedRequest =
-        profileType === "Category"
-          ? {...profile, profileType, categoryIds: [...selectedIds]}
-          : {...profile, profileType, conditionIds: [...selectedIds]};
-      setEditRequest(updatedRequest);
-    }
-  }, [profile, profileType, selectedIds])
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("beforeRemove", async (e) => {
@@ -106,9 +115,9 @@ const ManageProfileCategoryView: React.FC<ManageProfileCategoryViewProps> = ({
     return unsubscribe;
   }, [navigation, selectedIds, editRequest]);
 
-  useLayoutEffect(() => {
+  const menuActions = useMemo(() => {
     const isFavourite = profile?.id === favouriteProfiles[profileType];
-    const menuActions = [
+    return [
       {
         title: isFavourite ? "Usuń z ulubionych" : "Ustaw jako ulubiony",
         icon: isFavourite ? STAR_OUTLINE_ICON : STAR_ICON,
@@ -122,10 +131,13 @@ const ManageProfileCategoryView: React.FC<ManageProfileCategoryViewProps> = ({
         onPress: showRemovalModal,
       },
     ];
+  }, [profile?.id, favouriteProfiles, profileType, theme.colors, toggleFavourite, showRemovalModal]);
+  
+  useLayoutEffect(() => {
     navigation.setOptions({
       actions: [{ hasMenu: true, menuActions }],
     });
-  }, [navigation, profile, favouriteProfiles, toggleFavourite, showRemovalModal, theme.colors]);
+  }, [navigation, menuActions]);
 
 
   const onChange = (id: string) => {

@@ -9,6 +9,7 @@ import {
   CategoryProfile,
   ConditionProfile,
   EditProfileRequest,
+  FavouriteProfileRequest,
   Profile,
   ProfileRequest,
   ProfileType,
@@ -183,7 +184,6 @@ export const useGetFavouriteProfiles = () => {
       const response = await api!.get<FavouriteProfilesResponse>(
         API_FAVOURITE_PROFILES,
       );
-      console.log(response);
       setFavouriteProfiles({
         Category: response.data.categoryProfileId,
         Condition: response.data.conditionProfileId,
@@ -247,3 +247,45 @@ export const useEditProfile = (
 
   return { editProfile, loading, error, success };
 };
+
+// export const useAddFavouriteProfile = (
+//   request: FavouriteProfileRequest,
+//   options: UseApiOptions = { immediate: true },
+// ) => {
+//   const { api } = useAuth();
+//   const [loading, setLoading] = useState(false);
+//   const [error, setError] = useState<string | null>(null);
+//   const [success, setSuccess] = useState<boolean | null>(null);
+
+//   const addFavouriteProfile = useCallback(async () => {
+//     setLoading(true);
+//     setError(null);
+//     setSuccess(null);
+//     const { profileType, id } = request;
+
+//     const endpoint =
+//       profileType === "Category"
+//         ? `${API_FAVOURITE_PROFILES}/${API_CATEGORY_PROFILES}/${id}`
+//         : `${API_FAVOURITE_PROFILES}/${API_CONDITION_PROFILES}/${id}`;
+
+//     try {
+//       console.log("Request: " + JSON.stringify(request));
+//       await api!.post(endpoint, request);
+//       setSuccess(true);
+//     } catch (err: any) {
+//       console.log("Error: " + JSON.stringify(err));
+//       setError(JSON.stringify(err) || "Wystąpił błąd");
+//       setSuccess(false);
+//     } finally {
+//       setLoading(false);
+//     }
+//   }, [api, request]);
+
+//   useEffect(() => {
+//     if (options.immediate) {
+//       addFavouriteProfile();
+//     }
+//   }, [addFavouriteProfile, options.immediate]);
+
+//   return { addFavouriteProfile, loading, error, success };
+// };

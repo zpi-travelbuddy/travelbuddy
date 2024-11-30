@@ -42,6 +42,8 @@ import { useSnackbar } from "@/context/SnackbarContext";
 import {
   API_CATEGORY_PROFILES,
   API_CONDITION_PROFILES,
+  API_FAVOURITE_CATEGORY_PROFILE,
+  API_FAVOURITE_CONDITION_PROFILE,
 } from "@/constants/Endpoints";
 import { useAuth } from "@/app/ctx";
 
@@ -144,6 +146,21 @@ const ProfileBrowseView: React.FC<ProfileBrowseViewProps> = ({
     setIsBottomSheetVisible(true);
   };
 
+  const toggleFavourite = useCallback(async () => {
+    const endpoint =
+      profileType === "Category"
+        ? `${API_FAVOURITE_CATEGORY_PROFILE}/${selectedProfile?.id}`
+        : `${API_FAVOURITE_CONDITION_PROFILE}/${selectedProfile?.id}`;
+    try {
+      if (selectedProfile?.id === favouriteProfiles[profileType])
+        await api!.delete(endpoint, {});
+      else await api!.post(endpoint, {});
+    } catch (err: any) {
+      console.log(err.response.data);
+    }
+    await refetchFavourites();
+  }, [selectedProfile, favouriteProfiles, profileType]);
+
   const handleCreateProfile = async (
     request: ProfileRequest,
     onSuccess?: (profile: ProfileDetails) => void,
@@ -167,7 +184,6 @@ const ProfileBrowseView: React.FC<ProfileBrowseViewProps> = ({
       showSnackbar("Profil został utworzony!");
 
       if (onSuccess) onSuccess(newProfile);
-
     } catch (err: any) {
       console.error(
         "Błąd podczas zapisywania profilu: ",
@@ -224,8 +240,9 @@ const ProfileBrowseView: React.FC<ProfileBrowseViewProps> = ({
           selectedProfile.id === favouriteProfiles[profileType]
             ? STAR_OUTLINE_ICON
             : STAR_ICON,
-        onPress: () => {
+        onPress: async () => {
           console.log(`Ulubione`);
+          await toggleFavourite();
           setIsActionMenuVisible(false);
         },
       },
@@ -239,7 +256,7 @@ const ProfileBrowseView: React.FC<ProfileBrowseViewProps> = ({
         },
       },
     ];
-  }, [selectedProfile]);
+  }, [selectedProfile, favouriteProfiles, toggleFavourite]);
 
   return (
     <GestureHandlerRootView>

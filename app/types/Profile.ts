@@ -41,3 +41,8 @@ export interface ProfileDetails {
   categories?: Category[];
   conditions?: Condition[];
 }
+
+export interface FavouriteProfileRequest {
+  id: string;
+  profileType: ProfileType;
+}
