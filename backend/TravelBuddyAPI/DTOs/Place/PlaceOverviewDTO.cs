@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using TravelBuddyAPI.DTOs.PlaceCategory;
 
 namespace TravelBuddyAPI.DTOs.Place;
 
@@ -18,4 +19,10 @@ public class PlaceOverviewDTO
     public string? State { get; set; }
 
     public string? City { get; set; }
+
+    public string? Street { get; set; }
+
+    public string? HouseNumber { get; set; }
+
+    public PlaceCategoryDTO? SuperCategory { get; set; }
 }
