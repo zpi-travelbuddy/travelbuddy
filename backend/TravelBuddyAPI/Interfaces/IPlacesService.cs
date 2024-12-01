@@ -4,7 +4,7 @@ using TravelBuddyAPI.Models;
 namespace TravelBuddyAPI.Interfaces;
 
 /// <summary>
-/// Interface for place-related services.
+/// Provides methods for managing places, including retrieving, adding, and deleting places.
 /// </summary>
 public interface IPlacesService
 {
@@ -30,6 +30,15 @@ public interface IPlacesService
     Task<List<PlaceOverviewDTO>> GetAutocompletePlacesAsync(string query, decimal? latitude, decimal? longitude);
 
     /// <summary>
+    /// Retrieves a list of place recommendations based on the provided location and radius.
+    /// </summary>
+    /// <param name="location">The location (latitude and longitude) to search around.</param>
+    /// <param name="radius">The radius within which to search for place recommendations.</param>
+    /// <param name="limit">The optional limit on the number of recommendations to retrieve.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains a list of <see cref="PlaceOverviewDTO"/>.</returns>
+    Task<List<PlaceOverviewDTO>> GetPlaceRecommendationsAsync((decimal latitude, decimal longitude) location, double radius, int? limit = null);
+
+    /// <summary>
     /// Retrieves the details of a place based on the identifier.
     /// </summary>
     /// <param name="id">The unique identifier of the place.</param>
@@ -44,9 +53,9 @@ public interface IPlacesService
     Task<PlaceDetailsDTO> GetPlaceDetailsAsync(string providerId);
 
     /// <summary>
-    /// Retrieves the ProviderPlace based on the provider indentifier.
+    /// Retrieves the ProviderPlace based on the provider identifier.
     /// </summary>
-    /// <param name="id">The unique identifier of the provider place.</param>
+    /// <param name="providerId">The unique identifier of the provider place.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains a <see cref="ProviderPlace"/>.</returns>
     Task<ProviderPlace?> GetProviderPlaceAsync(string providerId);
 
@@ -54,7 +63,7 @@ public interface IPlacesService
     /// Adds a new place based on the provided place request data.
     /// </summary>
     /// <param name="place">The data transfer object containing the place information.</param>
-    /// <returns>A task that represents the asynchronous operation. The task result indicates whether the place was successfully added.</returns>
+    /// <returns>A task that represents the asynchronous operation. The task result contains the added <see cref="PlaceDetailsDTO"/>.</returns>
     Task<PlaceDetailsDTO> AddPlaceAsync(PlaceRequestDTO place);
 
     /// <summary>

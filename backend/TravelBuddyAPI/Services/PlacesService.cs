@@ -248,4 +248,10 @@ public class PlacesService(TravelBuddyDbContext dbContext, IGeoapifyService geoa
     {
         return await _geoapifyService.GetPlaceDetailsAsync(providerId);
     }
+
+    public async Task<List<PlaceOverviewDTO>> GetPlaceRecommendationsAsync((decimal latitude, decimal longitude) location, double radius, int? limit = null)
+    {
+        await Task.CompletedTask;
+        throw new NotImplementedException();
+    }
 }
