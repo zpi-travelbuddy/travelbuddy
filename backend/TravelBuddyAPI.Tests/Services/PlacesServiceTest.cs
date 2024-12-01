@@ -166,12 +166,12 @@ public class PlacesServiceTest
             // HouseNumber = "123",
             Latitude = 50.0m,
             Longitude = 20.0m,
-            CategoryId = Guid.NewGuid()
+            SuperCategoryId = Guid.NewGuid()
         };
 
         var categories = new List<PlaceCategory>
     {
-        new PlaceCategory { Id = placeRequest.CategoryId.Value, Name = "Test Category" }
+        new PlaceCategory { Id = placeRequest.SuperCategoryId.Value, Name = "Test Category" }
     };
 
         _mockDbCache.Setup(x => x.GetCategoriesAsync()).ReturnsAsync(categories);
@@ -192,6 +192,6 @@ public class PlacesServiceTest
 
         // Check the added category
         Assert.NotNull(result.SuperCategory);
-        Assert.Equal(placeRequest.CategoryId, result.SuperCategory.Id);
+        Assert.Equal(placeRequest.SuperCategoryId, result.SuperCategory.Id);
     }
 }

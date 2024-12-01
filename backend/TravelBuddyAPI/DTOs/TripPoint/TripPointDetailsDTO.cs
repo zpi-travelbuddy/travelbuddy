@@ -26,9 +26,6 @@ public class TripPointDetailsDTO
     [Range(0, double.MaxValue, ErrorMessage = $"{nameof(PredictedCost)} must be a positive number.")]
     public decimal PredictedCost { get; set; }
 
-    [Range(0, double.MaxValue, ErrorMessage = $"{nameof(PredictedCostPerPerson)} must be a positive number.")]
-    public decimal? PredictedCostPerPerson { get; set; }
-
     [Required]
     [RegularExpression(@"^[A-Z]{3}$", ErrorMessage = $"{nameof(CurrencyCode)} must be a valid 3-letter ISO 4217 code.")]
     public string? CurrencyCode { get; set; }
@@ -46,11 +43,7 @@ public class TripPointDetailsDTO
     public TripPointStatus Status { get; set; }
 
     [Required]
-    public Guid PlaceId { get; set; }
     public PlaceOverviewDTO? Place { get; set; }
 
     public TripPointReviewOverviewDTO? Review { get; set; }
-
-    public PlaceCategoryDTO? Category { get; set; }
-
 }
