@@ -25,23 +25,36 @@ public class TripPointsService(TravelBuddyDbContext dbContext, INBPService nbpSe
             using var transaction = await _dbContext.Database.BeginTransactionAsync();
 
             Trip trip = await _dbContext.Trips
-                .Include(t => t.TripDays)
+                .Include(t => t.TripDays!)
+                    .ThenInclude(td => td.TripPoints)
+                .Include(t => t.TripDays!)
+                    .ThenInclude(td => td.TransferPoints)
                 .Where(t => t.UserId == userId && t.TripDays != null && t.TripDays.Any(td => td.Id == tripPoint.TripDayId))
                 .FirstOrDefaultAsync()
                 ?? throw new ArgumentException(ErrorMessage.TripDayNotFound);
-
             if (tripPoint.StartTime > tripPoint.EndTime) throw new ArgumentException(ErrorMessage.StartTimeAfterEndTime);
 
             TripDay? tripDay = trip.TripDays?.FirstOrDefault(td => td.Id == tripPoint.TripDayId);
             if (tripDay?.Date < DateOnly.FromDateTime(DateTime.Now)) throw new ArgumentException(ErrorMessage.TripDayInPast);
 
-            List<TripPoint> overlappingTripPoints = await _dbContext.TripPoints
-                .Where(tp => tp.TripDayId == tripPoint.TripDayId
-                    && ((tp.StartTime < tripPoint.EndTime && tp.EndTime > tripPoint.StartTime)
-                        || (tp.StartTime == tripPoint.StartTime && tp.EndTime == tripPoint.EndTime)))
-                .ToListAsync();
+            List<TripPoint> tripPoints = tripDay?.TripPoints?.ToList() ?? [];
+            List<TransferPoint> transferPoints = tripDay?.TransferPoints?.ToList() ?? [];
 
+            List<TripPoint> overlappingTripPoints = tripPoints
+                .Where(tp => (tp.StartTime < tripPoint.EndTime && tp.EndTime > tripPoint.StartTime)
+                            || (tp.StartTime == tripPoint.StartTime && tp.EndTime == tripPoint.EndTime))
+                .ToList() ?? [];
             if (overlappingTripPoints.Count != 0) throw new ArgumentException(ErrorMessage.TripPointOverlap);
+
+            TripPoint? previousTripPoint = tripPoints
+                .Where(tp => tp.EndTime <= tripPoint.StartTime)
+                .OrderByDescending(tp => tp.EndTime)
+                .FirstOrDefault();
+
+            TransferPoint? conflictingTransferPoint = transferPoints
+                .Where(tp => tp.FromTripPointId == previousTripPoint?.Id)
+                .FirstOrDefault();
+            if (conflictingTransferPoint != null) _dbContext.TransferPoints.Remove(conflictingTransferPoint);
 
             decimal exchangeRate = await _nbpService.GetRateAsync(trip?.CurrencyCode ?? string.Empty) ?? throw new InvalidOperationException(ErrorMessage.RetriveExchangeRate);
 
