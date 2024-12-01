@@ -1,24 +1,116 @@
 import { StyleSheet, Text, ScrollView, View } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { MD3ThemeExtended } from "@/constants/Themes";
 import { SegmentedButtons, TextInput, useTheme } from "react-native-paper";
 import StarRatingDisplayComponent from "@/components/StarRatingDisplayComponent";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import ActionButtons from "@/components/ActionButtons";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import CurrencyValueInput from "@/components/CurrencyValueInput";
+import useTripDetails from "@/composables/useTripDetails";
+import LoadingView from "./LoadingView";
+import { ReviewRequest } from "@/types/Review";
+import { useAuth } from "@/app/ctx";
+import { API_SUBMIT_REVIEW } from "@/constants/Endpoints";
 
 const SurveyView = () => {
   const theme = useTheme();
   const styles = createStyles(theme as MD3ThemeExtended);
   const router = useRouter();
 
+  const { currency, trip_id, place_id, trip_point_id } = useLocalSearchParams();
+
+  const {
+    tripDetails,
+    loading: tripLoading,
+    error: tripError,
+  } = useTripDetails(trip_id as string);
+
+  const { api } = useAuth();
+
+  const [error, setError] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const [hours, setHours] = useState<number | null>(null);
+  const [minutes, setMinutes] = useState<number | null>(null);
+  const [hoursText, setHoursText] = useState<string>("");
+  const [minutesText, setMinutesText] = useState<string>("");
+  const [costType, setCostType] = useState<string>("perPerson");
+  const [cost, setCost] = useState<number>(0);
+  const [rating, setRating] = useState<number>(3);
+
+  useEffect(() => setError(tripError || ""), [tripError]);
+  useEffect(() => setLoading(tripLoading || false), [tripLoading]);
+
+  const handleChange = (setter: React.Dispatch<React.SetStateAction<any>>) => {
+    return (value: any) => {
+      if (typeof value === "string") setter(value.trim());
+      else setter(value);
+    };
+  };
+
+  const handleTimeChange = (
+    coordinateText: string,
+    setCoordinate: React.Dispatch<React.SetStateAction<number | null>>,
+  ) => {
+    const numericValue = Number(coordinateText);
+    if (!isNaN(numericValue) && numericValue < 0) {
+      setCoordinate(numericValue);
+    } else {
+      setError("Wartość spędzonego czasu jest nieprawidłowa.");
+    }
+  };
+
+  const handleHoursChange = () => {
+    handleTimeChange(hoursText || "", setHours);
+  };
+
+  const handleMinutesChange = () => {
+    handleTimeChange(minutesText || "", setMinutes);
+  };
+
   const onCancel = () => {
     router.back();
   };
 
-  const onSave = () => {
-    router.back();
+  const onSave = async () => {
+    if ((minutes && minutes < 0) || (hours && hours < 0)) {
+      setError("Wartość spędzonego czasu jest nieprawidłowa.");
+      return;
+    }
+
+    let totalCost = cost;
+    if (costType === "perPerson") {
+      const numberOfTravelers = tripDetails
+        ? tripDetails?.numberOfTravelers
+        : 1;
+      totalCost = numberOfTravelers * cost;
+    }
+
+    let time = undefined;
+    if (hours) time = hours * 60 * 60;
+    if (minutes) time = time ? time + minutes * 60 : minutes * 60;
+
+    const reviewRequest: ReviewRequest = {
+      tripPointId: trip_point_id as string,
+      placeId: place_id as string,
+      actualCost: totalCost,
+      currencyCode: currency as string,
+      actualTimeSpent: time,
+      rating: rating,
+    };
+    setLoading(true);
+    try {
+      await api!.post(API_SUBMIT_REVIEW, reviewRequest);
+      router.back();
+    } catch (err: any) {
+      console.error(err.response.data);
+    } finally {
+      setLoading(false);
+    }
   };
+
+  if (tripLoading) return <LoadingView transparent={true} />;
 
   return (
     <GestureHandlerRootView style={styles.wrapper}>
@@ -31,35 +123,39 @@ const SurveyView = () => {
           <View style={styles.inputContainer}>
             <View style={styles.inputWithLabel}>
               <TextInput
+                value={hoursText}
                 mode="outlined"
                 style={styles.timeInput}
+                onChangeText={handleChange(setHoursText)}
+                onEndEditing={handleHoursChange}
                 keyboardType="numeric"
               />
               <Text style={styles.label}>h</Text>
             </View>
             <View style={styles.inputWithLabel}>
               <TextInput
+                value={minutesText}
                 mode="outlined"
                 style={styles.timeInput}
+                onChangeText={handleChange(setMinutesText)}
+                onEndEditing={handleMinutesChange}
                 keyboardType="numeric"
               />
               <Text style={styles.label}>min</Text>
             </View>
           </View>
 
-          <View style={styles.inputWithCurrency}>
-            <TextInput
-              label="Koszt"
-              mode="outlined"
-              style={styles.costInput}
-              keyboardType="numeric"
-            />
-            <Text style={styles.currencyLabel}>PLN</Text>
-          </View>
+          <CurrencyValueInput
+            label={"Koszt"}
+            budget={cost}
+            currency={currency ? (currency as string) : ""}
+            disable={true}
+            handleBudgetChange={handleChange(setCost)}
+          />
 
           <SegmentedButtons
-            value={""}
-            onValueChange={(value: string) => console.log(value.toString())}
+            value={costType}
+            onValueChange={handleChange(setCostType)}
             style={styles.segmentedButtons}
             buttons={[
               {
@@ -74,7 +170,9 @@ const SurveyView = () => {
           />
           <StarRatingDisplayComponent
             style={styles.starRatingPadding}
-            rating={4.5}
+            rating={rating}
+            editable={true}
+            onRatingChange={(rating) => setRating(rating)}
           />
         </View>
       </ScrollView>

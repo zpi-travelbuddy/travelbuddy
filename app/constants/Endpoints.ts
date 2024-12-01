@@ -16,3 +16,6 @@ export const API_PLACES_AUTOCOMPLETE = "/places/autocomplete";
 // Profiles
 export const API_CATEGORY_PROFILES = "/categoryProfiles";
 export const API_CONDITION_PROFILES = "/conditionProfiles";
+
+// Review
+export const API_SUBMIT_REVIEW = "/tripPoints/submitReview";
