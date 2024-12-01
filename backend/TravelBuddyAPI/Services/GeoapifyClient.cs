@@ -65,7 +65,7 @@ public class GeoapifyClient : IGeoapifyService
         }
     }
 
-    public async Task<string?> GetIsolineAsync((double latitude, double longitude) start, int range, TransferMode mode, TrafficType traffic = TrafficType.approximated, Units units = Units.metric, IsolineType type = IsolineType.distance, TransferType routeType = TransferType.balanced)
+    public async Task<string?> GetIsolineAsync((decimal latitude, decimal longitude) start, int range, TransferMode mode, TrafficType traffic = TrafficType.approximated, Units units = Units.metric, IsolineType type = IsolineType.distance, TransferType routeType = TransferType.balanced)
     {
         var request = new RestRequest("v1/isoline", Method.Get);
         request.AddParameter("lat", start.latitude);
@@ -97,12 +97,12 @@ public class GeoapifyClient : IGeoapifyService
         }
     }
 
-    public async Task<List<ProviderPlace>?> GetNearbyPlacesAsync(double latitude, double longitude, double radius, IEnumerable<PlaceCategory> categories, IEnumerable<PlaceCondition>? conditions = null, int? limit = null, int? offset = null)
+    public async Task<List<ProviderPlace>?> GetNearbyPlacesAsync(decimal latitude, decimal longitude, double radius, IEnumerable<PlaceCategory> categories, IEnumerable<PlaceCondition>? conditions = null, int? limit = null, int? offset = null)
     {
         return await GetNearbyPlacesAsync((latitude, longitude), radius, categories, conditions, limit, offset);
     }
 
-    public async Task<List<ProviderPlace>?> GetNearbyPlacesAsync((double latitude, double longitude) location, double radius, IEnumerable<PlaceCategory> categories, IEnumerable<PlaceCondition>? conditions = null, int? limit = null, int? offset = null)
+    public async Task<List<ProviderPlace>?> GetNearbyPlacesAsync((decimal latitude, decimal longitude) location, double radius, IEnumerable<PlaceCategory> categories, IEnumerable<PlaceCondition>? conditions = null, int? limit = null, int? offset = null)
     {
         var request = new RestRequest("v2/places", Method.Get);
         request.AddParameter("filter", $"circle:{location.longitude},{location.latitude},{radius}");
@@ -132,7 +132,7 @@ public class GeoapifyClient : IGeoapifyService
         }
     }
 
-    public async Task<List<ProviderPlace>?> GetNearbyPlacesAsync((double latitude, double longitude) start, (double latitude, double longitude) end, IEnumerable<PlaceCategory> categories, IEnumerable<PlaceCondition>? conditions = null, int? limit = null, int? offset = null)
+    public async Task<List<ProviderPlace>?> GetNearbyPlacesAsync((decimal latitude, decimal longitude) start, (decimal latitude, decimal longitude) end, IEnumerable<PlaceCategory> categories, IEnumerable<PlaceCondition>? conditions = null, int? limit = null, int? offset = null)
     {
         var request = new RestRequest("v2/places", Method.Get);
         request.AddParameter("filter", $"rect:{start.longitude},{start.latitude},{end.longitude},{end.latitude}");
