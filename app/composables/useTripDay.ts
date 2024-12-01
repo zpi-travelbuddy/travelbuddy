@@ -21,7 +21,7 @@ const useTripDayDetails = (tripDayId: string | null) => {
       const response = await api!.get<TripDayDetails>(
         `/trips/tripDay/${tripDayId}`,
       );
-      console.log(JSON.stringify(response));
+
       setTransferPoints(
         response.data.transferPoints ? response.data.transferPoints : [],
       );
@@ -53,6 +53,11 @@ const useTripDayDetails = (tripDayId: string | null) => {
     setLoading(false);
   }, [fetchTripDayDetails]);
 
+  const refetchNoLoading = useCallback(async () => {
+    setError(null);
+    await fetchTripDayDetails();
+  }, [fetchTripDayDetails]);
+
   useEffect(() => {
     if (tripDayId) {
       refetch();
@@ -66,6 +71,7 @@ const useTripDayDetails = (tripDayId: string | null) => {
     loading,
     error,
     refetch,
+    refetchNoLoading,
   };
 };
 

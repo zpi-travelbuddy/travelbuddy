@@ -6,6 +6,8 @@ export interface TripPointCompact {
   tripDayId: string;
   startTime: string;
   endTime: string;
+  latitude?: number;
+  longitude?: number;
 }
 
 export interface CreateTripPointRequest {
@@ -79,25 +81,25 @@ export interface Option {
   icon: string;
   label: string;
   onPress: () => void;
+  disabled?: boolean;
+  isDelete?: boolean;
 }
 
-export type TransferType =
-  | "walk"
-  | "bus"
-  | "car"
-  | "train"
-  | "manual"
-  | "empty";
+export enum TransferType {
+  Car = 0,
+  Motorbike = 1,
+  Bicycle = 2,
+  Walk = 3,
+}
 
-export const TransferTypeLabels: Record<TransferType, string> = {
-  walk: "Chód",
-  bus: "Autobus",
-  car: "Samochód",
-  train: "Pociąg",
-  manual: "Ręcznie",
-  empty: "Pusty",
+export const TransferTypeLabels = {
+  [TransferType.Car]: "Samochód",
+  [TransferType.Motorbike]: "Motocykl",
+  [TransferType.Bicycle]: "Rower",
+  [TransferType.Walk]: "Chód",
+  null: "Ręcznie",
 };
 
-export const reversedTransferTypeLabels = Object.fromEntries(
-  Object.entries(TransferTypeLabels).map(([key, value]) => [value, key]),
-) as Record<string, TransferType>;
+// export const reversedTransferTypeLabels = Object.fromEntries(
+//   Object.entries(TransferTypeLabels).map(([key, value]) => [value, key]),
+// ) as Record<string, TransferType>;

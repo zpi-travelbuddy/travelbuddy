@@ -9,8 +9,7 @@ public class TripPointReviewOverviewDTO
     [Required]
     public Guid Id { get; set; }
 
-    [Required]
-    public Guid TripPointId { get; set; }
+    public Guid? TripPointId { get; set; }
 
     [Required]
     public Guid? PlaceId { get; set; }

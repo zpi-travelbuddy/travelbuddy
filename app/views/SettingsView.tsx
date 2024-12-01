@@ -17,21 +17,33 @@ import { useAuth } from "@/app/ctx";
 import { router } from "expo-router";
 import CustomModal from "@/components/CustomModal";
 import ActionTextButtons from "@/components/ActionTextButtons";
+import useAppSettings from "@/hooks/useAppSettings";
+import { FontSize, Theme } from "@/context/AppSettingsContext";
 
-type ModalOption = "FONT" | "THEME";
+type ModalOption = "FONT" | "CONTRAST" | "THEME";
 
 const windowWidth = Dimensions.get("window").width;
 
 const SettingsView = () => {
+  const {
+    theme: selectedTheme,
+    setTheme,
+    contrast: selectedContrast,
+    setContrast,
+    fontSize: selectedFontSize,
+    setFontSize,
+  } = useAppSettings();
+
   const { signOut } = useAuth();
 
   const theme = useTheme();
   const styles = createStyles(theme);
 
-  const [isSwitchOn, setIsSwitchOn] = useState(false);
+  const isSwitchOn = selectedContrast === "high";
 
-  const [selectedFont, setSelectedFont] = useState("small");
-  const [selectedTheme, setSelectedTheme] = useState("dark");
+  const toggleSwitch = () => {
+    setContrast(isSwitchOn ? "normal" : "high");
+  };
 
   const [isSheetVisible, setIsSheetVisible] = useState(false);
   const [isLogoutModalVisible, setIsLogoutModalVisible] = useState(false);
@@ -49,6 +61,12 @@ const SettingsView = () => {
     medium: "średnia",
     large: "duża",
   };
+
+  const contrastItems: Record<string, string> = {
+    normal: "normalny",
+    high: "wysoki",
+  };
+
   const themeItems: Record<string, string> = { light: "jasny", dark: "ciemny" };
 
   const openBottomSheet = (
@@ -64,15 +82,13 @@ const SettingsView = () => {
     setIsSheetVisible(true);
   };
 
-  const toggleSwitch = () => setIsSwitchOn((prev) => !prev);
-
   const handleSelect = (option: string) => {
     switch (selectedOptionToModal) {
       case "FONT":
-        setSelectedFont(option);
+        setFontSize(option as FontSize);
         break;
       case "THEME":
-        setSelectedTheme(option);
+        setTheme(option as Theme);
         break;
       default:
         break;
@@ -99,20 +115,22 @@ const SettingsView = () => {
     <GestureHandlerRootView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollView}>
         <View style={styles.content}>
-          <SettingListItem
+          {/* <SettingListItem
             title="Czcionka"
             rightComponent={() => (
-              <Text style={styles.rightText}>{fontItems[selectedFont]}</Text>
+              <Text style={styles.rightText}>
+                {fontItems[selectedFontSize]}
+              </Text>
             )}
             onPress={() =>
               openBottomSheet(
                 "Wybierz czcionkę",
                 fontItems,
                 "FONT",
-                selectedFont,
+                selectedFontSize,
               )
             }
-          />
+          /> */}
           <SettingListItem
             title="Motyw"
             rightComponent={() => (
@@ -137,12 +155,11 @@ const SettingsView = () => {
               />
             )}
             onPress={() => {
-              console.log("Wysoki kontrast kliknięty");
-              setIsSwitchOn(!isSwitchOn);
+              toggleSwitch();
             }}
           />
 
-          <Title style={styles.title}>Moje Statystyki</Title>
+          {/* <Title style={styles.title}>Moje Statystyki</Title>
           <SettingListItem
             title="Oceny atrakcji"
             rightComponent={() => <List.Icon icon="chevron-right" />}
@@ -163,7 +180,7 @@ const SettingsView = () => {
             onPress={() => {
               console.log("Statystyki wycieczek kliknięte");
             }}
-          />
+          /> */}
 
           <Title style={styles.title}>Preferencje i statystyki</Title>
           <SettingListItem
@@ -171,6 +188,7 @@ const SettingsView = () => {
             rightComponent={() => <List.Icon icon="chevron-right" />}
             onPress={() => {
               console.log("Profile preferencji kliknięte");
+              router.push(`/(auth)/(tabs)/settings/categoryProfiles`);
             }}
           />
           <SettingListItem
@@ -178,6 +196,7 @@ const SettingsView = () => {
             rightComponent={() => <List.Icon icon="chevron-right" />}
             onPress={() => {
               console.log("Profile udogodnień kliknięte");
+              router.push(`/(auth)/(tabs)/settings/conditionProfiles`);
             }}
           />
         </View>

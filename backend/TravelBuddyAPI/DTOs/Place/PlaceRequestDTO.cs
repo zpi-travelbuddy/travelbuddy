@@ -8,7 +8,7 @@ public class PlaceRequestDTO
 {
     public string? ProviderId { get; set; }
 
-    public Guid? CategoryId { get; set; }
+    public Guid? SuperCategoryId { get; set; }
     
     [Required]
     public string? Name { get; set; }

@@ -76,6 +76,11 @@ export function formatMinutesInWords(minutes: number): string {
   return `${minutes} minut`;
 }
 
+export function formatTimeFromString(time: string): string {
+  if (time.length <= 5) return time;
+  return time.slice(0, 5);
+}
+
 export function formatTimeRange(startTime: string, endTime: string): string {
   return `${startTime} - ${endTime}`;
 }

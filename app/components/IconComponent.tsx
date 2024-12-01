@@ -7,6 +7,7 @@ interface IconComponentProps {
   iconSize: number;
   color: string;
   backgroundColor: string;
+  disabled?: boolean;
 }
 
 const IconComponent: React.FC<IconComponentProps> = ({
@@ -14,11 +15,18 @@ const IconComponent: React.FC<IconComponentProps> = ({
   iconSize: size,
   color,
   backgroundColor,
+  disabled = false,
 }) => {
   const styles = createStyles(2 * size);
 
   return (
-    <View style={[styles.circle, { backgroundColor }]}>
+    <View
+      style={[
+        { opacity: disabled ? 0.5 : 1 },
+        styles.circle,
+        { backgroundColor },
+      ]}
+    >
       <Icon source={source} size={size} color={color} />
     </View>
   );

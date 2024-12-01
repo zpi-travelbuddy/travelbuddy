@@ -9,7 +9,11 @@ export const WHITE = "#FFFFFF";
 export const BACKDROP = "rgba(0, 0, 0, 0.32)";
 
 export interface MD3ColorsExtended extends MD3Colors {
+  surfaceContainerLowest: string;
+  surfaceContainerLow: string;
+  surfaceContainer: string;
   surfaceContainerHigh: string;
+  surfaceContainerHighest: string;
 }
 
 export const Colors = {

@@ -6,9 +6,21 @@ export interface Profile {
 }
 
 export interface CategoryProfile extends Profile {
-  categories?: string[]; // to be updated;
+  categories?: Category[];
+}
+
+export interface Category {
+  id: string;
+  name: string;
+  subCategories: Category[];
 }
 
 export interface ConditionProfile extends Profile {
-  conditions?: string[]; // to be updated;
+  conditions?: Condition[];
+}
+
+export interface Condition {
+  id: string;
+  name: string;
+  subConditions: Condition[];
 }

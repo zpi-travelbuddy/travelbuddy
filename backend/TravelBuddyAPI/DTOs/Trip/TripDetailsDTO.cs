@@ -32,6 +32,10 @@ public class TripDetailsDTO
     [Range(0, double.MaxValue, ErrorMessage = $"{nameof(Budget)} must be a positive number.")]
     public decimal Budget { get; set; }
 
+    public decimal? PredictedCost { get; set; }
+
+    public decimal? ActualCost { get; set; }
+
     [Required]
     [RegularExpression(@"^[A-Z]{3}$", ErrorMessage = $"{nameof(CurrencyCode)} must be a valid 3-letter ISO 4217 code.")]
     public string? CurrencyCode { get; set; }

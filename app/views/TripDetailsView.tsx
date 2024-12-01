@@ -31,6 +31,7 @@ import { MD3ThemeExtended } from "@/constants/Themes";
 import CustomModal from "@/components/CustomModal";
 import ActionTextButtons from "@/components/ActionTextButtons";
 import { useAuth } from "@/app/ctx";
+import { formatDateToISO } from "@/utils/TimeUtils";
 
 const { height, width } = Dimensions.get("window");
 
@@ -178,7 +179,7 @@ const TripDetailsView = () => {
   const handleConfirm = useCallback(
     ({ date }: { date: CalendarDate }) => {
       const fixedDate = date as Date;
-      const formattedDate = fixedDate.toISOString().split("T")[0];
+      const formattedDate = formatDateToISO(fixedDate);
       const tripDayId = dateToIdMap.get(formattedDate);
       if (tripDayId) {
         console.log("Redirecting to day with id " + tripDayId);

@@ -31,7 +31,6 @@ export const AuthProvider = ({ children }: any) => {
     const { email, password } = credentials;
     try {
       const response = await Auth.signUp({ username: email, password });
-      console.log(response);
     } catch (error) {
       console.error("Sign up error:", error);
       throw error;
@@ -42,7 +41,6 @@ export const AuthProvider = ({ children }: any) => {
     const { email } = credentials;
     try {
       const response = await Auth.resendSignUp(email);
-      console.log(response);
     } catch (error) {
       console.error("Resend sign up error:", error);
       throw error;
@@ -52,7 +50,6 @@ export const AuthProvider = ({ children }: any) => {
   const confirmSignUp = async (email: string, code: string) => {
     try {
       const response = await Auth.confirmSignUp(email, code);
-      console.log(response);
     } catch (error) {
       console.error("Confirm sign up error:", error);
       throw error;

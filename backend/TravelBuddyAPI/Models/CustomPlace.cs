@@ -1,5 +1,6 @@
 namespace TravelBuddyAPI.Models;
 public class CustomPlace : Place
 {
-    public PlaceCategory? PlaceCategory { get; set; }
+    public Guid? SuperCategoryId { get; set; }
+    public PlaceCategory? SuperCategory { get; set; }
 }
