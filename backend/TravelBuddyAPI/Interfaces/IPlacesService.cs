@@ -36,7 +36,7 @@ public interface IPlacesService
     /// <param name="radius">The radius within which to search for place recommendations.</param>
     /// <param name="limit">The optional limit on the number of recommendations to retrieve.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains a list of <see cref="PlaceOverviewDTO"/>.</returns>
-    Task<List<PlaceOverviewDTO>> GetPlaceRecommendationsAsync((decimal latitude, decimal longitude) location, double radius, int? limit = null);
+    Task<List<PlaceOverviewDTO>> GetPlaceRecommendationsAsync((decimal latitude, decimal longitude) location, double radius, IEnumerable<PlaceCategory> categories, IEnumerable<PlaceCondition>? conditions = null, int? limit = null);
 
     /// <summary>
     /// Retrieves the details of a place based on the identifier.

@@ -249,9 +249,9 @@ public class PlacesService(TravelBuddyDbContext dbContext, IGeoapifyService geoa
         return await _geoapifyService.GetPlaceDetailsAsync(providerId);
     }
 
-    public async Task<List<PlaceOverviewDTO>> GetPlaceRecommendationsAsync((decimal latitude, decimal longitude) location, double radius, int? limit = null)
+    public async Task<List<PlaceOverviewDTO>> GetPlaceRecommendationsAsync((decimal latitude, decimal longitude) location, double radius, IEnumerable<PlaceCategory> categories, IEnumerable<PlaceCondition>? conditions = null, int? limit = null)
     {
-        await Task.CompletedTask;
-        throw new NotImplementedException();
+        List<ProviderPlace> places = await _geoapifyService.GetNearbyPlacesAsync(location, radius, categories, conditions, limit) ?? [];
+        return await PlacesToOverviewDTOsAsync(places);
     }
 }
