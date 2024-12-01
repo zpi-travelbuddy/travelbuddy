@@ -154,28 +154,33 @@ public class PlacesService(TravelBuddyDbContext dbContext, IGeoapifyService geoa
             Longitude = place.Longitude,
         };
 
-        if (place is ProviderPlace) // TODO Add AverageCostPerPerson, AverageTimeSpent, AverageRating
+        if (place is ProviderPlace)
         {
             ProviderPlace providerPlace = await _dbContext.Places
                 .OfType<ProviderPlace>()
                 .Include(p => p.Categories)
                 .Include(p => p.Conditions)
+                .Include(p => p.Reviews)
                 .Where(p => p.Id == place.Id)
                 .FirstAsync();
 
             placeDetails.ProviderId = providerPlace.ProviderId;
-            placeDetails.Categories = providerPlace?.Categories?
+            placeDetails.Categories = providerPlace.Categories?
                 .Select(c => new PlaceCategoryDTO
                 {
                     Id = c.Id,
                     Name = c.Name,
                 }).ToList();
-            placeDetails.Conditions = providerPlace?.Conditions?
+            placeDetails.Conditions = providerPlace.Conditions?
                 .Select(c => new PlaceConditionDTO
                 {
                     Id = c.Id,
                     Name = c.Name,
                 }).ToList();
+
+            placeDetails.AverageCostPerPerson = providerPlace.AverageCostPerPerson.HasValue ? Math.Round(providerPlace.AverageCostPerPerson.Value, 2) : null; // TODO add currency conversion in future
+            placeDetails.AverageTimeSpent = providerPlace.AverageTimeSpent;
+            placeDetails.AverageRating = providerPlace.AverageRating;
         }
         else if (place is CustomPlace customPlace && customPlace.PlaceCategory is not null)
         {

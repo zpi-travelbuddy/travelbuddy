@@ -43,7 +43,7 @@ public class TripsServiceTest
 
         _mockNBPService.Setup(x => x.GetRateAsync(It.IsAny<string>(), It.IsAny<DateOnly?>())).ReturnsAsync(4.5m);
         _mockPlacesService.Setup(x => x.AddPlaceAsync(It.IsAny<PlaceRequestDTO>())).ReturnsAsync(new PlaceDetailsDTO() { Id = Guid.NewGuid(), ProviderId = destinationProviderId });
-        _mockPlacesService.Setup(x => x.GetProviderPlaceAsync(It.IsAny<string>())).ReturnsAsync(new ProviderPlace(){ ProviderId = destinationProviderId });
+        _mockPlacesService.Setup(x => x.GetProviderPlaceAsync(It.IsAny<string>())).ReturnsAsync(new ProviderPlace() { ProviderId = destinationProviderId });
 
         var tripRequest = new TripRequestDTO
         {
@@ -219,7 +219,7 @@ public class TripsServiceTest
 
         _mockNBPService.Setup(x => x.GetRateAsync(It.IsAny<string>(), It.IsAny<DateOnly?>())).ReturnsAsync(4.5m);
         _mockPlacesService.Setup(x => x.AddPlaceAsync(It.IsAny<PlaceRequestDTO>())).ReturnsAsync(new PlaceDetailsDTO() { Id = Guid.NewGuid(), ProviderId = tripRequest.DestinationProviderId });
-        _mockPlacesService.Setup(x => x.GetProviderPlaceAsync(It.IsAny<string>())).ReturnsAsync(new ProviderPlace(){ ProviderId = tripRequest.DestinationProviderId });
+        _mockPlacesService.Setup(x => x.GetProviderPlaceAsync(It.IsAny<string>())).ReturnsAsync(new ProviderPlace() { ProviderId = tripRequest.DestinationProviderId });
 
         // Act
         var result = await _tripsService.EditTripAsync(userId, tripId, tripRequest);
@@ -285,7 +285,7 @@ public class TripsServiceTest
 
         _mockNBPService.Setup(x => x.GetRateAsync(It.IsAny<string>(), It.IsAny<DateOnly?>())).ReturnsAsync(4.5m);
         _mockPlacesService.Setup(x => x.AddPlaceAsync(It.IsAny<PlaceRequestDTO>())).ReturnsAsync(new PlaceDetailsDTO() { Id = Guid.NewGuid(), ProviderId = tripRequest.DestinationProviderId });
-        _mockPlacesService.Setup(x => x.GetProviderPlaceAsync(It.IsAny<string>())).ReturnsAsync(new ProviderPlace(){ ProviderId = tripRequest.DestinationProviderId });
+        _mockPlacesService.Setup(x => x.GetProviderPlaceAsync(It.IsAny<string>())).ReturnsAsync(new ProviderPlace() { ProviderId = tripRequest.DestinationProviderId });
 
         // Act
         var result = await _tripsService.EditTripAsync(userId, tripId, tripRequest);
@@ -458,5 +458,110 @@ public class TripsServiceTest
         // Act & Assert
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _tripsService.EditTripAsync(userId, tripId, tripRequest));
         Assert.Equal($"{ITripsService.ErrorMessage.EditTrip} {ITripsService.ErrorMessage.AddTripDaysInPast}", exception.Message);
+    }
+
+    [Fact]
+    public async Task GetTripDetailsAsync_ValidTripId_ShouldReturnTripDetails()
+    {
+        // Arrange
+        var userId = "user1";
+        var tripId = Guid.NewGuid();
+
+        var trip = new Trip
+        {
+            Id = tripId,
+            UserId = userId,
+            CurrencyCode = "USD",
+            Name = "Test Trip",
+            StartDate = DateOnly.FromDateTime(DateTime.Now),
+            EndDate = DateOnly.FromDateTime(DateTime.Now + TimeSpan.FromDays(1)),
+            NumberOfTravelers = 2,
+            ExchangeRate = 4.5m,
+            Budget = 1000m,
+            TripDays = new List<TripDay>
+            {
+                new TripDay { Id = Guid.NewGuid(), Date = DateOnly.FromDateTime(DateTime.Now) },
+                new TripDay { Id = Guid.NewGuid(), Date = DateOnly.FromDateTime(DateTime.Now + TimeSpan.FromDays(1)) }
+            },
+        };
+
+        await _dbContext.Trips.AddAsync(trip);
+        await _dbContext.SaveChangesAsync();
+
+        foreach (var tripDay in trip.TripDays)
+        {
+            var tripPoint1 = new TripPoint
+            {
+                Id = Guid.NewGuid(),
+                TripDayId = tripDay.Id,
+                Name = "Point 1",
+                PredictedCost = 100.0m * trip.ExchangeRate,
+                ExchangeRate = trip.ExchangeRate,
+            };
+
+            var tripPoint2 = new TripPoint
+            {
+                Id = Guid.NewGuid(),
+                TripDayId = tripDay.Id,
+                Name = "Point 2",
+                PredictedCost = 25.0m * trip.ExchangeRate,
+                ExchangeRate = trip.ExchangeRate,
+            };
+
+            await _dbContext.TripPoints.AddRangeAsync(tripPoint1, tripPoint2);
+        }
+
+        await _dbContext.SaveChangesAsync();
+
+        foreach (var tripDay in trip.TripDays)
+        {
+            var tripPoints = await _dbContext.TripPoints.Where(tp => tp.TripDayId == tripDay.Id).ToListAsync();
+            foreach (var tripPoint in tripPoints)
+            {
+                var review = new TripPointReview
+                {
+                    Id = Guid.NewGuid(),
+                    UserId = userId,
+                    TripPointId = tripPoint.Id,
+                    Rating = 5,
+                    ActualCostPerPerson = 50.0m * trip.ExchangeRate,
+                    ExchangeRate = trip.ExchangeRate,
+                };
+
+                await _dbContext.TripPointReviews.AddAsync(review);
+            }
+        }
+        await _dbContext.SaveChangesAsync();
+
+        // Act
+        var result = await _tripsService.GetTripDetailsAsync(userId, tripId);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(trip.Name, result.Name);
+        Assert.Equal(trip.NumberOfTravelers, result.NumberOfTravelers);
+        Assert.Equal(trip.StartDate, result.StartDate);
+        Assert.Equal(trip.EndDate, result.EndDate);
+        Assert.Equal(trip.DestinationId, result.DestinationId);
+        Assert.Equal(Math.Round(trip.Budget / trip.ExchangeRate, 2), result.Budget);
+        Assert.Equal(trip.CurrencyCode, result.CurrencyCode);
+        Assert.Equal(trip.CategoryProfileId, result.CategoryProfileId);
+        Assert.Equal(trip.ConditionProfileId, result.ConditionProfileId);
+        Assert.Equal(250, result.PredictedCost);
+        Assert.Equal(2 * 2 * 50 * trip.NumberOfTravelers, result.ActualCost);
+        Assert.NotNull(result.TripDays);
+        Assert.Equal(trip.TripDays.Count, result.TripDays.Count);
+    }
+
+    [Fact]
+    public async Task GetTripDetailsAsync_InvalidTripId_ShouldThrowArgumentException()
+    {
+        // Arrange
+        var userId = "user1";
+        var tripId = Guid.NewGuid();
+
+        // Act & Assert
+        var exception = await Assert.ThrowsAsync<ArgumentException>(() => _tripsService.GetTripDetailsAsync(userId, tripId));
+        Assert.Equal($"{ITripsService.ErrorMessage.TripNotFound}", exception.Message);
     }
 }

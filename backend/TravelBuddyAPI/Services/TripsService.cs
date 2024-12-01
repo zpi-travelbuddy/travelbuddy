@@ -325,6 +325,9 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
         var trip = await _dbContext.Trips
             .Where(p => p.Id == tripId && p.UserId == userId)
             .Include(p => p.TripDays!)
+                .ThenInclude(td => td.TripPoints!)
+                .ThenInclude(tp => tp != null ? tp.Place : null)
+                .ThenInclude(p => p != null ? p.Reviews : null)
             .FirstOrDefaultAsync();
 
         if (trip == null)
@@ -344,6 +347,8 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
             CurrencyCode = trip.CurrencyCode,
             CategoryProfileId = trip.CategoryProfileId,
             ConditionProfileId = trip.ConditionProfileId,
+            PredictedCost = trip.PredictedCost,
+            ActualCost = trip.ActualCost
         };
 
         tripDetails.TripDays = trip.TripDays?.Select(td => new TripDayOverviewDTO

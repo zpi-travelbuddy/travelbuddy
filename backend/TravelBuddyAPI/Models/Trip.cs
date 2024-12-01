@@ -60,15 +60,39 @@ public class Trip
     public bool? IsFinished { get => TripDays?.All(td => td?.IsFinished ?? true); }
 
     [NotMapped]
-    public decimal? Cost
+    public decimal? PredictedCost
     {
-        get => TripDays?.Sum(td => td?.Cost);
+        get
+        {
+            decimal? predictedCost = TripDays?.Sum(td => td.PredictedCost);
+            return predictedCost.HasValue ? Math.Round(predictedCost.Value, 2) : null;
+        }
     }
 
     [NotMapped]
-    public decimal? CostPerPerson
+    public decimal? PredictedCostPerPerson
     {
-        get => Cost.HasValue ? Math.Round(Cost.Value / NumberOfTravelers, 2) : null;
+        get
+        {
+            decimal? predictedCostPerPerson = PredictedCost / NumberOfTravelers;
+            return predictedCostPerPerson.HasValue ? Math.Round(predictedCostPerPerson.Value, 2) : null;
+        }
+    }
+
+    [NotMapped]
+    public decimal? ActualCost
+    {
+        get => ActualCostPerPerson.HasValue ? Math.Round(ActualCostPerPerson.Value * NumberOfTravelers, 2) : null;
+    }
+
+    [NotMapped]
+    public decimal? ActualCostPerPerson
+    {
+        get
+        {
+            decimal? actualCostPerPerson = TripDays?.Sum(td => td?.ActualCostPerPerson);
+            return actualCostPerPerson.HasValue ? Math.Round(actualCostPerPerson.Value, 2) : null;
+        }
     }
 
     [NotMapped]
