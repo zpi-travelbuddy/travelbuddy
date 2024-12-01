@@ -115,7 +115,6 @@ export function useTripNotificationManager() {
     const subscription = Notifications.addNotificationReceivedListener(
       async (response) => {
         const firedNotificationId = response.request.identifier;
-        console.log(firedNotificationId);
         setTripNotifications((prev) => {
           // Find the trip point ID associated with the fired notification
           const updated = Object.fromEntries(

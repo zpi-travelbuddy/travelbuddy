@@ -127,7 +127,7 @@ const NotificationFormBottomSheet: React.FC<
                   label="Minuty"
                 ></TextInput>
                 <Text style={[{ color: theme.colors.error }, styles.textError]}>
-                  {errorText ? errorText : " "}
+                  {errorText || " "}
                 </Text>
                 <ActionButtons
                   onAction1={handleCancel}
