@@ -114,10 +114,6 @@ const ProfileBrowseView: React.FC<ProfileBrowseViewProps> = ({
     if (error) showSnackbar(error);
   }, [error]);
 
-  useEffect(() => {
-    if (selectedProfile) console.log(selectedProfile);
-  }, [selectedProfile]);
-
   const flatListRef = useRef<FlatList>(null);
 
   const renderProfileCard = ({ item }: { item: Profile }) => (
@@ -160,7 +156,7 @@ const ProfileBrowseView: React.FC<ProfileBrowseViewProps> = ({
         await api!.delete(endpoint, {});
       else await api!.post(endpoint, {});
     } catch (err: any) {
-      console.log(err.response.data);
+      console.error(err.response.data);
     }
     await refetchFavourites();
   }, [selectedProfile, favouriteProfiles, profileType]);
