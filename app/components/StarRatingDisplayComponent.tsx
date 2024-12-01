@@ -1,26 +1,39 @@
 import { StyleSheet, View, ViewStyle } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import { Text, useTheme } from "react-native-paper";
-import { StarRatingDisplay } from "react-native-star-rating-widget";
+import StarRating from "react-native-star-rating-widget";
 
 interface StarRatingDisplayComponentProps {
   rating?: number;
+  editable?: boolean;
   style?: ViewStyle;
+  onRatingChange?: (rating: number) => void;
 }
 
 const StarRatingDisplayComponent: React.FC<StarRatingDisplayComponentProps> = ({
-  rating,
+  rating = 5,
+  editable = false,
   style,
+  onRatingChange,
 }) => {
+  const [currentRating, setCurrentRating] = useState(rating);
   const theme = useTheme();
+
+  const handleRatingChange = (newRating: number): void => {
+    setCurrentRating(newRating);
+    if (onRatingChange) onRatingChange(newRating);
+  };
+
   return (
     <View style={StyleSheet.flatten([styles.container, style])}>
-      <StarRatingDisplay
-        color={rating ? theme.colors.primary : theme.colors.surfaceDisabled}
-        rating={rating || 5}
+      <StarRating
+        rating={currentRating}
+        onChange={handleRatingChange}
+        color={theme.colors.primary}
+        starSize={30} // Rozmiar gwiazdek
       />
       <Text variant="titleLarge" style={styles.ratingText}>
-        {rating ? `(${rating?.toFixed(1)})` : "Brak"}
+        {currentRating ? `(${currentRating.toFixed(1)})` : "Brak"}
       </Text>
     </View>
   );
