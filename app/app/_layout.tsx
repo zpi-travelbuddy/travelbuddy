@@ -16,6 +16,7 @@ import { AuthProvider } from "./ctx";
 import { SnackbarProvider } from "@/context/SnackbarContext";
 import { NavigationDataProvider } from "@/context/NavigationDataContext";
 import { AppSettingsProvider } from "@/context/AppSettingsContext";
+import Notification from "@/utils/notifications";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -81,6 +82,7 @@ export default () => {
       <AuthProvider>
         <RootLayout />
       </AuthProvider>
+      <Notification />
     </AppSettingsProvider>
   );
 };

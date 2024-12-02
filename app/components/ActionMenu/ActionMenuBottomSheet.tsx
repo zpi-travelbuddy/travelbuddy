@@ -65,7 +65,6 @@ const ActionMenuBottomSheet: React.FC<ActionMenuBottomSheetProps> = ({
         index={isVisible ? 0 : -1}
         snapPoints={snapPoints}
         enablePanDownToClose
-        onClose={onClose}
         onAnimate={handleAnimate}
         containerStyle={{ zIndex: 3 }}
         backgroundComponent={({ style }) => (
