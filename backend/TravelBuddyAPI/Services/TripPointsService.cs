@@ -210,6 +210,7 @@ public class TripPointsService(TravelBuddyDbContext dbContext, INBPService nbpSe
                 ProviderId = tripPoint.Place is ProviderPlace providerPlace ? providerPlace.ProviderId : null,
                 Name = tripPoint.Place.Name,
                 Country = tripPoint.Place.Country,
+                State = tripPoint.Place.State,
                 City = tripPoint.Place.City,
                 Street = tripPoint.Place.Street,
                 HouseNumber = tripPoint.Place.HouseNumber,
