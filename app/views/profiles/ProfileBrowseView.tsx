@@ -47,6 +47,9 @@ import {
 } from "@/constants/Endpoints";
 import { useAuth } from "@/app/ctx";
 
+const DUPLICATE_PROFILE_NAME_MESSAGE =
+  "profile with the same name already exists.";
+
 interface ProfileBrowseViewProps {
   profileType: ProfileType;
 }
@@ -101,14 +104,20 @@ const ProfileBrowseView: React.FC<ProfileBrowseViewProps> = ({
 
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
+  const [createProfileError, setCreateProfileError] = useState<string>("");
 
   useEffect(() => {
     setLoading(loadingFavouritesLoading || loadingProfiles || false);
   }, [loadingFavouritesLoading, loadingProfiles]);
 
   useEffect(() => {
-    setError(loadingFavouritesError || loadingProfilesError || "");
-  }, [loadingFavouritesError, loadingProfilesError]);
+    setError(
+      loadingFavouritesError ||
+        loadingProfilesError ||
+        createProfileError ||
+        "",
+    );
+  }, [loadingFavouritesError, loadingProfilesError, createProfileError]);
 
   useEffect(() => {
     if (error) showSnackbar(error);
@@ -161,12 +170,22 @@ const ProfileBrowseView: React.FC<ProfileBrowseViewProps> = ({
     await refetchFavourites();
   }, [selectedProfile, favouriteProfiles, profileType]);
 
+  const handleCreateProfileError = (err: any) => {
+    if (err.response.data.endsWith(DUPLICATE_PROFILE_NAME_MESSAGE)) {
+      return "Istnieje już profil z tą nazwą!";
+    } else
+      return (
+        "Błąd podczas zapisywania profilu: " + JSON.stringify(err.response.data)
+      );
+  };
+
   const handleCreateProfile = async (
     request: ProfileRequest,
     onSuccess?: (profile: ProfileDetails) => void,
   ): Promise<void> => {
     try {
       setLoading(true);
+      setCreateProfileError("");
       const endpoint =
         profileType === "Category"
           ? API_CATEGORY_PROFILES
@@ -182,14 +201,10 @@ const ProfileBrowseView: React.FC<ProfileBrowseViewProps> = ({
       const newProfile = response.data;
       setSelectedProfile(newProfile);
       showSnackbar("Profil został utworzony!");
-
+      setCreateProfileError("");
       if (onSuccess) onSuccess(newProfile);
     } catch (err: any) {
-      console.error(
-        "Błąd podczas zapisywania profilu: ",
-        JSON.stringify(err.response.data),
-      );
-      showSnackbar("Nie dodano profilu. " + JSON.stringify(err.response.data));
+      setCreateProfileError(handleCreateProfileError(err));
     } finally {
       setLoading(false);
     }
@@ -197,7 +212,6 @@ const ProfileBrowseView: React.FC<ProfileBrowseViewProps> = ({
 
   const handleSave = useCallback(
     async (name: string) => {
-      setLoading(true);
       await handleCreateProfile(
         {
           profileType: profileType,
@@ -206,12 +220,11 @@ const ProfileBrowseView: React.FC<ProfileBrowseViewProps> = ({
           conditionIds: [],
         },
         (newProfile) => {
-          router.push(`${path}/${newProfile.id}`);
-          setLoading(false);
+          if (!createProfileError) router.push(`${path}/${newProfile.id}`);
         },
       );
     },
-    [handleCreateProfile, router, path, profileType],
+    [handleCreateProfile, router, path, profileType, createProfileError],
   );
 
   const deleteProfile = async (selectedProfile: Profile | null) => {
@@ -339,6 +352,7 @@ const ProfileBrowseView: React.FC<ProfileBrowseViewProps> = ({
           Keyboard.dismiss();
         }}
         onSave={handleSave}
+        createError={createProfileError}
       />
       <ActionMenuBottomSheet
         headerComponent={() => (

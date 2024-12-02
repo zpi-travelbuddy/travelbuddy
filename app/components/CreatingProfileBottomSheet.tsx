@@ -13,6 +13,7 @@ interface BottomSheetComponentProps {
   onClose: () => void;
   onSave: (name: string) => void;
   label?: string;
+  createError?: string;
 }
 
 const CreatingProfileBottonSheet: React.FC<BottomSheetComponentProps> = ({
@@ -20,6 +21,7 @@ const CreatingProfileBottonSheet: React.FC<BottomSheetComponentProps> = ({
   onClose,
   onSave,
   label,
+  createError,
 }) => {
   const theme = useTheme();
   const styles = createStyles(theme);
@@ -37,14 +39,17 @@ const CreatingProfileBottonSheet: React.FC<BottomSheetComponentProps> = ({
     [onClose],
   );
 
-  const handleSave = () => {
+  const handleSave = useCallback(() => {
     if (profileName) {
-      onClose();
       onSave(profileName);
-      setError("");
-      setProfileName("");
+      if (!createError) {
+        onClose();
+        setError("");
+        setProfileName("");
+        return;
+      } else setError(createError);
     } else setError("Uzupełnij nazwę profilu!");
-  };
+  }, [createError, profileName]);
 
   useEffect(() => {
     if (isVisible) {
@@ -82,7 +87,7 @@ const CreatingProfileBottonSheet: React.FC<BottomSheetComponentProps> = ({
               label="Nazwa profilu"
               value={profileName}
               onChangeText={setProfileName}
-              error={!!error}
+              error={!!error || !!createError}
             />
             {!!error && <Text style={styles.textError}>{error}</Text>}
             <ActionButtons

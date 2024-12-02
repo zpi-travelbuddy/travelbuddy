@@ -1,5 +1,11 @@
 import React from "react";
-import { FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  FlatList,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { Checkbox } from "react-native-paper";
 import { MD3ThemeExtended } from "@/constants/Themes";
 import { useTheme } from "react-native-paper";
@@ -12,11 +18,11 @@ import {
 } from "@/types/Profile";
 
 const categoryLabels: Record<string, string> = {
-  catering: "Catering",
+  catering: "Restauracja",
   activity: "Aktywności",
-  commercial: "Komercja",
+  commercial: "Sklep",
   entertainment: "Rozrywka",
-  heritage: "Dziedzictwo",
+  heritage: "Zabytek",
   leisure: "Wypoczynek",
   national_park: "Park Narodowy",
   natural: "Przyroda",
@@ -26,8 +32,6 @@ const categoryLabels: Record<string, string> = {
 };
 
 const conditionLabels: Record<string, string> = {
-  access_limited: "Ograniczony dostęp",
-  access: "Dostęp",
   dogs: "Psy dozwolone",
   egg_free: "Bez jajek",
   fee: "Płatne",
@@ -35,7 +39,6 @@ const conditionLabels: Record<string, string> = {
   halal: "Halal",
   internet_access: "Dostęp do internetu",
   kosher: "Koszerne",
-  named: "Nazwane",
   no_dogs: "Bez psów",
   no_fee: "Bez opłat",
   organic: "Ekologiczne",
