@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { StyleSheet, Text, ScrollView, View } from "react-native";
 import React, { useEffect, useState } from "react";
 import { MD3ThemeExtended } from "@/constants/Themes";
@@ -12,19 +13,26 @@ import LoadingView from "./LoadingView";
 import { ReviewRequest } from "@/types/Review";
 import { useAuth } from "@/app/ctx";
 import { API_SUBMIT_REVIEW } from "@/constants/Endpoints";
+import { useGetTripPoint } from "@/composables/useTripPoint";
 
 const SurveyView = () => {
   const theme = useTheme();
   const styles = createStyles(theme as MD3ThemeExtended);
   const router = useRouter();
 
-  const { currency, trip_id, place_id, trip_point_id } = useLocalSearchParams();
+  const { trip_id, trip_point_id } = useLocalSearchParams();
 
   const {
     tripDetails,
     loading: tripLoading,
     error: tripError,
   } = useTripDetails(trip_id as string);
+
+  const {
+    tripPointDetails,
+    loading: tripPointLoading,
+    error: tripPointError,
+  } = useGetTripPoint(trip_point_id as string);
 
   const { api } = useAuth();
 
@@ -36,11 +44,22 @@ const SurveyView = () => {
   const [hoursText, setHoursText] = useState<string>("");
   const [minutesText, setMinutesText] = useState<string>("");
   const [costType, setCostType] = useState<string>("perPerson");
+  const [currency, setCurrency] = useState<string>("");
   const [cost, setCost] = useState<number>(0);
   const [rating, setRating] = useState<number>(3);
 
-  useEffect(() => setError(tripError || ""), [tripError]);
-  useEffect(() => setLoading(tripLoading || false), [tripLoading]);
+  useEffect(
+    () => setError(tripError || tripPointError || ""),
+    [tripError, tripPointError],
+  );
+  useEffect(
+    () => setLoading(tripLoading || tripPointLoading || false),
+    [tripLoading, tripPointLoading],
+  );
+
+  useEffect(() => {
+    if (tripDetails) setCurrency(tripDetails?.currencyCode);
+  }, [tripDetails]);
 
   const handleChange = (setter: React.Dispatch<React.SetStateAction<any>>) => {
     return (value: any) => {
@@ -93,17 +112,19 @@ const SurveyView = () => {
 
     const reviewRequest: ReviewRequest = {
       tripPointId: trip_point_id as string,
-      placeId: place_id as string,
+      placeId: tripPointDetails?.placeId || "",
       actualCost: totalCost,
-      currencyCode: currency as string,
+      currencyCode: currency || "",
       actualTimeSpent: time,
       rating: rating,
     };
+    console.log(JSON.stringify(reviewRequest));
     setLoading(true);
     try {
       await api!.post(API_SUBMIT_REVIEW, reviewRequest);
       router.back();
     } catch (err: any) {
+      console.log(JSON.stringify(err));
       console.error(err.response.data);
     } finally {
       setLoading(false);

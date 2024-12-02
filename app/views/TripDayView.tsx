@@ -1,11 +1,5 @@
-import {
-  Fragment,
-  useCallback,
-  useMemo,
-  useRef,
-  useState,
-  useEffect,
-} from "react";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Fragment, useCallback, useMemo, useRef, useState } from "react";
 import { Dimensions, ScrollView, StyleSheet, View } from "react-native";
 import { useTheme, FAB, TextInput, Text } from "react-native-paper";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -40,12 +34,7 @@ import useTripDayDetails from "@/composables/useTripDay";
 import { useSnackbar } from "@/context/SnackbarContext";
 import { useAuth } from "@/app/ctx";
 
-import {
-  convertFromSeconds,
-  convertToSeconds,
-  getTimeWithoutSeconds,
-  formatTimeRange,
-} from "@/utils/TimeUtils";
+import { formatTimeRange } from "@/utils/TimeUtils";
 import ActionTextButtons from "@/components/ActionTextButtons";
 import CustomModal from "@/components/CustomModal";
 import { useDeleteTripPoint } from "@/composables/useTripPoint";
@@ -159,9 +148,8 @@ const TripDayView = () => {
 
   const selectedTransferPointData = useMemo(() => {
     const { fromTripPointId, toTripPointId } = selectedFromToTripPointId || {};
-    let transferPointData: TransferPointData | undefined = transferPointMap.get(
-      fromTripPointId as string,
-    );
+    const transferPointData: TransferPointData | undefined =
+      transferPointMap.get(fromTripPointId as string);
     if (!transferPointData) {
       return { fromTripPointId, toTripPointId };
     }
@@ -441,8 +429,11 @@ const TripDayView = () => {
     deleteTransferPoint,
   ]);
 
-  const handleTripPointPress = () => {
+  const handleTripPointPress = (tripPoint: TripPointCompact) => {
     console.log("Trip point pressed");
+    router.push(
+      `/trips/details/${trip_id}/day/${day_id}/tripPoints/${tripPoint.id}/survey`,
+    );
   };
 
   const handleTripPointLongPress = (tripPoint: TripPointCompact) => {
@@ -588,7 +579,7 @@ const TripDayView = () => {
               {sortedTripPoints.map((fromTripPoint, index) => (
                 <Fragment key={fromTripPoint.id}>
                   <TripPointCard
-                    onPress={handleTripPointPress}
+                    onPress={() => handleTripPointPress(fromTripPoint)}
                     onLongPress={() => handleTripPointLongPress(fromTripPoint)}
                     tripPoint={fromTripPoint}
                   />
