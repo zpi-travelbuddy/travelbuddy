@@ -1,11 +1,4 @@
-import {
-  Fragment,
-  useCallback,
-  useMemo,
-  useRef,
-  useState,
-  useEffect,
-} from "react";
+import { Fragment, useCallback, useMemo, useRef, useState } from "react";
 import { Dimensions, ScrollView, StyleSheet, View } from "react-native";
 import { useTheme, FAB, TextInput, Text } from "react-native-paper";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -40,12 +33,7 @@ import useTripDayDetails from "@/composables/useTripDay";
 import { useSnackbar } from "@/context/SnackbarContext";
 import { useAuth } from "@/app/ctx";
 
-import {
-  convertFromSeconds,
-  convertToSeconds,
-  getTimeWithoutSeconds,
-  formatTimeRange,
-} from "@/utils/TimeUtils";
+import { formatTimeRange } from "@/utils/TimeUtils";
 import ActionTextButtons from "@/components/ActionTextButtons";
 import CustomModal from "@/components/CustomModal";
 import { useDeleteTripPoint } from "@/composables/useTripPoint";
@@ -131,20 +119,20 @@ const TripDayView = () => {
           setIsVisible(VisibilityState.None);
         },
       },
-    },
-    {
-      icon: SEARCH_TRIP_POINT_ICON,
-      label: "Wyszukaj",
-      onPress: () => {
-        router.push({
-          pathname: "/explore",
-          params: {
-            trip_id: trip_id,
-            day_id: day_id,
-            date: new Date(tripDay?.date as string).toLocaleDateString(),
-          },
-        });
-        setIsVisible(VisibilityState.None);
+      {
+        icon: SEARCH_TRIP_POINT_ICON,
+        label: "Wyszukaj",
+        onPress: () => {
+          router.push({
+            pathname: "/explore",
+            params: {
+              trip_id: trip_id,
+              day_id: day_id,
+              date: new Date(tripDay?.date as string).toLocaleDateString(),
+            },
+          });
+          setIsVisible(VisibilityState.None);
+        },
       },
       {
         icon: RECOMMENDATION_ICON,
@@ -166,9 +154,8 @@ const TripDayView = () => {
 
   const selectedTransferPointData = useMemo(() => {
     const { fromTripPointId, toTripPointId } = selectedFromToTripPointId || {};
-    let transferPointData: TransferPointData | undefined = transferPointMap.get(
-      fromTripPointId as string,
-    );
+    const transferPointData: TransferPointData | undefined =
+      transferPointMap.get(fromTripPointId as string);
     if (!transferPointData) {
       return { fromTripPointId, toTripPointId };
     }
