@@ -252,6 +252,21 @@ public class PlacesService(TravelBuddyDbContext dbContext, IGeoapifyService geoa
     public async Task<List<PlaceOverviewDTO>> GetPlaceRecommendationsAsync((decimal latitude, decimal longitude) location, double radius, IEnumerable<PlaceCategory> categories, IEnumerable<PlaceCondition>? conditions = null, int? limit = null)
     {
         List<ProviderPlace> places = await _geoapifyService.GetNearbyPlacesAsync(location, radius, categories, conditions, limit) ?? [];
-        return await PlacesToOverviewDTOsAsync(places);
+
+        var existingPlaces = await _dbContext.Places
+            .OfType<ProviderPlace>()
+            .Where(p => places.Select(pl => pl.ProviderId).Contains(p.ProviderId))
+            .Include(p => p.Reviews)
+            .ToListAsync();
+
+        var recommendations = places.Select(p =>
+            {
+                var existingPlace = existingPlaces.FirstOrDefault(ep => ep.ProviderId == p.ProviderId);
+                return existingPlace ?? p;
+            })
+            .OrderByDescending(p => p.AverageRating)
+            .ToList();
+
+        return await PlacesToOverviewDTOsAsync(recommendations);
     }
 }
