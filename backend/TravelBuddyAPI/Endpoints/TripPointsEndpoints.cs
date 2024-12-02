@@ -107,10 +107,22 @@ public static class TripPointsEndpoints
         }
     }
 
-    private static async Task<Results<Accepted<string>, NotFound<string>, BadRequest<string>>> EditTripPointAsync(Guid id, TripPointRequestDTO tripPoint)
+    private static async Task<Results<Accepted<string>, NotFound<string>, BadRequest<string>>> EditTripPointAsync(Guid id, TripPointRequestDTO tripPoint, HttpContext httpContext, ITripPointsService tripPointsService)
     {
-        await Task.CompletedTask;
-        return TypedResults.NotFound("Not implemented");
+        try
+        {
+            var userId = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new InvalidOperationException("User not found");
+            await tripPointsService.EditTripPointAsync(userId, id, tripPoint);
+            return TypedResults.Accepted($"/tripPoints/{id}", "Trip point edited successfully");
+        }
+        catch (InvalidOperationException ex) when (ex.Message.Contains(ITripPointsService.ErrorMessage.TripPointNotFound) || ex.Message.Contains(ITripPointsService.ErrorMessage.TripDayNotFound))
+        {
+            return TypedResults.NotFound(ex.Message);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return TypedResults.BadRequest(ex.Message);
+        }
     }
 
     private static async Task<Results<Created<TripPointDetailsDTO>, BadRequest<string>>> CreateTripPointAsync(TripPointRequestDTO tripPoint, ITripPointsService tripPointsService, HttpContext httpContext)
