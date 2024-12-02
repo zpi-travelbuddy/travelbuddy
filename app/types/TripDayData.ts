@@ -33,6 +33,17 @@ export interface Review {
   rating: number;
 }
 
+export interface TripPointViewModel {
+  name?: string;
+  address?: string;
+  category?: string;
+  predictedCost?: string;
+  predictedCostPerPerson?: string;
+  startTime?: string;
+  endTime?: string;
+  comment?: string;
+}
+
 export interface TripPointDetails {
   id: string;
   name: string;

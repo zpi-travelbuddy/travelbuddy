@@ -15,6 +15,7 @@ export interface PlaceViewModel {
   imageUrl?: string;
 }
 export interface Place {
+  id: string;
   providerId: string;
   categoryId?: string;
   name: string;
