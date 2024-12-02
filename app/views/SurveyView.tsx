@@ -13,7 +13,8 @@ import LoadingView from "./LoadingView";
 import { ReviewRequest } from "@/types/Review";
 import { useAuth } from "@/app/ctx";
 import { API_SUBMIT_REVIEW } from "@/constants/Endpoints";
-import { useGetTripPoint } from "@/composables/useTripPoint";
+import { formatTimeSpan } from "@/utils/TimeUtils";
+import { useSnackbar } from "@/context/SnackbarContext";
 
 const SurveyView = () => {
   const theme = useTheme();
@@ -28,19 +29,14 @@ const SurveyView = () => {
     error: tripError,
   } = useTripDetails(trip_id as string);
 
-  const {
-    tripPointDetails,
-    loading: tripPointLoading,
-    error: tripPointError,
-  } = useGetTripPoint(trip_point_id as string);
-
   const { api } = useAuth();
+  const { showSnackbar } = useSnackbar();
 
   const [error, setError] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
 
-  const [hours, setHours] = useState<number | null>(null);
-  const [minutes, setMinutes] = useState<number | null>(null);
+  const [hours, setHours] = useState<number | undefined>(undefined);
+  const [minutes, setMinutes] = useState<number | undefined>(undefined);
   const [hoursText, setHoursText] = useState<string>("");
   const [minutesText, setMinutesText] = useState<string>("");
   const [costType, setCostType] = useState<string>("perPerson");
@@ -48,18 +44,15 @@ const SurveyView = () => {
   const [cost, setCost] = useState<number>(0);
   const [rating, setRating] = useState<number>(3);
 
-  useEffect(
-    () => setError(tripError || tripPointError || ""),
-    [tripError, tripPointError],
-  );
-  useEffect(
-    () => setLoading(tripLoading || tripPointLoading || false),
-    [tripLoading, tripPointLoading],
-  );
-
   useEffect(() => {
     if (tripDetails) setCurrency(tripDetails?.currencyCode);
   }, [tripDetails]);
+
+  useEffect(() => setLoading(tripLoading || false), [tripLoading]);
+
+  useEffect(() => {
+    if (error) showSnackbar(error);
+  }, [error]);
 
   const handleChange = (setter: React.Dispatch<React.SetStateAction<any>>) => {
     return (value: any) => {
@@ -69,15 +62,12 @@ const SurveyView = () => {
   };
 
   const handleTimeChange = (
-    coordinateText: string,
-    setCoordinate: React.Dispatch<React.SetStateAction<number | null>>,
+    timeText: string,
+    setTimePart: React.Dispatch<React.SetStateAction<number | undefined>>,
   ) => {
-    const numericValue = Number(coordinateText);
-    if (!isNaN(numericValue) && numericValue < 0) {
-      setCoordinate(numericValue);
-    } else {
-      setError("Wartość spędzonego czasu jest nieprawidłowa.");
-    }
+    const numericValue = Number(timeText);
+    if (!isNaN(numericValue) && numericValue >= 0) setTimePart(numericValue);
+    else setError("Wartość spędzonego czasu jest nieprawidłowa.");
   };
 
   const handleHoursChange = () => {
@@ -88,9 +78,7 @@ const SurveyView = () => {
     handleTimeChange(minutesText || "", setMinutes);
   };
 
-  const onCancel = () => {
-    router.back();
-  };
+  const onCancel = () => router.back();
 
   const onSave = async () => {
     if ((minutes && minutes < 0) || (hours && hours < 0)) {
@@ -99,39 +87,43 @@ const SurveyView = () => {
     }
 
     let totalCost = cost;
-    if (costType === "perPerson") {
+    if (costType === "total") {
       const numberOfTravelers = tripDetails
         ? tripDetails?.numberOfTravelers
         : 1;
-      totalCost = numberOfTravelers * cost;
+      totalCost = cost / numberOfTravelers;
     }
 
-    let time = undefined;
-    if (hours) time = hours * 60 * 60;
-    if (minutes) time = time ? time + minutes * 60 : minutes * 60;
+    const timespan = formatTimeSpan(hours, minutes);
 
     const reviewRequest: ReviewRequest = {
-      tripPointId: trip_point_id as string,
-      placeId: tripPointDetails?.placeId || "",
-      actualCost: totalCost,
-      currencyCode: currency || "",
-      actualTimeSpent: time,
+      actualCostPerPerson: totalCost,
+      actualTimeSpent: timespan,
       rating: rating,
     };
-    console.log(JSON.stringify(reviewRequest));
     setLoading(true);
     try {
-      await api!.post(API_SUBMIT_REVIEW, reviewRequest);
+      await api!.post(
+        `${API_SUBMIT_REVIEW}/${trip_point_id as string}`,
+        reviewRequest,
+      );
       router.back();
+      showSnackbar("Pomyślnie dodano recenzję!", "success");
     } catch (err: any) {
-      console.log(JSON.stringify(err));
       console.error(err.response.data);
+      showSnackbar("Wystąpił błąd", "error");
     } finally {
       setLoading(false);
     }
   };
 
-  if (tripLoading) return <LoadingView transparent={true} />;
+  if (loading) return <LoadingView transparent={true} />;
+
+  if (tripError) {
+    router.back();
+    showSnackbar(tripError?.toString() || "Unknown error", "error");
+    return null;
+  }
 
   return (
     <GestureHandlerRootView style={styles.wrapper}>

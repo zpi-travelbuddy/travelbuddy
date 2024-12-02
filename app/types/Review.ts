@@ -1,8 +1,5 @@
 export interface ReviewRequest {
-  tripPointId: string;
-  placeId: string;
-  actualCost?: number;
-  currencyCode?: string;
-  actualTimeSpent?: number;
+  actualCostPerPerson?: number;
+  actualTimeSpent?: string;
   rating?: number;
 }
