@@ -25,6 +25,7 @@ public interface ITripPointsService
         public const string TripPointReviewExists = "Trip point review already exists.";
         public const string TripPointWrongStatus = "Trip point has an incorrect status: ";
         public const string CreateTripPointReview = "An error occurred while creating a trip point review.";
+        public const string EditTripPoint = "An error occurred while editing a trip point.";
     }
 
     /// <summary>
