@@ -17,12 +17,7 @@ import { MD3ThemeExtended } from "@/constants/Themes";
 import { router, useFocusEffect } from "expo-router";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useTheme, FAB, MD3Theme } from "react-native-paper";
-import {
-  ProfileRequest,
-  Profile,
-  ProfileDetails,
-  ProfileType,
-} from "@/types/Profile";
+import { Profile, ProfileType } from "@/types/Profile";
 import ProfileCard from "@/components/ProfileCard";
 import CreatingProfileBottonSheet from "@/components/CreatingProfileBottomSheet";
 import ActionMenuBottomSheet from "@/components/ActionMenu/ActionMenuBottomSheet";
@@ -46,9 +41,6 @@ import {
   API_FAVOURITE_CONDITION_PROFILE,
 } from "@/constants/Endpoints";
 import { useAuth } from "@/app/ctx";
-
-const DUPLICATE_PROFILE_NAME_MESSAGE =
-  "profile with the same name already exists.";
 
 interface ProfileBrowseViewProps {
   profileType: ProfileType;
@@ -104,20 +96,14 @@ const ProfileBrowseView: React.FC<ProfileBrowseViewProps> = ({
 
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
-  const [createProfileError, setCreateProfileError] = useState<string>("");
 
   useEffect(() => {
     setLoading(loadingFavouritesLoading || loadingProfiles || false);
   }, [loadingFavouritesLoading, loadingProfiles]);
 
   useEffect(() => {
-    setError(
-      loadingFavouritesError ||
-        loadingProfilesError ||
-        createProfileError ||
-        "",
-    );
-  }, [loadingFavouritesError, loadingProfilesError, createProfileError]);
+    setError(loadingFavouritesError || loadingProfilesError || "");
+  }, [loadingFavouritesError, loadingProfilesError]);
 
   useEffect(() => {
     if (error) showSnackbar(error);
@@ -169,63 +155,6 @@ const ProfileBrowseView: React.FC<ProfileBrowseViewProps> = ({
     }
     await refetchFavourites();
   }, [selectedProfile, favouriteProfiles, profileType]);
-
-  const handleCreateProfileError = (err: any) => {
-    if (err.response.data.endsWith(DUPLICATE_PROFILE_NAME_MESSAGE)) {
-      return "Istnieje już profil z tą nazwą!";
-    } else
-      return (
-        "Błąd podczas zapisywania profilu: " + JSON.stringify(err.response.data)
-      );
-  };
-
-  const handleCreateProfile = async (
-    request: ProfileRequest,
-    onSuccess?: (profile: ProfileDetails) => void,
-  ): Promise<void> => {
-    try {
-      setLoading(true);
-      setCreateProfileError("");
-      const endpoint =
-        profileType === "Category"
-          ? API_CATEGORY_PROFILES
-          : API_CONDITION_PROFILES;
-
-      const response = await api!.post<ProfileDetails>(endpoint, request);
-
-      if (!response) {
-        showSnackbar("Nie udało się stworzyć profilu.");
-        return;
-      }
-
-      const newProfile = response.data;
-      setSelectedProfile(newProfile);
-      showSnackbar("Profil został utworzony!");
-      setCreateProfileError("");
-      if (onSuccess) onSuccess(newProfile);
-    } catch (err: any) {
-      setCreateProfileError(handleCreateProfileError(err));
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleSave = useCallback(
-    async (name: string) => {
-      await handleCreateProfile(
-        {
-          profileType: profileType,
-          name: name,
-          categoryIds: [],
-          conditionIds: [],
-        },
-        (newProfile) => {
-          if (!createProfileError) router.push(`${path}/${newProfile.id}`);
-        },
-      );
-    },
-    [handleCreateProfile, router, path, profileType, createProfileError],
-  );
 
   const deleteProfile = async (selectedProfile: Profile | null) => {
     hideModal();
@@ -351,8 +280,7 @@ const ProfileBrowseView: React.FC<ProfileBrowseViewProps> = ({
           setIsBottomSheetVisible(false);
           Keyboard.dismiss();
         }}
-        onSave={handleSave}
-        createError={createProfileError}
+        profileType={profileType}
       />
       <ActionMenuBottomSheet
         headerComponent={() => (
