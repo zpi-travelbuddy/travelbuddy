@@ -18,13 +18,13 @@ import {
 } from "@/types/Profile";
 
 const categoryLabels: Record<string, string> = {
-  catering: "Restauracja",
+  catering: "Restauracje",
   activity: "Aktywności",
-  commercial: "Sklep",
+  commercial: "Sklepy",
   entertainment: "Rozrywka",
-  heritage: "Zabytek",
+  heritage: "Zabytki",
   leisure: "Wypoczynek",
-  national_park: "Park Narodowy",
+  national_park: "Parki narodowe",
   natural: "Przyroda",
   religion: "Religia",
   sport: "Sport",
