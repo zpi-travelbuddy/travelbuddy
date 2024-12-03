@@ -148,7 +148,14 @@ const TripDayView = () => {
         icon: SEARCH_TRIP_POINT_ICON,
         label: "Wyszukaj",
         onPress: () => {
-          router.push("/explore");
+          router.push({
+            pathname: "/explore",
+            params: {
+              trip_id: trip_id,
+              day_id: day_id,
+              date: new Date(tripDay?.date as string).toLocaleDateString(),
+            },
+          });
           setIsVisible(VisibilityState.None);
         },
       },
@@ -172,9 +179,8 @@ const TripDayView = () => {
 
   const selectedTransferPointData = useMemo(() => {
     const { fromTripPointId, toTripPointId } = selectedFromToTripPointId || {};
-    let transferPointData: TransferPointData | undefined = transferPointMap.get(
-      fromTripPointId as string,
-    );
+    const transferPointData: TransferPointData | undefined =
+      transferPointMap.get(fromTripPointId as string);
     if (!transferPointData) {
       return { fromTripPointId, toTripPointId };
     }

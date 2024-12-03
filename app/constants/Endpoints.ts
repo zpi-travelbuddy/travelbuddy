@@ -12,6 +12,8 @@ export const API_CURRENCY = "/trips/availableCurrencies";
 
 // Places
 export const API_PLACES_AUTOCOMPLETE = "/places/autocomplete";
+export const ATTRACTION_DETAILS_ENDPOINT = "/places/provider";
+export const PLACE_DETAILS_ENDPOINT = "/places";
 
 // Profiles
 export const API_CATEGORY_PROFILES = "/categoryProfiles";
