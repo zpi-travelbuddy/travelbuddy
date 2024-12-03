@@ -31,9 +31,6 @@ public class TripPoint{
     [Range(0, double.MaxValue, ErrorMessage = $"{nameof(PredictedCost)} must be a positive number.")]
     public decimal PredictedCost { get; set; }
 
-    [NotMapped]
-    public decimal? PredictedCostPerPerson => Trip is null ? null : Math.Round(PredictedCost / Trip.NumberOfTravelers, 2);
-
     [Required]
     public TimeOnly StartTime { get; set; }
 

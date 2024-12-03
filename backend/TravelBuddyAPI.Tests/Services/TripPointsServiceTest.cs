@@ -765,4 +765,578 @@ public class TripPointsServiceTest : IDisposable
         Assert.NotNull(result);
         Assert.Empty(result);
     }
+
+    [Fact]
+    public async Task CreateTripPointAsync_DeletesConflictingTransferPoint_WhenAddingNewTripPointBetweenOtherTripPoints()
+    {
+        // Arrange
+        var userId = "user1";
+        var tripDayId = Guid.NewGuid();
+        var existingTripPoint1 = new TripPoint
+        {
+            Id = Guid.NewGuid(),
+            TripDayId = tripDayId,
+            Name = "Existing Trip Point 1",
+            StartTime = TimeOnly.Parse("10:00"),
+            EndTime = TimeOnly.Parse("11:00")
+        };
+
+        var existingTripPoint2 = new TripPoint
+        {
+            Id = Guid.NewGuid(),
+            TripDayId = tripDayId,
+            Name = "Existing Trip Point 2",
+            StartTime = TimeOnly.Parse("12:00"),
+            EndTime = TimeOnly.Parse("13:00")
+        };
+
+        var transferPoint = new TransferPoint
+        {
+            Id = Guid.NewGuid(),
+            TripDayId = tripDayId,
+            FromTripPointId = existingTripPoint1.Id,
+            ToTripPointId = existingTripPoint2.Id
+        };
+
+        await _dbContext.TripPoints.AddRangeAsync(existingTripPoint1, existingTripPoint2);
+        await _dbContext.TransferPoints.AddAsync(transferPoint);
+        await _dbContext.SaveChangesAsync();
+
+        var tripPointRequest = new TripPointRequestDTO
+        {
+            TripDayId = tripDayId,
+            Name = "New Trip Point",
+            Comment = "Test Comment",
+            PredictedCost = 100,
+            StartTime = TimeOnly.Parse("11:00"),
+            EndTime = TimeOnly.Parse("12:00"),
+            Place = new PlaceRequestDTO { ProviderId = "1", Name = "Test Place" }
+        };
+
+        var place = new ProviderPlace
+        {
+            Id = Guid.NewGuid(),
+            Name = tripPointRequest.Place.Name,
+            ProviderId = tripPointRequest.Place.ProviderId,
+            City = tripPointRequest.Place.City,
+            Country = tripPointRequest.Place.Country
+        };
+
+        await _dbContext.Places.AddAsync(place);
+        await _dbContext.SaveChangesAsync();
+
+        var trip = new Trip
+        {
+            UserId = userId,
+            CurrencyCode = "USD",
+            Name = "Test Trip",
+            TripDays = new List<TripDay> { new TripDay { Id = tripDayId, Date = DateOnly.FromDateTime(DateTime.Now) } }
+        };
+
+        await _dbContext.Trips.AddAsync(trip);
+        await _dbContext.SaveChangesAsync();
+
+        _mockNBPService.Setup(s => s.GetRateAsync(It.IsAny<string>(), It.IsAny<DateOnly?>()))
+            .ReturnsAsync(2.0m);
+
+        _mockGeoapifyService.Setup(s => s.GetPlaceDetailsAsync(It.IsAny<string>()))
+            .ReturnsAsync(place);
+
+        _mockPlacesService.Setup(s => s.AddPlaceAsync(It.IsAny<PlaceRequestDTO>()))
+            .ReturnsAsync(new PlaceDetailsDTO { Id = place.Id, Name = place.Name, City = place.City, Country = place.Country });
+
+        _mockPlacesService.Setup(s => s.GetProviderPlaceAsync(It.IsAny<string>()))
+            .ReturnsAsync(place);
+
+        // Act
+        var result = await _tripPointsService.CreateTripPointAsync(userId, tripPointRequest);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(tripPointRequest.Name, result.Name);
+        Assert.Equal(tripPointRequest.Comment, result.Comment);
+        Assert.Null(await _dbContext.TransferPoints.FindAsync(transferPoint.Id));
+    }
+
+    [Fact]
+    public async Task CreateTripPointAsync_AddsTripPointAfterOtherTwo_TransferPointStaysIntact()
+    {
+        // Arrange
+        var userId = "user1";
+        var tripDayId = Guid.NewGuid();
+        var existingTripPoint1 = new TripPoint
+        {
+            Id = Guid.NewGuid(),
+            TripDayId = tripDayId,
+            Name = "Existing Trip Point 1",
+            StartTime = TimeOnly.Parse("10:00"),
+            EndTime = TimeOnly.Parse("11:00")
+        };
+
+        var existingTripPoint2 = new TripPoint
+        {
+            Id = Guid.NewGuid(),
+            TripDayId = tripDayId,
+            Name = "Existing Trip Point 2",
+            StartTime = TimeOnly.Parse("12:00"),
+            EndTime = TimeOnly.Parse("13:00")
+        };
+
+        var transferPoint = new TransferPoint
+        {
+            Id = Guid.NewGuid(),
+            TripDayId = tripDayId,
+            FromTripPointId = existingTripPoint1.Id,
+            ToTripPointId = existingTripPoint2.Id
+        };
+
+        await _dbContext.TripPoints.AddRangeAsync(existingTripPoint1, existingTripPoint2);
+        await _dbContext.TransferPoints.AddAsync(transferPoint);
+        await _dbContext.SaveChangesAsync();
+
+        var tripPointRequest = new TripPointRequestDTO
+        {
+            TripDayId = tripDayId,
+            Name = "New Trip Point",
+            Comment = "Test Comment",
+            PredictedCost = 100,
+            StartTime = TimeOnly.Parse("13:00"),
+            EndTime = TimeOnly.Parse("14:00"),
+            Place = new PlaceRequestDTO { ProviderId = "1", Name = "Test Place" }
+        };
+
+        var place = new ProviderPlace
+        {
+            Id = Guid.NewGuid(),
+            Name = tripPointRequest.Place.Name,
+            ProviderId = tripPointRequest.Place.ProviderId,
+            City = tripPointRequest.Place.City,
+            Country = tripPointRequest.Place.Country
+        };
+
+        await _dbContext.Places.AddAsync(place);
+        await _dbContext.SaveChangesAsync();
+
+        var trip = new Trip
+        {
+            UserId = userId,
+            CurrencyCode = "USD",
+            Name = "Test Trip",
+            TripDays = new List<TripDay> { new TripDay { Id = tripDayId, Date = DateOnly.FromDateTime(DateTime.Now) } }
+        };
+
+        await _dbContext.Trips.AddAsync(trip);
+        await _dbContext.SaveChangesAsync();
+
+        _mockNBPService.Setup(s => s.GetRateAsync(It.IsAny<string>(), It.IsAny<DateOnly?>()))
+            .ReturnsAsync(2.0m);
+
+        _mockGeoapifyService.Setup(s => s.GetPlaceDetailsAsync(It.IsAny<string>()))
+            .ReturnsAsync(place);
+
+        _mockPlacesService.Setup(s => s.AddPlaceAsync(It.IsAny<PlaceRequestDTO>()))
+            .ReturnsAsync(new PlaceDetailsDTO { Id = place.Id, Name = place.Name, City = place.City, Country = place.Country });
+
+        _mockPlacesService.Setup(s => s.GetProviderPlaceAsync(It.IsAny<string>()))
+            .ReturnsAsync(place);
+
+        // Act
+        var result = await _tripPointsService.CreateTripPointAsync(userId, tripPointRequest);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(tripPointRequest.Name, result.Name);
+        Assert.Equal(tripPointRequest.Comment, result.Comment);
+        Assert.NotNull(await _dbContext.TransferPoints.FindAsync(transferPoint.Id));
+    }
+
+    [Fact]
+    public async Task EditTripPointAsync_UpdatesTripPointDetails_WhenValidRequest()
+    {
+        // Arrange
+        var userId = "user1";
+        var tripDayId = Guid.NewGuid();
+        var tripPointId = Guid.NewGuid();
+
+        ProviderPlace newPlace = new ProviderPlace
+        {
+            Id = Guid.NewGuid(),
+            ProviderId = "1",
+            Name = "New Place",
+            City = "New City",
+            Country = "New Country"
+        };
+
+        var tripPointRequest = new TripPointRequestDTO
+        {
+            TripDayId = tripDayId,
+            Name = "Updated Trip Point",
+            Comment = "Updated Comment",
+            PredictedCost = 150,
+            StartTime = TimeOnly.Parse("11:00"),
+            EndTime = TimeOnly.Parse("12:00"),
+            Place = new PlaceRequestDTO { ProviderId = newPlace.ProviderId }
+        };
+
+        var trip = new Trip
+        {
+            UserId = userId,
+            CurrencyCode = "USD",
+            Name = "Test Trip",
+            TripDays = new List<TripDay> { new TripDay { Id = tripDayId, Date = DateOnly.FromDateTime(DateTime.Now) } }
+        };
+
+        var oldPlace = new CustomPlace { Id = Guid.NewGuid(), Name = "Test Place", City = "Test City", Country = "Test Country" };
+
+        var tripPoint = new TripPoint
+        {
+            Id = tripPointId,
+            TripDayId = tripDayId,
+            Name = "Test Trip Point",
+            Comment = "Test Comment",
+            PredictedCost = 100,
+            StartTime = TimeOnly.Parse("10:00"),
+            EndTime = TimeOnly.Parse("11:00"),
+            Place = oldPlace
+        };
+
+        await _dbContext.Trips.AddAsync(trip);
+        await _dbContext.TripPoints.AddAsync(tripPoint);
+        await _dbContext.AddAsync(newPlace);
+        await _dbContext.SaveChangesAsync();
+
+        _mockNBPService.Setup(s => s.GetRateAsync(It.IsAny<string>(), It.IsAny<DateOnly?>()))
+            .ReturnsAsync(2.0m);
+
+        _mockPlacesService.Setup(s => s.AddPlaceAsync(It.IsAny<PlaceRequestDTO>()))
+            .ReturnsAsync(new PlaceDetailsDTO { Id = newPlace.Id, Name = newPlace.Name, City = newPlace.City, Country = newPlace.Country });
+
+        _mockPlacesService.Setup(s => s.GetProviderPlaceAsync(It.IsAny<string>()))
+            .ReturnsAsync(newPlace);
+
+        // Act
+        var result = await _tripPointsService.EditTripPointAsync(userId, tripPointId, tripPointRequest);
+
+        // Assert
+        Assert.True(result);
+        var updatedTripPoint = await _dbContext.TripPoints.Where(tp => tp.Id == tripPointId).FirstOrDefaultAsync();
+        var previousPlace = await _dbContext.Places.FindAsync(oldPlace.Id);
+        Assert.Null(previousPlace);
+        Assert.NotNull(updatedTripPoint);
+        Assert.Equal(tripPointRequest.Name, updatedTripPoint.Name);
+        Assert.Equal(tripPointRequest.Comment, updatedTripPoint.Comment);
+        Assert.Equal(tripPointRequest.PredictedCost * 2.0m, updatedTripPoint.PredictedCost);
+        Assert.Equal(newPlace.Id, updatedTripPoint.PlaceId);
+        Assert.Equal(tripPointRequest.StartTime, updatedTripPoint.StartTime);
+        Assert.Equal(tripPointRequest.EndTime, updatedTripPoint.EndTime);
+    }
+
+    [Fact]
+    public async Task EditTripPointAsync_InvalidOperationException_WhenTripDayNotFound()
+    {
+        // Arrange
+        var userId = "user1";
+        var tripPointId = Guid.NewGuid();
+        var tripPointRequest = new TripPointRequestDTO
+        {
+            TripDayId = Guid.NewGuid(),
+            Name = "Updated Trip Point",
+            Comment = "Updated Comment",
+            PredictedCost = 150,
+            StartTime = TimeOnly.Parse("11:00"),
+            EndTime = TimeOnly.Parse("12:00"),
+            Place = new PlaceRequestDTO { ProviderId = "1", Name = "Updated Place" }
+        };
+
+        // Act & Assert
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _tripPointsService.EditTripPointAsync(userId, tripPointId, tripPointRequest));
+        Assert.Equal($"{ITripPointsService.ErrorMessage.EditTripPoint} {ITripPointsService.ErrorMessage.TripDayNotFound}", exception.Message);
+    }
+
+    [Fact]
+    public async Task EditTripPointAsync_ThrowsInvalidOperationException_WhenTripPointNotFound()
+    {
+        // Arrange
+        var userId = "user1";
+        var tripDayId = Guid.NewGuid();
+        var tripPointId = Guid.NewGuid();
+        var tripPointRequest = new TripPointRequestDTO
+        {
+            TripDayId = tripDayId,
+            Name = "Updated Trip Point",
+            Comment = "Updated Comment",
+            PredictedCost = 150,
+            StartTime = TimeOnly.Parse("11:00"),
+            EndTime = TimeOnly.Parse("12:00"),
+            Place = new PlaceRequestDTO { ProviderId = "1", Name = "Updated Place" }
+        };
+
+        var trip = new Trip
+        {
+            UserId = userId,
+            CurrencyCode = "USD",
+            Name = "Test Trip",
+            TripDays = new List<TripDay> { new TripDay { Id = tripDayId, Date = DateOnly.FromDateTime(DateTime.Now) } }
+        };
+
+        await _dbContext.Trips.AddAsync(trip);
+        await _dbContext.SaveChangesAsync();
+
+        // Act & Assert
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _tripPointsService.EditTripPointAsync(userId, tripPointId, tripPointRequest));
+        Assert.Equal($"{ITripPointsService.ErrorMessage.EditTripPoint} {ITripPointsService.ErrorMessage.TripPointNotFound}", exception.Message);
+    }
+
+    [Fact]
+    public async Task EditTripPointAsync_ThrowsInvalidOperationException_WhenStartTimeAfterEndTime()
+    {
+        // Arrange
+        var userId = "user1";
+        var tripDayId = Guid.NewGuid();
+        var tripPointId = Guid.NewGuid();
+        var tripPointRequest = new TripPointRequestDTO
+        {
+            TripDayId = tripDayId,
+            Name = "Updated Trip Point",
+            Comment = "Updated Comment",
+            PredictedCost = 150,
+            StartTime = TimeOnly.Parse("12:00"),
+            EndTime = TimeOnly.Parse("11:00"),
+            Place = new PlaceRequestDTO { ProviderId = "1", Name = "Updated Place" }
+        };
+
+        var trip = new Trip
+        {
+            UserId = userId,
+            CurrencyCode = "USD",
+            Name = "Test Trip",
+            TripDays = new List<TripDay> { new TripDay { Id = tripDayId, Date = DateOnly.FromDateTime(DateTime.Now) } }
+        };
+
+        var tripPoint = new TripPoint
+        {
+            Id = tripPointId,
+            TripDayId = tripDayId,
+            Name = "Test Trip Point",
+            Comment = "Test Comment",
+            PredictedCost = 100,
+            StartTime = TimeOnly.Parse("10:00"),
+            EndTime = TimeOnly.Parse("11:00"),
+            Place = new CustomPlace { Id = Guid.NewGuid(), Name = "Test Place", City = "Test City", Country = "Test Country" }
+        };
+
+        await _dbContext.Trips.AddAsync(trip);
+        await _dbContext.TripPoints.AddAsync(tripPoint);
+        await _dbContext.SaveChangesAsync();
+
+        // Act & Assert
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _tripPointsService.EditTripPointAsync(userId, tripPointId, tripPointRequest));
+        Assert.Equal($"{ITripPointsService.ErrorMessage.EditTripPoint} {ITripPointsService.ErrorMessage.StartTimeAfterEndTime}", exception.Message);
+    }
+
+    [Fact]
+    public async Task EditTripPointAsync_ThrowsInvalidOperationException_WhenTripPointOverlaps()
+    {
+        // Arrange
+        var userId = "user1";
+        var tripDayId = Guid.NewGuid();
+        var tripPointId = Guid.NewGuid();
+        var existingTripPoint = new TripPoint
+        {
+            Id = Guid.NewGuid(),
+            TripDayId = tripDayId,
+            Name = "Existing Trip Point",
+            StartTime = TimeOnly.Parse("11:00"),
+            EndTime = TimeOnly.Parse("12:00")
+        };
+
+        await _dbContext.TripPoints.AddAsync(existingTripPoint);
+        await _dbContext.SaveChangesAsync();
+
+        var tripPointRequest = new TripPointRequestDTO
+        {
+            TripDayId = tripDayId,
+            Name = "Updated Trip Point",
+            Comment = "Updated Comment",
+            PredictedCost = 150,
+            StartTime = TimeOnly.Parse("11:30"),
+            EndTime = TimeOnly.Parse("12:30"),
+            Place = new PlaceRequestDTO { ProviderId = "1", Name = "Updated Place" }
+        };
+
+        var trip = new Trip
+        {
+            UserId = userId,
+            CurrencyCode = "USD",
+            Name = "Test Trip",
+            TripDays = new List<TripDay> { new TripDay { Id = tripDayId, Date = DateOnly.FromDateTime(DateTime.Now) } }
+        };
+
+        var tripPoint = new TripPoint
+        {
+            Id = tripPointId,
+            TripDayId = tripDayId,
+            Name = "Test Trip Point",
+            Comment = "Test Comment",
+            PredictedCost = 100,
+            StartTime = TimeOnly.Parse("10:00"),
+            EndTime = TimeOnly.Parse("11:00"),
+            Place = new CustomPlace { Id = Guid.NewGuid(), Name = "Test Place", City = "Test City", Country = "Test Country" }
+        };
+
+        await _dbContext.Trips.AddAsync(trip);
+        await _dbContext.TripPoints.AddAsync(tripPoint);
+        await _dbContext.SaveChangesAsync();
+
+        // Act & Assert
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _tripPointsService.EditTripPointAsync(userId, tripPointId, tripPointRequest));
+        Assert.Equal($"{ITripPointsService.ErrorMessage.EditTripPoint} {ITripPointsService.ErrorMessage.TripPointOverlap}", exception.Message);
+    }
+
+    [Fact]
+    public async Task EditTripPointAsync_ThrowsInvalidOperationException_WhenPlaceIsEmpty()
+    {
+        // Arrange
+        var userId = "user1";
+        var tripDayId = Guid.NewGuid();
+        var tripPointId = Guid.NewGuid();
+        var tripPointRequest = new TripPointRequestDTO
+        {
+            TripDayId = tripDayId,
+            Name = "Updated Trip Point",
+            Comment = "Updated Comment",
+            PredictedCost = 150,
+            StartTime = TimeOnly.Parse("11:00"),
+            EndTime = TimeOnly.Parse("12:00"),
+            Place = null
+        };
+
+        var trip = new Trip
+        {
+            UserId = userId,
+            CurrencyCode = "USD",
+            Name = "Test Trip",
+            TripDays = new List<TripDay> { new TripDay { Id = tripDayId, Date = DateOnly.FromDateTime(DateTime.Now) } }
+        };
+
+        var tripPoint = new TripPoint
+        {
+            Id = tripPointId,
+            TripDayId = tripDayId,
+            Name = "Test Trip Point",
+            Comment = "Test Comment",
+            PredictedCost = 100,
+            StartTime = TimeOnly.Parse("10:00"),
+            EndTime = TimeOnly.Parse("11:00"),
+            Place = new CustomPlace { Id = Guid.NewGuid(), Name = "Test Place", City = "Test City", Country = "Test Country" }
+        };
+
+        await _dbContext.Trips.AddAsync(trip);
+        await _dbContext.TripPoints.AddAsync(tripPoint);
+        await _dbContext.SaveChangesAsync();
+
+        _mockNBPService.Setup(s => s.GetRateAsync(It.IsAny<string>(), It.IsAny<DateOnly?>()))
+            .ReturnsAsync(2.0m);
+
+        // Act & Assert
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _tripPointsService.EditTripPointAsync(userId, tripPointId, tripPointRequest));
+        Assert.Equal($"{ITripPointsService.ErrorMessage.EditTripPoint} {ITripPointsService.ErrorMessage.EmptyPlace}", exception.Message);
+    }
+
+    [Fact]
+    public async Task EditTripPointAsync_RemovesConflictingTransferPoints_WhenUpdatingTripPoint()
+    {
+        // Arrange
+        var userId = "user1";
+        var tripDayId = Guid.NewGuid();
+        var tripPointId = Guid.NewGuid();
+
+        var existingTripPoint1 = new TripPoint
+        {
+            Id = Guid.NewGuid(),
+            TripDayId = tripDayId,
+            Name = "Existing Trip Point 1",
+            StartTime = TimeOnly.Parse("10:00"),
+            EndTime = TimeOnly.Parse("11:00"),
+            Place = new CustomPlace { Id = Guid.NewGuid(), Name = "Test Place", City = "Test City", Country = "Test Country", Latitude = 0, Longitude = 0 }
+        };
+
+        var existingTripPoint2 = new TripPoint
+        {
+            Id = Guid.NewGuid(),
+            TripDayId = tripDayId,
+            Name = "Existing Trip Point 2",
+            StartTime = TimeOnly.Parse("12:00"),
+            EndTime = TimeOnly.Parse("13:00"),
+            Place = new CustomPlace { Id = Guid.NewGuid(), Name = "Test Place", City = "Test City", Country = "Test Country", Latitude = 0, Longitude = 0 }
+        };
+
+        var tripPointToUpdate = new TripPoint
+        {
+            Id = tripPointId,
+            TripDayId = tripDayId,
+            Name = "Trip point to be updated",
+            Comment = "Test Comment",
+            PredictedCost = 100,
+            StartTime = TimeOnly.Parse("14:00"),
+            EndTime = TimeOnly.Parse("15:00"),
+            Place = new CustomPlace { Id = Guid.NewGuid(), Name = "Test Place", City = "Test City", Country = "Test Country", Latitude = 0, Longitude = 0 }
+        };
+
+        var transferPoint1 = new TransferPoint
+        {
+            Id = Guid.NewGuid(),
+            TripDayId = tripDayId,
+            FromTripPointId = existingTripPoint1.Id,
+            ToTripPointId = existingTripPoint2.Id,
+            TransferTime = TimeSpan.FromMinutes(30)
+        };
+
+        var transferPoint2 = new TransferPoint
+        {
+            Id = Guid.NewGuid(),
+            TripDayId = tripDayId,
+            FromTripPointId = existingTripPoint2.Id,
+            ToTripPointId = tripPointToUpdate.Id,
+            TransferTime = TimeSpan.FromMinutes(30)
+        };
+
+        var tripPointRequest = new TripPointRequestDTO
+        {
+            TripDayId = tripDayId,
+            Name = "Updated Trip Point",
+            Comment = "Updated Comment",
+            PredictedCost = 150,
+            StartTime = TimeOnly.Parse("11:30"),
+            EndTime = TimeOnly.Parse("11:40"),
+            Place = new PlaceRequestDTO { Name = "Test Place", City = "Test City", Country = "Test Country", Latitude = 0, Longitude = 0 }
+        };
+
+        var trip = new Trip
+        {
+            UserId = userId,
+            CurrencyCode = "USD",
+            Name = "Test Trip",
+            TripDays = new List<TripDay> { new TripDay { Id = tripDayId, Date = DateOnly.FromDateTime(DateTime.Now) } }
+        };
+
+        await _dbContext.Trips.AddAsync(trip);
+        await _dbContext.TripPoints.AddRangeAsync(existingTripPoint1, existingTripPoint2, tripPointToUpdate);
+        await _dbContext.TransferPoints.AddRangeAsync(transferPoint1, transferPoint2);
+        await _dbContext.SaveChangesAsync();
+
+        _mockNBPService.Setup(s => s.GetRateAsync(It.IsAny<string>(), It.IsAny<DateOnly?>()))
+            .ReturnsAsync(2.0m);
+
+        _mockPlacesService.Setup(s => s.AddPlaceAsync(It.IsAny<PlaceRequestDTO>()))
+            .ReturnsAsync(new PlaceDetailsDTO { Id = Guid.NewGuid(), Name = tripPointRequest.Place.Name, City = tripPointRequest.Place.City, Country = tripPointRequest.Place.Country, Latitude = tripPointRequest.Place.Latitude, Longitude = tripPointRequest.Place.Longitude });
+
+        // Act
+        var result = await _tripPointsService.EditTripPointAsync(userId, tripPointId, tripPointRequest);
+
+        // Assert
+        Assert.True(result);
+        Assert.Null(await _dbContext.TransferPoints.FindAsync(transferPoint1.Id));
+        Assert.Null(await _dbContext.TransferPoints.FindAsync(transferPoint2.Id));
+    }
 }

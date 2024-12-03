@@ -61,8 +61,7 @@ public class PlacesService(TravelBuddyDbContext dbContext, IGeoapifyService geoa
         }
         else if (newPlace is CustomPlace customPlace)
         {
-            var categories = await _dbCache.GetCategoriesAsync();
-            customPlace.PlaceCategory = categories?.FirstOrDefault(c => c.Id == place.CategoryId);
+            customPlace.SuperCategoryId = place.SuperCategoryId;
         }
 
         var validationContext = new ValidationContext(newPlace);
@@ -131,6 +130,8 @@ public class PlacesService(TravelBuddyDbContext dbContext, IGeoapifyService geoa
                     Country = p.Country,
                     State = p.State,
                     City = p.City,
+                    Street = p.Street,
+                    HouseNumber = p.HouseNumber,
                 };
             }).ToList() ?? [];
     }
@@ -154,35 +155,44 @@ public class PlacesService(TravelBuddyDbContext dbContext, IGeoapifyService geoa
             Longitude = place.Longitude,
         };
 
-        if (place is ProviderPlace) // TODO Add AverageCostPerPerson, AverageTimeSpent, AverageRating
+        if (place is ProviderPlace)
         {
             ProviderPlace providerPlace = await _dbContext.Places
                 .OfType<ProviderPlace>()
                 .Include(p => p.Categories)
                 .Include(p => p.Conditions)
+                .Include(p => p.Reviews)
                 .Where(p => p.Id == place.Id)
                 .FirstAsync();
 
             placeDetails.ProviderId = providerPlace.ProviderId;
-            placeDetails.Categories = providerPlace?.Categories?
+            placeDetails.Categories = providerPlace.Categories?
                 .Select(c => new PlaceCategoryDTO
                 {
                     Id = c.Id,
                     Name = c.Name,
                 }).ToList();
-            placeDetails.Conditions = providerPlace?.Conditions?
+            placeDetails.Conditions = providerPlace.Conditions?
                 .Select(c => new PlaceConditionDTO
                 {
                     Id = c.Id,
                     Name = c.Name,
                 }).ToList();
+
+            placeDetails.AverageCostPerPerson = providerPlace.AverageCostPerPerson.HasValue ? Math.Round(providerPlace.AverageCostPerPerson.Value, 2) : null; // TODO add currency conversion in future
+            placeDetails.AverageTimeSpent = providerPlace.AverageTimeSpent;
+            placeDetails.AverageRating = providerPlace.AverageRating;
         }
-        else if (place is CustomPlace customPlace && customPlace.PlaceCategory is not null)
+        else if (place is CustomPlace customPlace && customPlace.SuperCategoryId is not null)
         {
+            PlaceCategory superCategory = await _dbContext.PlaceCategories
+                .Where(c => c.Id == customPlace.SuperCategoryId)
+                .FirstAsync();
+
             placeDetails.SuperCategory = new PlaceCategoryDTO
             {
-                Id = customPlace.PlaceCategory.Id,
-                Name = customPlace.PlaceCategory.Name,
+                Id = superCategory.Id,
+                Name = superCategory.Name,
             };
         }
 

@@ -18,7 +18,8 @@
     },
     "android": {
       "package": "com.zpitravelbuddy.travelbuddy",
-      "userInterfaceStyle": "automatic"
+      "userInterfaceStyle": "automatic",
+      "permissions": ["android.permission.SCHEDULE_EXACT_ALARM"]
     },
     "web": {
       "bundler": "metro",
@@ -26,6 +27,13 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
+      [
+        "expo-notifications",
+        {
+          "defaultChannel": "default"
+        }
+      ],
+      "expo-calendar",
       "expo-router",
       "expo-font",
       "expo-secure-store",

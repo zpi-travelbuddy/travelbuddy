@@ -19,8 +19,7 @@ public class ProviderPlace : Place
     {
         get
         {
-            decimal? average = Reviews?.Average(r => r.ActualCostPerPerson);
-            return average.HasValue ? Math.Round(average.Value, 2) : null;
+            return Reviews?.Average(r => r.ActualCostPerPerson);
         }
     }
 

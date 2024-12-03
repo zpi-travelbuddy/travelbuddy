@@ -24,15 +24,26 @@ import { useAnimatedKeyboard } from "react-native-reanimated";
 import TripPointTypePicker from "@/components/TripPointTypePicker";
 import { CreateTripPointRequest, TripPointDetails } from "@/types/TripDayData";
 import { Place } from "@/types/Place";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import {
+  useGlobalSearchParams,
+  useLocalSearchParams,
+  useRouter,
+} from "expo-router";
 import LoadingView from "./LoadingView";
 import { useSnackbar } from "@/context/SnackbarContext";
 import useTripDetails from "@/composables/useTripDetails";
 import usePlaceDetails from "@/composables/usePlace";
 import { useAuth } from "@/app/ctx";
-import { API_ADDING_TRIP_POINT } from "@/constants/Endpoints";
+import {
+  API_ADDING_TRIP_POINT,
+  ATTRACTION_DETAILS_ENDPOINT,
+  PLACE_DETAILS_ENDPOINT,
+} from "@/constants/Endpoints";
 
 const { height, width } = Dimensions.get("window");
+
+const OVERLAPPING_TRIP_POINTS_MESSAGE =
+  "An error occurred while creating a trip point. Trip point overlaps with another trip point.";
 
 const AddingTripPointView = () => {
   const theme = useTheme();
@@ -40,10 +51,12 @@ const AddingTripPointView = () => {
   const router = useRouter();
   const { showSnackbar } = useSnackbar();
 
-  const params = useLocalSearchParams();
-  const { trip_id, day_id } = params;
+  const { trip_id, day_id, date, attractionProviderId } =
+    useLocalSearchParams();
 
-  const { date } = useLocalSearchParams();
+  useEffect(() => {
+    console.log(attractionProviderId);
+  }, [attractionProviderId]);
 
   useAnimatedKeyboard();
 
@@ -59,7 +72,12 @@ const AddingTripPointView = () => {
     placeDetails: destinationDetails,
     loading: destinationLoading,
     error: destinationError,
-  } = usePlaceDetails(tripDetails?.destinationId);
+  } = usePlaceDetails(
+    attractionProviderId
+      ? (attractionProviderId as string)
+      : tripDetails?.destinationId,
+    attractionProviderId ? ATTRACTION_DETAILS_ENDPOINT : PLACE_DETAILS_ENDPOINT,
+  );
 
   const [tripPointName, setTripPointName] = useState("");
 
@@ -72,6 +90,7 @@ const AddingTripPointView = () => {
   const [comment, setComment] = useState<string>("");
   const [tripPointType, setTripPointType] =
     useState<TripPointType>("attraction");
+
   const [startTime, setStartTime] = useState<Date>(roundToNearestQuarterHour());
   const [endTime, setEndTime] = useState<Date>(
     addHoursToTheSameDay(startTime, 1),
@@ -110,8 +129,23 @@ const AddingTripPointView = () => {
       setCountry(destinationDetails.country || "");
       setState(destinationDetails.state || "");
       setCity(destinationDetails.city || "");
-      setStreet(destinationDetails.street || "");
-      setHouseNumber(destinationDetails.houseNumber || "");
+      if (attractionProviderId) {
+        setTripPointName(destinationDetails.name || "");
+        setStreet(destinationDetails.street || "");
+        setHouseNumber(destinationDetails.houseNumber || "");
+        setLatitude(destinationDetails.latitude || null);
+        setLongitude(destinationDetails.longitude || null);
+        setLatitudeText(
+          destinationDetails.latitude
+            ? destinationDetails.latitude.toString()
+            : "",
+        );
+        setLongitudeText(
+          destinationDetails.longitude
+            ? destinationDetails.longitude.toString()
+            : "",
+        );
+      }
     }
   }, [destinationDetails]);
 
@@ -192,10 +226,7 @@ const AddingTripPointView = () => {
   };
 
   const handleErrorMessage = (errorData: any) => {
-    if (
-      errorData ===
-      "An error occurred while creating a trip point. Trip point overlaps with another trip point."
-    ) {
+    if (errorData === OVERLAPPING_TRIP_POINTS_MESSAGE) {
       return "Punkt podróży nakłada się na inny punkt podróży";
     }
     return errorData;
@@ -206,7 +237,6 @@ const AddingTripPointView = () => {
   ) => {
     try {
       setLoading(true);
-
       const response = await api!.post<TripPointDetails>(
         API_ADDING_TRIP_POINT,
         tripPointRequest,
@@ -218,9 +248,12 @@ const AddingTripPointView = () => {
       }
 
       showSnackbar("Punkt wycieczki zapisany!");
-      router.back();
+      if (attractionProviderId)
+        router.replace(`/(auth)/(tabs)/trips/details/${trip_id}/day/${day_id}`);
+      else router.back();
       router.setParams({
         refresh: "true",
+        attractionProviderId: null,
       });
     } catch (err: any) {
       console.error(

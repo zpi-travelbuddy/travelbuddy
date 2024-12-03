@@ -28,17 +28,27 @@ import {
   SEARCH_TRIP_POINT_ICON,
   MOTORBIKE_ICON,
   WALK_ICON,
+  ADD_NOTIFICATION_ICON,
+  REMOVE_NOTIFICATION_ICON,
+  CALENDAR_ADD_ICON,
 } from "@/constants/Icons";
 import { Option } from "@/types/TripDayData";
 import useTripDayDetails from "@/composables/useTripDay";
 import { useSnackbar } from "@/context/SnackbarContext";
 import { useAuth } from "@/app/ctx";
-
-import { formatTimeRange } from "@/utils/TimeUtils";
+import { conditionalItem } from "@/utils/ArrayUtils";
+import { formatTimeRange, formatMinutes } from "@/utils/TimeUtils";
 import ActionTextButtons from "@/components/ActionTextButtons";
 import CustomModal from "@/components/CustomModal";
 import { useDeleteTripPoint } from "@/composables/useTripPoint";
 import ActionMenuBottomSheet from "@/components/ActionMenu/ActionMenuBottomSheet";
+import { useTripNotificationManager } from "@/hooks/useTripNotificationManager";
+import {
+  cancelNotification,
+  schedulePushNotification,
+} from "@/utils/notifications";
+import NotificationFormBottomSheet from "@/components/NotificationFormBottomSheet";
+import { addEventToMainCalendar } from "@/utils/calendar";
 
 const { width } = Dimensions.get("window");
 
@@ -48,6 +58,7 @@ enum VisibilityState {
   None = "none",
   TripPoint = "trip-point",
   Transfer = "transfer",
+  NotificationForm = "notification-form",
 }
 
 type TransferPointData =
@@ -62,6 +73,13 @@ const TripDayView = () => {
   const { api } = useAuth();
   const { trip_id, day_id, refresh } = params;
   const { showSnackbar } = useSnackbar();
+
+  const {
+    isRegistered,
+    registerNotification,
+    unregisterNotification,
+    getNotificationId,
+  } = useTripNotificationManager();
 
   const [selectedTripPoint, setSelectedTripPoint] =
     useState<TripPointCompact | null>(null);
@@ -81,6 +99,11 @@ const TripDayView = () => {
     loading: deleteTripPointLoading,
     error: deleteTripPointError,
   } = useDeleteTripPoint();
+
+  const selectedTripPointDate =
+    selectedTripPoint && tripDay
+      ? new Date(`${tripDay.date}T${selectedTripPoint.startTime}`)
+      : null;
 
   const transferPointMap = useMemo(() => {
     const map = new Map<string, TransferPoint>();
@@ -103,6 +126,8 @@ const TripDayView = () => {
   );
   const [isTripPointSheetVisible, setIsTripPointSheetVisible] =
     useState<boolean>(false);
+  const [isNotificationFormVisible, setIsNotificationFormVisible] =
+    useState<boolean>(false);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
 
   const options: Option[] = useMemo(
@@ -124,7 +149,14 @@ const TripDayView = () => {
         icon: SEARCH_TRIP_POINT_ICON,
         label: "Wyszukaj",
         onPress: () => {
-          router.push("/explore");
+          router.push({
+            pathname: "/explore",
+            params: {
+              trip_id: trip_id,
+              day_id: day_id,
+              date: new Date(tripDay?.date as string).toLocaleDateString(),
+            },
+          });
           setIsVisible(VisibilityState.None);
         },
       },
@@ -495,17 +527,47 @@ const TripDayView = () => {
 
   const hideModal = () => {
     setIsModalVisible(false);
-    setSelectedTripPoint(null);
   };
 
   const onCloseBottomSheet = () => {
     console.log("Close bottom sheet");
     setIsTripPointSheetVisible(false);
-    if (!isModalVisible) setSelectedTripPoint(null);
+  };
+
+  const handleScheduleNotification = async (
+    minutes: number,
+  ): Promise<boolean> => {
+    if (!selectedTripPoint) return false;
+
+    if (!tripDay?.date || !selectedTripPointDate) {
+      showSnackbar("Wystąpił błąd", "error");
+      return false;
+    }
+
+    const parsedDate = new Date(
+      selectedTripPointDate.getTime() - minutes * 60 * 1000,
+    );
+
+    if (parsedDate < new Date()) {
+      showSnackbar("Nie można ustawić przypomnienia w przeszłości", "error");
+      return false;
+    }
+
+    const newNotificationId = await schedulePushNotification(
+      selectedTripPoint.name,
+      `Zaczyna się za ${formatMinutes(minutes)}`,
+      parsedDate,
+    );
+    await registerNotification(selectedTripPoint.id, newNotificationId);
+
+    return true;
   };
 
   const getActionsForSelectedTripPoint: Action[] = useMemo(() => {
     if (!selectedTripPoint) return [];
+
+    const notificationId = getNotificationId(selectedTripPoint.id);
+
     return [
       {
         label: "Szczegóły punktu wycieczki",
@@ -525,6 +587,53 @@ const TripDayView = () => {
           // router.push(`/trips/edit/${selectedTrip.id}`);
         },
       },
+      ...conditionalItem(
+        !!selectedTripPointDate && selectedTripPointDate > new Date(),
+        {
+          label: notificationId ? "Usuń przypomnienie" : "Ustaw przypomnienie",
+          icon: notificationId
+            ? REMOVE_NOTIFICATION_ICON
+            : ADD_NOTIFICATION_ICON,
+          onPress: async () => {
+            if (notificationId) {
+              try {
+                await cancelNotification(notificationId);
+                await unregisterNotification(selectedTripPoint.id);
+              } catch (error: any) {
+                console.error("Error while setting notification", error);
+                showSnackbar("Wystąpił błąd", "error");
+              }
+            } else {
+              console.log(`Dodaj`);
+              setIsTripPointSheetVisible(false);
+              setIsNotificationFormVisible(true);
+            }
+          },
+        },
+      ),
+      {
+        label: "Dodaj do kalendarza",
+        icon: CALENDAR_ADD_ICON,
+        onPress: () => {
+          if (tripDay?.date === undefined) return;
+
+          const startDate = new Date(
+            `${tripDay?.date}T${selectedTripPoint.startTime}`,
+          );
+          const endDate = new Date(
+            `${tripDay?.date}T${selectedTripPoint.endTime}`,
+          );
+
+          const data = {
+            title: selectedTripPoint.name,
+            startDate,
+            endDate,
+            timezone: "GMT+1",
+          };
+
+          addEventToMainCalendar(data);
+        },
+      },
       {
         label: "Usuń punkt wycieczki",
         icon: DELETE_ICON,
@@ -535,7 +644,7 @@ const TripDayView = () => {
         },
       },
     ];
-  }, [selectedTripPoint]);
+  }, [selectedTripPoint, getNotificationId]);
 
   const hideAll = () => {
     console.log("Hide all");
@@ -654,6 +763,22 @@ const TripDayView = () => {
           actions={getActionsForSelectedTripPoint}
           isVisible={isTripPointSheetVisible}
           onClose={onCloseBottomSheet}
+        />
+
+        <NotificationFormBottomSheet
+          isVisible={isNotificationFormVisible}
+          onClose={() => setIsNotificationFormVisible(false)}
+          onCancel={() => {
+            setIsNotificationFormVisible(false);
+            setIsTripPointSheetVisible(true);
+          }}
+          onSave={async (minutes) => {
+            const didSchedule = await handleScheduleNotification(minutes);
+            if (didSchedule) {
+              setIsNotificationFormVisible(false);
+              setIsTripPointSheetVisible(true);
+            }
+          }}
         />
       </GestureHandlerRootView>
       <LoadingView show={loadingOverlay} />

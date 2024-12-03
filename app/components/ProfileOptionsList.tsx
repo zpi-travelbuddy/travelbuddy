@@ -1,90 +1,92 @@
-import React, { useEffect, useState } from "react";
-import { FlatList, StyleSheet, Text, TouchableOpacity } from "react-native";
+import React from "react";
+import {
+  FlatList,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { Checkbox } from "react-native-paper";
 import { MD3ThemeExtended } from "@/constants/Themes";
 import { useTheme } from "react-native-paper";
 import {
   Category,
-  CategoryProfile,
+  CATEGORY_LIST,
   Condition,
-  ConditionProfile,
+  CONDITION_LIST,
   ProfileType,
 } from "@/types/Profile";
 
 const categoryLabels: Record<string, string> = {
+  catering: "Restauracje",
   activity: "Aktywności",
-  commercial: "Komercja",
+  commercial: "Sklepy",
   entertainment: "Rozrywka",
-  heritage: "Dziedzictwo",
+  heritage: "Zabytki",
   leisure: "Wypoczynek",
+  national_park: "Parki narodowe",
   natural: "Przyroda",
-  national_park: "Park Narodowy",
-  tourism: "Turystyka",
   religion: "Religia",
   sport: "Sport",
-  catering: "Catering",
+  tourism: "Turystyka",
+};
+
+const conditionLabels: Record<string, string> = {
+  dogs: "Psy dozwolone",
+  egg_free: "Bez jajek",
+  fee: "Płatne",
+  gluten_free: "Bez glutenu",
+  halal: "Halal",
+  internet_access: "Dostęp do internetu",
+  kosher: "Koszerne",
+  no_dogs: "Bez psów",
+  no_fee: "Bez opłat",
+  organic: "Ekologiczne",
+  soy_free: "Bez soi",
+  sugar_free: "Bez cukru",
+  vegetarian: "Wegetariańskie",
+  vegan: "Wegańskie",
+  wheelchair: "Dostępne dla wózków",
 };
 
 interface ProfileListProps {
   profileType: ProfileType;
-  profile?: CategoryProfile | ConditionProfile;
-  items: (Category | Condition)[];
+  selectedIds: string[];
+  onChange: (id: string) => void;
 }
 
 const ProfileOptionsList: React.FC<ProfileListProps> = ({
   profileType,
-  profile,
-  items,
+  selectedIds,
+  onChange,
 }) => {
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const theme = useTheme();
   const styles = createStyles(theme as MD3ThemeExtended);
-
-  // Funkcja do zaznaczania/odznaczania
-  const toggleSelection = (id: string) => {
-    setSelectedIds((prev) =>
-      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id],
-    );
-  };
-
-  // Ustawienie początkowego stanu na podstawie profilu
-  useEffect(() => {
-    if (profile) {
-      if (profileType === "Category" && "categories" in profile) {
-        setSelectedIds(
-          profile.categories?.map((category) => category.id) || [],
-        );
-      } else if (profileType === "Condition" && "conditions" in profile) {
-        setSelectedIds(
-          profile.conditions?.map((condition) => condition.id) || [],
-        );
-      }
-    }
-  }, [profile, profileType]);
 
   const renderItem = ({ item }: { item: Category | Condition }) => {
     const isSelected = selectedIds.includes(item.id);
     const label =
-      profileType === "Category" ? categoryLabels[item.name] : item.name;
+      profileType === "Category"
+        ? categoryLabels[item.name] || item.name
+        : conditionLabels[item.name] || item.name;
 
     return (
-      <TouchableOpacity
-        style={styles.item}
-        onPress={() => toggleSelection(item.id)}
-      >
+      <TouchableOpacity style={styles.item} onPress={() => onChange(item.id)}>
         <Checkbox
           status={isSelected ? "checked" : "unchecked"}
-          onPress={() => toggleSelection(item.id)}
+          onPress={() => onChange(item.id)}
           color={theme.colors.primary}
         />
-        <Text style={styles.itemText}>{label}</Text>
+        <View style={styles.textContainer}>
+          <Text style={styles.itemText}>{label}</Text>
+        </View>
       </TouchableOpacity>
     );
   };
 
   return (
     <FlatList
-      data={items} // Przekazujemy odpowiednią tablicę (categories lub conditions)
+      data={profileType === "Category" ? CATEGORY_LIST : CONDITION_LIST}
       renderItem={renderItem}
       keyExtractor={(item) => item.id}
       numColumns={2}
@@ -110,10 +112,14 @@ const createStyles = (theme: MD3ThemeExtended) =>
       marginVertical: 10,
       flex: 1,
     },
+    textContainer: {
+      flex: 1,
+      marginLeft: 10,
+    },
     itemText: {
       ...theme.fonts.bodyLarge,
-      marginLeft: 10,
       color: theme.colors.onSurface,
+      flexWrap: "wrap",
     },
   });
 
