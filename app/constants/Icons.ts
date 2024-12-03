@@ -55,3 +55,9 @@ export const VEGE_ICON = "food-drumstick-off";
 export const DEFAULT_ICON_SIZE = 24;
 export const NON_STANDARD_TRANSFER_ICON = "compass-outline";
 export const MARKER_ICON = "map-marker";
+
+// Other
+
+export const CALENDAR_ADD_ICON = "event";
+export const ADD_NOTIFICATION_ICON = "notifications";
+export const REMOVE_NOTIFICATION_ICON = "notifications-off";
