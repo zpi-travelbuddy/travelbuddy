@@ -33,6 +33,7 @@
           "defaultChannel": "default"
         }
       ],
+      "expo-calendar",
       "expo-router",
       "expo-font",
       "expo-secure-store",
