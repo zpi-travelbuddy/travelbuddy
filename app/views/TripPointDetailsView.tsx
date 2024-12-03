@@ -56,10 +56,9 @@ const parseTripPoint = (
 
   const category = tripPoint.category?.name || "Brak danych";
 
-  const address =
-    tripPoint.place != null
-      ? formatAddress(tripPoint.place, false)
-      : "Brak danych";
+  const address = tripPoint.place
+    ? formatAddress(tripPoint.place, false)
+    : "Brak danych";
 
   const predictedCost =
     tripPoint.predictedCost != null
@@ -77,15 +76,13 @@ const parseTripPoint = (
         )
       : "Brak danych";
 
-  const startTime =
-    tripPoint.startTime != null
-      ? getTimeWithoutSeconds(tripPoint.startTime)
-      : "Brak danych";
+  const startTime = tripPoint.startTime
+    ? getTimeWithoutSeconds(tripPoint.startTime)
+    : "Brak danych";
 
-  const endTime =
-    tripPoint.endTime != null
-      ? getTimeWithoutSeconds(tripPoint.endTime)
-      : "Brak danych";
+  const endTime = tripPoint.endTime
+    ? getTimeWithoutSeconds(tripPoint.endTime)
+    : "Brak danych";
 
   const comment = tripPoint.comment || "Brak danych";
 
