@@ -83,6 +83,7 @@ const EditingTripPointView = () => {
 
   const [errors, setErrors] = useState<TripErrors>({});
   const [loading, setLoading] = useState<boolean>(false);
+  const [isAttraction, setIsAttraction] = useState<boolean>(false);
 
   const [expectedCost, setExpectedCost] = useState<number>(0);
   const [costType, setCostType] = useState<string>("perPerson");
@@ -97,16 +98,16 @@ const EditingTripPointView = () => {
   const [endTime, setEndTime] = useState<Date>(
     addHoursToTheSameDay(startTime, 1),
   );
-  const [country, setCountry] = useState<string>("");
-  const [state, setState] = useState<string>("");
-  const [street, setStreet] = useState<string>("");
-  const [city, setCity] = useState<string>("");
-  const [houseNumber, setHouseNumber] = useState<string>("");
+  const [country, setCountry] = useState<string | null>(null);
+  const [state, setState] = useState<string | null>(null);
+  const [street, setStreet] = useState<string | null>(null);
+  const [city, setCity] = useState<string | null>(null);
+  const [houseNumber, setHouseNumber] = useState<string | null>(null);
 
   const [longitude, setLongitude] = useState<number | null>(null);
   const [latitude, setLatitude] = useState<number | null>(null);
-  const [longitudeText, setLongitudeText] = useState<string>("");
-  const [latitudeText, setLatitudeText] = useState<string>("");
+  const [longitudeText, setLongitudeText] = useState<string | null>(null);
+  const [latitudeText, setLatitudeText] = useState<string | null>(null);
 
   const [isStartDatePickerVisible, setIsStartDatePickerVisible] =
     useState<boolean>(false);
@@ -140,13 +141,25 @@ const EditingTripPointView = () => {
   useEffect(() => {
     if (tripPointDetails) {
       console.log(JSON.stringify(tripPointDetails));
-      setTripPointName(tripPointDetails.name || "");
-      setCountry(tripPointDetails.place?.country || "");
-      setState(tripPointDetails.place?.state || "");
-      setCity(tripPointDetails.place?.city || "");
-      setStreet(tripPointDetails.place?.street || "");
-      setHouseNumber(tripPointDetails.place?.houseNumber || "");
+      setTripPointName(tripPointDetails.name);
+      setCountry(tripPointDetails.place?.country || null);
+      setState(tripPointDetails.place?.state || null);
+      setCity(tripPointDetails.place?.city || null);
+      setStreet(tripPointDetails.place?.street || null);
+      setHouseNumber(tripPointDetails.place?.houseNumber || null);
       setComment(tripPointDetails.comment || "");
+      // setLatitude(tripPointDetails.place?.latitude || null);
+      // setLongitude(tripPointDetails.place?.longitude || null);
+      // setLatitudeText(
+      //   tripPointDetails.place?.latitude
+      //     ? tripPointDetails.place?.latitude.toString()
+      //     : null,
+      // );
+      // setLongitudeText(
+      //   tripPointDetails.place?.longitude
+      //     ? tripPointDetails.place?.longitude.toString()
+      //     : null,
+      // );
       setTripPointCategory(
         tripPointDetails?.place?.superCategory ||
           getCategoryByName(DEFAULT_CATEGORY_NAME),
@@ -155,7 +168,9 @@ const EditingTripPointView = () => {
       setEndTime(convertTimestampToDateTime(tripPointDetails.endTime));
       setExpectedCost(tripPointDetails.predictedCost || 0);
     }
+    setIsAttraction(isAttraction || !!tripPointDetails?.place?.providerId);
   }, [tripPointDetails]);
+
 
   useEffect(() => {
     setErrors((prev) => ({
@@ -316,11 +331,12 @@ const EditingTripPointView = () => {
   };
 
   const handleCoordinateChange = (
-    coordinateText: string,
+    coordinateText: string | null,
     setCoordinate: React.Dispatch<React.SetStateAction<number | null>>,
     setErrorField: keyof TripErrors,
     maxValue: number,
   ) => {
+    if (!coordinateText) return;
     const numericValue = Number(coordinateText);
     if (!isNaN(numericValue) && Math.abs(numericValue) <= maxValue) {
       setErrors((prev) => ({ ...prev, [setErrorField]: "" }));
@@ -371,6 +387,7 @@ const EditingTripPointView = () => {
 
             <TextInput
               mode="outlined"
+              disabled={isAttraction}
               style={styles.textInput}
               label="Nazwa"
               value={tripPointName}
@@ -384,10 +401,16 @@ const EditingTripPointView = () => {
 
             <TextInput
               mode="outlined"
-              style={styles.textInput}
+              style={isAttraction ? styles.textInputDisabled : styles.textInput}
               label="Państwo"
-              value={country}
-              placeholder={country}
+              disabled={isAttraction}
+              value={
+                isAttraction
+                  ? country !== null
+                    ? country
+                    : "Brak"
+                  : country || ""
+              }
               onChangeText={handleChange(setCountry, "country")}
               error={!!errors.country}
             ></TextInput>
@@ -397,10 +420,12 @@ const EditingTripPointView = () => {
 
             <TextInput
               mode="outlined"
-              style={styles.textInput}
+              style={isAttraction ? styles.textInputDisabled : styles.textInput}
               label="Prowincja"
-              value={state}
-              placeholder={state}
+              disabled={isAttraction}
+              value={
+                isAttraction ? (state !== null ? state : "Brak") : state || ""
+              }
               onChangeText={handleChange(setState, "state")}
               error={!!errors.state}
             ></TextInput>
@@ -410,10 +435,12 @@ const EditingTripPointView = () => {
 
             <TextInput
               mode="outlined"
-              style={styles.textInput}
+              style={isAttraction ? styles.textInputDisabled : styles.textInput}
               label="Miasto"
-              value={city}
-              placeholder={city}
+              disabled={isAttraction}
+              value={
+                isAttraction ? (city !== null ? city : "Brak") : city || ""
+              }
               onChangeText={handleChange(setCity, "city")}
               error={!!errors.city}
             ></TextInput>
@@ -421,10 +448,16 @@ const EditingTripPointView = () => {
 
             <TextInput
               mode="outlined"
-              style={styles.textInput}
+              style={isAttraction ? styles.textInputDisabled : styles.textInput}
               label="Ulica"
-              value={street}
-              placeholder={street}
+              disabled={isAttraction}
+              value={
+                isAttraction
+                  ? street !== null
+                    ? street
+                    : "Brak"
+                  : street || ""
+              }
               onChangeText={handleChange(setStreet, "street")}
               error={!!errors.street}
             ></TextInput>
@@ -434,10 +467,16 @@ const EditingTripPointView = () => {
 
             <TextInput
               mode="outlined"
-              style={styles.textInput}
+              style={isAttraction ? styles.textInputDisabled : styles.textInput}
               label="Numer adresu"
-              value={houseNumber}
-              placeholder={houseNumber}
+              disabled={isAttraction}
+              value={
+                isAttraction
+                  ? houseNumber !== null
+                    ? houseNumber
+                    : "Brak"
+                  : houseNumber || ""
+              }
               onChangeText={handleChange(setHouseNumber, "houseName")}
               error={!!errors.houseNumber}
             ></TextInput>
@@ -447,9 +486,16 @@ const EditingTripPointView = () => {
 
             <TextInput
               mode="outlined"
-              style={styles.textInput}
+              style={isAttraction ? styles.textInputDisabled : styles.textInput}
               label="Szerokość geograficzna"
-              value={latitudeText}
+              disabled={isAttraction}
+              value={
+                isAttraction
+                  ? latitudeText !== null
+                    ? latitudeText
+                    : "Brak"
+                  : latitudeText || ""
+              }
               onChangeText={setLatitudeText}
               onEndEditing={handleLatitudeChange}
               keyboardType="numeric"
@@ -463,7 +509,14 @@ const EditingTripPointView = () => {
               mode="outlined"
               style={styles.textInput}
               label="Długość geograficzna"
-              value={longitudeText}
+              disabled={isAttraction}
+              value={
+                isAttraction
+                  ? longitudeText !== null
+                    ? longitudeText
+                    : "Brak"
+                  : longitudeText || ""
+              }
               onChangeText={setLongitudeText}
               onEndEditing={handleLongitudeChange}
               keyboardType="numeric"
@@ -477,7 +530,7 @@ const EditingTripPointView = () => {
               label={"Przewidywany koszt"}
               budget={expectedCost}
               currency={selectedCurrency}
-              disable={true}
+              currencyDisable={true}
               error={!!errors.expectedCost}
               handleBudgetChange={handleChange(setExpectedCost, "expectedCost")}
             />
@@ -517,6 +570,7 @@ const EditingTripPointView = () => {
             <TripPointTypePicker
               onPress={() => setIsSheetVisible(true)}
               selectedCategory={tripPointCategory}
+              disabled={isAttraction}
             />
 
             <TextInput
@@ -569,7 +623,7 @@ const EditingTripPointView = () => {
           title={"Wybierz rodzaj punktu wycieczki"}
           items={CategoryLabels}
           selectedItem={tripPointCategory?.name || DEFAULT_CATEGORY_NAME}
-          isVisible={isSheetVisible}
+          isVisible={isSheetVisible && !isAttraction}
           onSelect={(item: string) => {
             handleChangeTripPointCategory(item);
           }}
@@ -605,6 +659,12 @@ const createStyles = (theme: MD3Theme) =>
       height: 50,
       marginVertical: 10,
       backgroundColor: theme.colors.surface,
+    },
+    textInputDisabled: {
+      width: "90%",
+      height: 50,
+      marginVertical: 10,
+      backgroundColor: theme.colors.inverseOnSurface,
     },
     modal: {
       backgroundColor: theme.colors.surface,

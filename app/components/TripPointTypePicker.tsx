@@ -13,6 +13,7 @@ import { Category } from "@/types/TripDayData";
 interface TripPointCategoryPickerProps {
   selectedCategory: Category | undefined;
   onPress: () => void;
+  disabled?: boolean;
 }
 
 const { width } = Dimensions.get("window");
@@ -20,6 +21,7 @@ const { width } = Dimensions.get("window");
 const TripPointTypePicker: React.FC<TripPointCategoryPickerProps> = ({
   selectedCategory,
   onPress,
+  disabled = false,
 }) => {
   const theme = useTheme();
   const styles = createStyles(theme);
@@ -40,7 +42,12 @@ const TripPointTypePicker: React.FC<TripPointCategoryPickerProps> = ({
             {CategoryLabels[selectedCategory?.name || DEFAULT_CATEGORY_NAME]}
           </Text>
         </View>
-        <Button mode="outlined" style={styles.button} onPress={onPress}>
+        <Button
+          mode="outlined"
+          disabled={disabled}
+          style={styles.button}
+          onPress={onPress}
+        >
           Wybierz
         </Button>
       </View>

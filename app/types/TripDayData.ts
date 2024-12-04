@@ -12,7 +12,7 @@ export interface TripPointCompact {
 
 export interface TripPointRequest {
   name: string;
-  comment?: string;
+  comment: string | null;
   tripDayId: string;
   place: Place;
   predictedCost: number;
