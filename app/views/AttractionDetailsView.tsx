@@ -7,12 +7,12 @@ import { MD3ThemeExtended } from "@/constants/Themes";
 import { displayCost, displayTime, formatAddress } from "@/utils/TextUtils";
 import StarRatingDisplayComponent from "@/components/StarRatingDisplayComponent";
 import IconComponent from "@/components/IconComponent";
-import { CategoryIcons, CategoryLabels } from "@/types/Trip";
 import { useAttractionDetails } from "@/composables/usePlace";
 import LoadingView from "./LoadingView";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useSnackbar } from "@/context/SnackbarContext";
 import ConditionIcons from "@/components/ConditionIcons";
+import { CategoryIcons, CategoryLabels } from "@/types/Profile";
 
 const { height, width } = Dimensions.get("window");
 
@@ -30,11 +30,8 @@ const AttractionDetailsView = () => {
     place_id as string,
   );
 
-  useEffect(() => console.log(JSON.stringify(placeDetails)), [placeDetails]);
 
-  if (loading) {
-    return <LoadingView />;
-  }
+  if (loading) return <LoadingView />;
 
   if (error) {
     router.back();
@@ -70,9 +67,7 @@ const AttractionDetailsView = () => {
                 color={theme.colors.onSurface}
                 backgroundColor={theme.colors.primaryContainer}
               />
-              <Text style={styles.label}>
-                {CategoryLabels["attraction"]}
-              </Text>
+              <Text style={styles.label}>{CategoryLabels["attraction"]}</Text>
             </View>
 
             <Text style={styles.doubleSpace} variant="bodySmall">

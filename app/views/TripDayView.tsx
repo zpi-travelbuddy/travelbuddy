@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Fragment, useCallback, useMemo, useRef, useState } from "react";
 import { Dimensions, ScrollView, StyleSheet, View } from "react-native";
 import { useTheme, FAB, TextInput, Text } from "react-native-paper";
@@ -170,9 +171,8 @@ const TripDayView = () => {
 
   const selectedTransferPointData = useMemo(() => {
     const { fromTripPointId, toTripPointId } = selectedFromToTripPointId || {};
-    let transferPointData: TransferPointData | undefined = transferPointMap.get(
-      fromTripPointId as string,
-    );
+    const transferPointData: TransferPointData | undefined =
+      transferPointMap.get(fromTripPointId as string);
     if (!transferPointData) {
       return { fromTripPointId, toTripPointId };
     }
