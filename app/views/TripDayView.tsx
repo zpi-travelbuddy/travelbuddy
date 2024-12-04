@@ -580,8 +580,15 @@ const TripDayView = () => {
         icon: EDIT_ICON,
         onPress: () => {
           console.log(`Edytuj`);
+          console.log(tripDay?.date);
+          console.log();
           setIsVisible(VisibilityState.None);
-          // router.push(`/trips/edit/${selectedTrip.id}`);
+          router.push({
+            pathname: `/(auth)/(tabs)/trips/details/${trip_id}/day/${day_id}/tripPoints/edit/${selectedTripPoint.id}`,
+            params: {
+              date: new Date(tripDay?.date as string).toLocaleDateString(),
+            },
+          });
         },
       },
       ...conditionalItem(

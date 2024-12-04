@@ -1,4 +1,3 @@
-import { StyleSheet } from "react-native";
 import React from "react";
 import EditingTripPointView from "@/views/EditingTripPointView";
 
@@ -7,5 +6,3 @@ const EditingTripPoint = () => {
 };
 
 export default EditingTripPoint;
-
-const styles = StyleSheet.create({});

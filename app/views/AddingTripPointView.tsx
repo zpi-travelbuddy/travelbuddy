@@ -45,14 +45,13 @@ import {
   ATTRACTION_DETAILS_ENDPOINT,
   PLACE_DETAILS_ENDPOINT,
 } from "@/constants/Endpoints";
+import {
+  NEW_OVERLAPPING_ERROR_MESSAGE,
+  OVERLAPPING_TRIP_POINTS_MESSAGE,
+} from "@/constants/Messages";
+import { requiredFieldsForTripPoint } from "@/utils/validations";
 
 const { height, width } = Dimensions.get("window");
-
-const OVERLAPPING_TRIP_POINTS_MESSAGE =
-  "An error occurred while creating a trip point. Trip point overlaps with another trip point.";
-
-const NEW_OVERLAPPING_ERROR_MESSAGE =
-  "Godziny punktu podróży nakładają się na inny punkt podróży";
 
 const AddingTripPointView = () => {
   const theme = useTheme();
@@ -192,26 +191,6 @@ const AddingTripPointView = () => {
     }
   }, [errors.api]);
 
-  const requiredFields = [
-    {
-      field: "tripPointName",
-      errorMessage: "Nazwa punktu wycieczki jest wymagana.",
-    },
-    {
-      field: "country",
-      errorMessage: "Nazwa państwa jest wymagana.",
-    },
-    { field: "city", errorMessage: "Nazwa miasta jest wymagana." },
-    {
-      field: "startTime",
-      errorMessage: "Godzina rozpoczęcia jest wymagana.",
-    },
-    {
-      field: "endTime",
-      errorMessage: "Godzina zakończenia jest wymagana.",
-    },
-  ];
-
   const validateForm = () => {
     let hasErrors = false;
 
@@ -228,7 +207,7 @@ const AddingTripPointView = () => {
       ["api"]: "",
     }));
 
-    requiredFields.forEach(({ field, errorMessage }) => {
+    requiredFieldsForTripPoint.forEach(({ field, errorMessage }) => {
       const fieldValue = {
         tripPointName,
         country,

@@ -10,6 +10,7 @@ import {
 } from "react-native-paper";
 import {
   addHoursToTheSameDay,
+  convertTimestampToDateTime,
   formatTime,
   roundToNearestQuarterHour,
 } from "@/utils/TimeUtils";
@@ -36,9 +37,12 @@ import {
   CategoryLabels,
   DEFAULT_CATEGORY_NAME,
 } from "@/types/Profile";
-import AddingTripPointView from "./AddingTripPointView";
-import { invertRecord } from "@/utils/ArrayUtils";
 import { useGetCategories } from "@/composables/useCategoryCondition";
+import {
+  NEW_OVERLAPPING_ERROR_MESSAGE,
+  OVERLAPPING_TRIP_POINTS_MESSAGE,
+} from "@/constants/Messages";
+import { requiredFieldsForTripPoint } from "@/utils/validations";
 
 const { height, width } = Dimensions.get("window");
 
@@ -135,6 +139,7 @@ const EditingTripPointView = () => {
 
   useEffect(() => {
     if (tripPointDetails) {
+      console.log(JSON.stringify(tripPointDetails));
       setTripPointName(tripPointDetails.name || "");
       setCountry(tripPointDetails.place?.country || "");
       setState(tripPointDetails.place?.state || "");
@@ -146,8 +151,8 @@ const EditingTripPointView = () => {
         tripPointDetails?.place?.superCategory ||
           getCategoryByName(DEFAULT_CATEGORY_NAME),
       );
-      setStartTime(new Date(tripPointDetails.startTime));
-      setEndTime(new Date(tripPointDetails.endTime));
+      setStartTime(convertTimestampToDateTime(tripPointDetails.startTime));
+      setEndTime(convertTimestampToDateTime(tripPointDetails.endTime));
       setExpectedCost(tripPointDetails.predictedCost || 0);
     }
   }, [tripPointDetails]);
@@ -169,26 +174,6 @@ const EditingTripPointView = () => {
     }
   }, [errors.api]);
 
-  const requiredFields = [
-    {
-      field: "tripPointName",
-      errorMessage: "Nazwa punktu wycieczki jest wymagana.",
-    },
-    {
-      field: "country",
-      errorMessage: "Nazwa państwa jest wymagana.",
-    },
-    { field: "city", errorMessage: "Nazwa miasta jest wymagana." },
-    {
-      field: "startTime",
-      errorMessage: "Godzina rozpoczęcia jest wymagana.",
-    },
-    {
-      field: "endTime",
-      errorMessage: "Godzina zakończenia jest wymagana.",
-    },
-  ];
-
   const validateForm = () => {
     let hasErrors = false;
 
@@ -205,7 +190,7 @@ const EditingTripPointView = () => {
       ["api"]: "",
     }));
 
-    requiredFields.forEach(({ field, errorMessage }) => {
+    requiredFieldsForTripPoint.forEach(({ field, errorMessage }) => {
       const fieldValue = {
         tripPointName,
         country,
@@ -229,11 +214,8 @@ const EditingTripPointView = () => {
   };
 
   const handleErrorMessage = (errorData: any) => {
-    if (
-      errorData ===
-      "An error occurred while editing a trip point. Trip point overlaps with another trip point."
-    ) {
-      return "Godziny punktu podróży nakładają się na inny punkt podróży";
+    if (errorData === OVERLAPPING_TRIP_POINTS_MESSAGE) {
+      return NEW_OVERLAPPING_ERROR_MESSAGE;
     }
     return errorData;
   };
@@ -598,7 +580,7 @@ const EditingTripPointView = () => {
   );
 };
 
-export default AddingTripPointView;
+export default EditingTripPointView;
 
 const createStyles = (theme: MD3Theme) =>
   StyleSheet.create({

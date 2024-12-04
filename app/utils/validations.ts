@@ -54,3 +54,23 @@ export const validateTripForm = (
 
   return newErrors;
 };
+
+export const requiredFieldsForTripPoint = [
+  {
+    field: "tripPointName",
+    errorMessage: "Nazwa punktu wycieczki jest wymagana.",
+  },
+  {
+    field: "country",
+    errorMessage: "Nazwa państwa jest wymagana.",
+  },
+  { field: "city", errorMessage: "Nazwa miasta jest wymagana." },
+  {
+    field: "startTime",
+    errorMessage: "Godzina rozpoczęcia jest wymagana.",
+  },
+  {
+    field: "endTime",
+    errorMessage: "Godzina zakończenia jest wymagana.",
+  },
+];
