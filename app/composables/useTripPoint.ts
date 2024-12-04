@@ -17,11 +17,11 @@ export const useCreateTripPoint = () => {
         setLoading(true);
         setError(null);
         setData(null);
-        const response = await api!.post<TripPointResponse>(
+        const response = await api!.post<TripPointDetails>(
           API_TRIP_POINT,
           request,
         );
-        setData(response.data as TripPointResponse);
+        setData(response.data as TripPointDetails);
       } catch (err: any) {
         if (err.response && err.response.status === 400) {
           setError("Nie dodano punktu wycieczki. " + err.response.data);

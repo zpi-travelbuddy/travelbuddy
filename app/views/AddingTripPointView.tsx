@@ -34,15 +34,25 @@ import { useSnackbar } from "@/context/SnackbarContext";
 import useTripDetails from "@/composables/useTripDetails";
 import usePlaceDetails from "@/composables/usePlace";
 import { useAuth } from "@/app/ctx";
-import { API_TRIP_POINT } from "@/constants/Endpoints";
 import {
   CATEGORY_NAME_LIST,
   CategoryLabels,
   DEFAULT_CATEGORY_NAME,
 } from "@/types/Profile";
 import { useGetCategories } from "@/composables/useCategoryCondition";
+import {
+  API_TRIP_POINT,
+  ATTRACTION_DETAILS_ENDPOINT,
+  PLACE_DETAILS_ENDPOINT,
+} from "@/constants/Endpoints";
 
 const { height, width } = Dimensions.get("window");
+
+const OVERLAPPING_TRIP_POINTS_MESSAGE =
+  "An error occurred while creating a trip point. Trip point overlaps with another trip point.";
+
+const NEW_OVERLAPPING_ERROR_MESSAGE =
+  "Godziny punktu podróży nakładają się na inny punkt podróży";
 
 const AddingTripPointView = () => {
   const theme = useTheme();
@@ -50,10 +60,12 @@ const AddingTripPointView = () => {
   const router = useRouter();
   const { showSnackbar } = useSnackbar();
 
-  const params = useLocalSearchParams();
-  const { trip_id, day_id } = params;
+  const { trip_id, day_id, date, attractionProviderId } =
+    useLocalSearchParams();
 
-  const { date } = useLocalSearchParams();
+  useEffect(() => {
+    console.log(attractionProviderId);
+  }, [attractionProviderId]);
 
   useAnimatedKeyboard();
 
@@ -69,7 +81,12 @@ const AddingTripPointView = () => {
     placeDetails: destinationDetails,
     loading: destinationLoading,
     error: destinationError,
-  } = usePlaceDetails(tripDetails?.destinationId);
+  } = usePlaceDetails(
+    attractionProviderId
+      ? (attractionProviderId as string)
+      : tripDetails?.destinationId,
+    attractionProviderId ? ATTRACTION_DETAILS_ENDPOINT : PLACE_DETAILS_ENDPOINT,
+  );
 
   const {
     categories,
@@ -138,8 +155,23 @@ const AddingTripPointView = () => {
       setCountry(destinationDetails.country || "");
       setState(destinationDetails.state || "");
       setCity(destinationDetails.city || "");
-      setStreet(destinationDetails.street || "");
-      setHouseNumber(destinationDetails.houseNumber || "");
+      if (attractionProviderId) {
+        setTripPointName(destinationDetails.name || "");
+        setStreet(destinationDetails.street || "");
+        setHouseNumber(destinationDetails.houseNumber || "");
+        setLatitude(destinationDetails.latitude || null);
+        setLongitude(destinationDetails.longitude || null);
+        setLatitudeText(
+          destinationDetails.latitude
+            ? destinationDetails.latitude.toString()
+            : "",
+        );
+        setLongitudeText(
+          destinationDetails.longitude
+            ? destinationDetails.longitude.toString()
+            : "",
+        );
+      }
     }
   }, [destinationDetails]);
 
@@ -220,11 +252,8 @@ const AddingTripPointView = () => {
   };
 
   const handleErrorMessage = (errorData: any) => {
-    if (
-      errorData ===
-      "An error occurred while creating a trip point. Trip point overlaps with another trip point."
-    ) {
-      return "Godziny punktu podróży nakładają się na inny punkt podróży";
+    if (errorData === OVERLAPPING_TRIP_POINTS_MESSAGE) {
+      return NEW_OVERLAPPING_ERROR_MESSAGE;
     }
     return errorData;
   };
@@ -233,7 +262,6 @@ const AddingTripPointView = () => {
     console.log(JSON.stringify(tripPointRequest));
     try {
       setLoading(true);
-
       const response = await api!.post<TripPointDetails>(
         API_TRIP_POINT,
         tripPointRequest,
@@ -245,9 +273,12 @@ const AddingTripPointView = () => {
       }
 
       showSnackbar("Punkt wycieczki zapisany!");
-      router.back();
+      if (attractionProviderId)
+        router.replace(`/(auth)/(tabs)/trips/details/${trip_id}/day/${day_id}`);
+      else router.back();
       router.setParams({
         refresh: "true",
+        attractionProviderId: null,
       });
     } catch (err: any) {
       console.error(

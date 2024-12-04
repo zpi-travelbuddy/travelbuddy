@@ -184,15 +184,13 @@ const EditTripView = () => {
   }, [dateRange]);
 
   useEffect(() => {
-    if (editSuccess !== null) {
-      if (editSuccess) {
-        showSnackbar("Wycieczka została zapisana!", "success");
-        router.back();
-        router.setParams({
-          refresh: "true",
-        });
-      } else showSnackbar("Błąd przy zapisie wycieczki", "error");
-    }
+    if (editSuccess) {
+      showSnackbar("Wycieczka została zapisana!", "success");
+      router.back();
+      router.setParams({
+        refresh: "true",
+      });
+    } else showSnackbar("Błąd przy zapisie wycieczki", "error");
   }, [router, editSuccess]);
 
   // =====================
@@ -240,7 +238,10 @@ const EditTripView = () => {
         numberOfTravelers: "Liczba osób musi dodatnia.",
       }));
     }
-    if (!editTripRequest.budget) {
+    if (
+      !editTripRequest.budget &&
+      !(editTripRequest && editTripRequest.budget >= 0)
+    ) {
       hasErrors = true;
       setErrors((prev) => ({
         ...prev,

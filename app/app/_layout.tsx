@@ -17,6 +17,7 @@ import { SnackbarProvider } from "@/context/SnackbarContext";
 import { NavigationDataProvider } from "@/context/NavigationDataContext";
 import { AppSettingsProvider } from "@/context/AppSettingsContext";
 import Notification from "@/utils/notifications";
+import Calendar from "@/utils/calendar";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -83,6 +84,7 @@ export default () => {
         <RootLayout />
       </AuthProvider>
       <Notification />
+      <Calendar />
     </AppSettingsProvider>
   );
 };

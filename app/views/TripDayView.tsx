@@ -30,6 +30,7 @@ import {
   WALK_ICON,
   ADD_NOTIFICATION_ICON,
   REMOVE_NOTIFICATION_ICON,
+  CALENDAR_ADD_ICON,
 } from "@/constants/Icons";
 import { Option } from "@/types/TripDayData";
 import useTripDayDetails from "@/composables/useTripDay";
@@ -47,6 +48,7 @@ import {
   schedulePushNotification,
 } from "@/utils/notifications";
 import NotificationFormBottomSheet from "@/components/NotificationFormBottomSheet";
+import { addEventToMainCalendar } from "@/utils/calendar";
 
 const { width } = Dimensions.get("window");
 
@@ -147,7 +149,14 @@ const TripDayView = () => {
         icon: SEARCH_TRIP_POINT_ICON,
         label: "Wyszukaj",
         onPress: () => {
-          router.push("/explore");
+          router.push({
+            pathname: "/explore",
+            params: {
+              trip_id: trip_id,
+              day_id: day_id,
+              date: new Date(tripDay?.date as string).toLocaleDateString(),
+            },
+          });
           setIsVisible(VisibilityState.None);
         },
       },
@@ -599,6 +608,29 @@ const TripDayView = () => {
           },
         },
       ),
+      {
+        label: "Dodaj do kalendarza",
+        icon: CALENDAR_ADD_ICON,
+        onPress: () => {
+          if (tripDay?.date === undefined) return;
+
+          const startDate = new Date(
+            `${tripDay?.date}T${selectedTripPoint.startTime}`,
+          );
+          const endDate = new Date(
+            `${tripDay?.date}T${selectedTripPoint.endTime}`,
+          );
+
+          const data = {
+            title: selectedTripPoint.name,
+            startDate,
+            endDate,
+            timezone: "GMT+1",
+          };
+
+          addEventToMainCalendar(data);
+        },
+      },
       {
         label: "Usuń punkt wycieczki",
         icon: DELETE_ICON,

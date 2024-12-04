@@ -12,10 +12,15 @@ export const API_CURRENCY = "/trips/availableCurrencies";
 
 // Places
 export const API_PLACES_AUTOCOMPLETE = "/places/autocomplete";
+export const ATTRACTION_DETAILS_ENDPOINT = "/places/provider";
+export const PLACE_DETAILS_ENDPOINT = "/places";
 
 // Profiles
 export const API_CATEGORY_PROFILES = "/categoryProfiles";
 export const API_CONDITION_PROFILES = "/conditionProfiles";
+export const API_FAVOURITE_CATEGORY_PROFILE = "/favourites/categoryProfile";
+export const API_FAVOURITE_CONDITION_PROFILE = "/favourites/conditionProfile";
+export const API_FAVOURITE_PROFILES = "/favourites";
 
 // Categories & Conditions
 export const API_CATEGORIES = "/categoryProfiles/categories";

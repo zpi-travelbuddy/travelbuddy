@@ -18,6 +18,28 @@ export interface ConditionProfile extends Profile {
   conditions?: Condition[];
 }
 
+export interface ProfileRequest {
+  name: string;
+  profileType: ProfileType;
+  conditionIds?: string[];
+  categoryIds?: string[];
+}
+export interface EditProfileRequest extends ProfileRequest {
+  id: string;
+}
+
+export interface ProfileDetails {
+  id: string;
+  name: string;
+  categories?: Category[];
+  conditions?: Condition[];
+}
+
+export interface FavouriteProfileRequest {
+  id: string;
+  profileType: ProfileType;
+}
+
 export interface Condition {
   id: string;
   name: string;

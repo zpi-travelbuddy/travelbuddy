@@ -4,7 +4,10 @@ import { TripSummary, EditTripRequest, TripDetails } from "@/types/Trip";
 import { useAuth } from "@/app/ctx";
 import { API_TRIPS } from "@/constants/Endpoints";
 
-const useTripDetails = (tripId: string | null) => {
+const useTripDetails = (
+  tripId: string | null,
+  options: UseApiOptions = { immediate: true },
+) => {
   const [tripDetails, setTripDetails] = useState<TripDetails | undefined>(
     undefined,
   );
@@ -51,10 +54,10 @@ const useTripDetails = (tripId: string | null) => {
   }, [fetchTripDetails]);
 
   useEffect(() => {
-    if (tripId) {
+    if (tripId && options.immediate) {
       refetch();
     }
-  }, [tripId, refetch]);
+  }, [tripId, refetch, options.immediate]);
 
   return { tripDetails, tripSummary, loading, error, refetch };
 };
@@ -81,11 +84,9 @@ export const useEditTripDetails = (
     setSuccess(null);
 
     try {
-      console.log("Request: " + JSON.stringify(request));
       await api!.put(`${API_TRIPS}/${id}`, request);
       setSuccess(true);
     } catch (err: any) {
-      console.log("Error: " + JSON.stringify(err));
       setError(JSON.stringify(err) || "Wystąpił błąd");
       setSuccess(false);
     } finally {
