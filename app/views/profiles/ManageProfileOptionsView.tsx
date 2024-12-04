@@ -4,9 +4,9 @@ import CustomModal from "@/components/CustomModal";
 import { DELETE_ICON, STAR_ICON, STAR_OUTLINE_ICON } from "@/constants/Icons";
 import { MD3ThemeExtended } from "@/constants/Themes";
 import {
-  Category,
-  Condition,
+  CATEGORY_LIST,
   CategoryProfile,
+  CONDITION_LIST,
   ProfileType,
 } from "@/types/Profile";
 import { useNavigation, useRouter } from "expo-router";
@@ -15,24 +15,6 @@ import { SafeAreaView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { useTheme, Text } from "react-native-paper";
 import ProfileOptionsList from "@/components/ProfileOptionsList";
 import Icon from "react-native-vector-icons/MaterialIcons";
-
-const categories: Category[] = [
-  { id: "1", name: "activity", subCategories: [] },
-  { id: "2", name: "commercial", subCategories: [] },
-  { id: "3", name: "entertainment", subCategories: [] },
-  { id: "4", name: "heritage", subCategories: [] },
-  { id: "5", name: "leisure", subCategories: [] },
-  { id: "6", name: "natural", subCategories: [] },
-  { id: "7", name: "national_park", subCategories: [] },
-  { id: "8", name: "tourism", subCategories: [] },
-  { id: "9", name: "religion", subCategories: [] },
-  { id: "10", name: "sport", subCategories: [] },
-  { id: "11", name: "catering", subCategories: [] },
-];
-
-const conditions: Condition[] = [
-  { id: "1", name: "activity", subConditions: [] },
-];
 
 interface ManageProfileCategoryViewProps {
   profileType: ProfileType;
@@ -54,9 +36,9 @@ const ManageProfileCategoryView: React.FC<ManageProfileCategoryViewProps> = ({
     id: "123-456-789-000",
     name: "Zwiedzanie",
     categories: [
-      { id: "3", name: "entertainment", subCategories: [] },
-      { id: "4", name: "heritage", subCategories: [] },
-      { id: "5", name: "leisure", subCategories: [] },
+      { id: "3", name: "entertainment"},
+      { id: "4", name: "heritage"},
+      { id: "5", name: "leisure"},
     ],
   };
 
@@ -114,7 +96,7 @@ const ManageProfileCategoryView: React.FC<ManageProfileCategoryViewProps> = ({
         </TouchableOpacity>
       </View>
       <ProfileOptionsList
-        items={profileType === "Category" ? categories : conditions}
+        items={profileType === "Category" ? CATEGORY_LIST : CONDITION_LIST}
         profile={profile}
         profileType={profileType}
       />

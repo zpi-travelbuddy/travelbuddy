@@ -1,6 +1,6 @@
 import { useAuth } from "@/app/ctx";
-import { API_ADDING_TRIP_POINT } from "@/constants/Endpoints";
-import { CreateTripPointRequest, TripPointDetails } from "@/types/TripDayData";
+import { API_TRIP_POINT } from "@/constants/Endpoints";
+import { TripPointRequest, TripPointDetails } from "@/types/TripDayData";
 import { useState, useCallback, useEffect } from "react";
 
 // Maybe for future refactor
@@ -12,13 +12,13 @@ export const useCreateTripPoint = () => {
   const { api } = useAuth();
 
   const createTripPoint = useCallback(
-    async (request: CreateTripPointRequest) => {
+    async (request: TripPointRequest) => {
       try {
         setLoading(true);
         setError(null);
         setData(null);
         const response = await api!.post<TripPointResponse>(
-          API_ADDING_TRIP_POINT,
+          API_TRIP_POINT,
           request,
         );
         setData(response.data as TripPointResponse);

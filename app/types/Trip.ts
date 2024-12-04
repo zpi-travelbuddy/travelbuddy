@@ -25,17 +25,21 @@ export interface TripViewModel {
   conditionProfileName: string;
 }
 
-export interface TripDetails {
+export interface TripRequest {
   id: string;
   name: string;
   numberOfTravelers: number;
   startDate: string;
   endDate: string;
-  destinationId: string;
+  destinationProviderId: string;
   budget: number;
   currencyCode: string;
   categoryProfileId?: string | null;
   conditionProfileId?: string | null;
+}
+
+export interface TripDetails extends TripRequest {
+  destinationId: string;
   tripDays: TripDay[];
   isArchived?: boolean;
 }
@@ -63,78 +67,7 @@ export interface DateRange {
 export interface TripErrors {
   [key: string]: string | undefined;
 }
-
-export type TripPointType =
-  | "attraction"
-  | "food"
-  | "culture"
-  | "museum"
-  | "shop"
-  | "park"
-  | "religion"
-  | "music"
-  | "other";
-
-export type Condition =
-  | "internet_access"
-  | "wheelchair"
-  | "dogs"
-  | "vegetarian"
-  | "vegan"
-  | "no-dogs"
-  | "halal"
-  | "kosher"
-  | "organic"
-  | "gluten_free"
-  | "sugar_free"
-  | "egg_free"
-  | "soy_free";
-
-export const ConditionList: Condition[] = [
-  "internet_access",
-  "wheelchair",
-  "dogs",
-  "vegetarian",
-  "vegan",
-  "no-dogs",
-  "halal",
-  "kosher",
-  "organic",
-  "sugar_free",
-  "egg_free",
-  "soy_free",
-];
-
-export const AttractionTypeIcons: Record<TripPointType, string> = {
-  attraction: "camera",
-  food: "silverware-fork-knife",
-  culture: "drama-masks",
-  museum: "bank",
-  shop: "basket",
-  park: "pine-tree",
-  religion: "church",
-  music: "music-note",
-  other: "map-marker",
-};
-
-export const AttractionTypeLabels: Record<TripPointType, string> = {
-  attraction: "Atrakcja",
-  food: "Jedzenie",
-  culture: "Kultura",
-  museum: "Muzeum",
-  shop: "Sklep",
-  park: "Park",
-  religion: "Kult",
-  music: "Muzyka",
-  other: "Inne",
-};
-
-export interface EditTripRequest {
+export interface Condition {
+  id: string;
   name: string;
-  numberOfTravelers: number;
-  startDate: string;
-  endDate: string;
-  destinationProviderId: string;
-  budget: number;
-  currencyCode: string;
 }

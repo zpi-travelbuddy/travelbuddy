@@ -18,11 +18,15 @@ import ActionButtons from "@/components/ActionButtons";
 import TimePicker from "@/components/TimePicker";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import SettingsBottomSheet from "@/components/SettingsBottomSheet";
-import { AttractionTypeLabels, TripErrors, TripPointType } from "@/types/Trip";
+import { TripErrors } from "@/types/Trip";
 import { CALENDAR_ICON } from "@/constants/Icons";
 import { useAnimatedKeyboard } from "react-native-reanimated";
 import TripPointTypePicker from "@/components/TripPointTypePicker";
-import { CreateTripPointRequest, TripPointDetails } from "@/types/TripDayData";
+import {
+  TripPointRequest,
+  TripPointDetails,
+  Category,
+} from "@/types/TripDayData";
 import { Place } from "@/types/Place";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import LoadingView from "./LoadingView";
@@ -30,7 +34,13 @@ import { useSnackbar } from "@/context/SnackbarContext";
 import useTripDetails from "@/composables/useTripDetails";
 import usePlaceDetails from "@/composables/usePlace";
 import { useAuth } from "@/app/ctx";
-import { API_ADDING_TRIP_POINT } from "@/constants/Endpoints";
+import { API_TRIP_POINT } from "@/constants/Endpoints";
+import {
+  CATEGORY_NAME_LIST,
+  CategoryLabels,
+  DEFAULT_CATEGORY_NAME,
+} from "@/types/Profile";
+import { useGetCategories } from "@/composables/useCategoryCondition";
 
 const { height, width } = Dimensions.get("window");
 
@@ -61,6 +71,12 @@ const AddingTripPointView = () => {
     error: destinationError,
   } = usePlaceDetails(tripDetails?.destinationId);
 
+  const {
+    categories,
+    loading: categoriesLoading,
+    error: categoriesError,
+  } = useGetCategories();
+
   const [tripPointName, setTripPointName] = useState("");
 
   const [errors, setErrors] = useState<TripErrors>({});
@@ -70,8 +86,9 @@ const AddingTripPointView = () => {
   const [costType, setCostType] = useState<string>("perPerson");
   const selectedCurrency = tripDetails ? tripDetails.currencyCode : "EUR";
   const [comment, setComment] = useState<string>("");
-  const [tripPointType, setTripPointType] =
-    useState<TripPointType>("attraction");
+  const [tripPointCategory, setTripPointCategory] = useState<
+    Category | undefined
+  >();
   const [startTime, setStartTime] = useState<Date>(roundToNearestQuarterHour());
   const [endTime, setEndTime] = useState<Date>(
     addHoursToTheSameDay(startTime, 1),
@@ -93,6 +110,8 @@ const AddingTripPointView = () => {
     useState<boolean>(false);
   const [isSheetVisible, setIsSheetVisible] = useState<boolean>(false);
 
+  const [filteredCategories, setFilteredCategories] = useState<Category[]>([]);
+
   const handleChange = (
     setter: React.Dispatch<React.SetStateAction<any>>,
     field: keyof TripErrors = "",
@@ -104,6 +123,15 @@ const AddingTripPointView = () => {
       if (clearError && field) setErrors((prev) => ({ ...prev, [field]: "" }));
     };
   };
+
+  useEffect(() => {
+    setFilteredCategories(
+      categories.filter((category) =>
+        CATEGORY_NAME_LIST.includes(category.name),
+      ),
+    );
+    setTripPointCategory(getCategoryByName(DEFAULT_CATEGORY_NAME));
+  }, [categories]);
 
   useEffect(() => {
     if (destinationDetails) {
@@ -118,13 +146,13 @@ const AddingTripPointView = () => {
   useEffect(() => {
     setErrors((prev) => ({
       ...prev,
-      ["api"]: tripError || destinationError || "",
+      ["api"]: tripError || destinationError || categoriesError || "",
     }));
-  }, [tripError, destinationError]);
+  }, [tripError, destinationError, categoriesError]);
 
   useEffect(() => {
-    setLoading(tripLoading || destinationLoading || false);
-  }, [tripLoading, destinationLoading]);
+    setLoading(tripLoading || destinationLoading || categoriesLoading || false);
+  }, [tripLoading, destinationLoading, categoriesLoading]);
 
   useEffect(() => {
     if (errors.api) {
@@ -196,19 +224,18 @@ const AddingTripPointView = () => {
       errorData ===
       "An error occurred while creating a trip point. Trip point overlaps with another trip point."
     ) {
-      return "Punkt podróży nakłada się na inny punkt podróży";
+      return "Godziny punktu podróży nakładają się na inny punkt podróży";
     }
     return errorData;
   };
 
-  const handleCreateRequest = async (
-    tripPointRequest: CreateTripPointRequest,
-  ) => {
+  const handleCreateRequest = async (tripPointRequest: TripPointRequest) => {
+    console.log(JSON.stringify(tripPointRequest));
     try {
       setLoading(true);
 
       const response = await api!.post<TripPointDetails>(
-        API_ADDING_TRIP_POINT,
+        API_TRIP_POINT,
         tripPointRequest,
       );
 
@@ -239,6 +266,19 @@ const AddingTripPointView = () => {
     }
   };
 
+  const getCategoryByName = (categoryName: string): Category | undefined => {
+    console.log(filteredCategories);
+    return filteredCategories.find(
+      (category) => category.name === categoryName,
+    );
+  };
+
+  const handleChangeTripPointCategory = (item: string) => {
+    const category = getCategoryByName(item ?? DEFAULT_CATEGORY_NAME);
+    if (category) setTripPointCategory({ ...category });
+    else setTripPointCategory(undefined);
+  };
+
   const onCancel = () => {
     console.log("Anulowanie");
     router.back();
@@ -248,8 +288,9 @@ const AddingTripPointView = () => {
     setErrors((prev) => ({ ...prev, ["api"]: "" }));
     const hasErrors = validateForm();
     if (!hasErrors) {
-      const placeToRequest = {
+      const placeToRequest: Place = {
         name: tripPointName,
+        superCategoryId: tripPointCategory?.id,
         country: country,
         state: state,
         street: street,
@@ -267,7 +308,7 @@ const AddingTripPointView = () => {
         totalExpectedCost = numberOfTravelers * expectedCost;
       }
 
-      const tripPointRequest: CreateTripPointRequest = {
+      const tripPointRequest: TripPointRequest = {
         name: tripPointName,
         comment: comment,
         tripDayId: day_id as string,
@@ -484,7 +525,7 @@ const AddingTripPointView = () => {
 
             <TripPointTypePicker
               onPress={() => setIsSheetVisible(true)}
-              selectedTripPointType={tripPointType}
+              selectedCategory={tripPointCategory}
             />
 
             <TextInput
@@ -535,11 +576,11 @@ const AddingTripPointView = () => {
 
         <SettingsBottomSheet
           title={"Wybierz rodzaj punktu wycieczki"}
-          items={AttractionTypeLabels}
-          selectedItem={tripPointType}
+          items={CategoryLabels}
+          selectedItem={tripPointCategory?.name || DEFAULT_CATEGORY_NAME}
           isVisible={isSheetVisible}
           onSelect={(item: string) => {
-            setTripPointType(item as TripPointType);
+            handleChangeTripPointCategory(item);
           }}
           onClose={() => setIsSheetVisible(false)}
         />

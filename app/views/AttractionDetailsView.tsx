@@ -7,7 +7,7 @@ import { MD3ThemeExtended } from "@/constants/Themes";
 import { displayCost, displayTime, formatAddress } from "@/utils/TextUtils";
 import StarRatingDisplayComponent from "@/components/StarRatingDisplayComponent";
 import IconComponent from "@/components/IconComponent";
-import { AttractionTypeIcons, AttractionTypeLabels } from "@/types/Trip";
+import { CategoryIcons, CategoryLabels } from "@/types/Trip";
 import { useAttractionDetails } from "@/composables/usePlace";
 import LoadingView from "./LoadingView";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -65,13 +65,13 @@ const AttractionDetailsView = () => {
             <Text variant="bodySmall">Rodzaj</Text>
             <View style={styles.rowContainer}>
               <IconComponent
-                source={AttractionTypeIcons["attraction"]}
+                source={CategoryIcons["attraction"]}
                 iconSize={DEFAULT_ICON_SIZE}
                 color={theme.colors.onSurface}
                 backgroundColor={theme.colors.primaryContainer}
               />
               <Text style={styles.label}>
-                {AttractionTypeLabels["attraction"]}
+                {CategoryLabels["attraction"]}
               </Text>
             </View>
 

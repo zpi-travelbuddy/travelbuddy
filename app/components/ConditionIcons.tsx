@@ -2,7 +2,6 @@ import { StyleSheet, ViewStyle } from "react-native";
 import { Text, useTheme } from "react-native-paper";
 import React, { useEffect, useState } from "react";
 import IconRow from "./IconRow";
-import { Condition } from "@/types/Trip";
 import { MD3ThemeExtended } from "@/constants/Themes";
 import { PlaceCondition } from "@/types/Place";
 import { convertConditions } from "@/converters/placeConverter";
@@ -25,7 +24,6 @@ const ConditionIcons: React.FC<ConditionIconsProps> = ({
 
   useEffect(() => {
     setConditions(convertConditions([...placeConditions]));
-    
   }, [placeConditions]);
 
   if (conditions.length === 0)

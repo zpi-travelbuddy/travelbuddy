@@ -24,7 +24,7 @@ import CustomModal from "@/components/CustomModal";
 import { RenderItem } from "@/components/RenderItem";
 import ActionButtons from "@/components/ActionButtons";
 import ClickableInput from "@/components/ClickableInput";
-import { TripErrors, EditTripRequest } from "@/types/Trip";
+import { TripErrors, TripRequest } from "@/types/Trip";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import useTripDetails, {
   useEditTripDetails,
@@ -62,8 +62,8 @@ const EditTripView = () => {
     destinationName: new_destination_name,
   } = params;
 
-  const [editTripRequest, setEditTripRequest] = useState<EditTripRequest>(
-    {} as EditTripRequest,
+  const [editTripRequest, setEditTripRequest] = useState<TripRequest>(
+    {} as TripRequest,
   );
 
   const {

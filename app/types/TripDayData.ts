@@ -1,4 +1,4 @@
-import { Place } from "./Place";
+import { Place, PlaceDetails, PlaceOverview } from "./Place";
 
 export interface TripPointCompact {
   id: string;
@@ -10,7 +10,7 @@ export interface TripPointCompact {
   longitude?: number;
 }
 
-export interface CreateTripPointRequest {
+export interface TripPointRequest {
   name: string;
   comment?: string;
   tripDayId: string;
@@ -47,7 +47,7 @@ export interface TripPointDetails {
   closingTime?: string;
   status?: number;
   placeId: string;
-  place?: Place;
+  place?: PlaceOverview;
   review?: Review;
   category?: Category;
 }

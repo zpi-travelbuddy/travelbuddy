@@ -2,27 +2,29 @@ import { Dimensions, StyleSheet, Text, View } from "react-native";
 import React from "react";
 import { Button, MD3Theme, useTheme } from "react-native-paper";
 import IconComponent from "./IconComponent";
-import {
-  AttractionTypeIcons,
-  AttractionTypeLabels,
-  TripPointType,
-} from "@/types/Trip";
 import { DEFAULT_ICON_SIZE } from "@/constants/Icons";
+import {
+  CategoryIcons,
+  CategoryLabels,
+  DEFAULT_CATEGORY_NAME,
+} from "@/types/Profile";
+import { Category } from "@/types/TripDayData";
 
-interface TripPointTypePickerProps {
-  selectedTripPointType: TripPointType;
+interface TripPointCategoryPickerProps {
+  selectedCategory: Category | undefined;
   onPress: () => void;
 }
 
 const { width } = Dimensions.get("window");
 
-const TripPointTypePicker: React.FC<TripPointTypePickerProps> = ({
-  selectedTripPointType,
+const TripPointTypePicker: React.FC<TripPointCategoryPickerProps> = ({
+  selectedCategory,
   onPress,
 }) => {
   const theme = useTheme();
   const styles = createStyles(theme);
-  const iconName = AttractionTypeIcons[selectedTripPointType] as TripPointType;
+  const iconName =
+    CategoryIcons[selectedCategory?.name || DEFAULT_CATEGORY_NAME];
   return (
     <>
       <Text style={styles.header}>Rodzaj punktu wycieczki</Text>
@@ -35,7 +37,7 @@ const TripPointTypePicker: React.FC<TripPointTypePickerProps> = ({
             backgroundColor={theme.colors.primaryContainer}
           />
           <Text style={styles.label}>
-            {AttractionTypeLabels[selectedTripPointType]}
+            {CategoryLabels[selectedCategory?.name || DEFAULT_CATEGORY_NAME]}
           </Text>
         </View>
         <Button mode="outlined" style={styles.button} onPress={onPress}>
