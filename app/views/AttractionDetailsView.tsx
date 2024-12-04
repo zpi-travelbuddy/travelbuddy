@@ -30,7 +30,6 @@ const AttractionDetailsView = () => {
     place_id as string,
   );
 
-
   if (loading) return <LoadingView />;
 
   if (error) {

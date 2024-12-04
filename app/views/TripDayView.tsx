@@ -136,6 +136,7 @@ const TripDayView = () => {
         icon: CREATING_TRIP_POINT_ICON,
         label: "Utwórz",
         onPress: () => {
+          console.log("Data: " + tripDay?.date);
           router.push({
             pathname: `/trips/details/${trip_id}/day/${day_id}/tripPoints/create`,
             params: {

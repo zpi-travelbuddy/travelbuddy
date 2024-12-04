@@ -171,7 +171,6 @@ const EditingTripPointView = () => {
     setIsAttraction(isAttraction || !!tripPointDetails?.place?.providerId);
   }, [tripPointDetails]);
 
-
   useEffect(() => {
     setErrors((prev) => ({
       ...prev,

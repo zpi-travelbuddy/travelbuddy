@@ -590,7 +590,6 @@ const AddingTripPointView = () => {
               label="Data"
               left={<TextInput.Icon icon={CALENDAR_ICON} />}
               value={date as string}
-              placeholder={comment}
               editable={false}
               disabled={true}
             ></TextInput>
