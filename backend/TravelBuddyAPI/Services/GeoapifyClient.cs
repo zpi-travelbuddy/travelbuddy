@@ -46,7 +46,7 @@ public class GeoapifyClient : IGeoapifyService
                 .Select(p => new ProviderPlace
                 {
                     ProviderId = p.place_id,
-                    Name = p.name,
+                    Name = p.name_international?.en ?? p.name,
                     Country = p.country,
                     State = p.state,
                     City = p.city,
@@ -265,7 +265,7 @@ public class GeoapifyClient : IGeoapifyService
             .Select(p => new ProviderPlace
             {
                 ProviderId = p.place_id,
-                Name = p.name,
+                Name = p.name_international?.en ?? p.name,
                 Country = p.country,
                 State = p.state,
                 City = p.city,
