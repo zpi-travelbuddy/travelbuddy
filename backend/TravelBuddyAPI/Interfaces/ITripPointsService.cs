@@ -26,6 +26,7 @@ public interface ITripPointsService
         public const string TripPointWrongStatus = "Trip point has an incorrect status: ";
         public const string CreateTripPointReview = "An error occurred while creating a trip point review.";
         public const string EditTripPoint = "An error occurred while editing a trip point.";
+        public const string RejectTripPointReview = "An error occurred while rejecting a trip point review.";
     }
 
     /// <summary>
@@ -84,9 +85,17 @@ public interface ITripPointsService
     /// <param name="userId">The ID of the user reviewing the trip point.</param>
     /// <param name="tripPointId">The ID of the trip point to review.</param>
     /// <param name="tripPointReview">The details of the trip point review.</param>
-    /// <returns>A task that represents the asynchronous operation. The task result indicates whether the review was successful.</returns>
+    /// <returns>A task that represents the asynchronous operation. The task result contains the trip point review details.</returns>
     Task<TripPointReviewDetailsDTO> ReviewTripPointAsync(string userId, Guid tripPointId, TripPointReviewRequestDTO tripPointReview);
-    
+
+    /// <summary>
+    /// Rejects a trip point review.
+    /// </summary>
+    /// <param name="userId">The ID of the user rejecting the trip point review.</param>
+    /// <param name="tripPointId">The ID of the trip point to reject the review for.</param>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    Task RejectTripPointReviewAsync(string userId, Guid tripPointId);
+
     /// <summary>
     /// Retrieves the details of a specific trip point review.
     /// </summary>

@@ -412,4 +412,20 @@ public class TripPointsService(TravelBuddyDbContext dbContext, INBPService nbpSe
             throw new InvalidOperationException($"{ErrorMessage.CreateTripPointReview} {e.Message}");
         }
     }
+
+    public async Task RejectTripPointReviewAsync(string userId, Guid tripPointId)
+    {
+        TripPoint tripPoint = await _dbContext.TripPoints
+                .Include(td => td.TripDay)
+                    .ThenInclude(td => td != null ? td.Trip : null)
+                .Where(tp => tp.TripDay != null && tp.TripDay.Trip != null && tp.TripDay.Trip.UserId == userId && tp.Id == tripPointId)
+                .FirstOrDefaultAsync()
+                ?? throw new ArgumentException(ErrorMessage.TripPointNotFound);
+
+        if (tripPoint.Status != TripPointStatus.reviewPending) throw new InvalidOperationException($"{ErrorMessage.TripPointWrongStatus} {tripPoint.Status}");
+
+        tripPoint.Status = TripPointStatus.reviewRejected;
+        _dbContext.Update(tripPoint);
+        await _dbContext.SaveChangesAsync();
+    }
 }

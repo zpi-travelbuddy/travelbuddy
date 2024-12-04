@@ -24,6 +24,9 @@ public static class TripPointsEndpoints
         group.MapPost("/submitReview/{tripPointId}", ReviewTripPointAsync)
             .WithName("SubmitTripPointReview");
 
+        group.MapPatch("/rejectReview/{tripPointId}", RejectTripPointReviewAsync)
+            .WithName("RejectTripPointReviewAsync");
+
         group.MapGet("/reviews", GetTripPointsReviewsAsync)
             .WithName("GetTripPointsReviews");
 
@@ -76,6 +79,24 @@ public static class TripPointsEndpoints
         catch (InvalidOperationException ex)
         {
             return TypedResults.BadRequest(ex.Message);
+        }
+    }
+
+    private static async Task<Results<Ok<string>, NotFound<string>, BadRequest<string>>> RejectTripPointReviewAsync(Guid tripPointId, ITripPointsService tripPointsService, HttpContext httpContext)
+    {
+        try
+        {
+            var userId = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new InvalidOperationException("User not found");
+            await tripPointsService.RejectTripPointReviewAsync(userId, tripPointId);
+            return TypedResults.Ok("Trip point review rejected successfully.");
+        }
+        catch (ArgumentException ex) when (ex.Message.Contains(ITripPointsService.ErrorMessage.TripPointNotFound))
+        {
+            return TypedResults.NotFound($"{ITripPointsService.ErrorMessage.RejectTripPointReview} {ex.Message}");
+        }
+        catch (InvalidOperationException ex) when (ex.Message.Contains(ITripPointsService.ErrorMessage.TripPointWrongStatus))
+        {
+            return TypedResults.BadRequest($"{ITripPointsService.ErrorMessage.RejectTripPointReview} {ex.Message}");
         }
     }
 
