@@ -294,8 +294,9 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
             Date = day.Date,
         };
 
+        var tripPoints = await _tripPointsService.UpdateTripPointsStatusesAsync(day.TripPoints ?? []);
 
-        dayDetails.TripPoints = day.TripPoints!.Select(tp => new TripPointOverviewDTO
+        dayDetails.TripPoints = tripPoints.Select(tp => new TripPointOverviewDTO
         {
             Id = tp.Id,
             Name = tp.Name,
@@ -303,7 +304,8 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
             StartTime = tp.StartTime,
             EndTime = tp.EndTime,
             Latitude = tp.Place?.Latitude,
-            Longitude = tp.Place?.Longitude
+            Longitude = tp.Place?.Longitude,
+            Status = tp.Status
         }).ToList();
 
         dayDetails.TransferPoints = day.TransferPoints!.Select(tp => new TransferPointOverviewDTO
@@ -317,7 +319,6 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
         }).ToList();
 
         return dayDetails;
-
     }
 
     public async Task<TripDetailsDTO> GetTripDetailsAsync(string userId, Guid tripId)

@@ -9,6 +9,7 @@ using System.ComponentModel.DataAnnotations;
 using TravelBuddyAPI.DTOs.Place;
 using static TravelBuddyAPI.Interfaces.ITripPointsService;
 using TravelBuddyAPI.DTOs.PlaceCategory;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 
 namespace TravelBuddyAPI.Services;
 
@@ -195,6 +196,8 @@ public class TripPointsService(TravelBuddyDbContext dbContext, INBPService nbpSe
                 .FirstOrDefault()
                 ?? throw new InvalidOperationException(ErrorMessage.TripPointNotFound);
 
+            existingTripPoint = await UpdateTripPointStatusAsync(existingTripPoint);
+
             if (tripPoint.StartTime > tripPoint.EndTime) throw new ArgumentException(ErrorMessage.StartTimeAfterEndTime);
             if (tripDay.Date < DateOnly.FromDateTime(DateTime.Now)) throw new ArgumentException(ErrorMessage.TripDayInPast); // TODO possibly change to checking trip point status
 
@@ -218,7 +221,7 @@ public class TripPointsService(TravelBuddyDbContext dbContext, INBPService nbpSe
             if (currentlyPreviousTripPoint?.Id != newPreviousTripPoint?.Id)
             {
                 var conflictingTransferPoints = tripDay.TransferPoints?
-                    .Where(tp => tp.FromTripPointId == newPreviousTripPoint?.Id 
+                    .Where(tp => tp.FromTripPointId == newPreviousTripPoint?.Id
                                 || tp.ToTripPointId == existingTripPoint.Id
                                 || tp.FromTripPointId == existingTripPoint.Id)
                     .ToList() ?? [];
@@ -252,7 +255,7 @@ public class TripPointsService(TravelBuddyDbContext dbContext, INBPService nbpSe
 
             _dbContext.Update(existingTripPoint);
             await _dbContext.SaveChangesAsync();
-            await transaction.CommitAsync(); 
+            await transaction.CommitAsync();
 
             return true;
         }
@@ -275,6 +278,8 @@ public class TripPointsService(TravelBuddyDbContext dbContext, INBPService nbpSe
                 && tp.TripDay.Trip != null
                 && tp.TripDay.Trip.UserId == userId)
             .FirstOrDefaultAsync() ?? throw new InvalidOperationException(ErrorMessage.TripPointNotFound);
+
+        tripPoint = await UpdateTripPointStatusAsync(tripPoint);
 
         return new TripPointDetailsDTO
         {
@@ -375,6 +380,8 @@ public class TripPointsService(TravelBuddyDbContext dbContext, INBPService nbpSe
                     && tp.TripDay.Trip.UserId == userId)
                 .FirstOrDefaultAsync() ?? throw new InvalidOperationException(ErrorMessage.TripPointNotFound);
 
+            tripPoint = await UpdateTripPointStatusAsync(tripPoint);
+
             if (tripPointReview.ActualCostPerPerson * 100 % 1 != 0) throw new ArgumentException(ErrorMessage.TooManyDecimalPlaces);
             if (tripPoint.Review != null) throw new InvalidOperationException(ErrorMessage.TripPointReviewExists);
             if (tripPoint.Status != TripPointStatus.reviewPending) throw new InvalidOperationException($"{ErrorMessage.TripPointWrongStatus} {tripPoint.Status.ToString()}");
@@ -422,10 +429,50 @@ public class TripPointsService(TravelBuddyDbContext dbContext, INBPService nbpSe
                 .FirstOrDefaultAsync()
                 ?? throw new ArgumentException(ErrorMessage.TripPointNotFound);
 
+        tripPoint = await UpdateTripPointStatusAsync(tripPoint);
+
         if (tripPoint.Status != TripPointStatus.reviewPending) throw new InvalidOperationException($"{ErrorMessage.TripPointWrongStatus} {tripPoint.Status}");
 
         tripPoint.Status = TripPointStatus.reviewRejected;
         _dbContext.Update(tripPoint);
         await _dbContext.SaveChangesAsync();
+    }
+
+    public async Task<TripPoint> UpdateTripPointStatusAsync(TripPoint tripPoint)
+    {
+        TripPoint fetchedTripPoint = await _dbContext.TripPoints
+            .Include(tp => tp.TripDay)
+            .Where(tp => tp.Id == tripPoint.Id)
+            .FirstOrDefaultAsync() ?? throw new InvalidOperationException(ErrorMessage.TripPointNotFound);
+
+        return await UpdateTripPointStatusInternalAsync(fetchedTripPoint);
+    }
+
+    public async Task<List<TripPoint>> UpdateTripPointsStatusesAsync(List<TripPoint> tripPoints)
+    {
+        List<TripPoint> fetchedTripPoints = await _dbContext.TripPoints
+            .Include(tp => tp.TripDay)
+            .Where(tp => tripPoints.Select(tp => tp.Id).Contains(tp.Id))
+            .ToListAsync();
+
+        foreach (var tripPoint in fetchedTripPoints){
+            await UpdateTripPointStatusInternalAsync(tripPoint);
+        }
+
+        return fetchedTripPoints;
+    }
+
+    private async Task<TripPoint> UpdateTripPointStatusInternalAsync(TripPoint tripPoint)
+    {
+        DateTime? endDateTime = tripPoint.TripDay?.Date.ToDateTime(tripPoint.EndTime);
+
+        if (tripPoint.Status == TripPointStatus.planned && endDateTime < DateTime.Now)
+        {
+            tripPoint.Status = TripPointStatus.reviewPending;
+            _dbContext.Update(tripPoint);
+            await _dbContext.SaveChangesAsync();
+        }
+
+        return tripPoint;
     }
 }

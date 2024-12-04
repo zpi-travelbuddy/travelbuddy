@@ -1,5 +1,6 @@
 using TravelBuddyAPI.DTOs.TripPoint;
 using TravelBuddyAPI.DTOs.TripPointReview;
+using TravelBuddyAPI.Models;
 
 namespace TravelBuddyAPI.Interfaces;
 
@@ -111,4 +112,17 @@ public interface ITripPointsService
     /// <returns>A task that represents the asynchronous operation. The task result contains a list of trip point review overviews.</returns>
     Task<List<TripPointReviewOverviewDTO>> GetTripPointsReviewsAsync(string userId);
 
+    /// <summary>
+    /// Updates the status of a specific trip point.
+    /// </summary>
+    /// <param name="tripPoint">The trip point to update the status for.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains the updated trip point.</returns>
+    Task<TripPoint> UpdateTripPointStatusAsync(TripPoint tripPointId);
+
+    /// <summary>
+    /// Updates the statuses of multiple trip points.
+    /// </summary>
+    /// <param name="tripPoints">The trip points to update the statuses for.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains the updated trip points.</returns>
+    Task<List<TripPoint>> UpdateTripPointsStatusesAsync(List<TripPoint> tripPoints);
 }

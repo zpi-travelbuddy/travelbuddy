@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using TravelBuddyAPI.DTOs.Place;
+using TravelBuddyAPI.Enums;
 
 namespace TravelBuddyAPI.DTOs.TripPoint;
 
@@ -25,4 +26,6 @@ public class TripPointOverviewDTO
     public decimal? Latitude { get; set; }
 
     public decimal? Longitude { get; set; }
+
+    public TripPointStatus Status { get; set; }
 }
