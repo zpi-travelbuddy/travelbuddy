@@ -199,7 +199,6 @@ public class TripPointsService(TravelBuddyDbContext dbContext, INBPService nbpSe
             existingTripPoint = await UpdateTripPointStatusAsync(existingTripPoint);
 
             if (tripPoint.StartTime > tripPoint.EndTime) throw new ArgumentException(ErrorMessage.StartTimeAfterEndTime);
-            if (tripDay.Date < DateOnly.FromDateTime(DateTime.Now)) throw new ArgumentException(ErrorMessage.TripDayInPast); // TODO possibly change to checking trip point status
 
             List<TripPoint> overlappingTripPoints = tripDay.TripPoints
                 .Where(tp => tp.Id != tripPointId
