@@ -594,7 +594,7 @@ public class TripPointsServiceTest : IDisposable
             UserId = userId,
             CurrencyCode = "USD",
             Name = "Test Trip",
-            TripDays = new List<TripDay> { new TripDay { Id = tripDayId, Date = DateOnly.FromDateTime(DateTime.Now) } }
+            TripDays = new List<TripDay> { new TripDay { Id = tripDayId, Date = DateOnly.FromDateTime(DateTime.Now).AddDays(1) } }
         };
 
         var tripPoint = new TripPoint
