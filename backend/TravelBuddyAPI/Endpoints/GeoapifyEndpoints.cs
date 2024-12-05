@@ -48,7 +48,7 @@ public static class GeoapifyEndpoints
         }
     }
 
-    private static async Task<IResult> Isoline(IGeoapifyService client, double latitude, double longitude, int range, TransferMode mode, TrafficType traffic = TrafficType.approximated, Units units = Units.metric, IsolineType type = IsolineType.distance, TransferType routeType = TransferType.balanced)
+    private static async Task<IResult> Isoline(IGeoapifyService client, decimal latitude, decimal longitude, int range, TransferMode mode, TrafficType traffic = TrafficType.approximated, Units units = Units.metric, IsolineType type = IsolineType.distance, TransferType routeType = TransferType.balanced)
     {
         try
         {
@@ -61,7 +61,7 @@ public static class GeoapifyEndpoints
         }
     }
 
-    private static async Task<IResult> NearbyPlacesByCircle(IGeoapifyService client, ITravelBuddyDbCache cache, double latitude, double longitude, double radius, string categories, string? conditions = null, int? limit = null, int? offset = null)
+    private static async Task<IResult> NearbyPlacesByCircle(IGeoapifyService client, ITravelBuddyDbCache cache, decimal latitude, decimal longitude, double radius, string categories, string? conditions = null, int? limit = null, int? offset = null)
     {
         var (categoriesList, conditionsList) = await ParseCategoriesAndConditions(cache, categories, conditions);    
 
@@ -81,7 +81,7 @@ public static class GeoapifyEndpoints
         }
     }
 
-    private static async Task<IResult> NearbyPlacesByRectangle(IGeoapifyService client, ITravelBuddyDbCache cache, double startLatitude, double startLongitude, double endLatitude, double endLongitude, string categories, string? conditions = null, int? limit = null, int? offset = null)
+    private static async Task<IResult> NearbyPlacesByRectangle(IGeoapifyService client, ITravelBuddyDbCache cache, decimal startLatitude, decimal startLongitude, decimal endLatitude, decimal endLongitude, string categories, string? conditions = null, int? limit = null, int? offset = null)
     {
         var (categoriesList, conditionsList) = await ParseCategoriesAndConditions(cache, categories, conditions);
 
