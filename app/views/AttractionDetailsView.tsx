@@ -1,4 +1,11 @@
-import { StyleSheet, View, Image, Dimensions, ScrollView } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Image,
+  Dimensions,
+  ScrollView,
+  Linking,
+} from "react-native";
 import { useEffect, useMemo } from "react";
 import { useTheme, Text } from "react-native-paper";
 import { ADD_ICON, DEFAULT_ICON_SIZE, LOCATION_ICON } from "@/constants/Icons";
@@ -118,8 +125,18 @@ const AttractionDetailsView = () => {
         </ScrollView>
 
         <ActionButtons
-          onAction1={() => {
-            console.log("Opening Maps");
+          onAction1={async () => {
+            const name = placeDetails.name;
+            const [latitude, longitude] = [
+              placeDetails.latitude,
+              placeDetails.longitude,
+            ];
+            const url = `https://www.google.com/maps?q=${latitude},${longitude} (${name})`;
+            try {
+              await Linking.openURL(url);
+            } catch (error: any) {
+              console.error(error);
+            }
           }}
           action1ButtonLabel={"Mapa"}
           onAction2={() => {

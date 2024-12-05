@@ -75,10 +75,10 @@ const TripDayView = () => {
   const { showSnackbar } = useSnackbar();
 
   const {
-    isRegistered,
     registerNotification,
     unregisterNotification,
     getNotificationId,
+    isRegistered,
   } = useTripNotificationManager();
 
   const [selectedTripPoint, setSelectedTripPoint] =
@@ -508,11 +508,18 @@ const TripDayView = () => {
       const transferPoint = transferPointMap.get(fromTripPoint.id);
       const toTripPointId = sortedTripPoints[index + 1].id;
 
+      const toTripPoint = getTripPoint(toTripPointId);
+
+      if (!toTripPoint) {
+        return null;
+      }
+
       return (
         <TransferPointNode
           onPress={() =>
             handleTransferPointPress(fromTripPoint.id, toTripPointId)
           }
+          tripPointContext={{ fromTripPoint, toTripPoint }}
           transferPoint={transferPoint}
         />
       );
@@ -698,6 +705,7 @@ const TripDayView = () => {
                     onPress={() => handleTripPointPress(fromTripPoint)}
                     onLongPress={() => handleTripPointLongPress(fromTripPoint)}
                     tripPoint={fromTripPoint}
+                    isRegistered={isRegistered}
                   />
                   {renderTransferPoint(fromTripPoint, index)}
                 </Fragment>

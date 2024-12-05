@@ -1,5 +1,9 @@
-import { TransferPoint, TransferType } from "@/types/TripDayData";
-import { StyleSheet, View } from "react-native";
+import {
+  TransferPoint,
+  TransferType,
+  TripPointCompact,
+} from "@/types/TripDayData";
+import { Linking, StyleSheet, View } from "react-native";
 import { useTheme, Text, IconButton } from "react-native-paper";
 import { DashedVerticalLine } from "./DashedVerticalLine";
 import { formatMinutes } from "@/utils/TimeUtils";
@@ -10,12 +14,15 @@ import {
   EMPTY_ICON,
   NON_STANDARD_TRANSFER_ICON,
   MOTORBIKE_ICON,
+  NAVIGATION_ICON,
 } from "@/constants/Icons";
 import { useMemo } from "react";
 import { MD3ThemeExtended } from "@/constants/Themes";
 
 const VERTICAL_LINE_HEIGHT = 20;
 const ICON_SIZE = 40;
+
+const SMALL_ICON_SIZE = 30;
 
 // Defined in case the icon name is different than type name
 const TRANSFER_TYPE_MAP = {
@@ -26,19 +33,33 @@ const TRANSFER_TYPE_MAP = {
   null: NON_STANDARD_TRANSFER_ICON,
 };
 
+// For Google Maps travel mode
+const TRANSFER_TYPE_MAP_GOOGLE = {
+  [TransferType.Car]: "driving",
+  [TransferType.Motorbike]: "driving",
+  [TransferType.Bicycle]: "bicycling",
+  [TransferType.Walk]: "walking",
+  null: "driving",
+};
+
 interface TransferPointNodeProps {
   transferPoint?: TransferPoint;
+  tripPointContext: {
+    fromTripPoint: TripPointCompact;
+    toTripPoint: TripPointCompact;
+  };
   onPress?: () => void;
-  onPressEmpty?: () => void;
 }
 
 export const TransferPointNode = ({
   transferPoint,
+  tripPointContext,
   onPress,
-  onPressEmpty,
 }: TransferPointNodeProps) => {
   const theme = useTheme();
   const style = createStyles(theme as MD3ThemeExtended);
+
+  const { fromTripPoint, toTripPoint } = tripPointContext;
 
   const { mode, seconds } = transferPoint || {};
 
@@ -49,6 +70,12 @@ export const TransferPointNode = ({
   const icon = transferPoint
     ? TRANSFER_TYPE_MAP[mode as TransferType]
     : EMPTY_ICON;
+
+  const { latitude: fromLatitude, longitude: fromLongitude } = fromTripPoint;
+  const { latitude: toLatitude, longitude: toLongitude } = toTripPoint;
+
+  const canNavigate =
+    fromLatitude && fromLongitude && toLatitude && toLongitude;
 
   return (
     <View style={style.wrapper}>
@@ -61,6 +88,27 @@ export const TransferPointNode = ({
         onPress={onPress}
       />
       <DashedVerticalLine height={VERTICAL_LINE_HEIGHT} />
+      {transferPoint && canNavigate ? (
+        <View style={style.leftComponent}>
+          <IconButton
+            icon={NAVIGATION_ICON}
+            size={SMALL_ICON_SIZE}
+            style={style.leftComponentButton}
+            iconColor={theme.colors.onTertiaryContainer}
+            onPress={async () => {
+              const travelMode = TRANSFER_TYPE_MAP_GOOGLE[mode as TransferType];
+
+              const url = `https://www.google.com/maps/dir/?api=1&origin=${fromLatitude},${fromLongitude}&destination=${toLatitude},${toLongitude}&travelmode=${travelMode}`;
+
+              try {
+                await Linking.openURL(url);
+              } catch (error) {
+                console.error(error);
+              }
+            }}
+          />
+        </View>
+      ) : null}
       {minutes != null ? (
         <Text numberOfLines={1} style={style.durationText}>
           {formatMinutes(minutes)}
@@ -87,5 +135,17 @@ const createStyles = (theme: MD3ThemeExtended) =>
       transform: [{ translateY: -10 }],
       left: "100%",
       height: 20,
+    },
+    leftComponent: {
+      position: "absolute",
+      top: "50%",
+      transform: [{ translateY: -22 }],
+      right: "115%",
+      display: "flex",
+      alignItems: "center",
+    },
+    leftComponentButton: {
+      margin: 0,
+      backgroundColor: theme.colors.tertiaryContainer,
     },
   });
