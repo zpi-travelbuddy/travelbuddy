@@ -4,7 +4,7 @@ import { TripSummary, TripRequest, TripDetails } from "@/types/Trip";
 import { useAuth } from "@/app/ctx";
 import { API_TRIPS } from "@/constants/Endpoints";
 import { CategoryProfile, ConditionProfile } from "@/types/Profile";
-import { useDynamicProfiles, useGetProfile } from "./useProfiles";
+import { useGetProfile } from "./useProfiles";
 
 export const useTripDetails = (
   tripId: string | null,

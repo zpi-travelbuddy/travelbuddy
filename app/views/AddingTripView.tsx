@@ -298,8 +298,12 @@ const AddingTripView = () => {
               <FlatList
                 data={
                   profileType === "Category"
-                    ? categoryProfiles
-                    : conditionProfiles
+                    ? categoryProfiles.sort((a, b) =>
+                        a.name.localeCompare(b.name),
+                      )
+                    : conditionProfiles.sort((a, b) =>
+                        a.name.localeCompare(b.name),
+                      )
                 }
                 renderItem={({ item }) => (
                   <RenderItem

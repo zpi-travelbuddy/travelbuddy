@@ -86,7 +86,11 @@ const ProfileOptionsList: React.FC<ProfileListProps> = ({
 
   return (
     <FlatList
-      data={profileType === "Category" ? CATEGORY_LIST : CONDITION_LIST}
+      data={
+        profileType === "Category"
+          ? CATEGORY_LIST.sort((a, b) => a.name.localeCompare(b.name))
+          : CONDITION_LIST.sort((a, b) => a.name.localeCompare(b.name))
+      }
       renderItem={renderItem}
       keyExtractor={(item) => item.id}
       numColumns={2}
