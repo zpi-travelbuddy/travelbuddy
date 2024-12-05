@@ -21,3 +21,7 @@ export const API_CONDITION_PROFILES = "/conditionProfiles";
 export const API_FAVOURITE_CATEGORY_PROFILE = "/favourites/categoryProfile";
 export const API_FAVOURITE_CONDITION_PROFILE = "/favourites/conditionProfile";
 export const API_FAVOURITE_PROFILES = "/favourites";
+
+// Categories & Conditions
+export const API_CATEGORIES = "/categoryProfiles/categories";
+export const API_CONDITIONS = "/conditionProfiles/conditions";
