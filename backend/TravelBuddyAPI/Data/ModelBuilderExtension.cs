@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Identity.Client;
-using Microsoft.VisualBasic;
 using TravelBuddyAPI.Enums;
 using TravelBuddyAPI.Models;
+
+namespace TravelBuddyAPI.Data;
 
 public static class ModelBuilderExtension
 {
@@ -10,7 +10,7 @@ public static class ModelBuilderExtension
     {
 
         //CATEGORIES
-        var placeCategories = new Dictionary<String, PlaceCategory>
+        var placeCategories = new Dictionary<string, PlaceCategory>
         {
             {"other", new PlaceCategory { Id = Guid.NewGuid(), Name = "other" }},
             {"activity", new PlaceCategory { Id = Guid.NewGuid(), Name = "activity" }},
@@ -422,7 +422,7 @@ public static class ModelBuilderExtension
 
 
         //CONDITIONS
-        var placeConditions = new Dictionary<String, PlaceCondition>
+        var placeConditions = new Dictionary<string, PlaceCondition>
         {
 
             {"internet_access", new PlaceCondition { Id = Guid.NewGuid(), Name = "internet_access" }},
