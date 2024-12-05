@@ -45,10 +45,7 @@ import {
 } from "@/constants/Endpoints";
 import { useAuth } from "@/app/ctx";
 import ActionButtons from "@/components/ActionButtons";
-import {
-  useGetCategories,
-  useGetConditions,
-} from "@/composables/useCategoryCondition";
+import { useGetItems } from "@/composables/useCategoryCondition";
 
 interface ManageProfileCategoryViewProps {
   profileType: ProfileType;
@@ -67,7 +64,9 @@ const ManageProfileCategoryView: React.FC<ManageProfileCategoryViewProps> = ({
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
-  const [items, setItems] = useState<(Category | Condition)[]>([]);
+  const [filteredItems, setFilteredItems] = useState<(Category | Condition)[]>(
+    [],
+  );
 
   const { profile_id } = useLocalSearchParams();
 
@@ -100,28 +99,22 @@ const ManageProfileCategoryView: React.FC<ManageProfileCategoryViewProps> = ({
   } = useGetFavouriteProfiles();
 
   const {
-    categories,
-    loading: categoriesLoading,
-    error: categoriesError,
-  } = useGetCategories();
-
-  const {
-    conditions,
-    loading: conditionsLoading,
-    error: conditionsError,
-  } = useGetConditions();
+    items,
+    loading: itemsLoading,
+    error: itemsError,
+  } = useGetItems(profileType);
 
   useEffect(() => {
-    setItems(
+    setFilteredItems(
       profileType === "Category"
-        ? categories.filter((category) =>
+        ? (items as Category[]).filter((category) =>
             CATEGORY_NAME_LIST.includes(category.name),
           )
-        : conditions.filter((condition) =>
+        : (items as Condition[]).filter((condition) =>
             CONDITION_NAME_LIST.includes(condition.name),
           ),
     );
-  }, [categories, conditions]);
+  }, [items]);
 
   const hideModal = () => setIsModalVisible(false);
 
@@ -167,37 +160,13 @@ const ManageProfileCategoryView: React.FC<ManageProfileCategoryViewProps> = ({
 
   useEffect(() => {
     setLoading(
-      fetchLoading ||
-        editLoading ||
-        favouritesLoading ||
-        categoriesLoading ||
-        conditionsLoading ||
-        false,
+      fetchLoading || editLoading || favouritesLoading || itemsLoading || false,
     );
-  }, [
-    fetchLoading,
-    editLoading,
-    favouritesLoading,
-    categoriesLoading,
-    conditionsLoading,
-  ]);
+  }, [fetchLoading, editLoading, favouritesLoading, itemsLoading]);
 
   useEffect(() => {
-    setError(
-      fetchError ||
-        editError ||
-        favouritesError ||
-        categoriesError ||
-        conditionsError ||
-        "",
-    );
-  }, [
-    fetchError,
-    editError,
-    favouritesError,
-    categoriesError,
-    conditionsError,
-  ]);
+    setError(fetchError || editError || favouritesError || itemsError || "");
+  }, [fetchError, editError, favouritesError, itemsError]);
 
   const deleteProfile = useCallback(async () => {
     const endpoint =
@@ -290,7 +259,7 @@ const ManageProfileCategoryView: React.FC<ManageProfileCategoryViewProps> = ({
         </TouchableOpacity>
       </View>
       <ProfileOptionsList
-        items={items}
+        items={filteredItems}
         labels={
           profileType === "Category"
             ? CategoryLabelsForProfiles

@@ -44,7 +44,7 @@ export interface FavouriteProfileRequest {
 export interface Condition {
   id: string;
   name: string;
-  subConditions: Condition;
+  subConditions: Condition[];
 }
 
 export const CONDITION_NAME_LIST = [

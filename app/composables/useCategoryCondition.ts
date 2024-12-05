@@ -1,28 +1,41 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useAuth } from "@/app/ctx";
 import { API_CATEGORIES, API_CONDITIONS } from "@/constants/Endpoints";
-import { Category, Condition } from "@/types/Profile";
+import { Category, Condition, ProfileType } from "@/types/Profile";
 import { useState, useCallback, useEffect } from "react";
 
-export const useGetCategories = () => {
-  const [categories, setCategories] = useState<Category[]>([]);
+const errorMessages: Record<ProfileType, Record<string, string>> = {
+  Category: {
+    NotFound: "Preferencje nie zostały znalezione.",
+    Error: "Wystąpił błąd podczas pobierania danych preferencji.",
+  },
+  Condition: {
+    NotFound: "Udogodnienia nie zostały znalezione.",
+    Error: "Wystąpił błąd podczas pobierania danych udogodnień.",
+  },
+};
+
+export const useGetItems = <T>(profileType: ProfileType) => {
+  const [items, setItems] = useState<T[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   const { api } = useAuth();
 
-  const fetchCategories = useCallback(async () => {
+  const fetchItems = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
+      const endpoint =
+        profileType === "Category" ? API_CATEGORIES : API_CONDITIONS;
 
-      const response = await api!.get<Category[]>(API_CATEGORIES);
-      setCategories(response.data);
+      const response = await api!.get<T[]>(endpoint);
+      setItems(response.data);
     } catch (err: any) {
       if (err.response && err.response.status === 404) {
-        setError("Kategorie nie zostały znalezione.");
+        setError(errorMessages[profileType]["NotFound"]);
       } else {
-        setError("Wystąpił błąd podczas pobierania danych kategorii.");
+        setError(errorMessages[profileType]["Error"]);
       }
     } finally {
       setLoading(false);
@@ -30,40 +43,16 @@ export const useGetCategories = () => {
   }, [api]);
 
   useEffect(() => {
-    fetchCategories();
-  }, [fetchCategories]);
+    fetchItems();
+  }, [fetchItems]);
 
-  return { categories, loading, error, refetch: fetchCategories };
+  return { items, loading, error, refetch: fetchItems };
+};
+
+export const useGetCategories = () => {
+  return useGetItems<Category>("Category");
 };
 
 export const useGetConditions = () => {
-  const [conditions, setConditions] = useState<Condition[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const { api } = useAuth();
-
-  const fetchConditions = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      const response = await api!.get<Condition[]>(API_CONDITIONS);
-      setConditions(response.data);
-    } catch (err: any) {
-      if (err.response && err.response.status === 404) {
-        setError("Udogodnienia nie zostały znalezione.");
-      } else {
-        setError("Wystąpił błąd podczas pobierania danych udogodnień.");
-      }
-    } finally {
-      setLoading(false);
-    }
-  }, [api]);
-
-  useEffect(() => {
-    fetchConditions();
-  }, [fetchConditions]);
-
-  return { conditions, loading, error, refetch: fetchConditions };
+  return useGetItems<Condition>("Condition");
 };
