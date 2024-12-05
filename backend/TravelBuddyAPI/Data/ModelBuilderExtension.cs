@@ -723,8 +723,8 @@ public static class ModelBuilderExtension
 
             new TripPoint { Id = Guid.NewGuid(), Name = "Samolot MIG", Comment = "Czy to lata?", TripDayId = tripDays[3].Id, PredictedCost = 0, StartTime = new TimeOnly(12,30,0), EndTime = new TimeOnly(12,40,0), Status = TripPointStatus.reviewPending, PlaceId = providerPlaces[4].Id, ExchangeRate = 1},
             new TripPoint { Id = Guid.NewGuid(), Name = "Pomnik 60 Pułku Piechoty", TripDayId = tripDays[3].Id, PredictedCost = 0, StartTime = new TimeOnly(13,0,0), EndTime = new TimeOnly(13,10,0), Status = TripPointStatus.reviewPending, PlaceId = providerPlaces[5].Id, ExchangeRate = 1},
-            new TripPoint { Id = Guid.NewGuid(), Name = "Bistro Bravo", Comment = "Czas na jedzonko", TripDayId = tripDays[3].Id, PredictedCost = 30, StartTime = new TimeOnly(14,0,0), EndTime = new TimeOnly(15,30,0), Status = TripPointStatus.reviewPending, PlaceId = providerPlaces[6].Id, ExchangeRate = 1, OpeningTime = new TimeOnly(12,0,0), ClosingTime = new TimeOnly(0,0,0)},
-            new TripPoint { Id = Guid.NewGuid(), Name = "Parowóz TKi3-120", TripDayId = tripDays[3].Id, PredictedCost = 5, StartTime = new TimeOnly(16,30,0), EndTime = new TimeOnly(17,0,0), Status = TripPointStatus.reviewPending, PlaceId = CustomPlaces[5].Id, ExchangeRate = 1}
+            new TripPoint { Id = Guid.NewGuid(), Name = "Bistro Bravo", Comment = "Czas na jedzonko", TripDayId = tripDays[3].Id, PredictedCost = 30, StartTime = new TimeOnly(14,0,0), EndTime = new TimeOnly(15,30,0), Status = TripPointStatus.reviewCompleted, PlaceId = providerPlaces[6].Id, ExchangeRate = 1, OpeningTime = new TimeOnly(12,0,0), ClosingTime = new TimeOnly(0,0,0)},
+            new TripPoint { Id = Guid.NewGuid(), Name = "Parowóz TKi3-120", TripDayId = tripDays[3].Id, PredictedCost = 5, StartTime = new TimeOnly(16,30,0), EndTime = new TimeOnly(17,0,0), Status = TripPointStatus.reviewCompleted, PlaceId = CustomPlaces[5].Id, ExchangeRate = 1}
         };
 
         modelBuilder.Entity<TripPoint>().HasData(tripPoints);
@@ -781,7 +781,7 @@ public static class ModelBuilderExtension
             new TripPointReview {PlaceId = providerPlaces[15].Id, ActualCostPerPerson = 14, Rating = 5, ActualTimeSpent = new TimeSpan(1,20,0), Id = Guid.NewGuid(), UserId = Guid.NewGuid().ToString() , TripPointId = null, CurrencyCode = "PLN", ExchangeRate = 1},
 
             new TripPointReview {PlaceId = providerPlaces[6].Id, ActualCostPerPerson = 40, Rating = 5, ActualTimeSpent = new TimeSpan(1,0,0), Id = Guid.NewGuid(), UserId = "c324c822-30c1-7029-7c4f-00799aadf54a" , TripPointId = tripPoints[16].Id, CurrencyCode = "PLN", ExchangeRate = 1},
-            new TripPointReview {PlaceId = providerPlaces[7].Id, ActualCostPerPerson = 10, Rating = 4.5m, ActualTimeSpent = new TimeSpan(0,10,0), Id = Guid.NewGuid(), UserId = "c324c822-30c1-7029-7c4f-00799aadf54a" , TripPointId = tripPoints[17].Id, CurrencyCode = "PLN", ExchangeRate = 1},
+            new TripPointReview {PlaceId = CustomPlaces[5].Id, ActualCostPerPerson = 10, Rating = 4.5m, ActualTimeSpent = new TimeSpan(0,10,0), Id = Guid.NewGuid(), UserId = "c324c822-30c1-7029-7c4f-00799aadf54a" , TripPointId = tripPoints[17].Id, CurrencyCode = "PLN", ExchangeRate = 1},
         };
 
         modelBuilder.Entity<TripPointReview>().HasData(reviews);
