@@ -120,7 +120,8 @@ interface UseProfileByIdResult<T extends Profile> {
 
 export const useGetProfile = <T extends Profile>(
   profileType: ProfileType,
-  id: string,
+  id?: string,
+  options: UseApiOptions = { immediate: true },
 ): UseProfileByIdResult<T> => {
   const [profile, setProfile] = useState<T | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -150,25 +151,27 @@ export const useGetProfile = <T extends Profile>(
     } finally {
       setLoading(false);
     }
-  }, [api, endpoint]);
+  }, [id, api, endpoint]);
 
   useEffect(() => {
-    fetchProfile();
-  }, [fetchProfile]);
+    if (id && id.length > 0 && options.immediate) {
+      fetchProfile();
+    }
+  }, [id, fetchProfile, options.immediate]);
 
   return { profile, loading, error, refetch: fetchProfile };
 };
 
-type ProfileDictionary = Record<ProfileType, string>;
+type ProfileDictionary = Record<ProfileType, string | null>;
 
 interface FavouriteProfilesResponse {
-  categoryProfileId: string;
-  conditionProfileId: string;
+  categoryProfileId: string | null;
+  conditionProfileId: string | null;
 }
 
 export const useGetFavouriteProfiles = () => {
   const [favouriteProfiles, setFavouriteProfiles] = useState<ProfileDictionary>(
-    { Category: "", Condition: "" },
+    { Category: null, Condition: null },
   );
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);

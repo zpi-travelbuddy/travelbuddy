@@ -32,7 +32,8 @@ export interface TripDetails {
   startDate: string;
   endDate: string;
   destinationId: string;
-  budget: number;
+  predictedCost: number;
+  actualCost: number;
   currencyCode: string;
   categoryProfileId?: string | null;
   conditionProfileId?: string | null;
@@ -129,7 +130,7 @@ export const AttractionTypeLabels: Record<TripPointType, string> = {
   other: "Inne",
 };
 
-export interface EditTripRequest {
+export interface TripRequest {
   name: string;
   numberOfTravelers: number;
   startDate: string;
@@ -137,4 +138,6 @@ export interface EditTripRequest {
   destinationProviderId: string;
   budget: number;
   currencyCode: string;
+  categoryProfileId: string | null;
+  conditionProfileId: string | null;
 }

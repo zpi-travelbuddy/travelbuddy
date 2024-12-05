@@ -1,5 +1,6 @@
 import { useAuth } from "@/app/ctx";
-import { PlaceCategory, PlaceCondition, PlaceDetails } from "@/types/Place";
+import { PlaceDetails } from "@/types/Place";
+import { Condition } from "@/types/Trip";
 import { useState, useCallback, useEffect } from "react";
 
 const usePlaceDetails = (
@@ -22,10 +23,10 @@ const usePlaceDetails = (
         ...response.data,
         conditions: response.data.conditions
           ? response.data.conditions
-          : ([] as PlaceCondition[]),
+          : ([] as Condition[]),
         categories: response.data.categories
           ? response.data.categories
-          : ([] as PlaceCategory[]),
+          : ([] as Category[]),
       });
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {

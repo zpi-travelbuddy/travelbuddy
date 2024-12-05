@@ -32,15 +32,15 @@ import useTripDetails, {
 import { useSnackbar } from "@/context/SnackbarContext";
 import LoadingView from "./LoadingView";
 import { CALENDAR_ICON, MARKER_ICON } from "@/constants/Icons";
-import {
-  useGetCategoryProfiles,
-  useGetConditionProfiles,
-} from "@/composables/useProfiles";
 import usePlaceDetails from "@/composables/usePlace";
-import { convertTripResponseToEditTripRequest } from "@/converters/tripConverters";
+import { convertTripResponseToTripRequest } from "@/converters/tripConverters";
 import { Place } from "@/types/Place";
 import { getDisplayPlace } from "@/utils/TextUtils";
 import { Profile, ProfileType } from "@/types/Profile";
+import {
+  useDynamicProfiles,
+  useGetFavouriteProfiles,
+} from "@/composables/useProfiles";
 
 const { height, width } = Dimensions.get("window");
 
@@ -122,15 +122,19 @@ const EditTripView = () => {
 
   const [profileType, setProfileType] = useState<ProfileType>("Category");
 
-  const [categoryProfiles, setCategoryProfiles] = useState<Profile[]>([
-    { id: "1", name: "Profile1" },
-    { id: "2", name: "Zwiedzanie i jedzenie" },
-  ]);
+  const {
+    profiles: categoryProfiles,
+    loading: categoryProfilesLoading,
+    error: categoryProfilesError,
+    refetch: fetchCategoryProfiles,
+  } = useDynamicProfiles("Category");
 
-  const [conditionProfiles, setConditionProfiles] = useState<Profile[]>([
-    { id: "11", name: "Profile11" },
-    { id: "22", name: "Potrzebuję internetu dla psa" },
-  ]);
+  const {
+    profiles: conditionProfiles,
+    loading: conditionProfilesLoading,
+    error: conditionProfilesError,
+    refetch: fetchConditionProfiles,
+  } = useDynamicProfiles("Condition");
 
   // =====================
   // SECTION: useEffect hooks
@@ -149,17 +153,30 @@ const EditTripView = () => {
   }, [destinationDetails, new_destination_id]);
 
   useEffect(() => {
-    setError(tripError || destinationError || "");
+    setError(tripError || destinationError || editError || "");
   }, [tripError, destinationError, editError]);
 
   useEffect(() => {
-    setLoading(tripLoading || destinationLoading || editTripLoading || false);
-  }, [tripLoading, destinationLoading, editTripLoading]);
+    setLoading(
+      tripLoading ||
+        destinationLoading ||
+        editTripLoading ||
+        categoryProfilesLoading ||
+        conditionProfilesLoading ||
+        false,
+    );
+  }, [
+    tripLoading,
+    destinationLoading,
+    editTripLoading,
+    categoryProfilesLoading,
+    conditionProfilesLoading,
+  ]);
 
   useEffect(() => {
     if (tripDetails && destinationDetails) {
       setEditTripRequest(
-        convertTripResponseToEditTripRequest(
+        convertTripResponseToTripRequest(
           tripDetails,
           destinationDetails as Place,
         ),
@@ -169,8 +186,8 @@ const EditTripView = () => {
         startDate: new Date(tripDetails.startDate),
         endDate: new Date(tripDetails.endDate),
       });
-      setCategoryProfileId("null");
-      setConditionProfileId("null");
+      setCategoryProfileId(tripDetails?.categoryProfileId || null);
+      setConditionProfileId(tripDetails?.conditionProfileId || null);
     }
   }, [tripDetails, destinationDetails]);
 
@@ -184,20 +201,24 @@ const EditTripView = () => {
   }, [dateRange]);
 
   useEffect(() => {
-    if (editSuccess) {
-      showSnackbar("Wycieczka została zapisana!", "success");
-      router.back();
-      router.setParams({
-        refresh: "true",
-      });
-    } else showSnackbar("Błąd przy zapisie wycieczki", "error");
-  }, [router, editSuccess]);
+    if (editSuccess !== null) {
+      if (editSuccess) {
+        showSnackbar("Wycieczka została zapisana!", "success");
+        router.back();
+        router.setParams({
+          refresh: "true",
+        });
+      } else showSnackbar("Błąd przy zapisie wycieczki", "error");
+    }
+  }, [editSuccess]);
 
   // =====================
   // SECTION: Functions
   // =====================
 
   const saveTrip = async () => {
+    console.log(JSON.stringify(editTripRequest));
+
     if (!editTripRequest.destinationProviderId) {
       showSnackbar("Błąd z celem wycieczki!", "error");
       console.error(editTripRequest.destinationProviderId);
@@ -302,8 +323,14 @@ const EditTripView = () => {
 
   const handleProfileSelection = useCallback(
     (profile: Profile) => {
-      if (profileType === "Category") setCategoryProfileId(profile.id);
-      else setConditionProfileId(profile.id);
+      console.log("New selected profile: " + profile.name);
+      if (profileType === "Category") {
+        setCategoryProfileId(profile.id);
+        handleChange("categoryProfileId")(profile.id);
+      } else {
+        setConditionProfileId(profile.id);
+        handleChange("conditionProfileId")(profile.id);
+      }
     },
     [profileType],
   );
