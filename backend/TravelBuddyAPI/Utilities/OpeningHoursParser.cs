@@ -18,7 +18,7 @@ namespace TravelBuddyAPI.Utilities
                 return (TimeOnly.MinValue, TimeOnly.MaxValue);
             }
 
-            var rules = openingHours.Split([';', ','], StringSplitOptions.RemoveEmptyEntries);
+            var rules = openingHours.Split([';'], StringSplitOptions.RemoveEmptyEntries);
 
             foreach (var rule in rules)
             {
@@ -30,6 +30,11 @@ namespace TravelBuddyAPI.Utilities
                     var startDayStr = dateRangeMatch.Groups["startDay"].Value;
                     var endMonth = dateRangeMatch.Groups["endMonth"].Value;
                     var endDayStr = dateRangeMatch.Groups["endDay"].Value;
+
+                    if (!IsValidMonth(startMonth) || (!string.IsNullOrEmpty(endMonth) && !IsValidMonth(endMonth)))
+                    {
+                        continue; // Skip invalid month rules
+                    }
 
                     if (endMonth.IsNullOrEmpty())
                     {
@@ -86,14 +91,17 @@ namespace TravelBuddyAPI.Utilities
             var dayOfWeek = dayOfWeekMap[date.DayOfWeek];
 
             // Regex pattern to match optional day or day range with time range
-            var dayRangePattern = @$"(?:(?<days>{dayOfWeek}|(?:Mo|Tu|We|Th|Fr|Sa|Su)(?:-(?:Mo|Tu|We|Th|Fr|Sa|Su))?)\s)?(?<opensAt>\d{{2}}:\d{{2}})-(?<closesAt>\d{{2}}:\d{{2}})";
+            var dayRangePattern = @$"(?:(?<days>(?:Mo|Tu|We|Th|Fr|Sa|Su)(?:-(?:Mo|Tu|We|Th|Fr|Sa|Su))?(?:,(?:Mo|Tu|We|Th|Fr|Sa|Su)(?:-(?:Mo|Tu|We|Th|Fr|Sa|Su))?)*)\s)?(?<opensAt>\d{{2}}:\d{{2}})-(?<closesAt>\d{{2}}:\d{{2}})";
             var dayRangeMatch = Regex.Match(rule, dayRangePattern);
 
             if (dayRangeMatch.Success)
             {
                 var days = dayRangeMatch.Groups["days"].Value;
-                var opensAt = TimeOnly.Parse(dayRangeMatch.Groups["opensAt"].Value);
-                var closesAt = TimeOnly.Parse(dayRangeMatch.Groups["closesAt"].Value);
+                var opensAtStr = dayRangeMatch.Groups["opensAt"].Value;
+                var closesAtStr = dayRangeMatch.Groups["closesAt"].Value;
+
+                var opensAt = opensAtStr == "24:00" ? TimeOnly.MinValue : TimeOnly.Parse(opensAtStr);
+                var closesAt = closesAtStr == "24:00" ? TimeOnly.MaxValue : TimeOnly.Parse(closesAtStr);
 
                 // If days are specified, ensure the date's day of the week is within the specified range
                 if (string.IsNullOrEmpty(days) || IsDayInRange(dayOfWeek, days))
@@ -107,23 +115,37 @@ namespace TravelBuddyAPI.Utilities
 
         public static bool IsDayInRange(string dayOfWeek, string days)
         {
-            if (days.Contains("-"))
+            var dayRanges = days.Split(',');
+            foreach (var dayRange in dayRanges)
             {
-                var dayParts = days.Split('-');
-                var startDay = dayParts[0];
-                var endDay = dayParts[1];
+                if (dayRange.Contains("-"))
+                {
+                    var dayParts = dayRange.Split('-');
+                    var startDay = dayParts[0];
+                    var endDay = dayParts[1];
 
-                // Get day indices for range comparison
-                var daysOfWeek = new[] { "Mo", "Tu", "We", "Th", "Fr", "Sa", "Su" };
-                var startIdx = Array.IndexOf(daysOfWeek, startDay);
-                var endIdx = Array.IndexOf(daysOfWeek, endDay);
-                var dayIdx = Array.IndexOf(daysOfWeek, dayOfWeek);
+                    // Get day indices for range comparison
+                    var daysOfWeek = new[] { "Mo", "Tu", "We", "Th", "Fr", "Sa", "Su" };
+                    var startIdx = Array.IndexOf(daysOfWeek, startDay);
+                    var endIdx = Array.IndexOf(daysOfWeek, endDay);
+                    var dayIdx = Array.IndexOf(daysOfWeek, dayOfWeek);
 
-                return dayIdx >= startIdx && dayIdx <= endIdx;
+                    if (dayIdx >= startIdx && dayIdx <= endIdx)
+                    {
+                        return true;
+                    }
+                }
+                else
+                {
+                    // Single day case
+                    if (dayOfWeek == dayRange)
+                    {
+                        return true;
+                    }
+                }
             }
 
-            // Single day case
-            return dayOfWeek == days;
+            return false;
         }
 
         public static bool IsDateInRangeIgnoringYear(DateOnly testDate, DateOnly startDate, DateOnly endDate)
@@ -145,6 +167,11 @@ namespace TravelBuddyAPI.Utilities
         {
             var monthNumber = DateTime.ParseExact(month, "MMM", CultureInfo.InvariantCulture).Month;
             return new DateOnly(year, monthNumber, day);
+        }
+
+        public static bool IsValidMonth(string month)
+        {
+            return DateTime.TryParseExact(month, "MMM", CultureInfo.InvariantCulture, DateTimeStyles.None, out _);
         }
 
         [GeneratedRegex(@"(?<startMonth>\w{3})(?: (?<startDay>\d{1,2}))?(?:-(?<endMonth>\w{3})(?: (?<endDay>\d{1,2}))?)?")]
