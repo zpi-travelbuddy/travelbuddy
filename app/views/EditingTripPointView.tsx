@@ -29,7 +29,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import LoadingView from "./LoadingView";
 import { useSnackbar } from "@/context/SnackbarContext";
 import { useAuth } from "@/app/ctx";
-import { API_TRIP_POINT } from "@/constants/Endpoints";
+import { API_TRIP_POINT, PLACE_DETAILS_ENDPOINT } from "@/constants/Endpoints";
 import { useGetTripPoint } from "@/composables/useTripPoint";
 import useTripDetails from "@/composables/useTripDetails";
 import {
@@ -82,7 +82,7 @@ const EditingTripPointView = () => {
     error: placeError,
     success,
     refetch: fetchPlaceDetails,
-  } = usePlaceDetails(placeId, "/places", { immediate: false });
+  } = usePlaceDetails(placeId, PLACE_DETAILS_ENDPOINT, { immediate: false });
 
   const {
     items: categories,

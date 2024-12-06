@@ -519,7 +519,7 @@ const AddingTripPointView = () => {
 
             <TextInput
               mode="outlined"
-              style={styles.textInput}
+              style={isAttraction ? styles.textInputDisabled : styles.textInput}
               label="Długość geograficzna"
               disabled={isAttraction}
               value={
