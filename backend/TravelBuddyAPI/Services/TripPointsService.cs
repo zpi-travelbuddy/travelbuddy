@@ -312,12 +312,14 @@ public class TripPointsService(TravelBuddyDbContext dbContext, INBPService nbpSe
                     })
                     .FirstOrDefaultAsync() : null
             } : null,
-            Review = tripPoint.Review != null ? new TripPointReviewOverviewDTO
+            Review = tripPoint.Review != null ? new TripPointReviewDetailsDTO
             {
                 Id = tripPoint.Review.Id,
                 TripPointId = tripPoint.Review.TripPointId,
+                CurrencyCode = tripPoint.Review.ActualCostPerPerson.HasValue && tripPoint.Review.ExchangeRate.HasValue ? tripPoint.Review.CurrencyCode : null,
                 PlaceId = tripPoint.Review.PlaceId,
-                PlaceName = tripPoint.Place?.Name,
+                ActualCostPerPerson = tripPoint.Review.ActualCostPerPerson.HasValue && tripPoint.Review.ExchangeRate.HasValue ? Math.Round(tripPoint.Review.ActualCostPerPerson.Value / tripPoint.Review.ExchangeRate.Value, 2) : null,
+                ActualTimeSpent = tripPoint.Review.ActualTimeSpent,
                 Rating = tripPoint.Review.Rating
             } : null
         };
