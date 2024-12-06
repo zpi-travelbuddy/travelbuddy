@@ -6,5 +6,4 @@ public enum TripPointStatus
     reviewPending,
     reviewRejected,
     reviewCompleted,
-    notVisited,
 }
