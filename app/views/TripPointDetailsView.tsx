@@ -1,13 +1,13 @@
 import { MD3ThemeExtended } from "@/constants/Themes";
 import { ScrollView, StyleSheet, View } from "react-native";
-import { Text, useTheme } from "react-native-paper";
+import { Divider, Text, useTheme } from "react-native-paper";
 import { TripPointDetails, TripPointViewModel } from "@/types/TripDayData";
 import { TripPointDetailsLabel } from "@/components/TripPointDetailLabel";
 import { SimplePlaceCard } from "@/components/TripPointDetailsView/SimplePlaceCard";
 import { getMoneyWithCurrency } from "@/utils/CurrencyUtils";
 import { useLayoutEffect, useMemo, useState } from "react";
 import { Place, PlaceViewModel } from "@/types/Place";
-import { router, useLocalSearchParams, useNavigation } from "expo-router";
+import { Link, router, useLocalSearchParams, useNavigation } from "expo-router";
 import { DELETE_ICON } from "@/constants/Icons";
 import CustomModal from "@/components/CustomModal";
 import { formatTimeRange, getTimeWithoutSeconds } from "@/utils/TimeUtils";
@@ -33,19 +33,6 @@ const LABELS: Record<string, string> = {
   comment: "Komentarz",
 };
 
-const convertPlace = (place: Place): PlaceViewModel => {
-  const subtitle = [place.city, place.state, place.country]
-    .filter(Boolean)
-    .join(", ");
-
-  return {
-    id: place.id,
-    providerId: place.providerId || "",
-    title: place.name,
-    subtitle: subtitle,
-  };
-};
-
 const parseTripPoint = (
   tripPoint: TripPointDetails | null,
   trip: TripDetails | null,
@@ -53,7 +40,7 @@ const parseTripPoint = (
   if (!tripPoint) {
     return {};
   }
-
+  console.log(tripPoint);
   const category = tripPoint.category?.name || "Brak danych";
 
   const address = tripPoint.place
@@ -98,6 +85,46 @@ const parseTripPoint = (
   };
 };
 
+const OpeningsHours = ({
+  openingTime,
+  closingTime,
+  startTime,
+  endTime,
+}: {
+  openingTime: string | undefined;
+  closingTime: string | undefined;
+  startTime: string | undefined;
+  endTime: string | undefined;
+}) => {
+  const theme = useTheme();
+  const styles = createStyles(theme as MD3ThemeExtended);
+
+  let fitsInTripPoint = false;
+
+  if (startTime && openingTime && endTime && closingTime) {
+    if (openingTime <= closingTime) {
+      fitsInTripPoint = startTime >= openingTime && endTime <= closingTime;
+    } else {
+      fitsInTripPoint =
+        (startTime >= "00:00:00" && endTime <= closingTime) ||
+        (startTime >= openingTime && endTime <= "24:00:00");
+    }
+    console.log(startTime >= "00:00:00" && endTime <= closingTime);
+  }
+
+  if (!openingTime || !closingTime) {
+    return <Text style={styles.value}>Brak danych</Text>;
+  }
+
+  return (
+    <Text style={[fitsInTripPoint ? {} : styles.warning, styles.value]}>
+      {getTimeWithoutSeconds(openingTime)} -{" "}
+      {getTimeWithoutSeconds(closingTime)}
+      {fitsInTripPoint ? "" : "(wizyta poza godzinami otwarcia!)"}
+    </Text>
+  );
+};
+
 const TripPointDetailsView = ({
   tripPoint,
   trip,
@@ -122,6 +149,7 @@ const TripPointDetailsView = ({
   const onDeleteTripPoint = async () => {
     await deleteTripPoint(tripPoint?.id);
     router.navigate({
+      // @ts-ignore
       pathname: `/trips/details/${trip_id}/day/${day_id}`,
       params: { refresh: "true" },
     });
@@ -167,18 +195,38 @@ const TripPointDetailsView = ({
               }
             />
           ))}
-        {
-          <TripPointDetailsLabel
-            title="Powiązana atrakcja"
-            element={
-              tripPoint?.place?.providerId ? (
-                <SimplePlaceCard place={convertPlace(tripPoint?.place)} />
-              ) : (
-                <Text style={styles.value}>Brak danych</Text>
-              )
-            }
-          />
-        }
+        {tripPoint?.place && (
+          <View style={styles.placeDetails}>
+            <Divider style={{ marginVertical: 10 }} />
+            <Text variant="titleLarge" style={styles.placeTitle}>
+              Powiązana atrakcja
+            </Text>
+            <TripPointDetailsLabel
+              title="Nazwa"
+              element={
+                <Text style={styles.value}>
+                  {tripPoint?.place?.name || "Brak danych"}
+                </Text>
+              }
+            />
+            <TripPointDetailsLabel
+              title="Godziny otwarcia"
+              element={
+                <OpeningsHours
+                  openingTime={tripPoint.openingTime}
+                  closingTime={tripPoint.closingTime}
+                  startTime={tripPoint.startTime}
+                  endTime={tripPoint.endTime}
+                />
+              }
+            />
+            <Text style={styles.placeUrl} variant="titleMedium">
+              <Link href={`/trips/place/${tripPoint.place.providerId}`}>
+                Sprawdź szczegóły
+              </Link>
+            </Text>
+          </View>
+        )}
       </ScrollView>
       <CustomModal visible={isModalVisible} onDismiss={hideModal}>
         <View>
@@ -232,5 +280,19 @@ const createStyles = (theme: MD3ThemeExtended) =>
     },
     modalSubtitle: {
       color: theme.colors.onSurface,
+    },
+    placeTitle: { paddingHorizontal: 16 },
+    warning: {
+      color: theme.colors.error,
+    },
+    placeUrl: {
+      marginTop: 10,
+      paddingHorizontal: 16,
+      color: theme.colors.tertiary,
+      fontFamily: "Manrope_700Bold",
+      textDecorationLine: "underline",
+    },
+    placeDetails: {
+      marginBottom: 80,
     },
   });
