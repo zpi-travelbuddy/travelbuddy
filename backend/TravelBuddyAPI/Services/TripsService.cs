@@ -294,8 +294,9 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
             Date = day.Date,
         };
 
+        var tripPoints = await _tripPointsService.UpdateTripPointsStatusesAsync(day.TripPoints ?? []);
 
-        dayDetails.TripPoints = day.TripPoints!.Select(tp => new TripPointOverviewDTO
+        dayDetails.TripPoints = tripPoints.Select(tp => new TripPointOverviewDTO
         {
             Id = tp.Id,
             Name = tp.Name,
@@ -303,7 +304,8 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
             StartTime = tp.StartTime,
             EndTime = tp.EndTime,
             Latitude = tp.Place?.Latitude,
-            Longitude = tp.Place?.Longitude
+            Longitude = tp.Place?.Longitude,
+            Status = tp.Status
         }).ToList();
 
         dayDetails.TransferPoints = day.TransferPoints!.Select(tp => new TransferPointOverviewDTO
@@ -317,7 +319,6 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
         }).ToList();
 
         return dayDetails;
-
     }
 
     public async Task<TripDetailsDTO> GetTripDetailsAsync(string userId, Guid tripId)
@@ -394,5 +395,29 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
         await _dbContext.SaveChangesAsync();
 
         return true;
+    }
+
+    public async Task<List<PlaceOverviewDTO>> GetPlaceRecommendationsAsync(string userId, Guid tripId, double radius, int? limit = null)
+    {
+        Trip trip = await _dbContext.Trips
+            .Where(t => t.Id == tripId && t.UserId == userId)
+            .Include(t => t.Destination)
+            .Include(t => t.CategoryProfile)
+                .ThenInclude(cp => cp!.Categories)
+            .Include(t => t.ConditionProfile)
+                .ThenInclude(cp => cp!.Conditions)
+            .FirstOrDefaultAsync() ?? throw new ArgumentException(ErrorMessage.TripNotFound);
+
+        if (trip.Destination == null || !trip.Destination.Latitude.HasValue || !trip.Destination.Longitude.HasValue)
+        {
+            throw new ArgumentException(ErrorMessage.NoCoordinatesInDestination);
+        }
+
+        if (trip.CategoryProfile == null || trip.CategoryProfile.Categories == null || trip.CategoryProfile.Categories.Count == 0)
+        {
+            throw new ArgumentException(ICategoryProfilesService.ErrorMessage.CategoryProfileNotFound);
+        }
+
+        return await _placesService.GetPlaceRecommendationsAsync((trip.Destination.Latitude.Value, trip.Destination.Longitude.Value), radius, trip.CategoryProfile.Categories, trip.ConditionProfile?.Conditions, limit);
     }
 }

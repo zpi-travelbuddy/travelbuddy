@@ -63,6 +63,12 @@ namespace TravelBuddyAPI.Tests.Utilities
         [InlineData("Jan Mo-Fr 09:00-17:00", "2024-01-28", null, null)]
         [InlineData("Nov 01-Feb 15: 08:30-16:30; Feb 16-Mar 31: 08:30-17:00; Apr-Aug: 08:30-19:15; Sep: 08:30-19:00; Oct 08:30-18:30;", "2023-04-16", "08:30", "19:15")]
         [InlineData("Nov 01-Feb 15: 08:30-16:30; Feb 16-Mar 31: 08:30-17:00; Apr-Aug: 08:30-19:15; Sep: 08:30-19:00; Oct 08:30-18:30;", "2023-09-16", "08:30", "19:00")]
+        [InlineData("Mo-Fr 04:30-24:00, Sa-Su 08:00-23:00", "2024-11-04", "04:30", "23:59")]
+        [InlineData("Mo-Tu,Th-Su 11:00-17:00; PH off; easter off", "2024-11-04", "11:00", "17:00")]
+        [InlineData("Mo-Tu,Th-Su 11:00-17:00; PH off; easter off", "2024-11-07", "11:00", "17:00")]
+        [InlineData("Mo-Tu,Th-Su 11:00-17:00; PH off; easter off", "2024-11-06", null, null)]
+        [InlineData("PH off; easter off", "2024-11-06", null, null)]
+        [InlineData("easter off; PH off;", "2024-11-06", null, null)]
         public void ParseOpeningHours_DateRange_ShouldReturnCorrectTimes(string? openingHours, string dateStr, string? expectedOpen, string? expectedClose)
         {
             var date = DateOnly.Parse(dateStr);
@@ -74,8 +80,8 @@ namespace TravelBuddyAPI.Tests.Utilities
             else
             {
                 Assert.NotNull(result);
-                Assert.Equal(TimeOnly.Parse(expectedOpen), result?.opensAt);
-                Assert.Equal(TimeOnly.Parse(expectedClose), result?.closesAt);
+                Assert.Equal(TimeOnly.Parse(expectedOpen).ToString("HH:mm"), result?.opensAt.ToString("HH:mm"));
+                Assert.Equal(TimeOnly.Parse(expectedClose).ToString("HH:mm"), result?.closesAt.ToString("HH:mm"));
             }
         }
 

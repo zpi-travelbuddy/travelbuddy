@@ -1,3 +1,4 @@
+using TravelBuddyAPI.DTOs.Place;
 using TravelBuddyAPI.DTOs.Trip;
 using TravelBuddyAPI.DTOs.TripDay;
 using TravelBuddyAPI.Models;
@@ -27,6 +28,8 @@ public interface ITripsService
         public const string CurrencyChangeNotAllowed = "Currency code cannot be changed.";
         public const string ProviderPlaceNotFound = "Provider place with the specified Id does not exist.";
         public const string DestinationProviderIdIsNull = "Destination provider Id cannot be null.";
+        public const string GetRecommendations = "An error occurred while retrieving place recommendations.";
+        public const string NoCoordinatesInDestination = "The destination does not have coordinates.";
     }
 
     /// <summary>
@@ -108,4 +111,14 @@ public interface ITripsService
     /// <param name="tripDayId">The ID of the trip day.</param>
     /// <returns>The trip day details.</returns>
     Task<TripDayDetailsDTO> GetTripDayDetailsAsync(string userId, Guid tripDayId);
+
+    /// <summary>
+    /// Retrieves place recommendations for a specific trip within a given radius.
+    /// </summary>
+    /// <param name="userId">The ID of the user.</param>
+    /// <param name="tripId">The ID of the trip.</param>
+    /// <param name="radius">The radius within which to search for places.</param>
+    /// <param name="limit">The optional limit on the number of places to retrieve.</param>
+    /// <returns>A list of place recommendations.</returns>
+    Task<List<PlaceOverviewDTO>> GetPlaceRecommendationsAsync(string userId, Guid tripId, double radius, int? limit = null);
 }
