@@ -317,7 +317,7 @@ const EditingTripPointView = () => {
     const hasErrors = validateForm();
     if (!hasErrors) {
       const placeToRequest: Place = {
-        name: tripPointName,
+        name: placeDetails?.name,
         superCategoryId: tripPointCategory?.id,
         country: country,
         state: state,
@@ -409,8 +409,7 @@ const EditingTripPointView = () => {
 
             <TextInput
               mode="outlined"
-              disabled={isAttraction}
-              style={isAttraction ? styles.textInputDisabled : styles.textInput}
+              style={styles.textInput}
               label="Nazwa"
               value={tripPointName}
               placeholder={tripPointName}

@@ -152,7 +152,7 @@ const ExploreView = ({ tripId }: ExploreViewProps) => {
       router.push({
         pathname: `/(auth)/(tabs)/trips/details/${trip_id}/day/${day_id}/tripPoints/create`,
         params: {
-          date: new Date(date as string).toLocaleDateString(),
+          date: date,
           attractionProviderId: place.providerId,
         },
       });

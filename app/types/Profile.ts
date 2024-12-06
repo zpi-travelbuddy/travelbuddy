@@ -64,6 +64,21 @@ export const CONDITION_NAME_LIST = [
   "wheelchair",
 ];
 
+export const CategoryIcons: Record<string, string> = {
+  activity: "party-popper",
+  commercial: "basket",
+  entertainment: "drama-masks",
+  heritage: "bank",
+  leisure: "pine-tree",
+  natural: "pine-tree",
+  national_park: "pine-tree",
+  tourism: "camera",
+  religion: "church",
+  sport: "soccer",
+  catering: "silverware-fork-knife",
+  other: "map-marker",
+};
+
 export const CATEGORY_NAME_LIST: string[] = [
   "activity",
   "commercial",

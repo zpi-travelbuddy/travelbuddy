@@ -147,10 +147,12 @@ const AddingTripPointView = () => {
         CATEGORY_NAME_LIST.includes(category.name),
       ),
     );
-    setTripPointCategory(getCategoryByName(DEFAULT_CATEGORY_NAME));
+    if (!attractionProviderId)
+      setTripPointCategory(getCategoryByName(DEFAULT_CATEGORY_NAME));
   }, [categories]);
 
   useEffect(() => {
+    console.log(JSON.stringify(destinationDetails));
     if (destinationDetails) {
       setCountry(destinationDetails.country);
       setState(destinationDetails.state);
@@ -173,7 +175,7 @@ const AddingTripPointView = () => {
         );
         setTripPointCategory(
           getCategoryByName(
-            destinationDetails.superCategory.name ?? DEFAULT_CATEGORY_NAME,
+            destinationDetails.superCategory?.name ?? DEFAULT_CATEGORY_NAME,
           ),
         );
       } else {
@@ -306,7 +308,7 @@ const AddingTripPointView = () => {
     const hasErrors = validateForm();
     if (!hasErrors) {
       const placeToRequest: Place = {
-        name: tripPointName,
+        name: destinationDetails?.name,
         providerId: attractionProviderId as string,
         superCategoryId: tripPointCategory?.id,
         country: country,
@@ -399,9 +401,8 @@ const AddingTripPointView = () => {
 
             <TextInput
               mode="outlined"
-              style={isAttraction ? styles.textInputDisabled : styles.textInput}
+              style={styles.textInput}
               label="Nazwa"
-              disabled={isAttraction}
               value={tripPointName}
               placeholder={tripPointName}
               onChangeText={handleChange(setTripPointName, "tripPointName")}
