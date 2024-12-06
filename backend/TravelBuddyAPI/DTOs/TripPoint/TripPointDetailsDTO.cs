@@ -45,5 +45,5 @@ public class TripPointDetailsDTO
     [Required]
     public PlaceOverviewDTO? Place { get; set; }
 
-    public TripPointReviewOverviewDTO? Review { get; set; }
+    public TripPointReviewDetailsDTO? Review { get; set; }
 }
