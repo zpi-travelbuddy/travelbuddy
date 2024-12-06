@@ -581,9 +581,7 @@ const TripDayView = () => {
         icon: EDIT_ICON,
         onPress: () => {
           console.log(`Edytuj`);
-          console.log(tripDay?.date);
-          console.log();
-          setIsVisible(VisibilityState.None);
+          setIsTripPointSheetVisible(false);
           router.push({
             pathname: `/(auth)/(tabs)/trips/details/${trip_id}/day/${day_id}/tripPoints/edit/${selectedTripPoint.id}`,
             params: {

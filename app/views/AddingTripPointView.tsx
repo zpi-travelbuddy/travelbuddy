@@ -105,7 +105,7 @@ const AddingTripPointView = () => {
   const [comment, setComment] = useState<string>("");
   const [tripPointCategory, setTripPointCategory] = useState<
     Category | undefined
-  >();
+  >(undefined);
   const [startTime, setStartTime] = useState<Date>(roundToNearestQuarterHour());
   const [endTime, setEndTime] = useState<Date>(
     addHoursToTheSameDay(startTime, 1),
@@ -171,11 +171,13 @@ const AddingTripPointView = () => {
             ? destinationDetails.longitude.toString()
             : null,
         );
-        getCategoryByName(
-          destinationDetails.superCategory.name ?? DEFAULT_CATEGORY_NAME,
+        setTripPointCategory(
+          getCategoryByName(
+            destinationDetails.superCategory.name ?? DEFAULT_CATEGORY_NAME,
+          ),
         );
       } else {
-        getCategoryByName(DEFAULT_CATEGORY_NAME);
+        setTripPointCategory(getCategoryByName(DEFAULT_CATEGORY_NAME));
       }
       setIsAttraction(!!attractionProviderId);
     }
@@ -333,8 +335,6 @@ const AddingTripPointView = () => {
         startTime: `${formatTime(startTime, true)}`,
         endTime: `${formatTime(endTime, true)}`,
         predictedCost: totalExpectedCost,
-        superCategoryId:
-          tripPointCategory?.id ?? getCategoryByName(DEFAULT_CATEGORY_NAME)?.id,
       };
 
       handleCreateRequest(tripPointRequest);
