@@ -43,6 +43,7 @@ import {
   OVERLAPPING_TRIP_POINTS_MESSAGE,
 } from "@/constants/Messages";
 import { requiredFieldsForTripPoint } from "@/utils/validations";
+import usePlaceDetails from "@/composables/usePlace";
 
 const { height, width } = Dimensions.get("window");
 
@@ -72,6 +73,16 @@ const EditingTripPointView = () => {
     loading: tripLoading,
     error: tripError,
   } = useTripDetails(trip_id as string);
+
+  const [placeId, setPlaceId] = useState<string | undefined>(undefined);
+
+  const {
+    placeDetails,
+    loading: placeLoading,
+    error: placeError,
+    success,
+    refetch: fetchPlaceDetails,
+  } = usePlaceDetails(placeId, "/places", { immediate: false });
 
   const {
     categories,
@@ -117,6 +128,21 @@ const EditingTripPointView = () => {
 
   const [filteredCategories, setFilteredCategories] = useState<Category[]>([]);
 
+  useEffect(() => {
+    if (tripPointDetails?.place?.id) {
+      setPlaceId(tripPointDetails?.place?.id);
+    }
+  }, [tripDetails]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (placeId) {
+        await fetchPlaceDetails();
+      }
+    };
+    fetchData();
+  }, [placeId]);
+
   const handleChange = (
     setter: React.Dispatch<React.SetStateAction<any>>,
     field: keyof TripErrors = "",
@@ -140,7 +166,6 @@ const EditingTripPointView = () => {
 
   useEffect(() => {
     if (tripPointDetails) {
-      console.log(JSON.stringify(tripPointDetails));
       setTripPointName(tripPointDetails.name);
       setCountry(tripPointDetails.place?.country || null);
       setState(tripPointDetails.place?.state || null);
@@ -148,18 +173,6 @@ const EditingTripPointView = () => {
       setStreet(tripPointDetails.place?.street || null);
       setHouseNumber(tripPointDetails.place?.houseNumber || null);
       setComment(tripPointDetails.comment || "");
-      // setLatitude(tripPointDetails.place?.latitude || null);
-      // setLongitude(tripPointDetails.place?.longitude || null);
-      // setLatitudeText(
-      //   tripPointDetails.place?.latitude
-      //     ? tripPointDetails.place?.latitude.toString()
-      //     : null,
-      // );
-      // setLongitudeText(
-      //   tripPointDetails.place?.longitude
-      //     ? tripPointDetails.place?.longitude.toString()
-      //     : null,
-      // );
       setTripPointCategory(
         tripPointDetails?.place?.superCategory ||
           getCategoryByName(DEFAULT_CATEGORY_NAME),
@@ -168,15 +181,26 @@ const EditingTripPointView = () => {
       setEndTime(convertTimestampToDateTime(tripPointDetails.endTime));
       setExpectedCost(tripPointDetails.predictedCost || 0);
     }
+    if (placeDetails && success) {
+      setLatitude(placeDetails.latitude || null);
+      setLongitude(placeDetails.longitude || null);
+      setLatitudeText(
+        placeDetails.latitude ? placeDetails.latitude.toString() : null,
+      );
+      setLongitudeText(
+        placeDetails.longitude ? placeDetails.longitude.toString() : null,
+      );
+    }
     setIsAttraction(isAttraction || !!tripPointDetails?.place?.providerId);
-  }, [tripPointDetails]);
+  }, [tripPointDetails, success]);
 
   useEffect(() => {
     setErrors((prev) => ({
       ...prev,
-      ["api"]: tripError || tripPointError || categoriesError || "",
+      ["api"]:
+        tripError || tripPointError || categoriesError || placeError || "",
     }));
-  }, [tripError, tripPointError, categoriesError]);
+  }, [tripError, tripPointError, categoriesError, placeError]);
 
   useEffect(() => {
     setLoading(tripLoading || tripPointLoading || categoriesLoading || false);
@@ -272,7 +296,6 @@ const EditingTripPointView = () => {
   };
 
   const getCategoryByName = (categoryName: string): Category | undefined => {
-    console.log(filteredCategories);
     return filteredCategories.find(
       (category) => category.name === categoryName,
     );
@@ -387,7 +410,7 @@ const EditingTripPointView = () => {
             <TextInput
               mode="outlined"
               disabled={isAttraction}
-              style={styles.textInput}
+              style={isAttraction ? styles.textInputDisabled : styles.textInput}
               label="Nazwa"
               value={tripPointName}
               placeholder={tripPointName}
@@ -506,7 +529,7 @@ const EditingTripPointView = () => {
 
             <TextInput
               mode="outlined"
-              style={styles.textInput}
+              style={isAttraction ? styles.textInputDisabled : styles.textInput}
               label="Długość geograficzna"
               disabled={isAttraction}
               value={

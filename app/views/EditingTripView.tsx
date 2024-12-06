@@ -32,10 +32,6 @@ import useTripDetails, {
 import { useSnackbar } from "@/context/SnackbarContext";
 import LoadingView from "./LoadingView";
 import { CALENDAR_ICON, MARKER_ICON } from "@/constants/Icons";
-import {
-  useGetCategoryProfiles,
-  useGetConditionProfiles,
-} from "@/composables/useProfiles";
 import usePlaceDetails from "@/composables/usePlace";
 import { convertTripResponseToEditTripRequest } from "@/converters/tripConverters";
 import { Place } from "@/types/Place";
@@ -145,7 +141,7 @@ const EditTripView = () => {
         ...prev,
         destinationProviderId: new_destination_id as string,
       }));
-    } else console.log("ERRRRROR");
+    }
   }, [destinationDetails, new_destination_id]);
 
   useEffect(() => {
@@ -384,7 +380,6 @@ const EditTripView = () => {
               budget={editTripRequest.budget}
               currency={editTripRequest.currencyCode}
               handleBudgetChange={handleChange("budget")}
-              disable={true}
               error={!!errors.budget}
             />
             {errors.budget && (
