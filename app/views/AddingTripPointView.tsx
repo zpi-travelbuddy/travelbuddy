@@ -171,14 +171,15 @@ const AddingTripPointView = () => {
             ? destinationDetails.longitude.toString()
             : null,
         );
+        getCategoryByName(
+          destinationDetails.superCategory.name ?? DEFAULT_CATEGORY_NAME,
+        );
+      } else {
+        getCategoryByName(DEFAULT_CATEGORY_NAME);
       }
       setIsAttraction(!!attractionProviderId);
     }
   }, [destinationDetails]);
-
-  useEffect(() => {
-    console.log("House number: " + houseNumber);
-  }, [houseNumber]);
 
   useEffect(() => {
     setErrors((prev) => ({
@@ -283,7 +284,6 @@ const AddingTripPointView = () => {
   };
 
   const getCategoryByName = (categoryName: string): Category | undefined => {
-    console.log(filteredCategories);
     return filteredCategories.find(
       (category) => category.name === categoryName,
     );
@@ -333,6 +333,8 @@ const AddingTripPointView = () => {
         startTime: `${formatTime(startTime, true)}`,
         endTime: `${formatTime(endTime, true)}`,
         predictedCost: totalExpectedCost,
+        superCategoryId:
+          tripPointCategory?.id ?? getCategoryByName(DEFAULT_CATEGORY_NAME)?.id,
       };
 
       handleCreateRequest(tripPointRequest);

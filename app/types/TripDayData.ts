@@ -18,6 +18,7 @@ export interface TripPointRequest {
   predictedCost: number;
   startTime: string;
   endTime: string;
+  superCategoryId?: string;
 }
 
 export interface Category {
