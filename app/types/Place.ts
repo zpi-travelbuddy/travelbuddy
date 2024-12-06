@@ -41,16 +41,6 @@ export interface PlaceOverview {
   superCategory: Category;
 }
 
-export interface PlaceCondition {
-  id: string;
-  name: string;
-}
-
-export interface PlaceCategory {
-  id: string;
-  name: string;
-}
-
 export interface PlaceDetails {
   id: string;
   providerId: string;

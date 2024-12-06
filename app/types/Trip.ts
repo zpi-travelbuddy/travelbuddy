@@ -67,7 +67,3 @@ export interface DateRange {
 export interface TripErrors {
   [key: string]: string | undefined;
 }
-export interface Condition {
-  id: string;
-  name: string;
-}

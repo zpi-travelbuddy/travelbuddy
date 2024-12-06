@@ -85,7 +85,7 @@ const EditingTripPointView = () => {
   } = usePlaceDetails(placeId, "/places", { immediate: false });
 
   const {
-    categories,
+    items: categories,
     loading: categoriesLoading,
     error: categoriesError,
   } = useGetCategories();

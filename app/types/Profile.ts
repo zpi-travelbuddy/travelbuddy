@@ -69,7 +69,6 @@ export const CATEGORY_NAME_LIST: string[] = [
   "commercial",
   "entertainment",
   "heritage",
-  "leisure",
   "natural",
   "national park",
   "tourism",
@@ -78,12 +77,11 @@ export const CATEGORY_NAME_LIST: string[] = [
   "catering",
 ];
 
-export const CategoryLabelsForProfiles: Record<string, string> = {
+export const CategoryLabels: Record<string, string> = {
   activity: "Rozrywka",
   commercial: "Sklepy",
   entertainment: "Kultura",
   heritage: "Zabytki",
-  leisure: "Natura",
   natural: "Natura",
   "national park": "Parki narodowe",
   tourism: "Atrakcje",

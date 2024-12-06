@@ -290,7 +290,7 @@ const EditTripView = () => {
       let profiles;
       if (profileType === "Category") profiles = categoryProfiles;
       else if (profileType === "Condition") profiles = conditionProfiles;
-      else throw new Error();
+      else throw new Error("Unknow profile type: " + profileType);
       const profile = profiles.find((p) => p.id === id);
       return profile ? profile.name : "Brak";
     } else return "Brak";

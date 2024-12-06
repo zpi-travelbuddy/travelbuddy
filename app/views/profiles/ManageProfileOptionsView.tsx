@@ -8,7 +8,7 @@ import {
   Condition,
   ProfileType,
   EditProfileRequest,
-  CategoryLabelsForProfiles,
+  CategoryLabels,
   ConditionLabels,
   CATEGORY_NAME_LIST,
   CONDITION_NAME_LIST,
@@ -260,11 +260,7 @@ const ManageProfileCategoryView: React.FC<ManageProfileCategoryViewProps> = ({
       </View>
       <ProfileOptionsList
         items={filteredItems}
-        labels={
-          profileType === "Category"
-            ? CategoryLabelsForProfiles
-            : ConditionLabels
-        }
+        labels={profileType === "Category" ? CategoryLabels : ConditionLabels}
         selectedIds={selectedIds}
         profileType={profileType}
         onChange={onChange}

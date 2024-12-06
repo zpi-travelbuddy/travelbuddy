@@ -100,7 +100,3 @@ export const TransferTypeLabels = {
   [TransferType.Walk]: "Chód",
   null: "Ręcznie",
 };
-
-// export const reversedTransferTypeLabels = Object.fromEntries(
-//   Object.entries(TransferTypeLabels).map(([key, value]) => [value, key]),
-// ) as Record<string, TransferType>;

@@ -88,7 +88,7 @@ const AddingTripPointView = () => {
   );
 
   const {
-    categories,
+    items: categories,
     loading: categoriesLoading,
     error: categoriesError,
   } = useGetCategories();
@@ -143,7 +143,7 @@ const AddingTripPointView = () => {
 
   useEffect(() => {
     setFilteredCategories(
-      categories.filter((category) =>
+      categories.filter((category: Category) =>
         CATEGORY_NAME_LIST.includes(category.name),
       ),
     );
@@ -247,7 +247,6 @@ const AddingTripPointView = () => {
   };
 
   const handleCreateRequest = async (tripPointRequest: TripPointRequest) => {
-    console.log(JSON.stringify(tripPointRequest));
     try {
       setLoading(true);
       const response = await api!.post<TripPointDetails>(
@@ -287,7 +286,7 @@ const AddingTripPointView = () => {
 
   const getCategoryByName = (categoryName: string): Category | undefined => {
     return filteredCategories.find(
-      (category) => category.name === categoryName,
+      (category: Category) => category.name === categoryName,
     );
   };
 

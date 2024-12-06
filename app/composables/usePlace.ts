@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useAuth } from "@/app/ctx";
-import { PlaceCategory, PlaceCondition, PlaceDetails } from "@/types/Place";
+import { PlaceDetails } from "@/types/Place";
 import { useState, useCallback, useEffect } from "react";
 import { UseApiOptions } from "./useTripDetails";
+import { Category, Condition } from "@/types/Profile";
 
 const usePlaceDetails = (
   placeId: string | undefined,
@@ -26,10 +27,10 @@ const usePlaceDetails = (
         ...response.data,
         conditions: response.data.conditions
           ? response.data.conditions
-          : ([] as PlaceCondition[]),
+          : ([] as Condition[]),
         categories: response.data.categories
           ? response.data.categories
-          : ([] as PlaceCategory[]),
+          : ([] as Category[]),
       });
       setSuccess(true);
     } catch (err: any) {
