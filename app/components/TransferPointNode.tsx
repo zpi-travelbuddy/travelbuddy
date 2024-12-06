@@ -18,6 +18,7 @@ import {
 } from "@/constants/Icons";
 import { useMemo } from "react";
 import { MD3ThemeExtended } from "@/constants/Themes";
+import { createNavigationURL } from "@/utils/maps";
 
 const VERTICAL_LINE_HEIGHT = 20;
 const ICON_SIZE = 40;
@@ -77,6 +78,29 @@ export const TransferPointNode = ({
   const canNavigate =
     fromLatitude && fromLongitude && toLatitude && toLongitude;
 
+  const handleNavigationButtonPress = async () => {
+    const travelMode = TRANSFER_TYPE_MAP_GOOGLE[mode as TransferType];
+
+    if (!canNavigate) {
+      console.error("Can't navigate without coordinates");
+      return;
+    }
+
+    const url = createNavigationURL(
+      fromLatitude,
+      fromLongitude,
+      toLatitude,
+      toLongitude,
+      travelMode,
+    );
+
+    try {
+      await Linking.openURL(url);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <View style={style.wrapper}>
       <DashedVerticalLine height={VERTICAL_LINE_HEIGHT} />
@@ -95,17 +119,7 @@ export const TransferPointNode = ({
             size={SMALL_ICON_SIZE}
             style={style.leftComponentButton}
             iconColor={theme.colors.onTertiaryContainer}
-            onPress={async () => {
-              const travelMode = TRANSFER_TYPE_MAP_GOOGLE[mode as TransferType];
-
-              const url = `https://www.google.com/maps/dir/?api=1&origin=${fromLatitude},${fromLongitude}&destination=${toLatitude},${toLongitude}&travelmode=${travelMode}`;
-
-              try {
-                await Linking.openURL(url);
-              } catch (error) {
-                console.error(error);
-              }
-            }}
+            onPress={handleNavigationButtonPress}
           />
         </View>
       ) : null}

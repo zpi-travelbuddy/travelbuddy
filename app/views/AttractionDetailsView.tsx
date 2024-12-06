@@ -26,6 +26,7 @@ import {
   DEFAULT_CATEGORY_NAME,
 } from "@/types/Profile";
 import { PlaceDetails } from "@/types/Place";
+import { createLocationURL } from "@/utils/maps";
 
 const { height, width } = Dimensions.get("window");
 
@@ -63,6 +64,27 @@ const AttractionDetailsView = () => {
     showSnackbar(error?.toString() || "Unknown error", "error");
     return null;
   }
+
+  const onLocationButtonPress = async () => {
+    if (!placeDetails) {
+      console.error("Place details not available");
+      return;
+    }
+
+    const name = placeDetails.name;
+    const [latitude, longitude] = [
+      placeDetails.latitude,
+      placeDetails.longitude,
+    ];
+
+    const url = createLocationURL(latitude, longitude, name);
+
+    try {
+      await Linking.openURL(url);
+    } catch (error: any) {
+      console.error(error);
+    }
+  };
 
   if (placeDetails) {
     return (
@@ -125,19 +147,7 @@ const AttractionDetailsView = () => {
         </ScrollView>
 
         <ActionButtons
-          onAction1={async () => {
-            const name = placeDetails.name;
-            const [latitude, longitude] = [
-              placeDetails.latitude,
-              placeDetails.longitude,
-            ];
-            const url = `https://www.google.com/maps?q=${latitude},${longitude} (${name})`;
-            try {
-              await Linking.openURL(url);
-            } catch (error: any) {
-              console.error(error);
-            }
-          }}
+          onAction1={onLocationButtonPress}
           action1ButtonLabel={"Mapa"}
           onAction2={() => {
             console.log("Adding to trip");

@@ -44,14 +44,7 @@ export const TripPointCard = ({
       <Card.Title
         title={name}
         subtitle={
-          <View
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "center",
-              gap: 10,
-            }}
-          >
+          <View style={style.subtitleContainer}>
             <Text>{timeRange}</Text>
             {hasLocation && <Icon size={20} source={LOCATION_ICON} />}
             {hasReminder && <Icon size={20} source={NOTIFICATION_ICON} />}
@@ -68,5 +61,11 @@ const createStyles = (theme: MD3ThemeExtended) =>
     card: {
       backgroundColor: theme.colors.surfaceContainer,
       width: Math.min(300, width * 0.8),
+    },
+    subtitleContainer: {
+      display: "flex",
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 10,
     },
   });
