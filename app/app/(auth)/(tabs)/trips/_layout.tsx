@@ -35,6 +35,10 @@ export default function StackLayout() {
         name="place/[place_id]"
         options={{ title: "Szczegóły atrakcji" }}
       />
+      <Stack.Screen
+        name="details/[trip_id]/day/[day_id]/explore/index"
+        options={{ title: "Wyszukaj atrakcję" }}
+      />
     </Stack>
   );
 }

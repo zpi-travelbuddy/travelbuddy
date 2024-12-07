@@ -149,7 +149,8 @@ const ExploreView = ({ tripId }: ExploreViewProps) => {
     console.log("Selected place", place);
     if (trip_id && day_id && date) {
       router.push({
-        pathname: `/(auth)/(tabs)/trips/details/${trip_id}/day/${day_id}/tripPoints/create`,
+        // @ts-ignore
+        pathname: `/trips/details/${trip_id}/day/${day_id}/tripPoints/create`,
         params: {
           date: date,
           attractionProviderId: place.providerId,
@@ -222,7 +223,8 @@ const ExploreView = ({ tripId }: ExploreViewProps) => {
         );
         setIsDateModalVisible(false);
         router.push({
-          pathname: `/(auth)/(tabs)/trips/details/${tripDetails?.id}/day/${tripDayId}/tripPoints/create`,
+          // @ts-ignore
+          pathname: `/trips/details/${tripDetails?.id}/day/${tripDayId}/tripPoints/create`,
           params: {
             date: formattedDate,
             attractionProviderId: selectedAttractionProviderId,
