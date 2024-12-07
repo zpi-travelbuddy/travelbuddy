@@ -460,8 +460,10 @@ const TripDayView = () => {
     deleteTransferPoint,
   ]);
 
-  const handleTripPointPress = () => {
-    console.log("Trip point pressed");
+  const handleTripPointPress = (tripPoint: TripPointCompact) => {
+    router.navigate(
+      `/trips/details/${trip_id}/day/${day_id}/tripPoints/details/${tripPoint.id}`,
+    );
   };
 
   const handleTripPointLongPress = (tripPoint: TripPointCompact) => {
@@ -569,9 +571,11 @@ const TripDayView = () => {
         label: "Szczegóły punktu wycieczki",
         icon: DETAILS_ICON,
         onPress: () => {
-          console.log(`Nawiguj do szczegółów`);
+          setIsTripPointSheetVisible(false);
           setIsVisible(VisibilityState.None);
-          // router.push(`/trips/details/${selectedTripPo.id}`);
+          router.navigate(
+            `/trips/details/${trip_id}/day/${day_id}/tripPoints/details/${selectedTripPoint.id}`,
+          );
         },
       },
       {
@@ -684,7 +688,7 @@ const TripDayView = () => {
               {sortedTripPoints.map((fromTripPoint, index) => (
                 <Fragment key={fromTripPoint.id}>
                   <TripPointCard
-                    onPress={handleTripPointPress}
+                    onPress={() => handleTripPointPress(fromTripPoint)}
                     onLongPress={() => handleTripPointLongPress(fromTripPoint)}
                     tripPoint={fromTripPoint}
                   />

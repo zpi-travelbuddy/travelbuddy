@@ -1,7 +1,8 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Identity.Client;
 using TravelBuddyAPI.Enums;
 using TravelBuddyAPI.Models;
+
+namespace TravelBuddyAPI.Data;
 
 public static class ModelBuilderExtension
 {
@@ -9,8 +10,9 @@ public static class ModelBuilderExtension
     {
 
         //CATEGORIES
-        var placeCategories = new Dictionary<String, PlaceCategory>
+        var placeCategories = new Dictionary<string, PlaceCategory>
         {
+            {"other", new PlaceCategory { Id = Guid.NewGuid(), Name = "other" }},
             {"activity", new PlaceCategory { Id = Guid.NewGuid(), Name = "activity" }},
             {"commercial", new PlaceCategory { Id = Guid.NewGuid(), Name = "commercial" }},
                 {"gift_and_souvenir", new PlaceCategory { Id = Guid.NewGuid(), Name = "gift_and_souvenir"}},
@@ -420,7 +422,7 @@ public static class ModelBuilderExtension
 
 
         //CONDITIONS
-        var placeConditions = new Dictionary<String, PlaceCondition>
+        var placeConditions = new Dictionary<string, PlaceCondition>
         {
 
             {"internet_access", new PlaceCondition { Id = Guid.NewGuid(), Name = "internet_access" }},
@@ -492,6 +494,17 @@ public static class ModelBuilderExtension
             new ProviderPlace { Id = Guid.NewGuid(), Name = "Samolot MIG", City = "Ostrów Wielkopolski", Country = "Poland", Latitude = 51.6550975m, Longitude = 17.8059913m, ProviderId = "514b5c227255ce314059cd461f3cdad34940f00103f901c95100f70000000092030b53616d6f6c6f74204d4947", State = "Greater Poland Voivodeship", Street = "Raszkowska"},
             new ProviderPlace { Id = Guid.NewGuid(), Name = "Pomnik 60 Pułku Piechoty", City = "Ostrów Wielkopolski", Country = "Poland", Latitude = 51.652452m, Longitude = 17.8150573m, ProviderId = "51b6dd5f98a7d031405953490f8c83d34940f00103f901c3b040f600000000920319506f6d6e696b203630205075c5826b752050696563686f7479"},
             new ProviderPlace { Id = Guid.NewGuid(), Name = "Bistro Bravo", City = "Ostrów Wielkopolski", Country = "Poland", Latitude = 51.6494557m, Longitude = 17.8174638m, ProviderId = "51f4a9be4e45d13140596108465d21d34940f00103f901d44b66110100000092030c42697374726f20427261766f", State = "Greater Poland Voivodeship", Street = "Rynek", HouseNumber = "15", OpeningHours = "Mo-Th 12:00-24:00; Fr-Su 12:00-24:00+"},
+            
+            new ProviderPlace { Id = Guid.NewGuid(), Name = "Wrocław", City = "Wrocław", Country = "Poland", Latitude = 51.10897760m, Longitude = 17.03266890m, ProviderId = "51dfc081e697fa30405906310a6025904940f00101f901bce3060000000000c0020992030857726f63c5826177", State = "Lower Silesian Voivodeship"},
+            new ProviderPlace { Id = Guid.NewGuid(), Name = "ZOO Wrocław", City = "Wrocław", Country = "Poland", Latitude = 51.10425535m, Longitude = 17.07484842m, ProviderId = "513a952f4429133140591ab1413d588d4940f00102f901012324020000000092030c5a4f4f2057726f63c5826177", State = "Lower Silesian Voivodeship", Street = "Zygmunta Wróblewskiego", HouseNumber = "1-5", OpeningHours = "Mar: Mo-Su 09:00-16:00; Apr-Sep: Mo-Fr 09:00-17:00; Apr-Sep: Sa,Su,PH 09:00-18:00; Oct: Mo-Su 09:00-16:00; Nov-Feb: Mo-Su 09:00-15:00"},
+            new ProviderPlace { Id = Guid.NewGuid(), Name = "Wrocławska Fontanna", City = "Wrocław", Country = "Poland", Latitude = 51.10864425m, Longitude = 17.07875630m, ProviderId = "51299d5f5f291431405946ac040ee88d4940f00102f901e25aa7020000000092031457726f63c5826177736b6120466f6e74616e6e61", State = "Lower Silesian Voivodeship", OpeningHours = "May-Oct: 00:00-24:00; Nov-Apr: Off"},
+            new ProviderPlace { Id = Guid.NewGuid(), Name = "Hala Stulecia", City = "Wrocław", Country = "Poland", Latitude = 51.10688750m, Longitude = 17.07731849m, ProviderId = "5159f5f324cb1331405964c6547dae8d4940f00102f90136e6691c0000000092030d48616c61205374756c65636961", State = "Lower Silesian Voivodeship", Street = "Wystawowa", HouseNumber = "1", OpeningHours = "Su-Th 09:00-18:00; Fr-Sa 09:00-19:00"},
+            new ProviderPlace { Id = Guid.NewGuid(), Name = "Muzeum Archeologiczne", City = "Wrocław", Country = "Poland", Latitude = 51.11288660m, Longitude = 17.02688220m, ProviderId = "5133d879c0e106314059f2ec6d11738e4940f00103f901710a264c000000009203154d757a65756d2041726368656f6c6f6769637a6e65", State = "Lower Silesian Voivodeship", Street = "Antoniego Cieszyńskiego", HouseNumber = "9", OpeningHours = "We-Sa 11:00-17:00; Su 10:00-18:00"},
+            new ProviderPlace { Id = Guid.NewGuid(), Name = "Kościół Najświętszej Maryi Panny Matki Pocieszenia", City = "Wrocław", Country = "Poland", Latitude = 51.10248345m, Longitude = 17.08599881m, ProviderId = "51324592040416314059a36a7b2d1e8d4940f00102f9010d300706000000009203374b6fc59b6369c3b3c582204e616ac59b7769c49974737a656a204d617279692050616e6e79204d61746b6920506f636965737a656e6961", State = "Lower Silesian Voivodeship", Street = "Edwarda Wittiga"},
+            new ProviderPlace { Id = Guid.NewGuid(), Name = "Bolesław Chrobry", City = "Wrocław", Country = "Poland", Latitude = 51.10432090m, Longitude = 17.03133350m, ProviderId = "51eac4e5780508314059b43e21635a8d4940f00103f901ace8111000000000920311426f6c6573c5826177204368726f627279", State = "Lower Silesian Voivodeship", OpeningHours = "24/7"},
+            new ProviderPlace { Id = Guid.NewGuid(), Name = "Ratusz", City = "Wrocław", Country = "Poland", Latitude = 51.10957585m, Longitude = 17.03206577m, ProviderId = "51b849627635083140596870d894068e4940f00102f90138ce3f330000000092030652617475737a", State = "Lower Silesian Voivodeship", Street = "Rynek Ratusz", OpeningHours = "We-Sa 10:00-17:00; Su 10:00-18:00"},
+            new ProviderPlace { Id = Guid.NewGuid(), Name = "Ogród Japoński", City = "Wrocław", Country = "Poland", Latitude = 51.10994465m, Longitude = 17.07986499m, ProviderId = "51d8ce250872143140598b6890aa128e4940f00102f9014c34de0f000000009203104f6772c3b364204a61706fc584736b69", State = "Lower Silesian Voivodeship", Street = "aleja Dąbska", OpeningHours = "Apr-Oct: Mo-Su,PH 09:00-19:00"},
+            new ProviderPlace { Id = Guid.NewGuid(), Name = "Muzeum Historyczne i Muzeum Sztuki Medalierskiej", City = "Wrocław", Country = "Poland", Latitude = 51.10744710m, Longitude = 17.02887780m, ProviderId = "51979416896407314059ca9f98d3c08d4940f00103f9010992932b020000009203304d757a65756d20486973746f7279637a6e652069204d757a65756d20537a74756b69204d6564616c696572736b69656a", State = "Lower Silesian Voivodeship", Street = "Kazimierza Wielkiego", HouseNumber = "35", OpeningHours = "We-Sa 11:00-17:00; Su 10:00-18:00"}
         };
 
         modelBuilder.Entity<ProviderPlace>().HasData(providerPlaces);
@@ -536,7 +549,131 @@ public static class ModelBuilderExtension
             new { ProviderPlaceId = providerPlaces[5].Id, PlaceCategoryId = placeCategories["tourism"].Id },
 
             new { ProviderPlaceId = providerPlaces[6].Id, PlaceCategoryId = placeCategories["restaurant"].Id },
-            new { ProviderPlaceId = providerPlaces[6].Id, PlaceCategoryId = placeCategories["catering"].Id }
+            new { ProviderPlaceId = providerPlaces[6].Id, PlaceCategoryId = placeCategories["catering"].Id },
+
+            new { ProviderPlaceId = providerPlaces[8].Id, PlaceCategoryId = placeCategories["zoo"].Id },
+            new { ProviderPlaceId = providerPlaces[8].Id, PlaceCategoryId = placeCategories["entertainment"].Id },
+
+            new { ProviderPlaceId = providerPlaces[9].Id, PlaceCategoryId = placeCategories["fountain"].Id },
+            new { ProviderPlaceId = providerPlaces[9].Id, PlaceCategoryId = placeCategories["tourism"].Id },
+            new { ProviderPlaceId = providerPlaces[9].Id, PlaceCategoryId = placeCategories["natural"].Id },
+            new { ProviderPlaceId = providerPlaces[9].Id, PlaceCategoryId = placeCategories["water"].Id },
+            new { ProviderPlaceId = providerPlaces[9].Id, PlaceCategoryId = placeCategories["attraction"].Id },
+
+            new { ProviderPlaceId = providerPlaces[10].Id, PlaceCategoryId = placeCategories["heritage"].Id },
+            new { ProviderPlaceId = providerPlaces[10].Id, PlaceCategoryId = placeCategories["unesco"].Id },
+            new { ProviderPlaceId = providerPlaces[10].Id, PlaceCategoryId = placeCategories["tourism"].Id },
+            new { ProviderPlaceId = providerPlaces[10].Id, PlaceCategoryId = placeCategories["attraction"].Id },
+            new { ProviderPlaceId = providerPlaces[10].Id, PlaceCategoryId = placeCategories["sights"].Id },
+
+            new { ProviderPlaceId = providerPlaces[11].Id, PlaceCategoryId = placeCategories["museum"].Id },
+            new { ProviderPlaceId = providerPlaces[11].Id, PlaceCategoryId = placeCategories["entertainment"].Id },
+
+            new { ProviderPlaceId = providerPlaces[12].Id, PlaceCategoryId = placeCategories["place_of_worship"].Id },
+            new { ProviderPlaceId = providerPlaces[12].Id, PlaceCategoryId = placeCategories["heritage"].Id },
+            new { ProviderPlaceId = providerPlaces[12].Id, PlaceCategoryId = placeCategories["religion"].Id },
+            new { ProviderPlaceId = providerPlaces[12].Id, PlaceCategoryId = placeCategories["tourism"].Id },
+            new { ProviderPlaceId = providerPlaces[12].Id, PlaceCategoryId = placeCategories["place_of_worship_religion"].Id },
+            new { ProviderPlaceId = providerPlaces[12].Id, PlaceCategoryId = placeCategories["sights"].Id },
+            new { ProviderPlaceId = providerPlaces[12].Id, PlaceCategoryId = placeCategories["christianity"].Id },
+            new { ProviderPlaceId = providerPlaces[12].Id, PlaceCategoryId = placeCategories["church"].Id },
+
+            new { ProviderPlaceId = providerPlaces[13].Id, PlaceCategoryId = placeCategories["memorial"].Id },
+            new { ProviderPlaceId = providerPlaces[13].Id, PlaceCategoryId = placeCategories["tourism"].Id },
+            new { ProviderPlaceId = providerPlaces[13].Id, PlaceCategoryId = placeCategories["sights"].Id },
+
+            new { ProviderPlaceId = providerPlaces[14].Id, PlaceCategoryId = placeCategories["heritage"].Id },
+            new { ProviderPlaceId = providerPlaces[14].Id, PlaceCategoryId = placeCategories["tourism"].Id },
+            new { ProviderPlaceId = providerPlaces[14].Id, PlaceCategoryId = placeCategories["sights"].Id },
+
+            new { ProviderPlaceId = providerPlaces[15].Id, PlaceCategoryId = placeCategories["garden"].Id },
+            new { ProviderPlaceId = providerPlaces[15].Id, PlaceCategoryId = placeCategories["leisure"].Id },
+            new { ProviderPlaceId = providerPlaces[15].Id, PlaceCategoryId = placeCategories["park"].Id },
+            new { ProviderPlaceId = providerPlaces[15].Id, PlaceCategoryId = placeCategories["tourism"].Id },
+            new { ProviderPlaceId = providerPlaces[15].Id, PlaceCategoryId = placeCategories["attraction"].Id },
+
+            new { ProviderPlaceId = providerPlaces[16].Id, PlaceCategoryId = placeCategories["museum"].Id },
+            new { ProviderPlaceId = providerPlaces[16].Id, PlaceCategoryId = placeCategories["entertainment"].Id }
+        );
+
+        //PROVIDER PLACE - PLACE CONDITION
+
+        modelBuilder.Entity("ProviderPlacePlaceCondition").HasData(
+
+            new { ProviderPlaceId = providerPlaces[8].Id, PlaceConditionId = placeConditions["wheelchair"].Id },
+            new { ProviderPlaceId = providerPlaces[8].Id, PlaceConditionId = placeConditions["limited_wheelchair"].Id },
+
+            new { ProviderPlaceId = providerPlaces[9].Id, PlaceConditionId = placeConditions["yes_access"].Id },
+            new { ProviderPlaceId = providerPlaces[9].Id, PlaceConditionId = placeConditions["yes_wheelchair"].Id },
+            new { ProviderPlaceId = providerPlaces[9].Id, PlaceConditionId = placeConditions["yes_dogs"].Id },
+            new { ProviderPlaceId = providerPlaces[9].Id, PlaceConditionId = placeConditions["wheelchair"].Id },
+
+            new { ProviderPlaceId = providerPlaces[10].Id, PlaceConditionId = placeConditions["yes_access"].Id },
+            new { ProviderPlaceId = providerPlaces[10].Id, PlaceConditionId = placeConditions["yes_wheelchair"].Id },
+            new { ProviderPlaceId = providerPlaces[10].Id, PlaceConditionId = placeConditions["yes_dogs"].Id },
+            new { ProviderPlaceId = providerPlaces[10].Id, PlaceConditionId = placeConditions["wheelchair"].Id },
+
+            new { ProviderPlaceId = providerPlaces[11].Id, PlaceConditionId = placeConditions["yes_access"].Id },
+            new { ProviderPlaceId = providerPlaces[11].Id, PlaceConditionId = placeConditions["yes_wheelchair"].Id },
+            new { ProviderPlaceId = providerPlaces[11].Id, PlaceConditionId = placeConditions["yes_dogs"].Id },
+            new { ProviderPlaceId = providerPlaces[11].Id, PlaceConditionId = placeConditions["fee"].Id },
+            new { ProviderPlaceId = providerPlaces[11].Id, PlaceConditionId = placeConditions["wheelchair"].Id },
+
+            new { ProviderPlaceId = providerPlaces[12].Id, PlaceConditionId = placeConditions["wheelchair"].Id },
+            new { ProviderPlaceId = providerPlaces[12].Id, PlaceConditionId = placeConditions["limited_wheelchair"].Id },
+
+            new { ProviderPlaceId = providerPlaces[13].Id, PlaceConditionId = placeConditions["yes_access"].Id },
+            new { ProviderPlaceId = providerPlaces[13].Id, PlaceConditionId = placeConditions["yes_wheelchair"].Id },
+            new { ProviderPlaceId = providerPlaces[13].Id, PlaceConditionId = placeConditions["yes_dogs"].Id },
+            new { ProviderPlaceId = providerPlaces[13].Id, PlaceConditionId = placeConditions["wheelchair"].Id },
+
+            new { ProviderPlaceId = providerPlaces[14].Id, PlaceConditionId = placeConditions["yes_access"].Id },
+            new { ProviderPlaceId = providerPlaces[14].Id, PlaceConditionId = placeConditions["yes_wheelchair"].Id },
+            new { ProviderPlaceId = providerPlaces[14].Id, PlaceConditionId = placeConditions["yes_dogs"].Id },
+            new { ProviderPlaceId = providerPlaces[14].Id, PlaceConditionId = placeConditions["wheelchair"].Id },
+
+            new { ProviderPlaceId = providerPlaces[15].Id, PlaceConditionId = placeConditions["fee"].Id },
+            new { ProviderPlaceId = providerPlaces[15].Id, PlaceConditionId = placeConditions["wheelchair"].Id },
+            new { ProviderPlaceId = providerPlaces[15].Id, PlaceConditionId = placeConditions["limited_wheelchair"].Id },
+
+            new { ProviderPlaceId = providerPlaces[16].Id, PlaceConditionId = placeConditions["yes_access"].Id },
+            new { ProviderPlaceId = providerPlaces[16].Id, PlaceConditionId = placeConditions["yes_wheelchair"].Id },
+            new { ProviderPlaceId = providerPlaces[16].Id, PlaceConditionId = placeConditions["yes_dogs"].Id },
+            new { ProviderPlaceId = providerPlaces[16].Id, PlaceConditionId = placeConditions["fee"].Id },
+            new { ProviderPlaceId = providerPlaces[16].Id, PlaceConditionId = placeConditions["wheelchair"].Id }
+        );
+
+        //CATEGORY PROFILE
+        
+        var categoryProfile = new CategoryProfile
+        {
+            Id = Guid.NewGuid(),
+            UserId = "c324c822-30c1-7029-7c4f-00799aadf54a",
+            Name = "Podstawowy",
+        };
+
+        modelBuilder.Entity<CategoryProfile>().HasData(categoryProfile);
+
+        modelBuilder.Entity("CategoryProfilePlaceCategory").HasData(
+            new { CategoryProfileId = categoryProfile.Id, PlaceCategoryId = placeCategories["entertainment"].Id },
+            new { CategoryProfileId = categoryProfile.Id, PlaceCategoryId = placeCategories["tourism"].Id },
+            new { CategoryProfileId = categoryProfile.Id, PlaceCategoryId = placeCategories["natural"].Id }
+
+        );
+
+        //CONDITION PROFILE
+
+        var conditionProfile = new ConditionProfile
+        {
+            Id = Guid.NewGuid(),
+            UserId = "c324c822-30c1-7029-7c4f-00799aadf54a",
+            Name = "Podstawowy",
+        };
+
+        modelBuilder.Entity<ConditionProfile>().HasData(conditionProfile);
+
+        modelBuilder.Entity("ConditionProfilePlaceCondition").HasData(
+            new { ConditionProfileId = conditionProfile.Id, PlaceConditionId = placeConditions["wheelchair"].Id }
 
         );
 
@@ -545,6 +682,7 @@ public static class ModelBuilderExtension
         {
             new Trip { Id = Guid.NewGuid(), UserId = "c324c822-30c1-7029-7c4f-00799aadf54a", Name = "Wycieczka do Moszczanki", NumberOfTravelers = 1, StartDate = DateOnly.FromDateTime(new DateTime(2024, 12, 20)), EndDate = DateOnly.FromDateTime(new DateTime(2024, 12, 21)), DestinationId = providerPlaces[0].Id, Budget = 100, CurrencyCode = "PLN", ExchangeRate = 1},
             new Trip { Id = Guid.NewGuid(), UserId = "c324c822-30c1-7029-7c4f-00799aadf54a", Name = "Wycieczka do Moszczanki", NumberOfTravelers = 1, StartDate = DateOnly.FromDateTime(new DateTime(2024, 11, 20)), EndDate = DateOnly.FromDateTime(new DateTime(2024, 11, 21)), DestinationId = providerPlaces[0].Id, Budget = 100, CurrencyCode = "PLN", ExchangeRate = 1},
+            new Trip { Id = Guid.NewGuid(), UserId = "c324c822-30c1-7029-7c4f-00799aadf54a", Name = "Wycieczka do Wrocławia", NumberOfTravelers = 1, StartDate = DateOnly.FromDateTime(new DateTime(2025, 12, 06)), EndDate = DateOnly.FromDateTime(new DateTime(2025, 12, 06)), DestinationId = providerPlaces[7].Id, Budget = 200, CurrencyCode = "PLN", ExchangeRate = 1, CategoryProfileId = categoryProfile.Id, ConditionProfileId = conditionProfile.Id},
         };
 
         modelBuilder.Entity<Trip>().HasData(trips);
@@ -556,6 +694,7 @@ public static class ModelBuilderExtension
             new TripDay { Id = Guid.NewGuid(), TripId = trips[0].Id, Date = DateOnly.FromDateTime(new DateTime(2024, 12, 21))},
             new TripDay { Id = Guid.NewGuid(), TripId = trips[1].Id, Date = DateOnly.FromDateTime(new DateTime(2024, 11, 20))},
             new TripDay { Id = Guid.NewGuid(), TripId = trips[1].Id, Date = DateOnly.FromDateTime(new DateTime(2024, 11, 21))},
+            new TripDay { Id = Guid.NewGuid(), TripId = trips[2].Id, Date = DateOnly.FromDateTime(new DateTime(2025, 12, 06))},
         };
 
         modelBuilder.Entity<TripDay>().HasData(tripDays);
@@ -580,12 +719,12 @@ public static class ModelBuilderExtension
             new TripPoint { Id = Guid.NewGuid(), Name = "Bohaterom I wojny światowej i Poległym za Wolność Ojczyzny", TripDayId = tripDays[2].Id, PredictedCost = 0, StartTime = new TimeOnly(11,0,0), EndTime = new TimeOnly(11,20,0), Status = TripPointStatus.reviewPending, PlaceId = providerPlaces[2].Id, ExchangeRate = 1},
             new TripPoint { Id = Guid.NewGuid(), Name = "Jana Pawła II", TripDayId = tripDays[2].Id, PredictedCost = 0, StartTime = new TimeOnly(11,50,0), EndTime = new TimeOnly(12,00,0), Status = TripPointStatus.reviewPending, PlaceId = providerPlaces[3].Id, ExchangeRate = 1},
             new TripPoint { Id = Guid.NewGuid(), Name = "Zalew", TripDayId = tripDays[2].Id, PredictedCost = 0, StartTime = new TimeOnly(12,30,0), EndTime = new TimeOnly(13,00,0), Status = TripPointStatus.reviewPending, PlaceId = CustomPlaces[3].Id, ExchangeRate = 1},
-            new TripPoint { Id = Guid.NewGuid(), Name = "Kościół w parku", TripDayId = tripDays[2].Id, PredictedCost = 0, StartTime = new TimeOnly(13,30,0), EndTime = new TimeOnly(14,00,0), Status = TripPointStatus.notVisited, PlaceId = CustomPlaces[4].Id, ExchangeRate = 1},
+            new TripPoint { Id = Guid.NewGuid(), Name = "Kościół w parku", TripDayId = tripDays[2].Id, PredictedCost = 0, StartTime = new TimeOnly(13,30,0), EndTime = new TimeOnly(14,00,0), Status = TripPointStatus.reviewRejected, PlaceId = CustomPlaces[4].Id, ExchangeRate = 1},
 
             new TripPoint { Id = Guid.NewGuid(), Name = "Samolot MIG", Comment = "Czy to lata?", TripDayId = tripDays[3].Id, PredictedCost = 0, StartTime = new TimeOnly(12,30,0), EndTime = new TimeOnly(12,40,0), Status = TripPointStatus.reviewPending, PlaceId = providerPlaces[4].Id, ExchangeRate = 1},
             new TripPoint { Id = Guid.NewGuid(), Name = "Pomnik 60 Pułku Piechoty", TripDayId = tripDays[3].Id, PredictedCost = 0, StartTime = new TimeOnly(13,0,0), EndTime = new TimeOnly(13,10,0), Status = TripPointStatus.reviewPending, PlaceId = providerPlaces[5].Id, ExchangeRate = 1},
-            new TripPoint { Id = Guid.NewGuid(), Name = "Bistro Bravo", Comment = "Czas na jedzonko", TripDayId = tripDays[3].Id, PredictedCost = 30, StartTime = new TimeOnly(14,0,0), EndTime = new TimeOnly(15,30,0), Status = TripPointStatus.reviewPending, PlaceId = providerPlaces[6].Id, ExchangeRate = 1, OpeningTime = new TimeOnly(12,0,0), ClosingTime = new TimeOnly(0,0,0)},
-            new TripPoint { Id = Guid.NewGuid(), Name = "Parowóz TKi3-120", TripDayId = tripDays[3].Id, PredictedCost = 0, StartTime = new TimeOnly(16,30,0), EndTime = new TimeOnly(17,0,0), Status = TripPointStatus.reviewPending, PlaceId = CustomPlaces[5].Id, ExchangeRate = 1}
+            new TripPoint { Id = Guid.NewGuid(), Name = "Bistro Bravo", Comment = "Czas na jedzonko", TripDayId = tripDays[3].Id, PredictedCost = 30, StartTime = new TimeOnly(14,0,0), EndTime = new TimeOnly(15,30,0), Status = TripPointStatus.reviewCompleted, PlaceId = providerPlaces[6].Id, ExchangeRate = 1, OpeningTime = new TimeOnly(12,0,0), ClosingTime = new TimeOnly(0,0,0)},
+            new TripPoint { Id = Guid.NewGuid(), Name = "Parowóz TKi3-120", TripDayId = tripDays[3].Id, PredictedCost = 5, StartTime = new TimeOnly(16,30,0), EndTime = new TimeOnly(17,0,0), Status = TripPointStatus.reviewCompleted, PlaceId = CustomPlaces[5].Id, ExchangeRate = 1}
         };
 
         modelBuilder.Entity<TripPoint>().HasData(tripPoints);
@@ -615,6 +754,37 @@ public static class ModelBuilderExtension
 
         modelBuilder.Entity<TransferPoint>().HasData(transferPoints);
 
-        
+
+        //REVIEWS
+
+        var reviews = new List<TripPointReview>
+        {
+            new TripPointReview {PlaceId = providerPlaces[8].Id, ActualCostPerPerson = 80, Rating = 4, ActualTimeSpent = new TimeSpan(1,30,0), Id = Guid.NewGuid(), UserId = Guid.NewGuid().ToString() , TripPointId = null, CurrencyCode = "PLN", ExchangeRate = 1},
+            new TripPointReview {PlaceId = providerPlaces[8].Id, ActualCostPerPerson = 75, Rating = 5, ActualTimeSpent = new TimeSpan(2,0,0), Id = Guid.NewGuid(), UserId = Guid.NewGuid().ToString() , TripPointId = null, CurrencyCode = "PLN", ExchangeRate = 1},
+            new TripPointReview {PlaceId = providerPlaces[8].Id, ActualCostPerPerson = 100, Rating = 4.5m, ActualTimeSpent = new TimeSpan(1,45,0), Id = Guid.NewGuid(), UserId = Guid.NewGuid().ToString() , TripPointId = null, CurrencyCode = "PLN", ExchangeRate = 1},
+            new TripPointReview {PlaceId = providerPlaces[8].Id, ActualCostPerPerson = 85, Rating = 5, ActualTimeSpent = new TimeSpan(1,37,0), Id = Guid.NewGuid(), UserId = Guid.NewGuid().ToString() , TripPointId = null, CurrencyCode = "PLN", ExchangeRate = 1},
+            new TripPointReview {PlaceId = providerPlaces[9].Id, ActualCostPerPerson = 0, Rating = 4.5m, ActualTimeSpent = new TimeSpan(0,15,0), Id = Guid.NewGuid(), UserId = Guid.NewGuid().ToString() , TripPointId = null, CurrencyCode = "PLN", ExchangeRate = 1},
+            new TripPointReview {PlaceId = providerPlaces[9].Id, ActualCostPerPerson = 0, Rating = 4m, ActualTimeSpent = new TimeSpan(0,10,0), Id = Guid.NewGuid(), UserId = Guid.NewGuid().ToString() , TripPointId = null, CurrencyCode = "PLN", ExchangeRate = 1},
+            new TripPointReview {PlaceId = providerPlaces[10].Id, ActualCostPerPerson = 17, Rating = 5, ActualTimeSpent = new TimeSpan(0,25,0), Id = Guid.NewGuid(), UserId = Guid.NewGuid().ToString() , TripPointId = null, CurrencyCode = "PLN", ExchangeRate = 1},
+            new TripPointReview {PlaceId = providerPlaces[10].Id, ActualCostPerPerson = 0, Rating = 4.5m, ActualTimeSpent = new TimeSpan(0,15,0), Id = Guid.NewGuid(), UserId = Guid.NewGuid().ToString() , TripPointId = null, CurrencyCode = "PLN", ExchangeRate = 1},
+            new TripPointReview {PlaceId = providerPlaces[10].Id, ActualCostPerPerson = 20, Rating = 5, ActualTimeSpent = new TimeSpan(0,30,0), Id = Guid.NewGuid(), UserId = Guid.NewGuid().ToString() , TripPointId = null, CurrencyCode = "PLN", ExchangeRate = 1},
+            new TripPointReview {PlaceId = providerPlaces[11].Id, ActualCostPerPerson = 15, Rating = 4, ActualTimeSpent = new TimeSpan(0,35,0), Id = Guid.NewGuid(), UserId = Guid.NewGuid().ToString() , TripPointId = null, CurrencyCode = "PLN", ExchangeRate = 1},
+            new TripPointReview {PlaceId = providerPlaces[11].Id, ActualCostPerPerson = 10, Rating = 3.5m, ActualTimeSpent = new TimeSpan(0,20,0), Id = Guid.NewGuid(), UserId = Guid.NewGuid().ToString() , TripPointId = null, CurrencyCode = "PLN", ExchangeRate = 1},
+            new TripPointReview {PlaceId = providerPlaces[12].Id, ActualCostPerPerson = 0, Rating = 3.5m, ActualTimeSpent = new TimeSpan(0,10,0), Id = Guid.NewGuid(), UserId = Guid.NewGuid().ToString() , TripPointId = null, CurrencyCode = "PLN", ExchangeRate = 1},
+            new TripPointReview {PlaceId = providerPlaces[12].Id, ActualCostPerPerson = 5, Rating = 4, ActualTimeSpent = new TimeSpan(0,8,0), Id = Guid.NewGuid(), UserId = Guid.NewGuid().ToString() , TripPointId = null, CurrencyCode = "PLN", ExchangeRate = 1},
+            new TripPointReview {PlaceId = providerPlaces[13].Id, ActualCostPerPerson = 0, Rating = 5, ActualTimeSpent = new TimeSpan(0,5,0), Id = Guid.NewGuid(), UserId = Guid.NewGuid().ToString() , TripPointId = null, CurrencyCode = "PLN", ExchangeRate = 1},
+            new TripPointReview {PlaceId = providerPlaces[13].Id, ActualCostPerPerson = 0, Rating = 5, ActualTimeSpent = new TimeSpan(0,7,0), Id = Guid.NewGuid(), UserId = Guid.NewGuid().ToString() , TripPointId = null, CurrencyCode = "PLN", ExchangeRate = 1},
+            new TripPointReview {PlaceId = providerPlaces[14].Id, ActualCostPerPerson = 30, Rating = 3, ActualTimeSpent = new TimeSpan(0,20,0), Id = Guid.NewGuid(), UserId = Guid.NewGuid().ToString() , TripPointId = null, CurrencyCode = "PLN", ExchangeRate = 1},
+            new TripPointReview {PlaceId = providerPlaces[14].Id, ActualCostPerPerson = 25, Rating = 4, ActualTimeSpent = new TimeSpan(0,15,0), Id = Guid.NewGuid(), UserId = Guid.NewGuid().ToString() , TripPointId = null, CurrencyCode = "PLN", ExchangeRate = 1},
+            new TripPointReview {PlaceId = providerPlaces[15].Id, ActualCostPerPerson = 14, Rating = 5, ActualTimeSpent = new TimeSpan(1,10,0), Id = Guid.NewGuid(), UserId = Guid.NewGuid().ToString() , TripPointId = null, CurrencyCode = "PLN", ExchangeRate = 1},
+            new TripPointReview {PlaceId = providerPlaces[15].Id, ActualCostPerPerson = 20, Rating = 5, ActualTimeSpent = new TimeSpan(0,50,0), Id = Guid.NewGuid(), UserId = Guid.NewGuid().ToString() , TripPointId = null, CurrencyCode = "PLN", ExchangeRate = 1},
+            new TripPointReview {PlaceId = providerPlaces[15].Id, ActualCostPerPerson = 14, Rating = 5, ActualTimeSpent = new TimeSpan(1,20,0), Id = Guid.NewGuid(), UserId = Guid.NewGuid().ToString() , TripPointId = null, CurrencyCode = "PLN", ExchangeRate = 1},
+
+            new TripPointReview {PlaceId = providerPlaces[6].Id, ActualCostPerPerson = 40, Rating = 5, ActualTimeSpent = new TimeSpan(1,0,0), Id = Guid.NewGuid(), UserId = "c324c822-30c1-7029-7c4f-00799aadf54a" , TripPointId = tripPoints[16].Id, CurrencyCode = "PLN", ExchangeRate = 1},
+            new TripPointReview {PlaceId = CustomPlaces[5].Id, ActualCostPerPerson = 10, Rating = 4.5m, ActualTimeSpent = new TimeSpan(0,10,0), Id = Guid.NewGuid(), UserId = "c324c822-30c1-7029-7c4f-00799aadf54a" , TripPointId = tripPoints[17].Id, CurrencyCode = "PLN", ExchangeRate = 1},
+        };
+
+        modelBuilder.Entity<TripPointReview>().HasData(reviews);
     }
+
 }
