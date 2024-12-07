@@ -104,30 +104,34 @@ export const TransferPointNode = ({
   return (
     <View style={style.wrapper}>
       <DashedVerticalLine height={VERTICAL_LINE_HEIGHT} />
-      <IconButton
-        icon={icon}
-        size={ICON_SIZE}
-        style={style.iconButton}
-        iconColor={theme.colors.onSurface}
-        onPress={onPress}
-      />
-      <DashedVerticalLine height={VERTICAL_LINE_HEIGHT} />
-      {transferPoint && canNavigate ? (
-        <View style={style.leftComponent}>
-          <IconButton
-            icon={NAVIGATION_ICON}
-            size={SMALL_ICON_SIZE}
-            style={style.leftComponentButton}
-            iconColor={theme.colors.onTertiaryContainer}
-            onPress={handleNavigationButtonPress}
-          />
+      <View style={style.dayItem}>
+        <View style={style.fillContainer}>
+          {transferPoint && canNavigate ? (
+            <IconButton
+              icon={NAVIGATION_ICON}
+              size={SMALL_ICON_SIZE}
+              style={style.leftComponentButton}
+              iconColor={theme.colors.onTertiaryContainer}
+              onPress={handleNavigationButtonPress}
+            />
+          ) : null}
         </View>
-      ) : null}
-      {minutes != null ? (
-        <Text numberOfLines={1} style={style.durationText}>
-          {formatMinutes(minutes)}
-        </Text>
-      ) : null}
+        <IconButton
+          icon={icon}
+          size={ICON_SIZE}
+          style={style.iconButton}
+          iconColor={theme.colors.onSurface}
+          onPress={onPress}
+        />
+        <View style={style.fillContainer}>
+          {minutes != null ? (
+            <Text numberOfLines={1} style={style.durationText}>
+              {formatMinutes(minutes)}
+            </Text>
+          ) : null}
+        </View>
+      </View>
+      <DashedVerticalLine height={VERTICAL_LINE_HEIGHT} />
     </View>
   );
 };
@@ -137,29 +141,29 @@ const createStyles = (theme: MD3ThemeExtended) =>
     wrapper: {
       position: "relative",
       alignItems: "center",
-      width: 80,
+      width: "100%",
     },
     iconButton: {
       backgroundColor: theme.colors.surfaceContainer,
       margin: 0,
     },
     durationText: {
-      position: "absolute",
-      top: "50%",
-      transform: [{ translateY: -10 }],
-      left: "100%",
       height: 20,
-    },
-    leftComponent: {
-      position: "absolute",
-      top: "50%",
-      transform: [{ translateY: -22 }],
-      right: "115%",
-      display: "flex",
-      alignItems: "center",
+      marginLeft: 10,
     },
     leftComponentButton: {
-      margin: 0,
+      alignSelf: "flex-end",
+      marginRight: 30,
       backgroundColor: theme.colors.tertiaryContainer,
+    },
+    fillContainer: {
+      flex: 1,
+    },
+    dayItem: {
+      display: "flex",
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      width: "100%",
     },
   });
