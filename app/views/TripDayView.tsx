@@ -137,6 +137,7 @@ const TripDayView = () => {
         label: "Utwórz",
         onPress: () => {
           router.push({
+            // @ts-ignore
             pathname: `/trips/details/${trip_id}/day/${day_id}/tripPoints/create`,
             params: {
               date: new Date(tripDay?.date as string).toLocaleDateString(),
@@ -149,11 +150,10 @@ const TripDayView = () => {
         icon: SEARCH_TRIP_POINT_ICON,
         label: "Wyszukaj",
         onPress: () => {
-          router.push({
-            pathname: "/explore",
+          router.navigate({
+            // @ts-ignore
+            pathname: `/trips/details/${trip_id}/day/${day_id}/explore`,
             params: {
-              trip_id: trip_id,
-              day_id: day_id,
               date: new Date(tripDay?.date as string).toLocaleDateString(),
             },
           });
