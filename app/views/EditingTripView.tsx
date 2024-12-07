@@ -190,7 +190,7 @@ const EditTripView = () => {
       router.setParams({
         refresh: "true",
       });
-    } else showSnackbar("Błąd przy zapisie wycieczki", "error");
+    }
   }, [router, editSuccess]);
 
   // =====================
@@ -248,15 +248,7 @@ const EditTripView = () => {
         budget: "Kwota budżetu jest wymagana.",
       }));
     }
-    // if (!editTripRequest.categoryProfileId){
-    //   hasErrors = true;
-    //   setErrors((prev) => ({...prev, categoryProfile: "Profil preferencji jest wymagany."}))
-    // }
 
-    // if (!editTripRequest.conditionProfileId){
-    //   hasErrors = true;
-    //   setErrors((prev) => ({...prev, conditionProfile: "Profil udogodnień jest wymagany."}))
-    // }
     if (hasErrors) {
       showSnackbar("Proszę uzupełnić wszystkie wymagane pola!", "error");
       return;
@@ -264,8 +256,8 @@ const EditTripView = () => {
 
     try {
       await editTrip();
-    } catch (error) {
-      showSnackbar("Błąd podczas zapisywania wycieczki!", "error");
+    } catch (error) {;
+      showSnackbar("Błąd przy zapisie wycieczki", "error");
       console.error(error);
     }
   };
