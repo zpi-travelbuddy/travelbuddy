@@ -42,7 +42,10 @@ import {
   NEW_OVERLAPPING_ERROR_MESSAGE,
   OVERLAPPING_TRIP_POINTS_MESSAGE,
 } from "@/constants/Messages";
-import { requiredFieldsForTripPoint } from "@/utils/validations";
+import {
+  onEndEditingString,
+  requiredFieldsForTripPoint,
+} from "@/utils/validations";
 import usePlaceDetails from "@/composables/usePlace";
 
 const { height, width } = Dimensions.get("window");
@@ -149,8 +152,7 @@ const EditingTripPointView = () => {
     clearError = true,
   ) => {
     return (value: any) => {
-      if (typeof value === "string") setter(value.trim());
-      else setter(value);
+      setter(value);
       if (clearError && field) setErrors((prev) => ({ ...prev, [field]: "" }));
     };
   };
@@ -418,6 +420,9 @@ const EditingTripPointView = () => {
               value={tripPointName}
               placeholder={tripPointName}
               onChangeText={handleChange(setTripPointName, "tripPointName")}
+              onEndEditing={() =>
+                onEndEditingString(setTripPointName, tripPointName)
+              }
               error={!!errors.tripPointName}
             ></TextInput>
             {errors.tripPointName && (
@@ -437,6 +442,7 @@ const EditingTripPointView = () => {
                   : country || ""
               }
               onChangeText={handleChange(setCountry, "country")}
+              onEndEditing={() => onEndEditingString(setCountry, country)}
               error={!!errors.country}
             ></TextInput>
             {errors.country && (
@@ -452,6 +458,7 @@ const EditingTripPointView = () => {
                 isAttraction ? (state !== null ? state : "Brak") : state || ""
               }
               onChangeText={handleChange(setState, "state")}
+              onEndEditing={() => onEndEditingString(setState, state)}
               error={!!errors.state}
             ></TextInput>
             {errors.state && (
@@ -467,6 +474,7 @@ const EditingTripPointView = () => {
                 isAttraction ? (city !== null ? city : "Brak") : city || ""
               }
               onChangeText={handleChange(setCity, "city")}
+              onEndEditing={() => onEndEditingString(setCity, city)}
               error={!!errors.city}
             ></TextInput>
             {errors.city && <Text style={styles.textError}>{errors.city}</Text>}
@@ -484,6 +492,7 @@ const EditingTripPointView = () => {
                   : street || ""
               }
               onChangeText={handleChange(setStreet, "street")}
+              onEndEditing={() => onEndEditingString(setStreet, street)}
               error={!!errors.street}
             ></TextInput>
             {errors.street && (
@@ -503,6 +512,9 @@ const EditingTripPointView = () => {
                   : houseNumber || ""
               }
               onChangeText={handleChange(setHouseNumber, "houseName")}
+              onEndEditing={() =>
+                onEndEditingString(setHouseNumber, houseNumber)
+              }
               error={!!errors.houseNumber}
             ></TextInput>
             {errors.houseNumber && (
@@ -586,6 +598,7 @@ const EditingTripPointView = () => {
               value={comment}
               placeholder={comment}
               onChangeText={handleChange(setComment, "comment")}
+              onEndEditing={() => onEndEditingString(setComment, comment)}
               error={!!errors.comment}
             ></TextInput>
             {errors.comment && (
