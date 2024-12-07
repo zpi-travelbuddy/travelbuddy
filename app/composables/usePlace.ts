@@ -48,15 +48,13 @@ const usePlaceDetails = (
     }
   }, [api, endpoint, placeId]);
 
-  const refetch = useCallback(fetchPlaceDetails, [fetchPlaceDetails]);
-
   useEffect(() => {
     if (placeId && options.immediate) {
-      refetch();
+      fetchPlaceDetails();
     }
-  }, [placeId, options.immediate, refetch]);
+  }, [placeId, options.immediate, fetchPlaceDetails]);
 
-  return { placeDetails, loading, error, success, refetch };
+  return { placeDetails, loading, error, success, refetch: fetchPlaceDetails };
 };
 
 export const useAttractionDetails = (

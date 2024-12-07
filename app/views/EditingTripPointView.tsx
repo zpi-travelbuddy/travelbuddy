@@ -132,7 +132,7 @@ const EditingTripPointView = () => {
     if (tripPointDetails?.place?.id) {
       setPlaceId(tripPointDetails?.place?.id);
     }
-  }, [tripDetails]);
+  }, [tripPointDetails]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -192,7 +192,7 @@ const EditingTripPointView = () => {
       );
     }
     setIsAttraction(isAttraction || !!tripPointDetails?.place?.providerId);
-  }, [tripPointDetails, success]);
+  }, [tripPointDetails, placeDetails, success]);
 
   useEffect(() => {
     setErrors((prev) => ({
@@ -210,7 +210,7 @@ const EditingTripPointView = () => {
         placeLoading ||
         false,
     );
-  }, [tripLoading, tripPointLoading, categoriesLoading, placeLoading, success]);
+  }, [tripLoading, tripPointLoading, categoriesLoading, placeLoading]);
 
   useEffect(() => {
     if (errors.api) {
@@ -349,8 +349,6 @@ const EditingTripPointView = () => {
         endTime: `${formatTime(endTime, true)}`,
         predictedCost: totalExpectedCost,
       };
-      console.log(JSON.stringify(tripPointRequest));
-      console.log(JSON.stringify(placeDetails));
 
       handleEditRequest(tripPointRequest);
     } else {
