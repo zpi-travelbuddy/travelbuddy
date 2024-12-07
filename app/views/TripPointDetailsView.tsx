@@ -3,10 +3,8 @@ import { ScrollView, StyleSheet, View } from "react-native";
 import { Divider, Text, useTheme } from "react-native-paper";
 import { TripPointDetails, TripPointViewModel } from "@/types/TripDayData";
 import { TripPointDetailsLabel } from "@/components/TripPointDetailLabel";
-import { SimplePlaceCard } from "@/components/TripPointDetailsView/SimplePlaceCard";
 import { getMoneyWithCurrency } from "@/utils/CurrencyUtils";
 import { useLayoutEffect, useMemo, useState } from "react";
-import { Place, PlaceViewModel } from "@/types/Place";
 import { Link, router, useLocalSearchParams, useNavigation } from "expo-router";
 import { DELETE_ICON } from "@/constants/Icons";
 import CustomModal from "@/components/CustomModal";
@@ -40,7 +38,7 @@ const parseTripPoint = (
   if (!tripPoint) {
     return {};
   }
-  console.log(tripPoint);
+
   const category = tripPoint.category?.name || "Brak danych";
 
   const address = tripPoint.place
@@ -109,7 +107,6 @@ const OpeningsHours = ({
         (startTime >= "00:00:00" && endTime <= closingTime) ||
         (startTime >= openingTime && endTime <= "24:00:00");
     }
-    console.log(startTime >= "00:00:00" && endTime <= closingTime);
   }
 
   if (!openingTime || !closingTime) {
@@ -197,7 +194,7 @@ const TripPointDetailsView = ({
           ))}
         {tripPoint?.place && (
           <View style={styles.placeDetails}>
-            <Divider style={{ marginVertical: 10 }} />
+            <Divider style={styles.divider} />
             <Text variant="titleLarge" style={styles.placeTitle}>
               Powiązana atrakcja
             </Text>
@@ -295,4 +292,5 @@ const createStyles = (theme: MD3ThemeExtended) =>
     placeDetails: {
       marginBottom: 80,
     },
+    divider: { marginVertical: 10 },
   });
