@@ -71,7 +71,7 @@ export const CategoryIcons: Record<string, string> = {
   heritage: "bank",
   leisure: "pine-tree",
   natural: "pine-tree",
-  national_park: "pine-tree",
+  "national park": "shield-bug-outline",
   tourism: "camera",
   religion: "church",
   sport: "soccer",
@@ -92,7 +92,7 @@ export const CATEGORY_NAME_LIST: string[] = [
   "catering",
 ];
 
-export const CategoryLabels: Record<string, string> = {
+export const CategoryLabelsForProfiles: Record<string, string> = {
   activity: "Rozrywka",
   commercial: "Sklepy",
   entertainment: "Kultura",
@@ -103,6 +103,19 @@ export const CategoryLabels: Record<string, string> = {
   religion: "Miejsca kultu",
   sport: "Sport",
   catering: "Restauracje",
+};
+
+export const CategoryLabelsForTripCategory: Record<string, string> = {
+  activity: "Rozrywka",
+  commercial: "Sklep",
+  entertainment: "Kultura",
+  heritage: "Zabytek",
+  natural: "Natura",
+  "national park": "Park",
+  tourism: "Atrakcja",
+  religion: "Miejsce kultu",
+  sport: "Sport",
+  catering: "Jedzenie",
 };
 
 export const ConditionLabels: Record<string, string> = {

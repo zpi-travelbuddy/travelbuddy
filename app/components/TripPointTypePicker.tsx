@@ -5,7 +5,7 @@ import IconComponent from "./IconComponent";
 import { DEFAULT_ICON_SIZE } from "@/constants/Icons";
 import {
   CategoryIcons,
-  CategoryLabels,
+  CategoryLabelsForTripCategory,
   DEFAULT_CATEGORY_NAME,
 } from "@/types/Profile";
 import { Category } from "@/types/TripDayData";
@@ -39,7 +39,11 @@ const TripPointTypePicker: React.FC<TripPointCategoryPickerProps> = ({
             backgroundColor={theme.colors.primaryContainer}
           />
           <Text style={styles.label}>
-            {CategoryLabels[selectedCategory?.name || DEFAULT_CATEGORY_NAME]}
+            {
+              CategoryLabelsForTripCategory[
+                selectedCategory?.name || DEFAULT_CATEGORY_NAME
+              ]
+            }
           </Text>
         </View>
         <Button
@@ -67,8 +71,9 @@ const createStyles = (theme: MD3Theme) =>
     label: {
       ...theme.fonts.bodyLarge,
       marginLeft: 10,
-      textAlign: "center",
+      textAlign: "left",
       color: theme.colors.onBackground,
+      flexShrink: 1,
     },
     rowContainer: {
       flexDirection: "row",
@@ -76,6 +81,7 @@ const createStyles = (theme: MD3Theme) =>
       alignItems: "center",
       width: "90%",
       marginVertical: 10,
+      flexWrap: "wrap",
     },
     leftContainer: {
       flexDirection: "row",

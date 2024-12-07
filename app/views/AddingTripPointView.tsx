@@ -36,7 +36,7 @@ import usePlaceDetails from "@/composables/usePlace";
 import { useAuth } from "@/app/ctx";
 import {
   CATEGORY_NAME_LIST,
-  CategoryLabels,
+  CategoryLabelsForProfiles,
   DEFAULT_CATEGORY_NAME,
 } from "@/types/Profile";
 import { useGetCategories } from "@/composables/useCategoryCondition";
@@ -340,7 +340,7 @@ const AddingTripPointView = () => {
 
       handleCreateRequest(tripPointRequest);
     } else {
-      showSnackbar("Uzupełnij brakujące pola i popraw błędy!");
+      showSnackbar("Uzupełnij brakujące pola i popraw błędy!", "error");
     }
   };
 
@@ -633,7 +633,7 @@ const AddingTripPointView = () => {
 
         <SettingsBottomSheet
           title={"Wybierz rodzaj punktu wycieczki"}
-          items={CategoryLabels}
+          items={CategoryLabelsForProfiles}
           selectedItem={tripPointCategory?.name || DEFAULT_CATEGORY_NAME}
           isVisible={isSheetVisible && !isAttraction}
           onSelect={(item: string) => {

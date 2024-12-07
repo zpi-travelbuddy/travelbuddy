@@ -12,7 +12,7 @@ import LoadingView from "./LoadingView";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useSnackbar } from "@/context/SnackbarContext";
 import ConditionIcons from "@/components/ConditionIcons";
-import { CategoryIcons, CategoryLabels } from "@/types/Profile";
+import { CategoryIcons, CategoryLabelsForProfiles } from "@/types/Profile";
 
 const { height, width } = Dimensions.get("window");
 
@@ -66,7 +66,9 @@ const AttractionDetailsView = () => {
                 color={theme.colors.onSurface}
                 backgroundColor={theme.colors.primaryContainer}
               />
-              <Text style={styles.label}>{CategoryLabels["attraction"]}</Text>
+              <Text style={styles.label}>
+                {CategoryLabelsForProfiles["attraction"]}
+              </Text>
             </View>
 
             <Text style={styles.doubleSpace} variant="bodySmall">

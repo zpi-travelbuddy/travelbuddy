@@ -60,7 +60,7 @@ const usePlaceDetails = (
 
 export const useAttractionDetails = (
   providerId: string | undefined,
-  options: UseApiOptions,
+  options: UseApiOptions = { immediate: true },
 ) => {
   return usePlaceDetails(providerId, "/places/provider", options);
 };

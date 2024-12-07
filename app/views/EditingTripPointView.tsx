@@ -34,7 +34,7 @@ import { useGetTripPoint } from "@/composables/useTripPoint";
 import useTripDetails from "@/composables/useTripDetails";
 import {
   CATEGORY_NAME_LIST,
-  CategoryLabels,
+  CategoryLabelsForProfiles,
   DEFAULT_CATEGORY_NAME,
 } from "@/types/Profile";
 import { useGetCategories } from "@/composables/useCategoryCondition";
@@ -642,7 +642,7 @@ const EditingTripPointView = () => {
 
         <SettingsBottomSheet
           title={"Wybierz rodzaj punktu wycieczki"}
-          items={CategoryLabels}
+          items={CategoryLabelsForProfiles}
           selectedItem={tripPointCategory?.name || DEFAULT_CATEGORY_NAME}
           isVisible={isSheetVisible && !isAttraction}
           onSelect={(item: string) => {
