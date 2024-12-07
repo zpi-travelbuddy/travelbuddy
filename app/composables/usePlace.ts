@@ -1,6 +1,6 @@
 import { useAuth } from "@/app/ctx";
 import { PlaceDetails } from "@/types/Place";
-import { Condition } from "@/types/Trip";
+import { Condition, Category } from "@/types/Profile";
 import { useState, useCallback, useEffect } from "react";
 
 const usePlaceDetails = (
