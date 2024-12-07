@@ -258,6 +258,7 @@ const TripDayView = () => {
         setLoadingOverlay(true);
         await updateTransferPoint(newTransferPoint, transferPointId);
         await refetchNoLoadingDayData();
+        setIsVisible(VisibilityState.None);
       } catch (error: any) {
         showSnackbar("Wystąpił błąd", "error");
       } finally {
@@ -360,6 +361,7 @@ const TripDayView = () => {
         setLoadingOverlay(true);
         await updateTransferPoint(newTransferPoint, transferPointId);
         await refetchNoLoadingDayData();
+        setIsVisible(VisibilityState.None);
       } catch (error: any) {
         showSnackbar("Wystąpił błąd", "error");
       } finally {
