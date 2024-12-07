@@ -148,7 +148,6 @@ const ExploreView = ({ tripId }: ExploreViewProps) => {
   const handleAddPress = (place: PlaceViewModel) => {
     console.log("Selected place", place);
     if (trip_id && day_id && date) {
-      console.log("Data: " + date);
       router.push({
         pathname: `/(auth)/(tabs)/trips/details/${trip_id}/day/${day_id}/tripPoints/create`,
         params: {

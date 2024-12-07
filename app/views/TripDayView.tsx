@@ -136,7 +136,6 @@ const TripDayView = () => {
         icon: CREATING_TRIP_POINT_ICON,
         label: "Utwórz",
         onPress: () => {
-          console.log("Data: " + tripDay?.date);
           router.push({
             pathname: `/trips/details/${trip_id}/day/${day_id}/tripPoints/create`,
             params: {
@@ -580,7 +579,6 @@ const TripDayView = () => {
         label: "Edytuj szczegóły punktu wycieczki",
         icon: EDIT_ICON,
         onPress: () => {
-          console.log(`Edytuj`);
           setIsTripPointSheetVisible(false);
           router.push({
             pathname: `/(auth)/(tabs)/trips/details/${trip_id}/day/${day_id}/tripPoints/edit/${selectedTripPoint.id}`,
