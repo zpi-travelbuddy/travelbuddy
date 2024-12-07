@@ -462,9 +462,8 @@ const TripDayView = () => {
   ]);
 
   const handleTripPointPress = (tripPoint: TripPointCompact) => {
-    console.log("Trip point pressed");
-    router.push(
-      `/trips/details/${trip_id}/day/${day_id}/tripPoints/${tripPoint.id}/survey`,
+    router.navigate(
+      `/trips/details/${trip_id}/day/${day_id}/tripPoints/details/${tripPoint.id}`,
     );
   };
 
@@ -573,9 +572,11 @@ const TripDayView = () => {
         label: "Szczegóły punktu wycieczki",
         icon: DETAILS_ICON,
         onPress: () => {
-          console.log(`Nawiguj do szczegółów`);
+          setIsTripPointSheetVisible(false);
           setIsVisible(VisibilityState.None);
-          // router.push(`/trips/details/${selectedTripPo.id}`);
+          router.navigate(
+            `/trips/details/${trip_id}/day/${day_id}/tripPoints/details/${selectedTripPoint.id}`,
+          );
         },
       },
       {

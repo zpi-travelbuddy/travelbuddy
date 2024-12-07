@@ -1,9 +1,26 @@
 import { Place, PlaceDetails } from "@/types/Place";
 
-export function formatAddress(place: PlaceDetails): string {
+export function formatAddress(
+  place: PlaceDetails | Place,
+  compact: boolean = true,
+): string {
   if (!place) return "";
 
-  return `${place.city}, ${place.country}`;
+  let addressLine = "";
+  let cityLine = "";
+
+  if (!compact && place.street) {
+    addressLine =
+      place.street + (place.houseNumber ? ` ${place.houseNumber}` : "") + "\n";
+  }
+
+  if (place.city) {
+    cityLine = [place.city, place.state, place.country]
+      .filter(Boolean)
+      .join(", ");
+  }
+
+  return addressLine + cityLine;
 }
 
 export function displayCost(number: number): string {

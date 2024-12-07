@@ -84,7 +84,11 @@ public class PlacesService(TravelBuddyDbContext dbContext, IGeoapifyService geoa
         {
             var places = await _geoapifyService.GetAddressAutocompleteAsync(query, Enums.AddressLevel.city) ?? [];
             var results = await PlacesToOverviewDTOsAsync(places);
-            return results.Where(p => p.City != null).ToList();
+            return results
+                .Where(p => p.City != null)
+                .GroupBy(p => p.ProviderId)
+                .Select(g => g.First())
+                .ToList();
         }
         catch (HttpRequestException)
         {
@@ -103,8 +107,13 @@ public class PlacesService(TravelBuddyDbContext dbContext, IGeoapifyService geoa
 
         try
         {
-            var places = await _geoapifyService.GetAddressAutocompleteAsync(query, Enums.AddressLevel.amenity, bias: bias) ?? [];
-            return await PlacesToOverviewDTOsAsync(places);
+            var places = await _geoapifyService
+                .GetAddressAutocompleteAsync(query, Enums.AddressLevel.amenity, bias: bias) ?? [];
+            var results = await PlacesToOverviewDTOsAsync(places);
+            return results
+                .GroupBy(p => p.ProviderId)
+                .Select(g => g.First())
+                .ToList();
         }
         catch (HttpRequestException)
         {
