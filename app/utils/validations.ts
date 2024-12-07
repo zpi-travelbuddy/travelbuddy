@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { DateRange, TripErrors } from "@/types/Trip";
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -69,3 +70,18 @@ export const requiredFieldsForTripPoint = [
     errorMessage: "Godzina zakończenia jest wymagana.",
   },
 ];
+
+export const onEndEditingString = (
+  setter: React.Dispatch<React.SetStateAction<any>>,
+  value: any,
+) => {
+  if (typeof value === "string") setter(value.trim());
+  else setter(value);
+};
+
+export const onEndEditingStringOnObject = (
+  setter: React.Dispatch<React.SetStateAction<any>>,
+  field: string,
+) => {
+  setter((prev: any) => ({ ...prev, [field]: prev[field].trim() }));
+};
