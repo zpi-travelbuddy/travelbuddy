@@ -43,6 +43,7 @@ export const useGetProfiles = <T>(
     } catch (err: any) {
       if (err.response && err.response.status === 404) {
         setError(notFoundMessage);
+        setProfiles([]);
       } else {
         setError(generalErrorMessage);
       }

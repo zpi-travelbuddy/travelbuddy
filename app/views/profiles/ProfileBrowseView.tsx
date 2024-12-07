@@ -41,6 +41,7 @@ import {
   API_FAVOURITE_CONDITION_PROFILE,
 } from "@/constants/Endpoints";
 import { useAuth } from "@/app/ctx";
+import LoadingView from "../LoadingView";
 
 interface ProfileBrowseViewProps {
   profileType: ProfileType;
@@ -62,6 +63,7 @@ const ProfileBrowseView: React.FC<ProfileBrowseViewProps> = ({
   const [selectedProfile, setSelectedProfile] = useState<Profile | null>(null);
 
   const [path, setPath] = useState<string>("");
+  const flatListRef = useRef<FlatList>(null);
 
   useEffect(() => {
     if (profileType === "Category")
@@ -108,8 +110,6 @@ const ProfileBrowseView: React.FC<ProfileBrowseViewProps> = ({
   useEffect(() => {
     if (error) showSnackbar(error);
   }, [error]);
-
-  const flatListRef = useRef<FlatList>(null);
 
   const renderProfileCard = ({ item }: { item: Profile }) => (
     <ProfileCard
@@ -166,7 +166,7 @@ const ProfileBrowseView: React.FC<ProfileBrowseViewProps> = ({
       setLoading(true);
       try {
         await api!.delete(endpoint, {});
-        await refetch();
+        refetch();
         showSnackbar("Pomyślnie usunięto profil!", "success");
       } catch (err: any) {
         showSnackbar("Wystąpił błąd podczas usuwania profilu!", "error");
@@ -264,7 +264,7 @@ const ProfileBrowseView: React.FC<ProfileBrowseViewProps> = ({
             </View>
             <ActionTextButtons
               onAction1={hideModal}
-              onAction2={() => deleteProfile(selectedProfile)}
+              onAction2={async () => await deleteProfile(selectedProfile)}
               action1ButtonLabel="Anuluj"
               action2ButtonLabel="Usuń"
               action1Icon={undefined}
