@@ -59,5 +59,8 @@ export const MARKER_ICON = "map-marker";
 // Other
 
 export const CALENDAR_ADD_ICON = "event";
+export const CALENDAR_ADD_ICON_MATERIAL = "calendar";
 export const ADD_NOTIFICATION_ICON = "notifications";
+export const ADD_NOTIFICATION_ICON_MATERIAL = "bell";
 export const REMOVE_NOTIFICATION_ICON = "notifications-off";
+export const REMOVE_NOTIFICATION_ICON_MATERIAL = "bell-off";
