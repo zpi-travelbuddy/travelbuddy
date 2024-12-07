@@ -19,6 +19,7 @@ import {
 import { useMemo } from "react";
 import { MD3ThemeExtended } from "@/constants/Themes";
 import { createNavigationURL } from "@/utils/maps";
+import { TRANSFER_TYPE_MAP_GOOGLE } from "@/constants/TravelModes";
 
 const VERTICAL_LINE_HEIGHT = 20;
 const ICON_SIZE = 40;
@@ -32,15 +33,6 @@ const TRANSFER_TYPE_MAP = {
   [TransferType.Bicycle]: BICYCLE_ICON,
   [TransferType.Walk]: WALK_ICON,
   null: NON_STANDARD_TRANSFER_ICON,
-};
-
-// For Google Maps travel mode
-const TRANSFER_TYPE_MAP_GOOGLE = {
-  [TransferType.Car]: "driving",
-  [TransferType.Motorbike]: "driving",
-  [TransferType.Bicycle]: "bicycling",
-  [TransferType.Walk]: "walking",
-  null: "driving",
 };
 
 interface TransferPointNodeProps {
