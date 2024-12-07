@@ -21,9 +21,9 @@ interface UseGetProfilesResult<T> {
   error: string | null;
   refetch: () => Promise<void>;
 }
-
 export const useGetProfiles = <T>(
-  endpoint: string,
+  endpoint: string, 
+  options: UseApiOptions = { immediate: true },
   notFoundMessage: string = "Profile nie zostały znalezione.",
   generalErrorMessage: string = "Wystąpił błąd podczas pobierania danych profili.",
 ): UseGetProfilesResult<T> => {
@@ -53,63 +53,30 @@ export const useGetProfiles = <T>(
   }, [api, endpoint, notFoundMessage, generalErrorMessage]);
 
   useEffect(() => {
-    fetchProfiles();
+    if (options.immediate) fetchProfiles();
   }, [fetchProfiles]);
 
   return { profiles, loading, error, refetch: fetchProfiles };
 };
 
-export const useDynamicProfiles = (profileType: ProfileType) => {
-  const {
-    profiles: categoryProfiles,
-    loading: categoryLoading,
-    error: categoryError,
-    refetch: refetchCategory,
-  } = useGetProfiles<CategoryProfile>(
-    API_CATEGORY_PROFILES,
-    "Profile preferencji nie zostały znalezione.",
-  );
+export const useDynamicProfiles = (
+  profileType: ProfileType,
+  options: UseApiOptions = { immediate: true },
+) => {
+  if (profileType === "Category") return { ...useGetCategoryProfiles(options) };
+  else return { ...useGetConditionProfiles(options) };
+};
 
-  const {
-    profiles: conditionProfiles,
-    loading: conditionLoading,
-    error: conditionError,
-    refetch: refetchCondition,
-  } = useGetProfiles<ConditionProfile>(
-    API_CONDITION_PROFILES,
-    "Profile udogodnień nie zostały znalezione.",
-  );
+export const useGetCategoryProfiles = (
+  options: UseApiOptions = { immediate: true },
+) => {
+  return { ...useGetProfiles(API_CATEGORY_PROFILES, options) };
+};
 
-  const [profiles, setProfiles] = useState<
-    (CategoryProfile | ConditionProfile)[]
-  >([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (profileType === "Category") {
-      setProfiles(categoryProfiles);
-      setLoading(categoryLoading);
-      setError(categoryError);
-    } else {
-      setProfiles(conditionProfiles);
-      setLoading(conditionLoading);
-      setError(conditionError);
-    }
-  }, [
-    profileType,
-    categoryProfiles,
-    conditionProfiles,
-    categoryLoading,
-    conditionLoading,
-    categoryError,
-    conditionError,
-  ]);
-
-  const refetch =
-    profileType === "Category" ? refetchCategory : refetchCondition;
-
-  return { profiles, loading, error, refetch };
+export const useGetConditionProfiles = (
+  options: UseApiOptions = { immediate: true },
+) => {
+  return { ...useGetProfiles(API_CONDITION_PROFILES, options) };
 };
 
 interface UseProfileByIdResult<T extends Profile> {
@@ -170,7 +137,9 @@ interface FavouriteProfilesResponse {
   conditionProfileId: string | null;
 }
 
-export const useGetFavouriteProfiles = () => {
+export const useGetFavouriteProfiles = (
+  options: UseApiOptions = { immediate: true },
+) => {
   const [favouriteProfiles, setFavouriteProfiles] = useState<ProfileDictionary>(
     { Category: null, Condition: null },
   );
@@ -201,7 +170,7 @@ export const useGetFavouriteProfiles = () => {
   }, [api]);
 
   useEffect(() => {
-    fetchProfiles();
+    if (options.immediate) fetchProfiles();
   }, [fetchProfiles]);
 
   return { favouriteProfiles, loading, error, refetch: fetchProfiles };

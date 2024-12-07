@@ -28,14 +28,15 @@ import { useSnackbar } from "@/context/SnackbarContext";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useAuth } from "@/app/ctx";
 import LoadingView from "./LoadingView";
-import { Profile, ProfileType } from "@/types/Profile";
+import { ConditionProfile, Profile, ProfileType } from "@/types/Profile";
 import { DateRange, TripErrors, TripRequest } from "@/types/Trip";
 import { MARKER_ICON, CALENDAR_ICON } from "@/constants/Icons";
 import { API_TRIPS } from "@/constants/Endpoints";
 import { validateTripForm } from "@/utils/validations";
 import { useAnimatedKeyboard } from "react-native-reanimated";
 import {
-  useDynamicProfiles,
+  useGetCategoryProfiles,
+  useGetConditionProfiles,
   useGetFavouriteProfiles,
 } from "@/composables/useProfiles";
 
@@ -86,13 +87,15 @@ const AddingTripView = () => {
     profiles: categoryProfiles,
     loading: categoryProfilesLoading,
     error: categoryProfilesError,
-  } = useDynamicProfiles("Category");
+    refetch: categoryProfileRefetch,
+  } = useGetCategoryProfiles();
 
   const {
     profiles: conditionProfiles,
     loading: conditionProfilesLoading,
     error: conditionProfilesError,
-  } = useDynamicProfiles("Condition");
+    refetch: conditionProfileRefetch,
+  } = useGetConditionProfiles();
 
   const {
     favouriteProfiles,
@@ -181,7 +184,6 @@ const AddingTripView = () => {
       categoryProfileId: categoryProfileId ?? null,
       conditionProfileId: conditionProfileId ?? null,
     };
-    console.log(JSON.stringify(tripRequest));
     setLoading(true);
     try {
       await api!.post(API_TRIPS, tripRequest);

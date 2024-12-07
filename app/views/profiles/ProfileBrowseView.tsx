@@ -14,7 +14,7 @@ import React, {
   useState,
 } from "react";
 import { MD3ThemeExtended } from "@/constants/Themes";
-import { router, useFocusEffect } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useTheme, FAB, MD3Theme } from "react-native-paper";
 import { Profile, ProfileType } from "@/types/Profile";
@@ -53,6 +53,7 @@ const ProfileBrowseView: React.FC<ProfileBrowseViewProps> = ({
   const styles = createStyles(theme as MD3ThemeExtended);
   const { showSnackbar } = useSnackbar();
   const { api } = useAuth();
+  const router = useRouter();
 
   const [isBottomSheetVisible, setIsBottomSheetVisible] =
     useState<boolean>(false);
@@ -75,20 +76,20 @@ const ProfileBrowseView: React.FC<ProfileBrowseViewProps> = ({
     loading: loadingProfiles,
     error: loadingProfilesError,
     refetch,
-  } = useDynamicProfiles(profileType);
+  } = useDynamicProfiles(profileType, { immediate: false });
 
   const {
     favouriteProfiles,
     loading: loadingFavouritesLoading,
     error: loadingFavouritesError,
     refetch: refetchFavourites,
-  } = useGetFavouriteProfiles();
+  } = useGetFavouriteProfiles({ immediate: false });
 
   useFocusEffect(
     useCallback(() => {
       refetch();
       refetchFavourites();
-    }, [refetch, refetchFavourites, profileType]),
+    }, [refetch, refetchFavourites]),
   );
 
   const sortedProfiles = useMemo(() => {
