@@ -137,6 +137,7 @@ const TripDayView = () => {
         label: "Utwórz",
         onPress: () => {
           router.push({
+            // @ts-ignore
             pathname: `/trips/details/${trip_id}/day/${day_id}/tripPoints/create`,
             params: {
               date: new Date(tripDay?.date as string).toLocaleDateString(),
@@ -149,11 +150,10 @@ const TripDayView = () => {
         icon: SEARCH_TRIP_POINT_ICON,
         label: "Wyszukaj",
         onPress: () => {
-          router.push({
-            pathname: "/explore",
+          router.navigate({
+            // @ts-ignore
+            pathname: `/trips/details/${trip_id}/day/${day_id}/explore`,
             params: {
-              trip_id: trip_id,
-              day_id: day_id,
               date: new Date(tripDay?.date as string).toLocaleDateString(),
             },
           });
@@ -259,6 +259,7 @@ const TripDayView = () => {
         setLoadingOverlay(true);
         await updateTransferPoint(newTransferPoint, transferPointId);
         await refetchNoLoadingDayData();
+        setIsVisible(VisibilityState.None);
       } catch (error: any) {
         showSnackbar("Wystąpił błąd", "error");
       } finally {
@@ -361,6 +362,7 @@ const TripDayView = () => {
         setLoadingOverlay(true);
         await updateTransferPoint(newTransferPoint, transferPointId);
         await refetchNoLoadingDayData();
+        setIsVisible(VisibilityState.None);
       } catch (error: any) {
         showSnackbar("Wystąpił błąd", "error");
       } finally {
@@ -461,8 +463,10 @@ const TripDayView = () => {
     deleteTransferPoint,
   ]);
 
-  const handleTripPointPress = () => {
-    console.log("Trip point pressed");
+  const handleTripPointPress = (tripPoint: TripPointCompact) => {
+    router.navigate(
+      `/trips/details/${trip_id}/day/${day_id}/tripPoints/details/${tripPoint.id}`,
+    );
   };
 
   const handleTripPointLongPress = (tripPoint: TripPointCompact) => {
@@ -570,9 +574,11 @@ const TripDayView = () => {
         label: "Szczegóły punktu wycieczki",
         icon: DETAILS_ICON,
         onPress: () => {
-          console.log(`Nawiguj do szczegółów`);
+          setIsTripPointSheetVisible(false);
           setIsVisible(VisibilityState.None);
-          // router.push(`/trips/details/${selectedTripPo.id}`);
+          router.navigate(
+            `/trips/details/${trip_id}/day/${day_id}/tripPoints/details/${selectedTripPoint.id}`,
+          );
         },
       },
       {
@@ -689,7 +695,7 @@ const TripDayView = () => {
               {sortedTripPoints.map((fromTripPoint, index) => (
                 <Fragment key={fromTripPoint.id}>
                   <TripPointCard
-                    onPress={handleTripPointPress}
+                    onPress={() => handleTripPointPress(fromTripPoint)}
                     onLongPress={() => handleTripPointLongPress(fromTripPoint)}
                     tripPoint={fromTripPoint}
                   />

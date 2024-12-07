@@ -75,6 +75,7 @@ const AttractionDetailsView = () => {
             <StarRatingDisplayComponent
               style={styles.starRatingPadding}
               rating={placeDetails?.averageRating || 0.0}
+              editable={false}
             />
 
             <Text variant="bodySmall">Rodzaj</Text>
