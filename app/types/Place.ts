@@ -1,3 +1,5 @@
+import { Category, Condition } from "./Profile";
+
 export interface PlaceCompact {
   id: string;
   providerId?: string;
@@ -17,9 +19,9 @@ export interface PlaceViewModel {
 export interface Place {
   id: string;
   providerId: string;
-  categoryId?: string;
+  superCategoryId?: string;
   name: string;
-  country: string;
+  country?: string;
   state?: string;
   city: string;
   street?: string;
@@ -28,14 +30,16 @@ export interface Place {
   longitude?: number;
 }
 
-export interface PlaceCondition {
-  id: string;
+export interface PlaceOverview {
+  id?: string;
+  providerId?: string;
   name: string;
-}
-
-export interface PlaceCategory {
-  id: string;
-  name: string;
+  country?: string;
+  state?: string;
+  city?: string;
+  street?: string;
+  houseNumber?: string;
+  superCategory: Category;
 }
 
 export interface PlaceDetails {
@@ -52,7 +56,7 @@ export interface PlaceDetails {
   averageCostPerPerson: number;
   averageTimeSpent: string;
   averageRating: number;
-  conditions: PlaceCondition[];
-  categories: PlaceCategory[];
-  superCategory: PlaceCategory;
+  conditions: Condition[];
+  categories: Category[];
+  superCategory: Category;
 }

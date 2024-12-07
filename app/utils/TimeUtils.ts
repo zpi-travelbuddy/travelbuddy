@@ -141,6 +141,12 @@ export const getTimeWithoutSeconds = (time: string) => {
   return time.split(":").slice(0, 2).join(":");
 };
 
+export const convertTimestampToDateTime = (timestamp: string) => {
+  const [hours, minutes, seconds] = timestamp.split(":").map(Number);
+  const date = new Date();
+  date.setHours(hours, minutes, seconds || 0, 0);
+  return date;
+
 export const formatTimeSpan = (hours?: number, minutes?: number): string => {
   const h = hours ?? 0;
   const m = minutes ?? 0;

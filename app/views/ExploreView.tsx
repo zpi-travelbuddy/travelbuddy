@@ -226,7 +226,7 @@ const ExploreView = ({ tripId }: ExploreViewProps) => {
           // @ts-ignore
           pathname: `/trips/details/${tripDetails?.id}/day/${tripDayId}/tripPoints/create`,
           params: {
-            date: formattedDate,
+            date: fixedDate.toLocaleDateString(),
             attractionProviderId: selectedAttractionProviderId,
           },
         });

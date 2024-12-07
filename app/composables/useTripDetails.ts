@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect, useCallback } from "react";
-import { TripSummary, EditTripRequest, TripDetails } from "@/types/Trip";
+import { TripSummary, TripRequest, TripDetails } from "@/types/Trip";
 import { useAuth } from "@/app/ctx";
 import { API_TRIPS } from "@/constants/Endpoints";
 
@@ -27,7 +27,6 @@ const useTripDetails = (
       if (err.response && err.response.status === 404) {
         setError("Wycieczka nie została znaleziona.");
       } else {
-        console.log(JSON.stringify(err));
         setError("Wystąpił błąd podczas pobierania danych.");
       }
     }
@@ -70,7 +69,7 @@ export interface UseApiOptions {
 
 export const useEditTripDetails = (
   id: string,
-  request: EditTripRequest,
+  request: TripRequest,
   options: UseApiOptions = { immediate: true },
 ) => {
   const { api } = useAuth();
