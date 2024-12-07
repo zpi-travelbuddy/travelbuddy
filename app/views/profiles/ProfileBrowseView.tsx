@@ -41,7 +41,6 @@ import {
   API_FAVOURITE_CONDITION_PROFILE,
 } from "@/constants/Endpoints";
 import { useAuth } from "@/app/ctx";
-import LoadingView from "../LoadingView";
 
 interface ProfileBrowseViewProps {
   profileType: ProfileType;
