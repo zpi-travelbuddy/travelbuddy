@@ -1,4 +1,4 @@
-/* eslint-disable prettier/prettier */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import ActionTextButtons from "@/components/ActionTextButtons";
 import CustomModal from "@/components/CustomModal";
 import { DELETE_ICON, STAR_ICON, STAR_OUTLINE_ICON } from "@/constants/Icons";
@@ -8,19 +8,44 @@ import {
   Condition,
   ProfileType,
   EditProfileRequest,
+  CategoryLabelsForProfiles,
+  ConditionLabels,
+  CATEGORY_NAME_LIST,
+  CONDITION_NAME_LIST,
 } from "@/types/Profile";
-import { useFocusEffect, useLocalSearchParams, useNavigation, useRouter } from "expo-router";
-import React, { useCallback, useEffect, useLayoutEffect, useMemo, useState } from "react";
+import {
+  useFocusEffect,
+  useLocalSearchParams,
+  useNavigation,
+  useRouter,
+} from "expo-router";
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useState,
+} from "react";
 import { SafeAreaView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { useTheme, Text } from "react-native-paper";
 import ProfileOptionsList from "@/components/ProfileOptionsList";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import { useEditProfile, useGetFavouriteProfiles, useGetProfile } from "@/composables/useProfiles";
+import {
+  useEditProfile,
+  useGetFavouriteProfiles,
+  useGetProfile,
+} from "@/composables/useProfiles";
 import LoadingView from "../LoadingView";
 import { useSnackbar } from "@/context/SnackbarContext";
-import { API_CATEGORY_PROFILES, API_CONDITION_PROFILES, API_FAVOURITE_CATEGORY_PROFILE, API_FAVOURITE_CONDITION_PROFILE } from "@/constants/Endpoints";
+import {
+  API_CATEGORY_PROFILES,
+  API_CONDITION_PROFILES,
+  API_FAVOURITE_CATEGORY_PROFILE,
+  API_FAVOURITE_CONDITION_PROFILE,
+} from "@/constants/Endpoints";
 import { useAuth } from "@/app/ctx";
 import ActionButtons from "@/components/ActionButtons";
+import { useGetItems } from "@/composables/useCategoryCondition";
 
 interface ManageProfileCategoryViewProps {
   profileType: ProfileType;
@@ -39,27 +64,57 @@ const ManageProfileCategoryView: React.FC<ManageProfileCategoryViewProps> = ({
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
+  const [filteredItems, setFilteredItems] = useState<(Category | Condition)[]>(
+    [],
+  );
 
   const { profile_id } = useLocalSearchParams();
 
   const { api } = useAuth();
 
-  const { profile, loading: fetchLoading, error: fetchError } = useGetProfile(profileType, profile_id as string);
+  const {
+    profile,
+    loading: fetchLoading,
+    error: fetchError,
+  } = useGetProfile(profileType, profile_id as string);
 
   const editRequest: EditProfileRequest = useMemo(() => {
     if (!profile) return {} as EditProfileRequest;
     return profileType === "Category"
-      ? {...profile, profileType, categoryIds: selectedIds}
-      : {...profile, profileType, conditionIds: selectedIds};
+      ? { ...profile, profileType, categoryIds: selectedIds }
+      : { ...profile, profileType, conditionIds: selectedIds };
   }, [profile, profileType, selectedIds]);
 
-  const {editProfile, loading: editLoading, error: editError} = useEditProfile(editRequest, {immediate: false})
+  const {
+    editProfile,
+    loading: editLoading,
+    error: editError,
+  } = useEditProfile(editRequest, { immediate: false });
 
   const {
     favouriteProfiles,
+    loading: favouritesLoading,
     error: favouritesError,
     refetch: refetchFavourites,
   } = useGetFavouriteProfiles();
+
+  const {
+    items,
+    loading: itemsLoading,
+    error: itemsError,
+  } = useGetItems(profileType);
+
+  useEffect(() => {
+    setFilteredItems(
+      profileType === "Category"
+        ? (items as Category[]).filter((category) =>
+            CATEGORY_NAME_LIST.includes(category.name),
+          )
+        : (items as Condition[]).filter((condition) =>
+            CONDITION_NAME_LIST.includes(condition.name),
+          ),
+    );
+  }, [items]);
 
   const hideModal = () => setIsModalVisible(false);
 
@@ -67,20 +122,24 @@ const ManageProfileCategoryView: React.FC<ManageProfileCategoryViewProps> = ({
 
   const getSelectedItems = useCallback((): string[] => {
     if (!profile) return [];
-  
+
     if (profileType === "Category" && "categories" in profile) {
-      return (profile.categories as Category[]).map((item: Category) => item.id);
+      return (profile.categories as Category[]).map(
+        (item: Category) => item.id,
+      );
     } else if (profileType === "Condition" && "conditions" in profile) {
-      return (profile.conditions as Condition[]).map((item: Condition) => item.id);
+      return (profile.conditions as Condition[]).map(
+        (item: Condition) => item.id,
+      );
     }
-  
+
     return [];
   }, [profile, profileType]);
 
   useFocusEffect(
     useCallback(() => {
-      const items = getSelectedItems();
-      setSelectedIds(items);
+      const selectedItems = getSelectedItems();
+      setSelectedIds(selectedItems);
     }, [getSelectedItems]),
   );
 
@@ -90,7 +149,8 @@ const ManageProfileCategoryView: React.FC<ManageProfileCategoryViewProps> = ({
         ? `${API_FAVOURITE_CATEGORY_PROFILE}/${profile?.id}`
         : `${API_FAVOURITE_CONDITION_PROFILE}/${profile?.id}`;
     try {
-      if (profile?.id === favouriteProfiles[profileType]) await api!.delete(endpoint, {});
+      if (profile?.id === favouriteProfiles[profileType])
+        await api!.delete(endpoint, {});
       else await api!.post(endpoint, {});
     } catch (err: any) {
       console.log(err.response.data);
@@ -99,32 +159,34 @@ const ManageProfileCategoryView: React.FC<ManageProfileCategoryViewProps> = ({
   }, [profile, favouriteProfiles, profileType]);
 
   useEffect(() => {
-    setLoading(fetchLoading || editLoading || false)
-  }, [fetchLoading, editLoading])
-  
+    setLoading(
+      fetchLoading || editLoading || favouritesLoading || itemsLoading || false,
+    );
+  }, [fetchLoading, editLoading, favouritesLoading, itemsLoading]);
+
   useEffect(() => {
-    setError(fetchError || editError || favouritesError || "")
-  }, [fetchError, editError, favouritesError])
+    setError(fetchError || editError || favouritesError || itemsError || "");
+  }, [fetchError, editError, favouritesError, itemsError]);
 
   const deleteProfile = useCallback(async () => {
     const endpoint =
-        profileType === "Category"
-          ? `${API_CATEGORY_PROFILES}/${profile?.id}`
-          : `${API_CONDITION_PROFILES}/${profile?.id}`;
+      profileType === "Category"
+        ? `${API_CATEGORY_PROFILES}/${profile?.id}`
+        : `${API_CONDITION_PROFILES}/${profile?.id}`;
     try {
-        await api!.delete(endpoint, {});
-        hideModal();
-        navigation.goBack();
+      await api!.delete(endpoint, {});
+      hideModal();
+      navigation.goBack();
     } catch (err: any) {
-        showSnackbar("Wystąpił błąd podczas usuwania profilu!", "error");
+      showSnackbar("Wystąpił błąd podczas usuwania profilu!", "error");
     }
-}, [profile, profileType, hideModal, navigation]);
+  }, [profile, profileType, hideModal, navigation]);
 
   const handleEditProfile = async () => {
     hideModal();
     await editProfile();
     navigation.goBack();
-  }
+  };
 
   const menuActions = useMemo(() => {
     const isFavourite = profile?.id === favouriteProfiles[profileType];
@@ -142,20 +204,28 @@ const ManageProfileCategoryView: React.FC<ManageProfileCategoryViewProps> = ({
         onPress: showRemovalModal,
       },
     ];
-  }, [profile?.id, favouriteProfiles, profileType, toggleFavourite, showRemovalModal, deleteProfile]);
-  
+  }, [
+    profile?.id,
+    favouriteProfiles,
+    profileType,
+    toggleFavourite,
+    showRemovalModal,
+    deleteProfile,
+  ]);
+
   useLayoutEffect(() => {
     navigation.setOptions({
       actions: [{ hasMenu: true, menuActions }],
     });
   }, [navigation, menuActions]);
 
-
   const onChange = (id: string) => {
     setSelectedIds((prev) =>
-      prev.includes(id) ? prev.filter((selectedId) => selectedId !== id) : [...prev, id]
+      prev.includes(id)
+        ? prev.filter((selectedId) => selectedId !== id)
+        : [...prev, id],
     );
-  };  
+  };
 
   if (loading) return <LoadingView />;
 
@@ -168,13 +238,33 @@ const ManageProfileCategoryView: React.FC<ManageProfileCategoryViewProps> = ({
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.favouriteContainer}>
-        <Text style={styles.leftText}> {profileType === "Category" ? "Preferencje: " : "Udogodnienia: "}</Text>
-        <TouchableOpacity style={styles.rightContainer} onPress={toggleFavourite}>
+        <Text style={styles.leftText}>
+          {" "}
+          {profileType === "Category" ? "Preferencje: " : "Udogodnienia: "}
+        </Text>
+        <TouchableOpacity
+          style={styles.rightContainer}
+          onPress={toggleFavourite}
+        >
           <Text style={styles.rightText}>Ulubiony</Text>
-          <Icon name={profile?.id === favouriteProfiles[profileType] ? STAR_ICON : STAR_OUTLINE_ICON} size={20} color={theme.colors.onSurface} />
+          <Icon
+            name={
+              profile?.id === favouriteProfiles[profileType]
+                ? STAR_ICON
+                : STAR_OUTLINE_ICON
+            }
+            size={20}
+            color={theme.colors.onSurface}
+          />
         </TouchableOpacity>
       </View>
       <ProfileOptionsList
+        items={filteredItems}
+        labels={
+          profileType === "Category"
+            ? CategoryLabelsForProfiles
+            : ConditionLabels
+        }
         selectedIds={selectedIds}
         profileType={profileType}
         onChange={onChange}
@@ -209,10 +299,10 @@ const ManageProfileCategoryView: React.FC<ManageProfileCategoryViewProps> = ({
 const createStyles = (theme: MD3ThemeExtended) =>
   StyleSheet.create({
     favouriteContainer: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      width: '100%',
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      width: "100%",
       padding: 10,
       backgroundColor: theme.colors.surface,
     },
@@ -221,8 +311,8 @@ const createStyles = (theme: MD3ThemeExtended) =>
       color: theme.colors.onSurface,
     },
     rightContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
+      flexDirection: "row",
+      alignItems: "center",
     },
     rightText: {
       ...theme.fonts.bodyLarge,

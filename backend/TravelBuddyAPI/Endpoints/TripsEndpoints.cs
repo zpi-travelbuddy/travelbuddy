@@ -46,8 +46,8 @@ public static class TripsEndpoints
         group.MapGet("/tripDay/{id}", GetTripDayDetailsAsync)
             .WithName("GetTripDayDetails");
 
-        group.MapGet("/recomendations/{tripDayId}", GetRecomendationsAsync)
-            .WithName("GetRecomendations");
+        group.MapGet("/recommendations/{tripId}", GetRecommendationsAsync)
+            .WithName("GetRecommendations");
 
         group.MapGet("/statistics", GetTripStatisticsAsync)
             .WithName("GetTripStatistics");
@@ -205,9 +205,21 @@ public static class TripsEndpoints
         }
     }
 
-    private static async Task<Results<Ok<List<PlaceOverviewDTO>>, NotFound<string>>> GetRecomendationsAsync(Guid tripDayId)
+    private static async Task<Results<Ok<List<PlaceOverviewDTO>>, NotFound<string>, BadRequest<string>>> GetRecommendationsAsync(HttpContext httpContext, ITripsService tripsService, Guid tripId, int radius = 10_000, int? limit = null)
     {
-        await Task.CompletedTask;
-        return TypedResults.NotFound("Not implemented");
+        try
+        {
+            var userId = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new InvalidOperationException("User not found");
+            var recommendations = await tripsService.GetPlaceRecommendationsAsync(userId, tripId, radius, limit);
+            return TypedResults.Ok(recommendations);
+        }
+        catch (ArgumentException ex) when (ex.Message.Contains(ITripsService.ErrorMessage.TripNotFound))
+        {
+            return TypedResults.NotFound(ex.Message);
+        }
+        catch (ArgumentException ex)
+        {
+            return TypedResults.BadRequest($"{ITripsService.ErrorMessage.GetRecommendations} {ex.Message}");
+        }
     }
 }

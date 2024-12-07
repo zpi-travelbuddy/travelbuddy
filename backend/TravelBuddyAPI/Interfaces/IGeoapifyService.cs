@@ -18,7 +18,7 @@ public interface IGeoapifyService
     /// <param name="limit">Optional limit on the number of places to return.</param>
     /// <param name="offset">Optional offset for pagination.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains a list of nearby places.</returns>
-    public Task<List<ProviderPlace>?> GetNearbyPlacesAsync((double latitude, double longitude) location, double radius, IEnumerable<PlaceCategory> categories, IEnumerable<PlaceCondition>? conditions = null, int? limit = null, int? offset = null);
+    public Task<List<ProviderPlace>?> GetNearbyPlacesAsync((decimal latitude, decimal longitude) location, double radius, IEnumerable<PlaceCategory> categories, IEnumerable<PlaceCondition>? conditions = null, int? limit = null, int? offset = null);
 
     /// <summary>
     /// Retrieves a list of nearby places based on a start and end location.
@@ -30,7 +30,7 @@ public interface IGeoapifyService
     /// <param name="limit">Optional limit on the number of places to return.</param>
     /// <param name="offset">Optional offset for pagination.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains a list of nearby places.</returns>
-    public Task<List<ProviderPlace>?> GetNearbyPlacesAsync((double latitude, double longitude) start, (double latitude, double longitude) end, IEnumerable<PlaceCategory> categories, IEnumerable<PlaceCondition>? conditions = null, int? limit = null, int? offset = null);
+    public Task<List<ProviderPlace>?> GetNearbyPlacesAsync((decimal latitude, decimal longitude) start, (decimal latitude, decimal longitude) end, IEnumerable<PlaceCategory> categories, IEnumerable<PlaceCondition>? conditions = null, int? limit = null, int? offset = null);
 
     /// <summary>
     /// Retrieves a list of nearby places based on a geometry ID.
@@ -54,7 +54,7 @@ public interface IGeoapifyService
     /// <param name="type">Optional type of isoline. Default is "distance".</param>
     /// <param name="routeType">Optional route type. Default is "balanced".</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains the geometryId of the isoline.</returns>
-    public Task<string?> GetIsolineAsync((double latitude, double longitude) start, int range, TransferMode mode, TrafficType traffic = TrafficType.approximated, Units units = Units.metric, IsolineType type = IsolineType.distance, TransferType routeType = TransferType.balanced);
+    public Task<string?> GetIsolineAsync((decimal latitude, decimal longitude) start, int range, TransferMode mode, TrafficType traffic = TrafficType.approximated, Units units = Units.metric, IsolineType type = IsolineType.distance, TransferType routeType = TransferType.balanced);
 
     /// <summary>
     /// Retrieves the details of a place based on its ID.

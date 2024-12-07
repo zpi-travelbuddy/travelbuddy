@@ -84,7 +84,11 @@ public class PlacesService(TravelBuddyDbContext dbContext, IGeoapifyService geoa
         {
             var places = await _geoapifyService.GetAddressAutocompleteAsync(query, Enums.AddressLevel.city) ?? [];
             var results = await PlacesToOverviewDTOsAsync(places);
-            return results.Where(p => p.City != null).ToList();
+            return results
+                .Where(p => p.City != null)
+                .GroupBy(p => p.ProviderId)
+                .Select(g => g.First())
+                .ToList();
         }
         catch (HttpRequestException)
         {
@@ -103,8 +107,13 @@ public class PlacesService(TravelBuddyDbContext dbContext, IGeoapifyService geoa
 
         try
         {
-            var places = await _geoapifyService.GetAddressAutocompleteAsync(query, Enums.AddressLevel.amenity, bias: bias) ?? [];
-            return await PlacesToOverviewDTOsAsync(places);
+            var places = await _geoapifyService
+                .GetAddressAutocompleteAsync(query, Enums.AddressLevel.amenity, bias: bias) ?? [];
+            var results = await PlacesToOverviewDTOsAsync(places);
+            return results
+                .GroupBy(p => p.ProviderId)
+                .Select(g => g.First())
+                .ToList();
         }
         catch (HttpRequestException)
         {
@@ -247,5 +256,26 @@ public class PlacesService(TravelBuddyDbContext dbContext, IGeoapifyService geoa
     public async Task<ProviderPlace?> GetProviderPlaceAsync(string providerId)
     {
         return await _geoapifyService.GetPlaceDetailsAsync(providerId);
+    }
+
+    public async Task<List<PlaceOverviewDTO>> GetPlaceRecommendationsAsync((decimal latitude, decimal longitude) location, double radius, IEnumerable<PlaceCategory> categories, IEnumerable<PlaceCondition>? conditions = null, int? limit = null)
+    {
+        List<ProviderPlace> places = await _geoapifyService.GetNearbyPlacesAsync(location, radius, categories, conditions, limit) ?? [];
+
+        var existingPlaces = await _dbContext.Places
+            .OfType<ProviderPlace>()
+            .Where(p => places.Select(pl => pl.ProviderId).Contains(p.ProviderId))
+            .Include(p => p.Reviews)
+            .ToListAsync();
+
+        var recommendations = places.Select(p =>
+            {
+                var existingPlace = existingPlaces.FirstOrDefault(ep => ep.ProviderId == p.ProviderId);
+                return existingPlace ?? p;
+            })
+            .OrderByDescending(p => p.AverageRating)
+            .ToList();
+
+        return await PlacesToOverviewDTOsAsync(recommendations);
     }
 }
