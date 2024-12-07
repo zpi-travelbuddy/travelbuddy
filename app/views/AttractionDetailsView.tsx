@@ -12,7 +12,13 @@ import LoadingView from "./LoadingView";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useSnackbar } from "@/context/SnackbarContext";
 import ConditionIcons from "@/components/ConditionIcons";
-import { CategoryIcons, CategoryLabelsForProfiles } from "@/types/Profile";
+import {
+  CATEGORY_NAME_LIST,
+  CategoryIcons,
+  CategoryLabelsForTripCategory,
+  DEFAULT_CATEGORY_NAME,
+} from "@/types/Profile";
+import { PlaceDetails } from "@/types/Place";
 
 const { height, width } = Dimensions.get("window");
 
@@ -30,7 +36,20 @@ const AttractionDetailsView = () => {
     place_id as string,
   );
 
-  if (loading) return <LoadingView />;
+  useEffect(() => console.log(JSON.stringify(placeDetails)), [placeDetails]);
+
+  const findAttractionCategory = (placeDetails: PlaceDetails) => {
+    if (placeDetails.superCategory) return placeDetails.superCategory.name;
+
+    const category = placeDetails.categories.find((category) =>
+      CATEGORY_NAME_LIST.includes(category.name),
+    );
+    return category?.name ?? DEFAULT_CATEGORY_NAME;
+  };
+
+  if (loading) {
+    return <LoadingView />;
+  }
 
   if (error) {
     router.back();
@@ -61,13 +80,13 @@ const AttractionDetailsView = () => {
             <Text variant="bodySmall">Rodzaj</Text>
             <View style={styles.rowContainer}>
               <IconComponent
-                source={CategoryIcons["attraction"]}
+                source={CategoryIcons[findAttractionCategory(placeDetails)]}
                 iconSize={DEFAULT_ICON_SIZE}
                 color={theme.colors.onSurface}
                 backgroundColor={theme.colors.primaryContainer}
               />
               <Text style={styles.label}>
-                {CategoryLabelsForProfiles["attraction"]}
+                {CategoryLabelsForTripCategory["tourism"]}
               </Text>
             </View>
 

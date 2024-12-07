@@ -136,5 +136,27 @@ export const ConditionLabels: Record<string, string> = {
   wheelchair: "Dostępne dla wózków",
 };
 
+const ConditionIconMap: Record<string, string> = {
+  wheelchair: "human-wheelchair",
+  internet_access: "wifi",
+  dogs: "dog-side",
+  vegetarian: "food-drumstick-off",
+  vegan: "leaf",
+  "no-dogs": "dog-side-off",
+  halal: "food-halal",
+  kosher: "food-kosher",
+  organic: "bio",
+  egg_free: "egg-off-outline",
+};
+
+export const getConditionIcons = (placeConditions?: Condition[]): string[] => {
+  if (!placeConditions) return [];
+
+  return placeConditions
+    .map((condition) => condition.name)
+    .filter((name) => CONDITION_NAME_LIST.includes(name))
+    .map((name) => ConditionIconMap[name] || "");
+};
+
 export const OTHER_CATEGORY_NAME = "other";
 export const DEFAULT_CATEGORY_NAME = "tourism";

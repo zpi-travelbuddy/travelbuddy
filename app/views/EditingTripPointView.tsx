@@ -203,8 +203,14 @@ const EditingTripPointView = () => {
   }, [tripError, tripPointError, categoriesError, placeError]);
 
   useEffect(() => {
-    setLoading(tripLoading || tripPointLoading || categoriesLoading || false);
-  }, [tripLoading, tripPointLoading, categoriesLoading]);
+    setLoading(
+      tripLoading ||
+        tripPointLoading ||
+        categoriesLoading ||
+        placeLoading ||
+        false,
+    );
+  }, [tripLoading, tripPointLoading, categoriesLoading, placeLoading, success]);
 
   useEffect(() => {
     if (errors.api) {
@@ -231,8 +237,6 @@ const EditingTripPointView = () => {
     requiredFieldsForTripPoint.forEach(({ field, errorMessage }) => {
       const fieldValue = {
         tripPointName,
-        country,
-        city,
         expectedCost,
         startTime,
         endTime,
@@ -317,7 +321,7 @@ const EditingTripPointView = () => {
     const hasErrors = validateForm();
     if (!hasErrors) {
       const placeToRequest: Place = {
-        name: placeDetails?.name,
+        name: placeDetails?.name ?? tripPointName,
         superCategoryId: tripPointCategory?.id,
         country: country,
         state: state,
@@ -345,6 +349,8 @@ const EditingTripPointView = () => {
         endTime: `${formatTime(endTime, true)}`,
         predictedCost: totalExpectedCost,
       };
+      console.log(JSON.stringify(tripPointRequest));
+      console.log(JSON.stringify(placeDetails));
 
       handleEditRequest(tripPointRequest);
     } else {

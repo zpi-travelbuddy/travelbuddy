@@ -221,8 +221,6 @@ const AddingTripPointView = () => {
     requiredFieldsForTripPoint.forEach(({ field, errorMessage }) => {
       const fieldValue = {
         tripPointName,
-        country,
-        city,
         expectedCost,
         startTime,
         endTime,
