@@ -22,6 +22,9 @@ export const API_FAVOURITE_CATEGORY_PROFILE = "/favourites/categoryProfile";
 export const API_FAVOURITE_CONDITION_PROFILE = "/favourites/conditionProfile";
 export const API_FAVOURITE_PROFILES = "/favourites";
 
+// Review
+export const API_SUBMIT_REVIEW = "/tripPoints/submitReview";
+
 // Categories & Conditions
 export const API_CATEGORIES = "/categoryProfiles/categories";
 export const API_CONDITIONS = "/conditionProfiles/conditions";
