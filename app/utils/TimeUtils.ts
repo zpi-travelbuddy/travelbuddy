@@ -82,6 +82,7 @@ export function formatTimeFromString(time: string): string {
 }
 
 export function formatTimeRange(startTime: string, endTime: string): string {
+  if (startTime === endTime) return startTime;
   return `${startTime} - ${endTime}`;
 }
 
