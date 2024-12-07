@@ -7,12 +7,18 @@ import { MD3ThemeExtended } from "@/constants/Themes";
 import { displayCost, displayTime, formatAddress } from "@/utils/TextUtils";
 import StarRatingDisplayComponent from "@/components/StarRatingDisplayComponent";
 import IconComponent from "@/components/IconComponent";
-import { AttractionTypeIcons, AttractionTypeLabels } from "@/types/Trip";
 import { useAttractionDetails } from "@/composables/usePlace";
 import LoadingView from "./LoadingView";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useSnackbar } from "@/context/SnackbarContext";
 import ConditionIcons from "@/components/ConditionIcons";
+import {
+  CATEGORY_NAME_LIST,
+  CategoryIcons,
+  CategoryLabelsForTripCategory,
+  DEFAULT_CATEGORY_NAME,
+} from "@/types/Profile";
+import { PlaceDetails } from "@/types/Place";
 
 const { height, width } = Dimensions.get("window");
 
@@ -31,6 +37,15 @@ const AttractionDetailsView = () => {
   );
 
   useEffect(() => console.log(JSON.stringify(placeDetails)), [placeDetails]);
+
+  const findAttractionCategory = (placeDetails: PlaceDetails) => {
+    if (placeDetails.superCategory) return placeDetails.superCategory.name;
+
+    const category = placeDetails.categories.find((category) =>
+      CATEGORY_NAME_LIST.includes(category.name),
+    );
+    return category?.name ?? DEFAULT_CATEGORY_NAME;
+  };
 
   if (loading) {
     return <LoadingView />;
@@ -66,13 +81,13 @@ const AttractionDetailsView = () => {
             <Text variant="bodySmall">Rodzaj</Text>
             <View style={styles.rowContainer}>
               <IconComponent
-                source={AttractionTypeIcons["attraction"]}
+                source={CategoryIcons[findAttractionCategory(placeDetails)]}
                 iconSize={DEFAULT_ICON_SIZE}
                 color={theme.colors.onSurface}
                 backgroundColor={theme.colors.primaryContainer}
               />
               <Text style={styles.label}>
-                {AttractionTypeLabels["attraction"]}
+                {CategoryLabelsForTripCategory["tourism"]}
               </Text>
             </View>
 

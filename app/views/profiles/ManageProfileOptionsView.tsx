@@ -17,7 +17,6 @@ import {
   useFocusEffect,
   useLocalSearchParams,
   useNavigation,
-  useRouter,
 } from "expo-router";
 import React, {
   useCallback,
@@ -57,7 +56,6 @@ const ManageProfileCategoryView: React.FC<ManageProfileCategoryViewProps> = ({
   const theme = useTheme();
   const styles = createStyles(theme as MD3ThemeExtended);
   const navigation = useNavigation();
-  const router = useRouter();
   const { showSnackbar } = useSnackbar();
 
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -230,7 +228,7 @@ const ManageProfileCategoryView: React.FC<ManageProfileCategoryViewProps> = ({
   if (loading) return <LoadingView />;
 
   if (error) {
-    router.back();
+    navigation.goBack();
     showSnackbar(error?.toString() || "Unknown error", "error");
     return null;
   }

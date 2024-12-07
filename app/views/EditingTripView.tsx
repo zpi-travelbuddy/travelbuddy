@@ -24,23 +24,21 @@ import CustomModal from "@/components/CustomModal";
 import { RenderItem } from "@/components/RenderItem";
 import ActionButtons from "@/components/ActionButtons";
 import ClickableInput from "@/components/ClickableInput";
-import { TripErrors, EditTripRequest } from "@/types/Trip";
+import { TripErrors, TripRequest } from "@/types/Trip";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import useTripDetails, {
+import {
+  useTripDetails,
   useEditTripDetails,
 } from "@/composables/useTripDetails";
 import { useSnackbar } from "@/context/SnackbarContext";
 import LoadingView from "./LoadingView";
 import { CALENDAR_ICON, MARKER_ICON } from "@/constants/Icons";
-import {
-  useGetCategoryProfiles,
-  useGetConditionProfiles,
-} from "@/composables/useProfiles";
 import usePlaceDetails from "@/composables/usePlace";
-import { convertTripResponseToEditTripRequest } from "@/converters/tripConverters";
+import { convertTripResponseToTripRequest } from "@/converters/tripConverters";
 import { Place } from "@/types/Place";
 import { getDisplayPlace } from "@/utils/TextUtils";
 import { Profile, ProfileType } from "@/types/Profile";
+import { useDynamicProfiles } from "@/composables/useProfiles";
 
 const { height, width } = Dimensions.get("window");
 
@@ -62,8 +60,8 @@ const EditTripView = () => {
     destinationName: new_destination_name,
   } = params;
 
-  const [editTripRequest, setEditTripRequest] = useState<EditTripRequest>(
-    {} as EditTripRequest,
+  const [editTripRequest, setEditTripRequest] = useState<TripRequest>(
+    {} as TripRequest,
   );
 
   const {
@@ -95,6 +93,7 @@ const EditTripView = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
   const [errors, setErrors] = useState<TripErrors>({});
+  const [profilesErrors, setProfilesErrors] = useState<string>("");
   const [numberOfPeople, setNumberOfPeople] = useState<string>("");
   const [destinationName, setDestinationName] = useState<string>("");
 
@@ -122,15 +121,17 @@ const EditTripView = () => {
 
   const [profileType, setProfileType] = useState<ProfileType>("Category");
 
-  const [categoryProfiles, setCategoryProfiles] = useState<Profile[]>([
-    { id: "1", name: "Profile1" },
-    { id: "2", name: "Zwiedzanie i jedzenie" },
-  ]);
+  const {
+    profiles: categoryProfiles,
+    loading: categoryProfilesLoading,
+    error: categoryProfilesError,
+  } = useDynamicProfiles("Category");
 
-  const [conditionProfiles, setConditionProfiles] = useState<Profile[]>([
-    { id: "11", name: "Profile11" },
-    { id: "22", name: "Potrzebuję internetu dla psa" },
-  ]);
+  const {
+    profiles: conditionProfiles,
+    loading: conditionProfilesLoading,
+    error: conditionProfilesError,
+  } = useDynamicProfiles("Condition");
 
   // =====================
   // SECTION: useEffect hooks
@@ -149,17 +150,34 @@ const EditTripView = () => {
   }, [destinationDetails, new_destination_id]);
 
   useEffect(() => {
-    setError(tripError || destinationError || "");
+    setError(tripError || destinationError || editError || "");
   }, [tripError, destinationError, editError]);
 
   useEffect(() => {
-    setLoading(tripLoading || destinationLoading || editTripLoading || false);
-  }, [tripLoading, destinationLoading, editTripLoading]);
+    setProfilesErrors(categoryProfilesError || conditionProfilesError || "");
+  }, [categoryProfilesError, conditionProfilesError]);
+
+  useEffect(() => {
+    setLoading(
+      tripLoading ||
+        destinationLoading ||
+        editTripLoading ||
+        categoryProfilesLoading ||
+        conditionProfilesLoading ||
+        false,
+    );
+  }, [
+    tripLoading,
+    destinationLoading,
+    editTripLoading,
+    categoryProfilesLoading,
+    conditionProfilesLoading,
+  ]);
 
   useEffect(() => {
     if (tripDetails && destinationDetails) {
       setEditTripRequest(
-        convertTripResponseToEditTripRequest(
+        convertTripResponseToTripRequest(
           tripDetails,
           destinationDetails as Place,
         ),
@@ -169,8 +187,8 @@ const EditTripView = () => {
         startDate: new Date(tripDetails.startDate),
         endDate: new Date(tripDetails.endDate),
       });
-      setCategoryProfileId("null");
-      setConditionProfileId("null");
+      setCategoryProfileId(tripDetails?.categoryProfileId || null);
+      setConditionProfileId(tripDetails?.conditionProfileId || null);
     }
   }, [tripDetails, destinationDetails]);
 
@@ -184,14 +202,20 @@ const EditTripView = () => {
   }, [dateRange]);
 
   useEffect(() => {
-    if (editSuccess) {
-      showSnackbar("Wycieczka została zapisana!", "success");
-      router.back();
-      router.setParams({
-        refresh: "true",
-      });
-    } else showSnackbar("Błąd przy zapisie wycieczki", "error");
-  }, [router, editSuccess]);
+    if (editSuccess !== null) {
+      if (editSuccess) {
+        showSnackbar("Wycieczka została zapisana!", "success");
+        router.back();
+        router.setParams({
+          refresh: "true",
+        });
+      } else showSnackbar("Błąd przy zapisie wycieczki", "error");
+    }
+  }, [editSuccess]);
+
+  useEffect(() => {
+    if (profilesErrors) showSnackbar(profilesErrors, "error");
+  }, [profilesErrors]);
 
   // =====================
   // SECTION: Functions
@@ -302,8 +326,14 @@ const EditTripView = () => {
 
   const handleProfileSelection = useCallback(
     (profile: Profile) => {
-      if (profileType === "Category") setCategoryProfileId(profile.id);
-      else setConditionProfileId(profile.id);
+      console.log("New selected profile: " + profile.name);
+      if (profileType === "Category") {
+        setCategoryProfileId(profile.id);
+        handleChange("categoryProfileId")(profile.id);
+      } else {
+        setConditionProfileId(profile.id);
+        handleChange("conditionProfileId")(profile.id);
+      }
     },
     [profileType],
   );
@@ -423,8 +453,12 @@ const EditTripView = () => {
               <FlatList
                 data={
                   profileType === "Category"
-                    ? categoryProfiles
-                    : conditionProfiles
+                    ? categoryProfiles.sort((a, b) =>
+                        a.name.localeCompare(b.name),
+                      )
+                    : conditionProfiles.sort((a, b) =>
+                        a.name.localeCompare(b.name),
+                      )
                 }
                 renderItem={({ item }) => (
                   <RenderItem

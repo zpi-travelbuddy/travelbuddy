@@ -32,7 +32,8 @@ export interface TripDetails {
   startDate: string;
   endDate: string;
   destinationId: string;
-  budget: number;
+  predictedCost: number;
+  actualCost: number;
   currencyCode: string;
   categoryProfileId?: string | null;
   conditionProfileId?: string | null;
@@ -64,72 +65,7 @@ export interface TripErrors {
   [key: string]: string | undefined;
 }
 
-export type TripPointType =
-  | "attraction"
-  | "food"
-  | "culture"
-  | "museum"
-  | "shop"
-  | "park"
-  | "religion"
-  | "music"
-  | "other";
-
-export type Condition =
-  | "internet_access"
-  | "wheelchair"
-  | "dogs"
-  | "vegetarian"
-  | "vegan"
-  | "no-dogs"
-  | "halal"
-  | "kosher"
-  | "organic"
-  | "gluten_free"
-  | "sugar_free"
-  | "egg_free"
-  | "soy_free";
-
-export const ConditionList: Condition[] = [
-  "internet_access",
-  "wheelchair",
-  "dogs",
-  "vegetarian",
-  "vegan",
-  "no-dogs",
-  "halal",
-  "kosher",
-  "organic",
-  "sugar_free",
-  "egg_free",
-  "soy_free",
-];
-
-export const AttractionTypeIcons: Record<TripPointType, string> = {
-  attraction: "camera",
-  food: "silverware-fork-knife",
-  culture: "drama-masks",
-  museum: "bank",
-  shop: "basket",
-  park: "pine-tree",
-  religion: "church",
-  music: "music-note",
-  other: "map-marker",
-};
-
-export const AttractionTypeLabels: Record<TripPointType, string> = {
-  attraction: "Atrakcja",
-  food: "Jedzenie",
-  culture: "Kultura",
-  museum: "Muzeum",
-  shop: "Sklep",
-  park: "Park",
-  religion: "Kult",
-  music: "Muzyka",
-  other: "Inne",
-};
-
-export interface EditTripRequest {
+export interface TripRequest {
   name: string;
   numberOfTravelers: number;
   startDate: string;
@@ -137,4 +73,6 @@ export interface EditTripRequest {
   destinationProviderId: string;
   budget: number;
   currencyCode: string;
+  categoryProfileId: string | null;
+  conditionProfileId: string | null;
 }

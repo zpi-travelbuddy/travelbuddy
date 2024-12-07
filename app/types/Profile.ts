@@ -64,12 +64,26 @@ export const CONDITION_NAME_LIST = [
   "wheelchair",
 ];
 
+export const CategoryIcons: Record<string, string> = {
+  activity: "party-popper",
+  commercial: "basket",
+  entertainment: "drama-masks",
+  heritage: "bank",
+  leisure: "pine-tree",
+  natural: "pine-tree",
+  "national park": "shield-bug-outline",
+  tourism: "camera",
+  religion: "church",
+  sport: "soccer",
+  catering: "silverware-fork-knife",
+  other: "map-marker",
+};
+
 export const CATEGORY_NAME_LIST: string[] = [
   "activity",
   "commercial",
   "entertainment",
   "heritage",
-  "leisure",
   "natural",
   "national park",
   "tourism",
@@ -83,13 +97,25 @@ export const CategoryLabelsForProfiles: Record<string, string> = {
   commercial: "Sklepy",
   entertainment: "Kultura",
   heritage: "Zabytki",
-  leisure: "Natura",
   natural: "Natura",
   "national park": "Parki narodowe",
   tourism: "Atrakcje",
   religion: "Miejsca kultu",
   sport: "Sport",
   catering: "Restauracje",
+};
+
+export const CategoryLabelsForTripCategory: Record<string, string> = {
+  activity: "Rozrywka",
+  commercial: "Sklep",
+  entertainment: "Kultura",
+  heritage: "Zabytek",
+  natural: "Natura",
+  "national park": "Park",
+  tourism: "Atrakcja",
+  religion: "Miejsce kultu",
+  sport: "Sport",
+  catering: "Jedzenie",
 };
 
 export const ConditionLabels: Record<string, string> = {
@@ -108,6 +134,28 @@ export const ConditionLabels: Record<string, string> = {
   vegetarian: "Wegetariańskie",
   vegan: "Wegańskie",
   wheelchair: "Dostępne dla wózków",
+};
+
+const ConditionIconMap: Record<string, string> = {
+  wheelchair: "human-wheelchair",
+  internet_access: "wifi",
+  dogs: "dog-side",
+  vegetarian: "food-drumstick-off",
+  vegan: "leaf",
+  "no-dogs": "dog-side-off",
+  halal: "food-halal",
+  kosher: "food-kosher",
+  organic: "bio",
+  egg_free: "egg-off-outline",
+};
+
+export const getConditionIcons = (placeConditions?: Condition[]): string[] => {
+  if (!placeConditions) return [];
+
+  return placeConditions
+    .map((condition) => condition.name)
+    .filter((name) => CONDITION_NAME_LIST.includes(name))
+    .map((name) => ConditionIconMap[name] || "");
 };
 
 export const OTHER_CATEGORY_NAME = "other";
