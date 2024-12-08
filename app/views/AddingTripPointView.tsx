@@ -31,7 +31,7 @@ import { Place } from "@/types/Place";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import LoadingView from "./LoadingView";
 import { useSnackbar } from "@/context/SnackbarContext";
-import useTripDetails from "@/composables/useTripDetails";
+import { useTripDetails } from "@/composables/useTripDetails";
 import usePlaceDetails from "@/composables/usePlace";
 import { useAuth } from "@/app/ctx";
 import {
@@ -49,7 +49,10 @@ import {
   NEW_OVERLAPPING_ERROR_MESSAGE,
   OVERLAPPING_TRIP_POINTS_MESSAGE,
 } from "@/constants/Messages";
-import { requiredFieldsForTripPoint } from "@/utils/validations";
+import {
+  requiredFieldsForTripPoint,
+  onEndEditingString,
+} from "@/utils/validations";
 
 const { height, width } = Dimensions.get("window");
 
@@ -135,8 +138,7 @@ const AddingTripPointView = () => {
     clearError = true,
   ) => {
     return (value: any) => {
-      if (typeof value === "string") setter(value.trim());
-      else setter(value);
+      setter(value);
       if (clearError && field) setErrors((prev) => ({ ...prev, [field]: "" }));
     };
   };
@@ -404,6 +406,9 @@ const AddingTripPointView = () => {
               value={tripPointName}
               placeholder={tripPointName}
               onChangeText={handleChange(setTripPointName, "tripPointName")}
+              onEndEditing={() =>
+                onEndEditingString(setTripPointName, tripPointName)
+              }
               error={!!errors.tripPointName}
             ></TextInput>
             {errors.tripPointName && (
@@ -423,6 +428,7 @@ const AddingTripPointView = () => {
                   : country || ""
               }
               onChangeText={handleChange(setCountry, "country")}
+              onEndEditing={() => onEndEditingString(setCountry, country)}
               error={!!errors.country}
             ></TextInput>
             {errors.country && (
@@ -438,6 +444,7 @@ const AddingTripPointView = () => {
                 isAttraction ? (state !== null ? state : "Brak") : state || ""
               }
               onChangeText={handleChange(setState, "state")}
+              onEndEditing={() => onEndEditingString(setState, state)}
               error={!!errors.state}
             ></TextInput>
             {errors.state && (
@@ -453,6 +460,7 @@ const AddingTripPointView = () => {
                 isAttraction ? (city !== null ? city : "Brak") : city || ""
               }
               onChangeText={handleChange(setCity, "city")}
+              onEndEditing={() => onEndEditingString(setCountry, city)}
               error={!!errors.city}
             ></TextInput>
             {errors.city && <Text style={styles.textError}>{errors.city}</Text>}
@@ -470,6 +478,7 @@ const AddingTripPointView = () => {
                   : street || ""
               }
               onChangeText={handleChange(setStreet, "street")}
+              onEndEditing={() => onEndEditingString(setStreet, street)}
               error={!!errors.street}
             ></TextInput>
             {errors.street && (
@@ -489,6 +498,9 @@ const AddingTripPointView = () => {
                   : houseNumber || ""
               }
               onChangeText={handleChange(setHouseNumber, "houseName")}
+              onEndEditing={() =>
+                onEndEditingString(setHouseNumber, houseNumber)
+              }
               error={!!errors.houseNumber}
             ></TextInput>
             {errors.houseNumber && (
@@ -572,6 +584,7 @@ const AddingTripPointView = () => {
               value={comment}
               placeholder={comment}
               onChangeText={handleChange(setComment, "comment")}
+              onEndEditing={() => onEndEditingString(setComment, comment)}
               error={!!errors.comment}
             ></TextInput>
             {errors.comment && (

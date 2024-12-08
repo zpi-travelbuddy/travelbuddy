@@ -1,4 +1,11 @@
-import { StyleSheet, View, Image, Dimensions, ScrollView } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Image,
+  Dimensions,
+  ScrollView,
+  Linking,
+} from "react-native";
 import { useEffect, useMemo } from "react";
 import { useTheme, Text } from "react-native-paper";
 import { ADD_ICON, DEFAULT_ICON_SIZE, LOCATION_ICON } from "@/constants/Icons";
@@ -19,6 +26,7 @@ import {
   DEFAULT_CATEGORY_NAME,
 } from "@/types/Profile";
 import { PlaceDetails } from "@/types/Place";
+import { createLocationURL } from "@/utils/maps";
 
 const { height, width } = Dimensions.get("window");
 
@@ -47,15 +55,34 @@ const AttractionDetailsView = () => {
     return category?.name ?? DEFAULT_CATEGORY_NAME;
   };
 
-  if (loading) {
-    return <LoadingView />;
-  }
+  if (loading) return <LoadingView />;
 
   if (error) {
     router.back();
     showSnackbar(error?.toString() || "Unknown error", "error");
     return null;
   }
+
+  const onLocationButtonPress = async () => {
+    if (!placeDetails) {
+      console.error("Place details not available");
+      return;
+    }
+
+    const name = placeDetails.name;
+    const [latitude, longitude] = [
+      placeDetails.latitude,
+      placeDetails.longitude,
+    ];
+
+    const url = createLocationURL(latitude, longitude, name);
+
+    try {
+      await Linking.openURL(url);
+    } catch (error: any) {
+      console.error(error);
+    }
+  };
 
   if (placeDetails) {
     return (
@@ -118,9 +145,7 @@ const AttractionDetailsView = () => {
         </ScrollView>
 
         <ActionButtons
-          onAction1={() => {
-            console.log("Opening Maps");
-          }}
+          onAction1={onLocationButtonPress}
           action1ButtonLabel={"Mapa"}
           onAction2={() => {
             console.log("Adding to trip");

@@ -33,6 +33,7 @@ export const CAR_ICON = "car";
 export const MANUAL_ICON = "hand";
 export const EMPTY_ICON = "plus";
 
+export const NOTIFICATION_ICON = "bell";
 export const LOCATION_ICON = "map-marker-outline";
 export const ADD_ICON = "plus";
 
@@ -61,3 +62,4 @@ export const MARKER_ICON = "map-marker";
 export const CALENDAR_ADD_ICON = "event";
 export const ADD_NOTIFICATION_ICON = "notifications";
 export const REMOVE_NOTIFICATION_ICON = "notifications-off";
+export const NAVIGATION_ICON = "map-marker-distance";

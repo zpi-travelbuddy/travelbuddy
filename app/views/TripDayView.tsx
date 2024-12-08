@@ -79,10 +79,10 @@ const TripDayView = () => {
   const { showSnackbar } = useSnackbar();
 
   const {
-    isRegistered,
     registerNotification,
     unregisterNotification,
     getNotificationId,
+    isRegistered,
   } = useTripNotificationManager();
 
   const [selectedTripPoint, setSelectedTripPoint] =
@@ -532,11 +532,18 @@ const TripDayView = () => {
         transferPoint?.seconds,
       );
 
+      const toTripPoint = getTripPoint(toTripPointId);
+
+      if (!toTripPoint) {
+        return null;
+      }
+
       return (
         <TransferPointNode
           onPress={() =>
             handleTransferPointPress(fromTripPoint.id, toTripPoint.id)
           }
+          tripPointContext={{ fromTripPoint, toTripPoint }}
           transferPoint={transferPoint}
           isWarningText={isTransferTooLong}
         />
@@ -723,6 +730,7 @@ const TripDayView = () => {
                     onPress={() => handleTripPointPress(fromTripPoint)}
                     onLongPress={() => handleTripPointLongPress(fromTripPoint)}
                     tripPoint={fromTripPoint}
+                    isRegistered={isRegistered}
                   />
                   {renderTransferPoint(fromTripPoint, index)}
                 </Fragment>
@@ -749,7 +757,11 @@ const TripDayView = () => {
             isVisible === VisibilityState.Transfer
           }
           onClose={onSelectorClose}
-          label={dynamicLabel}
+          label={
+            isVisible === VisibilityState.TripPoint
+              ? "Wybierz metodę"
+              : dynamicLabel
+          }
           extendedView={
             extendedView ? (
               <ExampleExtendedView
