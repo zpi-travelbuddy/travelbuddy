@@ -604,6 +604,7 @@ const TripDayView = () => {
           setIsTripPointSheetVisible(false);
           setIsVisible(VisibilityState.None);
           router.navigate({
+            // @ts-ignore
             pathname: `/trips/details/${trip_id}/day/${day_id}/tripPoints/details/${selectedTripPoint.id}`,
             params: {
               date: new Date(tripDay?.date as string).toLocaleDateString(),
@@ -617,6 +618,7 @@ const TripDayView = () => {
         onPress: () => {
           setIsTripPointSheetVisible(false);
           router.push({
+            // @ts-ignore
             pathname: `/(auth)/(tabs)/trips/details/${trip_id}/day/${day_id}/tripPoints/edit/${selectedTripPoint.id}`,
             params: {
               date: new Date(tripDay?.date as string).toLocaleDateString(),
