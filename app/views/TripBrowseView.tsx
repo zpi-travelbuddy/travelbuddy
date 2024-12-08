@@ -280,13 +280,15 @@ const TripBrowseView = () => {
             )
           }
         />
-        <FAB
-          style={styles.fab}
-          icon="plus"
-          color={theme.colors.onPrimary}
-          label="Dodaj"
-          onPress={() => router.push(`/trips/add`)}
-        />
+        {value === "actual" && (
+          <FAB
+            style={styles.fab}
+            icon="plus"
+            color={theme.colors.onPrimary}
+            label="Dodaj"
+            onPress={() => router.push(`/trips/add`)}
+          />
+        )}
         <CustomModal visible={isModalVisible} onDismiss={hideModal}>
           <View>
             <Text style={styles.modalTitleText}>
