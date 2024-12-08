@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { StyleSheet, View, Image, Dimensions, ScrollView } from "react-native";
 import React, {
   useMemo,

@@ -2,13 +2,11 @@ import { StyleSheet, ViewStyle } from "react-native";
 import { Text, useTheme } from "react-native-paper";
 import React, { useEffect, useState } from "react";
 import IconRow from "./IconRow";
-import { Condition } from "@/types/Trip";
 import { MD3ThemeExtended } from "@/constants/Themes";
-import { PlaceCondition } from "@/types/Place";
-import { convertConditions } from "@/converters/placeConverter";
+import { Condition, getConditionIcons } from "@/types/Profile";
 
 interface ConditionIconsProps {
-  placeConditions: PlaceCondition[];
+  placeConditions: Condition[];
   iconColor: string;
   style?: ViewStyle;
 }
@@ -21,14 +19,13 @@ const ConditionIcons: React.FC<ConditionIconsProps> = ({
   const theme = useTheme() as MD3ThemeExtended;
   const styles = createStyles(theme, iconColor);
 
-  const [conditions, setConditions] = useState<string[]>([]);
+  const [conditionIcons, setConditionIcons] = useState<string[]>([]);
 
   useEffect(() => {
-    setConditions(convertConditions([...placeConditions]));
-    
+    setConditionIcons(getConditionIcons([...placeConditions]));
   }, [placeConditions]);
 
-  if (conditions.length === 0)
+  if (conditionIcons.length === 0)
     return (
       <>
         <Text style={styles.text}>Brak</Text>
@@ -40,7 +37,7 @@ const ConditionIcons: React.FC<ConditionIconsProps> = ({
         <IconRow
           style={style}
           iconColor={iconColor}
-          icons={conditions}
+          icons={conditionIcons}
         ></IconRow>
       </>
     );

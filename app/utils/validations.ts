@@ -56,6 +56,21 @@ export const validateTripForm = (
   return newErrors;
 };
 
+export const requiredFieldsForTripPoint = [
+  {
+    field: "tripPointName",
+    errorMessage: "Nazwa punktu wycieczki jest wymagana.",
+  },
+  {
+    field: "startTime",
+    errorMessage: "Godzina rozpoczęcia jest wymagana.",
+  },
+  {
+    field: "endTime",
+    errorMessage: "Godzina zakończenia jest wymagana.",
+  },
+];
+
 export const onEndEditingString = (
   setter: React.Dispatch<React.SetStateAction<any>>,
   value: any,

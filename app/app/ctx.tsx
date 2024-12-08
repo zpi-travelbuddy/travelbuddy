@@ -7,10 +7,12 @@ import axios from "axios";
 Amplify.configure(amplifyConfig);
 
 const EXPIRATION_BUFFER = 5 * 60 * 1000; // 5 minutes
+const TIMEOUT_DURATION = 10000; // 10 seconds
 
 // axios
 const api = axios.create({
   baseURL: process.env.EXPO_PUBLIC_API_URL,
+  timeout: TIMEOUT_DURATION,
 });
 
 // cache

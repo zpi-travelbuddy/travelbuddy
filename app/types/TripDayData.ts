@@ -1,4 +1,4 @@
-import { Place } from "./Place";
+import { Place, PlaceDetails, PlaceOverview } from "./Place";
 
 export interface TripPointCompact {
   id: string;
@@ -10,14 +10,15 @@ export interface TripPointCompact {
   longitude?: number;
 }
 
-export interface CreateTripPointRequest {
+export interface TripPointRequest {
   name: string;
-  comment?: string;
+  comment: string | null;
   tripDayId: string;
   place: Place;
   predictedCost: number;
   startTime: string;
   endTime: string;
+  superCategoryId?: string;
 }
 
 export interface Category {
@@ -58,7 +59,7 @@ export interface TripPointDetails {
   closingTime?: string;
   status?: number;
   placeId: string;
-  place?: Place;
+  place?: PlaceOverview;
   review?: Review;
   category?: Category;
 }
@@ -110,7 +111,3 @@ export const TransferTypeLabels = {
   [TransferType.Walk]: "Chód",
   null: "Ręcznie",
 };
-
-// export const reversedTransferTypeLabels = Object.fromEntries(
-//   Object.entries(TransferTypeLabels).map(([key, value]) => [value, key]),
-// ) as Record<string, TransferType>;

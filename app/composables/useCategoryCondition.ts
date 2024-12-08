@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useAuth } from "@/app/ctx";
 import { API_CATEGORIES, API_CONDITIONS } from "@/constants/Endpoints";
+
 import { Category, Condition, ProfileType } from "@/types/Profile";
 import { useState, useCallback, useEffect } from "react";
 
