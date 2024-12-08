@@ -319,13 +319,18 @@ const EditTripView = () => {
 
   const handleProfileSelection = useCallback(
     (profile: Profile) => {
-      console.log("New selected profile: " + profile.name);
       if (profileType === "Category") {
-        setCategoryProfileId(profile.id);
-        handleChange("categoryProfileId")(profile.id);
+        setCategoryProfileId((prevId) => {
+          const newId = prevId === profile.id ? null : profile.id;
+          handleChange("categoryProfileId")(newId);
+          return newId;
+        });
       } else {
-        setConditionProfileId(profile.id);
-        handleChange("conditionProfileId")(profile.id);
+        setConditionProfileId((prevId) => {
+          const newId = prevId === profile.id ? null : profile.id;
+          handleChange("conditionProfileId")(newId);
+          return newId;
+        });
       }
     },
     [profileType],
