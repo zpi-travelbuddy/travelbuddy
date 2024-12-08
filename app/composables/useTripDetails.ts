@@ -34,23 +34,23 @@ export const useTripDetails = (
     }
   }, [api, tripId]);
 
-  // const fetchTripSummary = useCallback(async () => {
-  //   try {
-  //     const response = await api!.get<TripSummary>(`/trips/summary/${tripId}`);
-  //     setTripSummary(response.data);
-  //   } catch (err: any) {
-  //     setError(
-  //       "Wystąpił błąd podczas pobierania podsumowania wycieczki: " +
-  //         err.toString(),
-  //     );
-  //   }
-  // }, [api, tripId]);
+  const fetchTripSummary = useCallback(async () => {
+    try {
+      const response = await api!.get<TripSummary>(`/trips/summary/${tripId}`);
+      setTripSummary(response.data);
+    } catch (err: any) {
+      setError(
+        "Wystąpił błąd podczas pobierania podsumowania wycieczki: " +
+          err.toString(),
+      );
+    }
+  }, [api, tripId]);
 
   const refetch = useCallback(async () => {
     setLoading(true);
     setError(null);
-    // await Promise.all([fetchTripDetails(), fetchTripSummary()]);
-    await fetchTripDetails();
+    await Promise.all([fetchTripDetails(), fetchTripSummary()]);
+    // await fetchTripDetails();
     setLoading(false);
   }, [fetchTripDetails]);
 

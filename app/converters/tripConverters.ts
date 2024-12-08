@@ -20,22 +20,25 @@ function getDestinationName(
     : "";
 }
 
-export const calculateTripSummary = (tripSummary: TripSummary) => {
-  let predictedSpendings = 0;
+export function calculateTripSummary(tripSummary: TripSummary) {
   let totalTripPoints = 0;
+  let totalSpendings = 0;
 
   tripSummary.tripDays.forEach((day) => {
-    day.tripPoints.forEach((point) => {
-      predictedSpendings += point.predictedSpendings;
-      totalTripPoints += 1;
-    });
+    const points = day.tripPoints;
+    totalTripPoints += points.length;
+    totalSpendings += points.reduce(
+      (sum, point) => sum + point.totalSpendings,
+      0,
+    );
   });
 
   return {
-    predictedSpendings,
     totalTripPoints,
+    totalSpendings,
+    currencyCode: tripSummary.currencyCode,
   };
-};
+}
 
 export function convertTripResponseToViewModel(
   tripDetails: TripDetails | undefined,
@@ -47,9 +50,12 @@ export function convertTripResponseToViewModel(
   if (!tripDetails) throw new Error("Trip details are undefined.");
   if (!destinationDetails)
     throw new Error("Destination details are undefined.");
-  const { predictedSpendings, totalTripPoints } = tripSummary
+  const { totalSpendings, totalTripPoints } = tripSummary
     ? calculateTripSummary(tripSummary)
-    : { predictedSpendings: 0, totalTripPoints: tripDetails.tripDays.length }; // temporary
+    : {
+        totalSpendings: 0,
+        totalTripPoints: tripDetails.tripDays.length,
+      }; // temporary
   return {
     name: tripDetails.name,
     dateRange: formatDateRange(
@@ -60,7 +66,7 @@ export function convertTripResponseToViewModel(
     numberOfTripPoints: totalTripPoints,
     numberOfTravelers: tripDetails.numberOfTravelers,
     predictedCost: getMoneyWithCurrency(
-      predictedSpendings,
+      totalSpendings,
       tripDetails.currencyCode,
     ),
     budget: getMoneyWithCurrency(tripDetails.budget, tripDetails.currencyCode),

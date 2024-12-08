@@ -50,7 +50,7 @@ export interface TripDetails extends TripRequest {
 
 export interface TripSummaryPoint {
   name: string;
-  predictedSpendings: number;
+  totalSpendings: number;
 }
 
 export interface TripSummaryDay {
@@ -59,7 +59,7 @@ export interface TripSummaryDay {
 }
 
 export interface TripSummary {
-  currency: string;
+  currencyCode: string;
   tripDays: TripSummaryDay[];
 }
 

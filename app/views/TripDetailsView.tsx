@@ -178,6 +178,7 @@ const TripDetailsView = () => {
   );
 
   useEffect(() => {
+    console.log(JSON.stringify(tripSummary));
     if (tripDetails && destinationDetails) {
       setTripViewModel(
         convertTripResponseToViewModel(

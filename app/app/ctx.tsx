@@ -96,6 +96,7 @@ export const AuthProvider = ({ children }: any) => {
     try {
       const session = await Auth.currentSession();
       cachedAccessToken = session.getAccessToken().getJwtToken();
+      console.log(cachedAccessToken);
       tokenExpiration = session.getAccessToken().getExpiration() * 1000;
     } catch (error) {
       cachedAccessToken = null;
