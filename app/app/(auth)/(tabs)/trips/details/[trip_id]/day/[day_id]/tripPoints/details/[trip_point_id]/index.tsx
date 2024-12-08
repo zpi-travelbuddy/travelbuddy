@@ -1,5 +1,5 @@
 import { useAuth } from "@/app/ctx";
-import { API_ADDING_TRIP_POINT, API_TRIPS } from "@/constants/Endpoints";
+import { API_TRIP_POINT, API_TRIPS } from "@/constants/Endpoints";
 import { TripDetails } from "@/types/Trip";
 import { TripPointDetails } from "@/types/TripDayData";
 import LoadingView from "@/views/LoadingView";
@@ -18,7 +18,7 @@ export default function TripPoint() {
   const fetchTripPointData = async () => {
     try {
       const fetchedTripPoint = await api?.get<TripPointDetails>(
-        `${API_ADDING_TRIP_POINT}/${trip_point_id}`,
+        `${API_TRIP_POINT}/${trip_point_id}`,
       );
       setTripPoint(fetchedTripPoint?.data || null);
     } catch (error: any) {
