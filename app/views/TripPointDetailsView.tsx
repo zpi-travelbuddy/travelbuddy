@@ -1,7 +1,11 @@
 import { MD3ThemeExtended } from "@/constants/Themes";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { Divider, Text, useTheme } from "react-native-paper";
-import { TripPointDetails, TripPointViewModel } from "@/types/TripDayData";
+import {
+  TripPointDetails,
+  TripPointStatus,
+  TripPointViewModel,
+} from "@/types/TripDayData";
 import { TripPointDetailsLabel } from "@/components/TripPointDetailLabel";
 import { getMoneyWithCurrency } from "@/utils/CurrencyUtils";
 import {
@@ -23,13 +27,16 @@ import {
   CALENDAR_ADD_ICON_MATERIAL,
   DELETE_ICON,
   EDIT_ICON_MATERIAL,
+  FILL_SURVEY_ICON,
   REMOVE_NOTIFICATION_ICON_MATERIAL,
 } from "@/constants/Icons";
 import CustomModal from "@/components/CustomModal";
 import {
   formatMinutes,
+  formatMinutesInWords,
   formatTimeRange,
   getTimeWithoutSeconds,
+  getTotalMinutesFromTimestamp,
 } from "@/utils/TimeUtils";
 import ActionTextButtons from "@/components/ActionTextButtons";
 import {
@@ -51,6 +58,7 @@ import { useTripNotificationManager } from "@/hooks/useTripNotificationManager";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import NotificationFormBottomSheet from "@/components/NotificationFormBottomSheet";
 import { useTripDetails } from "@/composables/useTripDetails";
+import StarRatingDisplayComponent from "@/components/StarRatingDisplayComponent";
 
 const LABELS: Record<string, string> = {
   name: "Nazwa punktu",
@@ -61,6 +69,11 @@ const LABELS: Record<string, string> = {
   startTime: "Godzina rozpoczęcia",
   endTime: "Godzina zakończenia",
   comment: "Komentarz",
+};
+
+const REVIEW_LABELS: Record<string, string> = {
+  actualCostPerPerson: "Koszt na osobę",
+  actualTimeSpent: "Czas pobytu",
 };
 
 const parseTripPoint = (
@@ -102,6 +115,14 @@ const parseTripPoint = (
     : "Brak danych";
 
   const comment = tripPoint.comment || "Brak danych";
+  const actualCostPerPerson: string =
+    tripPoint.review?.actualCostPerPerson && tripPoint.review?.currencyCode
+      ? `${tripPoint.review?.actualCostPerPerson} ${tripPoint.review?.currencyCode}`
+      : "Brak danych";
+  const actualTimeSpent: string = tripPoint.review?.actualTimeSpent
+    ? `${formatMinutesInWords(getTotalMinutesFromTimestamp(tripPoint.review?.actualTimeSpent))}`
+    : "Brak danych";
+  const rating = tripPoint.review?.rating;
 
   return {
     name: tripPoint.name,
@@ -112,6 +133,11 @@ const parseTripPoint = (
     startTime,
     endTime,
     comment,
+    review: {
+      actualTimeSpent,
+      actualCostPerPerson,
+      rating,
+    },
   };
 };
 
@@ -250,6 +276,16 @@ const TripPointDetailsView = () => {
     setError(deleteError || tripDayError || tripError || tripPointError || "");
   }, [deleteError, tripDayError, tripError, tripPointError]);
 
+  const onSurveyFillOut = () => {
+    console.log("onSurveyFillOut");
+    hideModal();
+    if (tripPoint)
+      router.push(
+        `/(auth)/(tabs)/trips/details/${trip_id}/day/${day_id}/tripPoints/${tripPoint.id}/survey`,
+      );
+    else showSnackbar("Wystąpił błąd!", "error");
+  };
+
   useLayoutEffect(() => {
     navigation.setOptions({
       actions: [
@@ -319,6 +355,18 @@ const TripPointDetailsView = () => {
                     setIsNotificationFormVisible(true);
                   }
                 },
+              },
+            ),
+            ...conditionalItem(
+              !!tripPoint &&
+                [
+                  TripPointStatus.REVIEW_PENDING,
+                  TripPointStatus.REVIEW_REJECTED,
+                ].includes(tripPoint?.status as TripPointStatus),
+              {
+                label: "Wypełnij ankietę",
+                icon: FILL_SURVEY_ICON,
+                onPress: onSurveyFillOut,
               },
             ),
             {
@@ -421,6 +469,38 @@ const TripPointDetailsView = () => {
               </Text>
             </View>
           )}
+          {tripPoint?.status === TripPointStatus.REVIEW_COMPLETED &&
+            parsedTripPoint.review && (
+              <View style={styles.placeDetails}>
+                <Divider style={styles.divider} />
+                <Text variant="titleLarge" style={styles.placeTitle}>
+                  Szczegóły ankiety
+                </Text>
+                {Object.entries(parsedTripPoint.review)
+                  .filter(([key]) => key in REVIEW_LABELS)
+                  .map(([key, value]) => (
+                    <TripPointDetailsLabel
+                      key={key}
+                      title={REVIEW_LABELS[key]}
+                      element={
+                        <Text style={styles.value}>
+                          {value?.toString() || "Brak danych"}
+                        </Text>
+                      }
+                    />
+                  ))}
+                <TripPointDetailsLabel
+                  title="Twoja ocena"
+                  element={
+                    <StarRatingDisplayComponent
+                      style={styles.starRatingPadding}
+                      rating={parsedTripPoint.review.rating}
+                      editable={false}
+                    />
+                  }
+                />
+              </View>
+            )}
         </ScrollView>
         <CustomModal visible={isModalVisible} onDismiss={hideModal}>
           <View>
@@ -508,7 +588,11 @@ const createStyles = (theme: MD3ThemeExtended) =>
       textDecorationLine: "underline",
     },
     placeDetails: {
-      marginBottom: 80,
+      marginVertical: 30,
     },
     divider: { marginVertical: 10 },
+    starRatingPadding: {
+      paddingVertical: 10,
+      alignSelf: "center",
+    },
   });

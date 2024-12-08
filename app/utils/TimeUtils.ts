@@ -172,3 +172,9 @@ export const combineDateAndTime = (date: Date, time: string): Date => {
 
   return combinedDate;
 };
+
+export const getTotalMinutesFromTimestamp = (timestamp: string): number => {
+  const [hours, minutes, seconds] = timestamp.split(":").map(Number);
+  const totalMinutes = hours * 60 + minutes + Math.floor(seconds / 60);
+  return totalMinutes;
+};

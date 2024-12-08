@@ -32,6 +32,7 @@ import {
   ADD_NOTIFICATION_ICON,
   REMOVE_NOTIFICATION_ICON,
   CALENDAR_ADD_ICON,
+  FILL_SURVEY_ICON,
 } from "@/constants/Icons";
 import { Option } from "@/types/TripDayData";
 import useTripDayDetails from "@/composables/useTripDay";
@@ -685,6 +686,17 @@ const TripDayView = () => {
               setIsNotificationFormVisible(true);
             }
           },
+        },
+      ),
+      ...conditionalItem(
+        [
+          TripPointStatus.REVIEW_PENDING,
+          TripPointStatus.REVIEW_REJECTED,
+        ].includes(selectedTripPoint.status as TripPointStatus),
+        {
+          label: "Wypełnij ankietę",
+          icon: FILL_SURVEY_ICON,
+          onPress: onSurveyFillOut,
         },
       ),
       {

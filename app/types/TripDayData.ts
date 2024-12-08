@@ -30,8 +30,10 @@ export interface Category {
 export interface Review {
   id: string;
   tripPointId: string;
+  currencyCode: string;
   placeId: string;
-  placeName: string;
+  actualCostPerPerson: number;
+  actualTimeSpent: string;
   rating: number;
 }
 
@@ -44,6 +46,11 @@ export interface TripPointViewModel {
   startTime?: string;
   endTime?: string;
   comment?: string;
+  review?: {
+    actualCostPerPerson?: string;
+    actualTimeSpent?: string;
+    rating?: number;
+  };
 }
 
 export interface TripPointDetails {

@@ -6,6 +6,7 @@ import { MD3Colors } from "react-native-paper/lib/typescript/types";
 
 export const BLACK = "#000000";
 export const WHITE = "#FFFFFF";
+export const YELLOW = "#FFCC00";
 export const BACKDROP = "rgba(0, 0, 0, 0.32)";
 
 export interface MD3ColorsExtended extends MD3Colors {

@@ -57,12 +57,19 @@ export const DEFAULT_ICON_SIZE = 24;
 export const NON_STANDARD_TRANSFER_ICON = "compass-outline";
 export const MARKER_ICON = "map-marker";
 
-// Other
+// Calendar
 export const CALENDAR_ADD_ICON = "event";
 export const CALENDAR_ADD_ICON_MATERIAL = "calendar";
+
+// Notifications
 export const ADD_NOTIFICATION_ICON = "notifications";
 export const ADD_NOTIFICATION_ICON_MATERIAL = "bell";
 export const REMOVE_NOTIFICATION_ICON = "notifications-off";
 export const REMOVE_NOTIFICATION_ICON_MATERIAL = "bell-off";
+
+// Survey
+export const FILL_SURVEY_ICON = "edit-document";
+export const COMPLETED_SURVEY_ICON = "file-check-outline";
+
+// Other
 export const NAVIGATION_ICON = "map-marker-distance";
-export const FILL_SURVEY_ICON = "file-document-edit";

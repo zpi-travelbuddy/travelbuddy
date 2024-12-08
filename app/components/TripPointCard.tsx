@@ -1,4 +1,4 @@
-import { TripPointCompact, TripPointStatus } from "@/types/TripDayData";
+import { TripPointCompact } from "@/types/TripDayData";
 import { StyleSheet, Dimensions, View } from "react-native";
 import { Card, Icon, Text, useTheme } from "react-native-paper";
 import { formatTimeFromString, formatTimeRange } from "@/utils/TimeUtils";
@@ -8,7 +8,7 @@ import {
   LOCATION_ICON,
   NOTIFICATION_ICON,
 } from "@/constants/Icons";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { YELLOW } from "@/constants/Colors";
 
 const { width } = Dimensions.get("window");
 
@@ -60,7 +60,7 @@ export const TripPointCard = ({
             {hasLocation && <Icon size={20} source={LOCATION_ICON} />}
             {hasReminder && <Icon size={20} source={NOTIFICATION_ICON} />}
             {hasSurveyToFillOut && (
-              <Icon size={20} color="#FFCC00" source={FILL_SURVEY_ICON} />
+              <Icon size={20} color={YELLOW} source={FILL_SURVEY_ICON} />
             )}
           </View>
         }
@@ -78,7 +78,7 @@ const createStyles = (theme: MD3ThemeExtended) =>
     },
     cardWithSurvey: {
       borderWidth: 2,
-      borderColor: "#FFCC00",
+      borderColor: YELLOW,
     },
     subtitleContainer: {
       display: "flex",
