@@ -39,6 +39,7 @@ import { Place } from "@/types/Place";
 import { getDisplayPlace } from "@/utils/TextUtils";
 import { Profile, ProfileType } from "@/types/Profile";
 import { useDynamicProfiles } from "@/composables/useProfiles";
+
 import { onEndEditingStringOnObject } from "@/utils/validations";
 
 const { height, width } = Dimensions.get("window");

@@ -157,12 +157,12 @@ const AddingTripPointView = () => {
     console.log(JSON.stringify(destinationDetails));
     if (destinationDetails) {
       setCountry(destinationDetails.country);
-      setState(destinationDetails.state);
+      setState(destinationDetails.state || "");
       setCity(destinationDetails.city);
       if (attractionProviderId) {
         setTripPointName(destinationDetails.name);
-        setStreet(destinationDetails.street);
-        setHouseNumber(destinationDetails.houseNumber);
+        setStreet(destinationDetails.street || "");
+        setHouseNumber(destinationDetails.houseNumber || "");
         setLatitude(destinationDetails.latitude || null);
         setLongitude(destinationDetails.longitude || null);
         setLatitudeText(
