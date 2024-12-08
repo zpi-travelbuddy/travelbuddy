@@ -77,10 +77,18 @@ public static class TripsEndpoints
         return TypedResults.NotFound("Not implemented");
     }
 
-    private static async Task<Results<Ok<TripSummaryDTO>, NotFound<string>>> GetTripSummaryAsync(Guid id)
+    private static async Task<Results<Ok<TripSummaryDTO>, NotFound<string>>> GetTripSummaryAsync(Guid id, HttpContext httpContext, ITripsService tripsService)
     {
-        await Task.CompletedTask;
-        return TypedResults.NotFound("Not implemented");
+        try
+        {
+            string userId = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new InvalidOperationException("User not found");
+            var summary = await tripsService.GetTripSummaryAsync(userId, id);
+            return TypedResults.Ok(summary);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return TypedResults.NotFound(ex.Message);
+        }
     }
 
     private static async Task<Results<Ok<List<TripOverviewWithStatisticsDTO>>, NotFound<string>>> GetPastTripsWithStatisticsAsync()
