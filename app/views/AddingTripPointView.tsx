@@ -31,7 +31,7 @@ import { Place } from "@/types/Place";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import LoadingView from "./LoadingView";
 import { useSnackbar } from "@/context/SnackbarContext";
-import useTripDetails from "@/composables/useTripDetails";
+import { useTripDetails } from "@/composables/useTripDetails";
 import usePlaceDetails from "@/composables/usePlace";
 import { useAuth } from "@/app/ctx";
 import {
@@ -49,7 +49,10 @@ import {
   NEW_OVERLAPPING_ERROR_MESSAGE,
   OVERLAPPING_TRIP_POINTS_MESSAGE,
 } from "@/constants/Messages";
-import { requiredFieldsForTripPoint, onEndEditingString } from "@/utils/validations";
+import {
+  requiredFieldsForTripPoint,
+  onEndEditingString,
+} from "@/utils/validations";
 
 const { height, width } = Dimensions.get("window");
 

@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useAuth } from "@/app/ctx";
 import { PlaceDetails } from "@/types/Place";
+import { Condition, Category } from "@/types/Profile";
 import { useState, useCallback, useEffect } from "react";
 import { UseApiOptions } from "./useTripDetails";
-import { Category, Condition } from "@/types/Profile";
 
 const usePlaceDetails = (
   placeId: string | undefined,

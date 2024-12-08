@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   StyleSheet,
   View,
@@ -28,12 +28,17 @@ import { useSnackbar } from "@/context/SnackbarContext";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useAuth } from "@/app/ctx";
 import LoadingView from "./LoadingView";
-import { Profile, ProfileType } from "@/types/Profile";
-import { DateRange, TripErrors } from "@/types/Trip";
+import { ConditionProfile, Profile, ProfileType } from "@/types/Profile";
+import { DateRange, TripErrors, TripRequest } from "@/types/Trip";
 import { MARKER_ICON, CALENDAR_ICON } from "@/constants/Icons";
 import { API_TRIPS } from "@/constants/Endpoints";
 import { onEndEditingString, validateTripForm } from "@/utils/validations";
 import { useAnimatedKeyboard } from "react-native-reanimated";
+import {
+  useGetCategoryProfiles,
+  useGetConditionProfiles,
+  useGetFavouriteProfiles,
+} from "@/composables/useProfiles";
 
 const { height, width } = Dimensions.get("window");
 registerTranslation("pl", pl);
@@ -49,7 +54,7 @@ const AddingTripView = () => {
   const router = useRouter();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
   const currency =
     useLocalSearchParams<{ currency: string }>().currency || DEFAULT_CURRENCY;
   const { destinationId, destinationName } = useLocalSearchParams<{
@@ -78,20 +83,54 @@ const AddingTripView = () => {
 
   const [profileType, setProfileType] = useState<ProfileType>("Category");
 
-  const categoryProfiles = useMemo(
-    () => [
-      { id: "1", name: "Profile1" },
-      { id: "2", name: "Profile2" },
-    ],
-    [],
-  );
-  const conditionProfiles = useMemo(
-    () => [
-      { id: "11", name: "Profile11" },
-      { id: "22", name: "Profile22" },
-    ],
-    [],
-  );
+  const {
+    profiles: categoryProfiles,
+    loading: categoryProfilesLoading,
+    error: categoryProfilesError,
+    refetch: categoryProfileRefetch,
+  } = useGetCategoryProfiles();
+
+  const {
+    profiles: conditionProfiles,
+    loading: conditionProfilesLoading,
+    error: conditionProfilesError,
+    refetch: conditionProfileRefetch,
+  } = useGetConditionProfiles();
+
+  const {
+    favouriteProfiles,
+    loading: favouriteProfilesLoading,
+    error: favouriteProfilesError,
+  } = useGetFavouriteProfiles();
+
+  useEffect(() => {
+    setCategoryProfileId(favouriteProfiles.Category);
+    setConditionProfileId(favouriteProfiles.Condition);
+  }, [favouriteProfiles]);
+
+  useEffect(() => {
+    setLoading(
+      categoryProfilesLoading ||
+        conditionProfilesLoading ||
+        favouriteProfilesLoading ||
+        false,
+    );
+  }, [
+    categoryProfilesLoading,
+    conditionProfilesLoading,
+    favouriteProfilesLoading,
+  ]);
+
+  useEffect(() => {
+    setErrors((prev) => ({
+      ...prev,
+      ["api"]:
+        categoryProfilesError ||
+        conditionProfilesError ||
+        favouriteProfilesError ||
+        "",
+    }));
+  }, [categoryProfilesError, conditionProfilesError, favouriteProfilesError]);
 
   const handleProfileSelection = useCallback(
     (profile: Profile) => {
@@ -132,7 +171,7 @@ const AddingTripView = () => {
   const handleSubmit = async () => {
     if (!validateForm()) return;
 
-    const tripData = {
+    const tripRequest: TripRequest = {
       name: tripName,
       numberOfTravelers: parseInt(numberOfPeople),
       startDate: formatDateToISO(range.startDate),
@@ -142,18 +181,19 @@ const AddingTripView = () => {
       destinationProviderId: destinationId,
       budget,
       currencyCode: currency,
+      categoryProfileId: categoryProfileId ?? null,
+      conditionProfileId: conditionProfileId ?? null,
     };
-
-    setIsLoading(true);
+    setLoading(true);
     try {
-      await api!.post(API_TRIPS, tripData);
+      await api!.post(API_TRIPS, tripRequest);
       router.navigate({ pathname: "/trips", params: { refresh: "true" } });
       showSnackbar("Zapisano wycieczkę!", "success");
     } catch (error: any) {
       console.error(error.response.data);
       showSnackbar("Wystąpił błąd podczas zapisywania wycieczki", "error");
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
@@ -261,8 +301,12 @@ const AddingTripView = () => {
               <FlatList
                 data={
                   profileType === "Category"
-                    ? categoryProfiles
-                    : conditionProfiles
+                    ? categoryProfiles.sort((a, b) =>
+                        a.name.localeCompare(b.name),
+                      )
+                    : conditionProfiles.sort((a, b) =>
+                        a.name.localeCompare(b.name),
+                      )
                 }
                 renderItem={({ item }) => (
                   <RenderItem
@@ -308,7 +352,7 @@ const AddingTripView = () => {
           action2Icon={undefined}
         />
       </ScrollView>
-      <LoadingView show={isLoading} />
+      <LoadingView show={loading} />
     </>
   );
 };
