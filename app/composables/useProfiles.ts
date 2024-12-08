@@ -22,7 +22,7 @@ interface UseGetProfilesResult<T> {
   refetch: () => Promise<void>;
 }
 export const useGetProfiles = <T>(
-  endpoint: string, 
+  endpoint: string,
   options: UseApiOptions = { immediate: true },
   notFoundMessage: string = "Profile nie zostały znalezione.",
   generalErrorMessage: string = "Wystąpił błąd podczas pobierania danych profili.",
@@ -70,13 +70,15 @@ export const useDynamicProfiles = (
 export const useGetCategoryProfiles = (
   options: UseApiOptions = { immediate: true },
 ) => {
-  return { ...useGetProfiles(API_CATEGORY_PROFILES, options) };
+  return { ...useGetProfiles<CategoryProfile>(API_CATEGORY_PROFILES, options) };
 };
 
 export const useGetConditionProfiles = (
   options: UseApiOptions = { immediate: true },
 ) => {
-  return { ...useGetProfiles(API_CONDITION_PROFILES, options) };
+  return {
+    ...useGetProfiles<ConditionProfile>(API_CONDITION_PROFILES, options),
+  };
 };
 
 interface UseProfileByIdResult<T extends Profile> {

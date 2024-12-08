@@ -31,7 +31,7 @@ import { useSnackbar } from "@/context/SnackbarContext";
 import { useAuth } from "@/app/ctx";
 import { API_TRIP_POINT, PLACE_DETAILS_ENDPOINT } from "@/constants/Endpoints";
 import { useGetTripPoint } from "@/composables/useTripPoint";
-import useTripDetails from "@/composables/useTripDetails";
+import { useTripDetails } from "@/composables/useTripDetails";
 import {
   CATEGORY_NAME_LIST,
   CategoryLabelsForProfiles,
