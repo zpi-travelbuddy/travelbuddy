@@ -132,7 +132,8 @@ const parseTripPoint = (
 const TripPointDetailsView = () => {
   const theme = useTheme();
   const styles = createStyles(theme as MD3ThemeExtended);
-  const { trip_id, trip_point_id, day_id, refresh } = useLocalSearchParams();
+  const { trip_id, trip_point_id, day_id, date, refresh } =
+    useLocalSearchParams();
   const navigation = useNavigation();
   const { showSnackbar } = useSnackbar();
 
@@ -193,8 +194,11 @@ const TripPointDetailsView = () => {
         refetchTrip();
         refetchTripPoint();
         refetchTripDay();
-        router.setParams({ refresh: undefined });
       }
+      return () => {
+        if (refresh && refresh === "true")
+          router.setParams({ refresh: "true" });
+      };
     }, [refetchTrip, refetchTripPoint, router, refresh]),
   );
 
@@ -232,9 +236,10 @@ const TripPointDetailsView = () => {
               color: theme.colors.onSurface,
               onPress: () => {
                 if (tripPoint)
-                  router.push(
-                    `/trips/details/${trip_id}/day/${day_id}/tripPoints/edit/${tripPoint.id}`,
-                  );
+                  router.push({
+                    pathname: `/trips/details/${trip_id}/day/${day_id}/tripPoints/edit/${tripPoint.id}`,
+                    params: { date: date },
+                  });
                 else showSnackbar("Wystąpił błąd", "error");
               },
             },
