@@ -383,6 +383,7 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
                 td.Date,
                 td.TripPoints?.Select(tp => new TripPointStatistics(
                     tp.Name,
+                    Math.Round(tp.PredictedCost / tp.ExchangeRate, 2),
                     tp.Review != null && tp.Review.ActualCostPerPerson.HasValue && tp.Review.ExchangeRate.HasValue 
                         ? Math.Round(tp.Review.ActualCostPerPerson.Value * trip.NumberOfTravelers / tp.Review.ExchangeRate.Value, 2) : 0
                 )).ToList() ?? []

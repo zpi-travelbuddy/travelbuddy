@@ -25,7 +25,7 @@ public class TripDay
     [NotMapped]
     public decimal? ActualCostPerPerson
     {
-        get => TripPoints?.Sum(tp => tp.Review?.ActualCostPerPerson / tp.ExchangeRate);
+        get => TripPoints?.Sum(tp => tp.Review?.ActualCostPerPerson / tp.Review?.ExchangeRate);
     }
 
     [NotMapped]
