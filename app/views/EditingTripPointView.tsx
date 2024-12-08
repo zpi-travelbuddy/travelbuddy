@@ -47,6 +47,7 @@ import {
   requiredFieldsForTripPoint,
 } from "@/utils/validations";
 import usePlaceDetails from "@/composables/usePlace";
+import { findAttractionCategory } from "@/utils/CategoryUtils";
 
 const { height, width } = Dimensions.get("window");
 
@@ -177,7 +178,11 @@ const EditingTripPointView = () => {
       setComment(tripPointDetails.comment || "");
       setTripPointCategory(
         tripPointDetails?.place?.superCategory ||
-          getCategoryByName(DEFAULT_CATEGORY_NAME),
+          getCategoryByName(
+            placeDetails
+              ? findAttractionCategory(placeDetails)
+              : DEFAULT_CATEGORY_NAME,
+          ),
       );
       setStartTime(convertTimestampToDateTime(tripPointDetails.startTime));
       setEndTime(convertTimestampToDateTime(tripPointDetails.endTime));
