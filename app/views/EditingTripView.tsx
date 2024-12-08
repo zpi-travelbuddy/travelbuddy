@@ -24,7 +24,7 @@ import CustomModal from "@/components/CustomModal";
 import { RenderItem } from "@/components/RenderItem";
 import ActionButtons from "@/components/ActionButtons";
 import ClickableInput from "@/components/ClickableInput";
-import { TripErrors, EditTripRequest } from "@/types/Trip";
+import { TripErrors, TripRequest } from "@/types/Trip";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import useTripDetails, {
   useEditTripDetails,
@@ -32,15 +32,12 @@ import useTripDetails, {
 import { useSnackbar } from "@/context/SnackbarContext";
 import LoadingView from "./LoadingView";
 import { CALENDAR_ICON, MARKER_ICON } from "@/constants/Icons";
-import {
-  useGetCategoryProfiles,
-  useGetConditionProfiles,
-} from "@/composables/useProfiles";
 import usePlaceDetails from "@/composables/usePlace";
 import { convertTripResponseToEditTripRequest } from "@/converters/tripConverters";
 import { Place } from "@/types/Place";
 import { getDisplayPlace } from "@/utils/TextUtils";
 import { Profile, ProfileType } from "@/types/Profile";
+import { onEndEditingString, onEndEditingStringOnObject } from "@/utils/validations";
 
 const { height, width } = Dimensions.get("window");
 
@@ -62,8 +59,8 @@ const EditTripView = () => {
     destinationName: new_destination_name,
   } = params;
 
-  const [editTripRequest, setEditTripRequest] = useState<EditTripRequest>(
-    {} as EditTripRequest,
+  const [editTripRequest, setEditTripRequest] = useState<TripRequest>(
+    {} as TripRequest,
   );
 
   const {
@@ -145,7 +142,7 @@ const EditTripView = () => {
         ...prev,
         destinationProviderId: new_destination_id as string,
       }));
-    } else console.log("ERRRRROR");
+    }
   }, [destinationDetails, new_destination_id]);
 
   useEffect(() => {
@@ -190,7 +187,7 @@ const EditTripView = () => {
       router.setParams({
         refresh: "true",
       });
-    } else showSnackbar("Błąd przy zapisie wycieczki", "error");
+    }
   }, [router, editSuccess]);
 
   // =====================
@@ -248,15 +245,7 @@ const EditTripView = () => {
         budget: "Kwota budżetu jest wymagana.",
       }));
     }
-    // if (!editTripRequest.categoryProfileId){
-    //   hasErrors = true;
-    //   setErrors((prev) => ({...prev, categoryProfile: "Profil preferencji jest wymagany."}))
-    // }
 
-    // if (!editTripRequest.conditionProfileId){
-    //   hasErrors = true;
-    //   setErrors((prev) => ({...prev, conditionProfile: "Profil udogodnień jest wymagany."}))
-    // }
     if (hasErrors) {
       showSnackbar("Proszę uzupełnić wszystkie wymagane pola!", "error");
       return;
@@ -264,8 +253,8 @@ const EditTripView = () => {
 
     try {
       await editTrip();
-    } catch (error) {
-      showSnackbar("Błąd podczas zapisywania wycieczki!", "error");
+    } catch (error) {;
+      showSnackbar("Błąd przy zapisie wycieczki", "error");
       console.error(error);
     }
   };
@@ -294,7 +283,7 @@ const EditTripView = () => {
       let profiles;
       if (profileType === "Category") profiles = categoryProfiles;
       else if (profileType === "Condition") profiles = conditionProfiles;
-      else throw new Error();
+      else throw new Error("Unknow profile type: " + profileType);
       const profile = profiles.find((p) => p.id === id);
       return profile ? profile.name : "Brak";
     } else return "Brak";
@@ -312,9 +301,7 @@ const EditTripView = () => {
   // SECTION: Return JSX (UI rendering)
   // =====================
 
-  if (loading) {
-    return <LoadingView />;
-  }
+  if (loading) return <LoadingView />;
 
   if (error) {
     router.back();
@@ -340,6 +327,9 @@ const EditTripView = () => {
               label="Nazwa"
               value={editTripRequest.name}
               onChangeText={handleChange("name")}
+              onEndEditing={() =>
+                onEndEditingStringOnObject(setEditTripRequest, "name")
+              }
               error={!!errors.name}
             />
             {errors.name && <Text style={styles.textError}>{errors.name}</Text>}
@@ -384,7 +374,6 @@ const EditTripView = () => {
               budget={editTripRequest.budget}
               currency={editTripRequest.currencyCode}
               handleBudgetChange={handleChange("budget")}
-              disable={true}
               error={!!errors.budget}
             />
             {errors.budget && (

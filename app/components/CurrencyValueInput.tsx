@@ -16,7 +16,7 @@ interface CurrencyValueInputProps {
   currency: string;
   handleBudgetChange: (value: number) => void;
   error?: boolean;
-  disable?: boolean;
+  currencyDisable?: boolean;
   label?: string;
 }
 
@@ -25,7 +25,7 @@ const CurrencyValueInput = ({
   currency,
   handleBudgetChange,
   error,
-  disable = false,
+  currencyDisable = false,
   label = "Budżet",
 }: CurrencyValueInputProps) => {
   const theme = useTheme();
@@ -62,7 +62,7 @@ const CurrencyValueInput = ({
         error={error ?? false}
       />
 
-      {disable ? (
+      {currencyDisable ? (
         <Text style={styles.currencyLabel}>{currency}</Text>
       ) : (
         <ClickableInput

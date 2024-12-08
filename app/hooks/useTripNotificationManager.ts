@@ -71,20 +71,23 @@ export function useTripNotificationManager() {
         return updated;
       });
     },
-    [],
+    [setTripNotifications, saveToStorage],
   );
 
   /**
    * Unregisters a trip point ID and removes its associated notification ID.
    * @param tripPointId - The ID of the trip point to unregister.
    */
-  const unregisterNotification = useCallback(async (tripPointId: string) => {
-    setTripNotifications((prev) => {
-      const { [tripPointId]: _, ...remaining } = prev; // Exclude the removed key
-      saveToStorage(remaining);
-      return remaining;
-    });
-  }, []);
+  const unregisterNotification = useCallback(
+    async (tripPointId: string) => {
+      setTripNotifications((prev) => {
+        const { [tripPointId]: _, ...remaining } = prev; // Exclude the removed key
+        saveToStorage(remaining);
+        return remaining;
+      });
+    },
+    [setTripNotifications, saveToStorage],
+  );
 
   /**
    * Checks if a trip point ID is registered with a notification.
