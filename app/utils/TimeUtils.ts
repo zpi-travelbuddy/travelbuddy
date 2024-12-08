@@ -146,6 +146,7 @@ export const convertTimestampToDateTime = (timestamp: string) => {
   const date = new Date();
   date.setHours(hours, minutes, seconds || 0, 0);
   return date;
+};
 
 export const formatTimeSpan = (hours?: number, minutes?: number): string => {
   const h = hours ?? 0;
