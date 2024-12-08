@@ -210,7 +210,14 @@ public class PlacesService(TravelBuddyDbContext dbContext, IGeoapifyService geoa
 
     public async Task<PlaceDetailsDTO> GetPlaceDetailsAsync(string providerId)
     {
-        ProviderPlace fetchedPlace = await GetProviderPlaceAsync(providerId) ?? throw new ArgumentException(ErrorMessages.IncorrectProviderPlaceId);
+        ProviderPlace fetchedPlace;
+
+        try{
+            fetchedPlace = await GetProviderPlaceAsync(providerId) ?? throw new ArgumentException(ErrorMessages.IncorrectProviderPlaceId);
+        }
+        catch (HttpRequestException){
+            throw new ArgumentException(ErrorMessages.IncorrectProviderPlaceId);
+        }
 
         ProviderPlace? place = await _dbContext.Places
             .OfType<ProviderPlace>()
