@@ -58,7 +58,6 @@ export const NON_STANDARD_TRANSFER_ICON = "compass-outline";
 export const MARKER_ICON = "map-marker";
 
 // Other
-
 export const CALENDAR_ADD_ICON = "event";
 export const CALENDAR_ADD_ICON_MATERIAL = "calendar";
 export const ADD_NOTIFICATION_ICON = "notifications";

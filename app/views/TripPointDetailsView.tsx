@@ -5,9 +5,20 @@ import { TripPointDetails, TripPointViewModel } from "@/types/TripDayData";
 import { TripPointDetailsLabel } from "@/components/TripPointDetailLabel";
 import { SimplePlaceCard } from "@/components/TripPointDetailsView/SimplePlaceCard";
 import { getMoneyWithCurrency } from "@/utils/CurrencyUtils";
-import { useEffect, useLayoutEffect, useMemo, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useState,
+} from "react";
 import { Place, PlaceViewModel } from "@/types/Place";
-import { router, useLocalSearchParams, useNavigation } from "expo-router";
+import {
+  router,
+  useFocusEffect,
+  useLocalSearchParams,
+  useNavigation,
+} from "expo-router";
 import {
   ADD_NOTIFICATION_ICON_MATERIAL,
   CALENDAR_ADD_ICON_MATERIAL,
@@ -22,7 +33,10 @@ import {
   getTimeWithoutSeconds,
 } from "@/utils/TimeUtils";
 import ActionTextButtons from "@/components/ActionTextButtons";
-import { useDeleteTripPoint } from "@/composables/useTripPoint";
+import {
+  useDeleteTripPoint,
+  useGetTripPoint,
+} from "@/composables/useTripPoint";
 import { formatAddress } from "@/utils/TextUtils";
 import LoadingView from "./LoadingView";
 import { TripDetails } from "@/types/Trip";
@@ -37,11 +51,7 @@ import { useSnackbar } from "@/context/SnackbarContext";
 import { useTripNotificationManager } from "@/hooks/useTripNotificationManager";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import NotificationFormBottomSheet from "@/components/NotificationFormBottomSheet";
-
-interface TripPointDetailsViewProps {
-  tripPoint: TripPointDetails | null;
-  trip: TripDetails | null;
-}
+import useTripDetails from "@/composables/useTripDetails";
 
 const LABELS: Record<string, string> = {
   name: "Nazwa punktu",
@@ -68,8 +78,8 @@ const convertPlace = (place: Place): PlaceViewModel => {
 };
 
 const parseTripPoint = (
-  tripPoint: TripPointDetails | null,
-  trip: TripDetails | null,
+  tripPoint: TripPointDetails | undefined,
+  trip: TripDetails | undefined,
 ): TripPointViewModel => {
   if (!tripPoint) {
     return {};
@@ -119,15 +129,27 @@ const parseTripPoint = (
   };
 };
 
-const TripPointDetailsView = ({
-  tripPoint,
-  trip,
-}: TripPointDetailsViewProps) => {
+const TripPointDetailsView = () => {
   const theme = useTheme();
   const styles = createStyles(theme as MD3ThemeExtended);
-  const { trip_id, day_id } = useLocalSearchParams();
+  const { trip_id, trip_point_id, day_id, refresh } = useLocalSearchParams();
   const navigation = useNavigation();
   const { showSnackbar } = useSnackbar();
+
+  const {
+    tripPointDetails: tripPoint,
+    loading: tripPointLoading,
+    error: tripPointError,
+    refetch: refetchTripPoint,
+  } = useGetTripPoint(trip_point_id as string);
+
+  const {
+    tripDetails: trip,
+    tripSummary,
+    loading: tripLoading,
+    error: tripError,
+    refetch: refetchTrip,
+  } = useTripDetails(trip_id as string);
 
   const {
     tripDay,
@@ -165,6 +187,16 @@ const TripPointDetailsView = ({
   const hideModal = () => setIsModalVisible(false);
   const showRemovalModal = () => setIsModalVisible(true);
 
+  useFocusEffect(
+    useCallback(() => {
+      if (refresh && refresh === "true") {
+        refetchTrip();
+        refetchTripPoint();
+        router.setParams({ refresh: undefined });
+      }
+    }, [refetchTrip, refetchTripPoint, router, refresh]),
+  );
+
   const onDeleteTripPoint = async () => {
     await deleteTripPoint(tripPoint?.id);
     router.navigate({
@@ -174,12 +206,18 @@ const TripPointDetailsView = ({
   };
 
   useEffect(() => {
-    setLoading(deleteLoading || tripDayLoading || false);
-  }, [deleteLoading, tripDayLoading]);
+    setLoading(
+      deleteLoading ||
+        tripDayLoading ||
+        tripLoading ||
+        tripPointLoading ||
+        false,
+    );
+  }, [deleteLoading, tripDayLoading, tripLoading, tripPointLoading]);
 
   useEffect(() => {
-    setError(deleteError || tripDayError || "");
-  }, [deleteError, tripDayError]);
+    setError(deleteError || tripDayError || tripError || tripPointError || "");
+  }, [deleteError, tripDayError, tripError, tripPointError]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -192,8 +230,11 @@ const TripPointDetailsView = ({
               icon: EDIT_ICON_MATERIAL,
               color: theme.colors.onSurface,
               onPress: () => {
-                console.log("Edit");
-                // router.push(`/trips/details/${trip_id}/day/${day_id}/tripPoints/details/${selectedTripPoint.id}`,);
+                if (tripPoint)
+                  router.push(
+                    `/trips/details/${trip_id}/day/${day_id}/tripPoints/edit/${tripPoint.id}`,
+                  );
+                else showSnackbar("Wystąpił błąd", "error");
               },
             },
             {
@@ -259,7 +300,7 @@ const TripPointDetailsView = ({
         },
       ],
     });
-  }, [tripDay, navigation]);
+  }, [tripDay, navigation, notificationId, tripPoint, tripDay]);
 
   const handleScheduleNotification = async (
     minutes: number,
