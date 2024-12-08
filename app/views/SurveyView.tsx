@@ -56,8 +56,7 @@ const SurveyView = () => {
 
   const handleChange = (setter: React.Dispatch<React.SetStateAction<any>>) => {
     return (value: any) => {
-      if (typeof value === "string") setter(value.trim());
-      else setter(value);
+      setter(value);
     };
   };
 

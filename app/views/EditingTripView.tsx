@@ -37,6 +37,7 @@ import { convertTripResponseToEditTripRequest } from "@/converters/tripConverter
 import { Place } from "@/types/Place";
 import { getDisplayPlace } from "@/utils/TextUtils";
 import { Profile, ProfileType } from "@/types/Profile";
+import { onEndEditingString, onEndEditingStringOnObject } from "@/utils/validations";
 
 const { height, width } = Dimensions.get("window");
 
@@ -308,9 +309,7 @@ const EditTripView = () => {
   // SECTION: Return JSX (UI rendering)
   // =====================
 
-  if (loading) {
-    return <LoadingView />;
-  }
+  if (loading) return <LoadingView />;
 
   if (error) {
     router.back();
@@ -336,6 +335,9 @@ const EditTripView = () => {
               label="Nazwa"
               value={editTripRequest.name}
               onChangeText={handleChange("name")}
+              onEndEditing={() =>
+                onEndEditingStringOnObject(setEditTripRequest, "name")
+              }
               error={!!errors.name}
             />
             {errors.name && <Text style={styles.textError}>{errors.name}</Text>}
