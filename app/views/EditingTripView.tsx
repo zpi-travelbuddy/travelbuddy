@@ -39,6 +39,7 @@ import { Place } from "@/types/Place";
 import { getDisplayPlace } from "@/utils/TextUtils";
 import { Profile, ProfileType } from "@/types/Profile";
 import { useDynamicProfiles } from "@/composables/useProfiles";
+import { onEndEditingStringOnObject } from "@/utils/validations";
 
 const { height, width } = Dimensions.get("window");
 
@@ -146,7 +147,7 @@ const EditTripView = () => {
         ...prev,
         destinationProviderId: new_destination_id as string,
       }));
-    } else console.log("ERRRRROR");
+    }
   }, [destinationDetails, new_destination_id]);
 
   useEffect(() => {
@@ -272,15 +273,7 @@ const EditTripView = () => {
         budget: "Kwota budżetu jest wymagana.",
       }));
     }
-    // if (!editTripRequest.categoryProfileId){
-    //   hasErrors = true;
-    //   setErrors((prev) => ({...prev, categoryProfile: "Profil preferencji jest wymagany."}))
-    // }
 
-    // if (!editTripRequest.conditionProfileId){
-    //   hasErrors = true;
-    //   setErrors((prev) => ({...prev, conditionProfile: "Profil udogodnień jest wymagany."}))
-    // }
     if (hasErrors) {
       showSnackbar("Proszę uzupełnić wszystkie wymagane pola!", "error");
       return;
@@ -289,7 +282,7 @@ const EditTripView = () => {
     try {
       await editTrip();
     } catch (error) {
-      showSnackbar("Błąd podczas zapisywania wycieczki!", "error");
+      showSnackbar("Błąd przy zapisie wycieczki", "error");
       console.error(error);
     }
   };
@@ -315,10 +308,10 @@ const EditTripView = () => {
 
   const getProfileName = (profileType: ProfileType, id: string | null) => {
     if (id) {
-      let profiles;
+      let profiles = [] as Profile[];
       if (profileType === "Category") profiles = categoryProfiles;
       else if (profileType === "Condition") profiles = conditionProfiles;
-      else throw new Error();
+      else throw new Error("Unknow profile type: " + profileType);
       const profile = profiles.find((p) => p.id === id);
       return profile ? profile.name : "Brak";
     } else return "Brak";
@@ -342,9 +335,7 @@ const EditTripView = () => {
   // SECTION: Return JSX (UI rendering)
   // =====================
 
-  if (loading) {
-    return <LoadingView />;
-  }
+  if (loading) return <LoadingView />;
 
   if (error) {
     router.back();
@@ -370,6 +361,9 @@ const EditTripView = () => {
               label="Nazwa"
               value={editTripRequest.name}
               onChangeText={handleChange("name")}
+              onEndEditing={() =>
+                onEndEditingStringOnObject(setEditTripRequest, "name")
+              }
               error={!!errors.name}
             />
             {errors.name && <Text style={styles.textError}>{errors.name}</Text>}
@@ -414,7 +408,6 @@ const EditTripView = () => {
               budget={editTripRequest.budget}
               currency={editTripRequest.currencyCode}
               handleBudgetChange={handleChange("budget")}
-              disable={true}
               error={!!errors.budget}
             />
             {errors.budget && (

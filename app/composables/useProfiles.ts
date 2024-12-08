@@ -110,7 +110,6 @@ export const useGetProfile = <T extends Profile>(
       const response = await api!.get<T>(endpoint);
       setProfile(response.data);
     } catch (err: any) {
-      console.error(JSON.stringify(err.response));
       if (err.response && err.response.status === 404) {
         setError("Profil nie został znaleziony.");
       } else {

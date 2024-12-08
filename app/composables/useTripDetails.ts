@@ -29,7 +29,6 @@ export const useTripDetails = (
       if (err.response && err.response.status === 404) {
         setError("Wycieczka nie została znaleziona.");
       } else {
-        console.log(JSON.stringify(err));
         setError("Wystąpił błąd podczas pobierania danych.");
       }
     }

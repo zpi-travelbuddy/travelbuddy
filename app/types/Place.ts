@@ -20,15 +20,27 @@ export interface PlaceViewModel {
 export interface Place {
   id: string;
   providerId: string;
-  categoryId?: string;
+  superCategoryId?: string;
   name: string;
-  country: string;
+  country?: string;
   state?: string;
   city: string;
   street?: string;
   houseNumber?: string;
   latitude?: number;
   longitude?: number;
+}
+
+export interface PlaceOverview {
+  id?: string;
+  providerId?: string;
+  name: string;
+  country?: string;
+  state?: string;
+  city?: string;
+  street?: string;
+  houseNumber?: string;
+  superCategory: Category;
 }
 
 export interface PlaceDetails {

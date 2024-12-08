@@ -5,7 +5,7 @@ export const API_TRIPS_CURRENT = "/trips/current";
 export const API_TRIPS_PAST = "/trips/past";
 
 // TripPoints
-export const API_ADDING_TRIP_POINT = `/tripPoints`;
+export const API_TRIP_POINT = `/tripPoints`;
 
 // Currency
 export const API_CURRENCY = "/trips/availableCurrencies";
@@ -21,6 +21,9 @@ export const API_CONDITION_PROFILES = "/conditionProfiles";
 export const API_FAVOURITE_CATEGORY_PROFILE = "/favourites/categoryProfile";
 export const API_FAVOURITE_CONDITION_PROFILE = "/favourites/conditionProfile";
 export const API_FAVOURITE_PROFILES = "/favourites";
+
+// Review
+export const API_SUBMIT_REVIEW = "/tripPoints/submitReview";
 
 // Categories & Conditions
 export const API_CATEGORIES = "/categoryProfiles/categories";

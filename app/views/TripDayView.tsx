@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Fragment, useCallback, useMemo, useRef, useState } from "react";
 import { Dimensions, ScrollView, StyleSheet, View } from "react-native";
 import { useTheme, FAB, TextInput, Text } from "react-native-paper";
@@ -74,10 +75,10 @@ const TripDayView = () => {
   const { showSnackbar } = useSnackbar();
 
   const {
-    isRegistered,
     registerNotification,
     unregisterNotification,
     getNotificationId,
+    isRegistered,
   } = useTripNotificationManager();
 
   const [selectedTripPoint, setSelectedTripPoint] =
@@ -136,6 +137,7 @@ const TripDayView = () => {
         label: "Utwórz",
         onPress: () => {
           router.push({
+            // @ts-ignore
             pathname: `/trips/details/${trip_id}/day/${day_id}/tripPoints/create`,
             params: {
               date: new Date(tripDay?.date as string).toLocaleDateString(),
@@ -148,11 +150,10 @@ const TripDayView = () => {
         icon: SEARCH_TRIP_POINT_ICON,
         label: "Wyszukaj",
         onPress: () => {
-          router.push({
-            pathname: "/explore",
+          router.navigate({
+            // @ts-ignore
+            pathname: `/trips/details/${trip_id}/day/${day_id}/explore`,
             params: {
-              trip_id: trip_id,
-              day_id: day_id,
               date: new Date(tripDay?.date as string).toLocaleDateString(),
             },
           });
@@ -258,6 +259,7 @@ const TripDayView = () => {
         setLoadingOverlay(true);
         await updateTransferPoint(newTransferPoint, transferPointId);
         await refetchNoLoadingDayData();
+        setIsVisible(VisibilityState.None);
       } catch (error: any) {
         showSnackbar("Wystąpił błąd", "error");
       } finally {
@@ -360,6 +362,7 @@ const TripDayView = () => {
         setLoadingOverlay(true);
         await updateTransferPoint(newTransferPoint, transferPointId);
         await refetchNoLoadingDayData();
+        setIsVisible(VisibilityState.None);
       } catch (error: any) {
         showSnackbar("Wystąpił błąd", "error");
       } finally {
@@ -505,11 +508,18 @@ const TripDayView = () => {
       const transferPoint = transferPointMap.get(fromTripPoint.id);
       const toTripPointId = sortedTripPoints[index + 1].id;
 
+      const toTripPoint = getTripPoint(toTripPointId);
+
+      if (!toTripPoint) {
+        return null;
+      }
+
       return (
         <TransferPointNode
           onPress={() =>
             handleTransferPointPress(fromTripPoint.id, toTripPointId)
           }
+          tripPointContext={{ fromTripPoint, toTripPoint }}
           transferPoint={transferPoint}
         />
       );
@@ -582,9 +592,13 @@ const TripDayView = () => {
         label: "Edytuj szczegóły punktu wycieczki",
         icon: EDIT_ICON,
         onPress: () => {
-          console.log(`Edytuj`);
-          setIsVisible(VisibilityState.None);
-          // router.push(`/trips/edit/${selectedTrip.id}`);
+          setIsTripPointSheetVisible(false);
+          router.push({
+            pathname: `/(auth)/(tabs)/trips/details/${trip_id}/day/${day_id}/tripPoints/edit/${selectedTripPoint.id}`,
+            params: {
+              date: new Date(tripDay?.date as string).toLocaleDateString(),
+            },
+          });
         },
       },
       ...conditionalItem(
@@ -691,6 +705,7 @@ const TripDayView = () => {
                     onPress={() => handleTripPointPress(fromTripPoint)}
                     onLongPress={() => handleTripPointLongPress(fromTripPoint)}
                     tripPoint={fromTripPoint}
+                    isRegistered={isRegistered}
                   />
                   {renderTransferPoint(fromTripPoint, index)}
                 </Fragment>
@@ -717,7 +732,11 @@ const TripDayView = () => {
             isVisible === VisibilityState.Transfer
           }
           onClose={onSelectorClose}
-          label={dynamicLabel}
+          label={
+            isVisible === VisibilityState.TripPoint
+              ? "Wybierz metodę"
+              : dynamicLabel
+          }
           extendedView={
             extendedView ? (
               <ExampleExtendedView

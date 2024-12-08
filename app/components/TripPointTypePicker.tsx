@@ -2,27 +2,31 @@ import { Dimensions, StyleSheet, Text, View } from "react-native";
 import React from "react";
 import { Button, MD3Theme, useTheme } from "react-native-paper";
 import IconComponent from "./IconComponent";
-import {
-  AttractionTypeIcons,
-  AttractionTypeLabels,
-  TripPointType,
-} from "@/types/Trip";
 import { DEFAULT_ICON_SIZE } from "@/constants/Icons";
+import {
+  CategoryIcons,
+  CategoryLabelsForTripCategory,
+  DEFAULT_CATEGORY_NAME,
+} from "@/types/Profile";
+import { Category } from "@/types/TripDayData";
 
-interface TripPointTypePickerProps {
-  selectedTripPointType: TripPointType;
+interface TripPointCategoryPickerProps {
+  selectedCategory: Category | undefined;
   onPress: () => void;
+  disabled?: boolean;
 }
 
 const { width } = Dimensions.get("window");
 
-const TripPointTypePicker: React.FC<TripPointTypePickerProps> = ({
-  selectedTripPointType,
+const TripPointTypePicker: React.FC<TripPointCategoryPickerProps> = ({
+  selectedCategory,
   onPress,
+  disabled = false,
 }) => {
   const theme = useTheme();
   const styles = createStyles(theme);
-  const iconName = AttractionTypeIcons[selectedTripPointType] as TripPointType;
+  const iconName =
+    CategoryIcons[selectedCategory?.name || DEFAULT_CATEGORY_NAME];
   return (
     <>
       <Text style={styles.header}>Rodzaj punktu wycieczki</Text>
@@ -35,10 +39,19 @@ const TripPointTypePicker: React.FC<TripPointTypePickerProps> = ({
             backgroundColor={theme.colors.primaryContainer}
           />
           <Text style={styles.label}>
-            {AttractionTypeLabels[selectedTripPointType]}
+            {
+              CategoryLabelsForTripCategory[
+                selectedCategory?.name || DEFAULT_CATEGORY_NAME
+              ]
+            }
           </Text>
         </View>
-        <Button mode="outlined" style={styles.button} onPress={onPress}>
+        <Button
+          mode="outlined"
+          disabled={disabled}
+          style={styles.button}
+          onPress={onPress}
+        >
           Wybierz
         </Button>
       </View>
@@ -58,8 +71,9 @@ const createStyles = (theme: MD3Theme) =>
     label: {
       ...theme.fonts.bodyLarge,
       marginLeft: 10,
-      textAlign: "center",
+      textAlign: "left",
       color: theme.colors.onBackground,
+      flexShrink: 1,
     },
     rowContainer: {
       flexDirection: "row",
@@ -67,6 +81,7 @@ const createStyles = (theme: MD3Theme) =>
       alignItems: "center",
       width: "90%",
       marginVertical: 10,
+      flexWrap: "wrap",
     },
     leftContainer: {
       flexDirection: "row",

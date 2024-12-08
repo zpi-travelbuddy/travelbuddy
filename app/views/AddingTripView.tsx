@@ -32,7 +32,7 @@ import { ConditionProfile, Profile, ProfileType } from "@/types/Profile";
 import { DateRange, TripErrors, TripRequest } from "@/types/Trip";
 import { MARKER_ICON, CALENDAR_ICON } from "@/constants/Icons";
 import { API_TRIPS } from "@/constants/Endpoints";
-import { validateTripForm } from "@/utils/validations";
+import { onEndEditingString, validateTripForm } from "@/utils/validations";
 import { useAnimatedKeyboard } from "react-native-reanimated";
 import {
   useGetCategoryProfiles,
@@ -226,6 +226,7 @@ const AddingTripView = () => {
               label="Nazwa"
               value={tripName}
               onChangeText={handleChange(setTripName, "tripName")}
+              onEndEditing={() => onEndEditingString(setTripName, tripName)}
               error={!!errors.tripName}
             />
             {errors.tripName && (

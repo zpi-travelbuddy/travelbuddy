@@ -20,6 +20,10 @@ export default function StackLayout() {
         options={{ title: "Dodanie punktu wycieczki" }}
       />
       <Stack.Screen
+        name="details/[trip_id]/day/[day_id]/explore/index"
+        options={{ title: "Wyszukaj atrakcję" }}
+      />
+      <Stack.Screen
         name="details/[trip_id]/day/[day_id]/index"
         options={{ title: "Szczegóły dnia wycieczki" }}
       />
@@ -31,6 +35,15 @@ export default function StackLayout() {
         name="edit/[trip_id]"
         options={{ title: "Edytowanie wycieczki" }}
       />
+      <Stack.Screen
+        name="add/index"
+        options={{ title: "Dodawanie wycieczki" }}
+      />
+      <Stack.Screen
+        name="add/destination"
+        options={{ title: "Wybór celu wycieczki" }}
+      />
+      <Stack.Screen name="add/currency" options={{ title: "Wybór waluty" }} />
       <Stack.Screen
         name="place/[place_id]"
         options={{ title: "Szczegóły atrakcji" }}

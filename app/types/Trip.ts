@@ -25,18 +25,21 @@ export interface TripViewModel {
   conditionProfileName: string;
 }
 
-export interface TripDetails {
+export interface TripRequest {
   id: string;
   name: string;
   numberOfTravelers: number;
   startDate: string;
   endDate: string;
-  destinationId: string;
-  predictedCost: number;
-  actualCost: number;
+  destinationProviderId: string;
+  budget: number;
   currencyCode: string;
   categoryProfileId?: string | null;
   conditionProfileId?: string | null;
+}
+
+export interface TripDetails extends TripRequest {
+  destinationId: string;
   tripDays: TripDay[];
   isArchived?: boolean;
 }
@@ -63,16 +66,4 @@ export interface DateRange {
 
 export interface TripErrors {
   [key: string]: string | undefined;
-}
-
-export interface TripRequest {
-  name: string;
-  numberOfTravelers: number;
-  startDate: string;
-  endDate: string;
-  destinationProviderId: string;
-  budget: number;
-  currencyCode: string;
-  categoryProfileId: string | null;
-  conditionProfileId: string | null;
 }

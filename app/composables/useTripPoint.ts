@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useAuth } from "@/app/ctx";
-import { API_ADDING_TRIP_POINT } from "@/constants/Endpoints";
-import { CreateTripPointRequest, TripPointDetails } from "@/types/TripDayData";
-import { useState, useCallback } from "react";
+import { API_TRIP_POINT } from "@/constants/Endpoints";
+import { TripPointRequest, TripPointDetails } from "@/types/TripDayData";
+import { useState, useCallback, useEffect } from "react";
 
 // Maybe for future refactor
 export const useCreateTripPoint = () => {
@@ -12,13 +13,13 @@ export const useCreateTripPoint = () => {
   const { api } = useAuth();
 
   const createTripPoint = useCallback(
-    async (request: CreateTripPointRequest) => {
+    async (request: TripPointRequest) => {
       try {
         setLoading(true);
         setError(null);
         setData(null);
         const response = await api!.post<TripPointDetails>(
-          API_ADDING_TRIP_POINT,
+          API_TRIP_POINT,
           request,
         );
         setData(response.data as TripPointDetails);
@@ -40,6 +41,51 @@ export const useCreateTripPoint = () => {
     loading,
     error,
     data,
+  };
+};
+
+export const useGetTripPoint = (tripPointId: string | null) => {
+  const [tripPointDetails, setTripPointDetails] = useState<
+    TripPointDetails | undefined
+  >();
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const { api } = useAuth();
+
+  const fetchTripPointDetails = useCallback(async () => {
+    try {
+      const response = await api!.get<TripPointDetails>(
+        `/tripPoints/${tripPointId}`,
+      );
+      setTripPointDetails(response.data);
+    } catch (err: any) {
+      if (err.response && err.response.status === 404) {
+        setError("Punkt wycieczki nie został znaleziony.");
+      } else {
+        setError("Wystąpił błąd podczas pobierania danych.");
+      }
+    }
+  }, [api, tripPointId]);
+
+  const refetch = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    await fetchTripPointDetails();
+    setLoading(false);
+  }, [fetchTripPointDetails]);
+
+  useEffect(() => {
+    if (tripPointId) {
+      refetch();
+    }
+  }, [tripPointId, refetch]);
+
+  return {
+    tripPointDetails,
+    loading,
+    error,
+    refetch,
   };
 };
 

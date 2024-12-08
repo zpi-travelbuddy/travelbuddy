@@ -82,6 +82,7 @@ export function formatTimeFromString(time: string): string {
 }
 
 export function formatTimeRange(startTime: string, endTime: string): string {
+  if (startTime === endTime) return startTime;
   return `${startTime} - ${endTime}`;
 }
 
@@ -138,4 +139,27 @@ export const convertFromSeconds = (time: number, timeType: TimeType) => {
 
 export const getTimeWithoutSeconds = (time: string) => {
   return time.split(":").slice(0, 2).join(":");
+};
+
+export const convertTimestampToDateTime = (timestamp: string) => {
+  const [hours, minutes, seconds] = timestamp.split(":").map(Number);
+  const date = new Date();
+  date.setHours(hours, minutes, seconds || 0, 0);
+  return date;
+};
+
+export const formatTimeSpan = (hours?: number, minutes?: number): string => {
+  const h = hours ?? 0;
+  const m = minutes ?? 0;
+
+  if (h < 0 || m < 0) {
+    throw new Error("Hours and minutes must be non-negative numbers.");
+  }
+  const s = 0;
+
+  const hh = h.toString().padStart(2, "0");
+  const mm = m.toString().padStart(2, "0");
+  const ss = s.toString().padStart(2, "0");
+
+  return `${hh}:${mm}:${ss}`;
 };

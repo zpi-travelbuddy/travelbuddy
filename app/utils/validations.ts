@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { DateRange, TripErrors } from "@/types/Trip";
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -53,4 +54,34 @@ export const validateTripForm = (
   if (budget === undefined) newErrors.budget = "Podaj budżet";
 
   return newErrors;
+};
+
+export const requiredFieldsForTripPoint = [
+  {
+    field: "tripPointName",
+    errorMessage: "Nazwa punktu wycieczki jest wymagana.",
+  },
+  {
+    field: "startTime",
+    errorMessage: "Godzina rozpoczęcia jest wymagana.",
+  },
+  {
+    field: "endTime",
+    errorMessage: "Godzina zakończenia jest wymagana.",
+  },
+];
+
+export const onEndEditingString = (
+  setter: React.Dispatch<React.SetStateAction<any>>,
+  value: any,
+) => {
+  if (typeof value === "string") setter(value.trim());
+  else setter(value);
+};
+
+export const onEndEditingStringOnObject = (
+  setter: React.Dispatch<React.SetStateAction<any>>,
+  field: string,
+) => {
+  setter((prev: any) => ({ ...prev, [field]: prev[field].trim() }));
 };
