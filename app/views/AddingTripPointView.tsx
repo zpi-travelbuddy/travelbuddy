@@ -49,7 +49,10 @@ import {
   NEW_OVERLAPPING_ERROR_MESSAGE,
   OVERLAPPING_TRIP_POINTS_MESSAGE,
 } from "@/constants/Messages";
-import { requiredFieldsForTripPoint, onEndEditingString } from "@/utils/validations";
+import {
+  requiredFieldsForTripPoint,
+  onEndEditingString,
+} from "@/utils/validations";
 
 const { height, width } = Dimensions.get("window");
 
@@ -154,12 +157,12 @@ const AddingTripPointView = () => {
     console.log(JSON.stringify(destinationDetails));
     if (destinationDetails) {
       setCountry(destinationDetails.country);
-      setState(destinationDetails.state);
+      setState(destinationDetails.state || "");
       setCity(destinationDetails.city);
       if (attractionProviderId) {
         setTripPointName(destinationDetails.name);
-        setStreet(destinationDetails.street);
-        setHouseNumber(destinationDetails.houseNumber);
+        setStreet(destinationDetails.street || "");
+        setHouseNumber(destinationDetails.houseNumber || "");
         setLatitude(destinationDetails.latitude || null);
         setLongitude(destinationDetails.longitude || null);
         setLatitudeText(

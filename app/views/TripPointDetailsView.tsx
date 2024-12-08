@@ -155,7 +155,7 @@ const TripPointDetailsView = () => {
     tripDay,
     loading: tripDayLoading,
     error: tripDayError,
-    refetch,
+    refetch: refetchTripDay,
   } = useTripDayDetails(tripPoint?.tripDayId ?? null);
 
   const {
@@ -192,6 +192,7 @@ const TripPointDetailsView = () => {
       if (refresh && refresh === "true") {
         refetchTrip();
         refetchTripPoint();
+        refetchTripDay();
         router.setParams({ refresh: undefined });
       }
     }, [refetchTrip, refetchTripPoint, router, refresh]),

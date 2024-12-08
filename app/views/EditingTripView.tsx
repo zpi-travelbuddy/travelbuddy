@@ -37,7 +37,7 @@ import { convertTripResponseToEditTripRequest } from "@/converters/tripConverter
 import { Place } from "@/types/Place";
 import { getDisplayPlace } from "@/utils/TextUtils";
 import { Profile, ProfileType } from "@/types/Profile";
-import { onEndEditingString, onEndEditingStringOnObject } from "@/utils/validations";
+import { onEndEditingStringOnObject } from "@/utils/validations";
 
 const { height, width } = Dimensions.get("window");
 
@@ -253,7 +253,7 @@ const EditTripView = () => {
 
     try {
       await editTrip();
-    } catch (error) {;
+    } catch (error) {
       showSnackbar("Błąd przy zapisie wycieczki", "error");
       console.error(error);
     }
