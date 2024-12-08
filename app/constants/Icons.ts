@@ -65,3 +65,4 @@ export const ADD_NOTIFICATION_ICON_MATERIAL = "bell";
 export const REMOVE_NOTIFICATION_ICON = "notifications-off";
 export const REMOVE_NOTIFICATION_ICON_MATERIAL = "bell-off";
 export const NAVIGATION_ICON = "map-marker-distance";
+export const FILL_SURVEY_ICON = "file-document-edit";

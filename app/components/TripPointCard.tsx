@@ -1,9 +1,14 @@
-import { TripPointCompact } from "@/types/TripDayData";
+import { TripPointCompact, TripPointStatus } from "@/types/TripDayData";
 import { StyleSheet, Dimensions, View } from "react-native";
 import { Card, Icon, Text, useTheme } from "react-native-paper";
 import { formatTimeFromString, formatTimeRange } from "@/utils/TimeUtils";
 import { MD3ThemeExtended } from "@/constants/Themes";
-import { LOCATION_ICON, NOTIFICATION_ICON } from "@/constants/Icons";
+import {
+  FILL_SURVEY_ICON,
+  LOCATION_ICON,
+  NOTIFICATION_ICON,
+} from "@/constants/Icons";
+import { useLocalSearchParams, useRouter } from "expo-router";
 
 const { width } = Dimensions.get("window");
 
@@ -12,6 +17,8 @@ interface TripPointCardProps {
   onPress?: () => void;
   onLongPress?: () => void;
   isRegistered: (tripPointId: string) => boolean;
+  isFillSurvey: (tripPoint: TripPointCompact) => boolean;
+  openSurveyModal: () => void;
 }
 
 export const TripPointCard = ({
@@ -19,6 +26,8 @@ export const TripPointCard = ({
   onPress,
   onLongPress,
   isRegistered,
+  isFillSurvey,
+  openSurveyModal,
 }: TripPointCardProps) => {
   const theme = useTheme();
   const style = createStyles(theme as MD3ThemeExtended);
@@ -34,11 +43,13 @@ export const TripPointCard = ({
 
   const hasLocation = tripPoint.latitude && tripPoint.longitude;
 
+  const hasSurveyToFillOut = isFillSurvey(tripPoint);
+
   return (
     <Card
-      onPress={onPress}
+      onPress={hasSurveyToFillOut ? openSurveyModal : onPress}
       onLongPress={onLongPress}
-      style={style.card}
+      style={[style.card, hasSurveyToFillOut && style.cardWithSurvey]}
       mode="contained"
     >
       <Card.Title
@@ -48,6 +59,9 @@ export const TripPointCard = ({
             <Text>{timeRange}</Text>
             {hasLocation && <Icon size={20} source={LOCATION_ICON} />}
             {hasReminder && <Icon size={20} source={NOTIFICATION_ICON} />}
+            {hasSurveyToFillOut && (
+              <Icon size={20} color="#FFCC00" source={FILL_SURVEY_ICON} />
+            )}
           </View>
         }
         titleVariant="titleMedium"
@@ -61,6 +75,10 @@ const createStyles = (theme: MD3ThemeExtended) =>
     card: {
       backgroundColor: theme.colors.surfaceContainer,
       width: Math.min(300, width * 0.8),
+    },
+    cardWithSurvey: {
+      borderWidth: 2,
+      borderColor: "#FFCC00",
     },
     subtitleContainer: {
       display: "flex",

@@ -8,6 +8,7 @@ export interface TripPointCompact {
   endTime: string;
   latitude?: number;
   longitude?: number;
+  status?: number;
 }
 
 export interface TripPointRequest {
@@ -111,3 +112,10 @@ export const TransferTypeLabels = {
   [TransferType.Walk]: "Chód",
   null: "Ręcznie",
 };
+
+export enum TripPointStatus {
+  PLANNED = 0,
+  REVIEW_PENDING = 1,
+  REVIEW_REJECTED = 2,
+  REVIEW_COMPLETED = 3,
+}

@@ -163,3 +163,12 @@ export const formatTimeSpan = (hours?: number, minutes?: number): string => {
 
   return `${hh}:${mm}:${ss}`;
 };
+
+export const combineDateAndTime = (date: Date, time: string): Date => {
+  const [hours, minutes, seconds] = time.split(":").map(Number);
+
+  const combinedDate = new Date(date);
+  combinedDate.setHours(hours, minutes, seconds, 0);
+
+  return combinedDate;
+};

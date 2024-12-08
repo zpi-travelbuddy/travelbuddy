@@ -8,7 +8,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import ActionButtons from "@/components/ActionButtons";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import CurrencyValueInput from "@/components/CurrencyValueInput";
-import useTripDetails from "@/composables/useTripDetails";
+import { useTripDetails } from "@/composables/useTripDetails";
 import LoadingView from "./LoadingView";
 import { ReviewRequest } from "@/types/Review";
 import { useAuth } from "@/app/ctx";
