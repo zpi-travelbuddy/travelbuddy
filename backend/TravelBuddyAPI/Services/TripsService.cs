@@ -433,9 +433,11 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
             throw new ArgumentException(ErrorMessage.NoCoordinatesInDestination);
         }
 
-        if (trip.CategoryProfile == null || trip.CategoryProfile.Categories == null || trip.CategoryProfile.Categories.Count == 0)
+        _ = trip.CategoryProfile ?? throw new ArgumentException(ICategoryProfilesService.ErrorMessage.CategoryProfileNotFound);
+
+        if (trip.CategoryProfile.Categories == null || trip.CategoryProfile.Categories.Count == 0)
         {
-            throw new ArgumentException(ICategoryProfilesService.ErrorMessage.CategoryProfileNotFound);
+            throw new ArgumentException(ICategoryProfilesService.ErrorMessage.NoCategoriesInProfile);
         }
 
         return await _placesService.GetPlaceRecommendationsAsync((trip.Destination.Latitude.Value, trip.Destination.Longitude.Value), radius, trip.CategoryProfile.Categories, trip.ConditionProfile?.Conditions, limit);
