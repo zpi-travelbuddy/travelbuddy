@@ -26,7 +26,7 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
         try
         {
             using var transaction = await _dbContext.Database.BeginTransactionAsync();
-           
+
             await ValidateTripRequest(userId, trip);
 
             if (trip.StartDate < DateOnly.FromDateTime(DateTime.Now)) throw new ArgumentException(ErrorMessage.StartDateInPast);
@@ -85,7 +85,7 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
 
     private async Task<Guid> AddDestinationAsync(string providerId)
     {
-        PlaceRequestDTO placeRequest = new(){ ProviderId = providerId};
+        PlaceRequestDTO placeRequest = new() { ProviderId = providerId };
         var newDestination = await _placesService.AddPlaceAsync(placeRequest);
         return newDestination.Id;
     }
@@ -367,9 +367,29 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
         throw new NotImplementedException();
     }
 
-    public Task<TripSummaryDTO> GetTripSummaryAsync(string userId, Guid tripId)
+    public async Task<TripSummaryDTO> GetTripSummaryAsync(string userId, Guid tripId)
     {
-        throw new NotImplementedException();
+        Trip trip = await _dbContext.Trips
+            .Where(p => p.Id == tripId && p.UserId == userId)
+            .Include(p => p.TripDays!)
+                .ThenInclude(td => td.TripPoints!)
+                .ThenInclude(tp => tp != null ? tp.Review : null)
+            .FirstOrDefaultAsync() ?? throw new InvalidOperationException(ErrorMessage.TripNotFound);
+
+        TripSummaryDTO tripSummary = new()
+        {
+            CurrencyCode = trip.CurrencyCode,
+            TripDays = trip.TripDays?.Select(td => new TripDayStatistics(
+                td.Date,
+                td.TripPoints?.Select(tp => new TripPointStatistics(
+                    tp.Name,
+                    tp.Review != null && tp.Review.ActualCostPerPerson.HasValue && tp.Review.ExchangeRate.HasValue 
+                        ? Math.Round(tp.Review.ActualCostPerPerson.Value * trip.NumberOfTravelers / tp.Review.ExchangeRate.Value, 2) : 0
+                )).ToList() ?? []
+            )).ToList() ?? []
+        };
+
+        return tripSummary;
     }
 
     private async Task<bool> DeleteTripDayDuringTransactionAsync(string userId, Guid tripDayId)
