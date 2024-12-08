@@ -519,9 +519,7 @@ const TripDayView = () => {
 
   const renderTransferPoint = useCallback(
     (fromTripPoint: TripPointCompact, index: number) => {
-      if (index === sortedTripPoints.length - 1) {
-        return null;
-      }
+      if (index === sortedTripPoints.length - 1) return null;
 
       const transferPoint = transferPointMap.get(fromTripPoint.id);
       const toTripPoint = sortedTripPoints[index + 1];
@@ -531,13 +529,6 @@ const TripDayView = () => {
         toTripPoint,
         transferPoint?.seconds,
       );
-
-      const toTripPoint = getTripPoint(toTripPointId);
-
-      if (!toTripPoint) {
-        return null;
-      }
-
       return (
         <TransferPointNode
           onPress={() =>

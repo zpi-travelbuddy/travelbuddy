@@ -80,81 +80,76 @@ export const TransferPointNode = ({
       "Czas transferu pomiędzy punktami jest za długi. Zalecamy zmianę godziny.",
       "warning",
     );
-    const { latitude: fromLatitude, longitude: fromLongitude } = fromTripPoint;
-    const { latitude: toLatitude, longitude: toLongitude } = toTripPoint;
+  };
+  const { latitude: fromLatitude, longitude: fromLongitude } = fromTripPoint;
+  const { latitude: toLatitude, longitude: toLongitude } = toTripPoint;
 
-    const canNavigate =
-      fromLatitude && fromLongitude && toLatitude && toLongitude;
+  const canNavigate =
+    fromLatitude && fromLongitude && toLatitude && toLongitude;
 
-    const handleNavigationButtonPress = async () => {
-      const travelMode = TRANSFER_TYPE_MAP_GOOGLE[mode as TransferType];
+  const handleNavigationButtonPress = async () => {
+    const travelMode = TRANSFER_TYPE_MAP_GOOGLE[mode as TransferType];
 
-      if (!canNavigate) {
-        console.error("Can't navigate without coordinates");
-        return;
-      }
+    if (!canNavigate) {
+      console.error("Can't navigate without coordinates");
+      return;
+    }
 
-      const url = createNavigationURL(
-        fromLatitude,
-        fromLongitude,
-        toLatitude,
-        toLongitude,
-        travelMode,
-      );
+    const url = createNavigationURL(
+      fromLatitude,
+      fromLongitude,
+      toLatitude,
+      toLongitude,
+      travelMode,
+    );
 
-      try {
-        await Linking.openURL(url);
-      } catch (error) {
-        console.error(error);
-      }
-    };
+    try {
+      await Linking.openURL(url);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
-    return (
-      <View style={style.wrapper}>
-        <DashedVerticalLine height={VERTICAL_LINE_HEIGHT} />
-        <View style={style.dayItem}>
-          <View style={style.fillContainer}>
-            {transferPoint && canNavigate ? (
-              <IconButton
-                icon={NAVIGATION_ICON}
-                size={SMALL_ICON_SIZE}
-                style={style.leftComponentButton}
-                iconColor={theme.colors.onTertiaryContainer}
-                onPress={handleNavigationButtonPress}
-              />
-            ) : null}
-          </View>
-          <IconButton
-            icon={icon}
-            size={ICON_SIZE}
-            style={style.iconButton}
-            iconColor={theme.colors.onSurface}
-            onPress={onPress}
-          />
-          <View style={style.fillContainer}>
-            {minutes != null ? (
-              <Text numberOfLines={1} style={style.durationText}>
+  return (
+    <View style={style.wrapper}>
+      <DashedVerticalLine height={VERTICAL_LINE_HEIGHT} />
+      <View style={style.dayItem}>
+        <View style={style.fillContainer}>
+          {transferPoint && canNavigate ? (
+            <IconButton
+              icon={NAVIGATION_ICON}
+              size={SMALL_ICON_SIZE}
+              style={style.leftComponentButton}
+              iconColor={theme.colors.onTertiaryContainer}
+              onPress={handleNavigationButtonPress}
+            />
+          ) : null}
+        </View>
+        <IconButton
+          icon={icon}
+          size={ICON_SIZE}
+          style={style.iconButton}
+          iconColor={theme.colors.onSurface}
+          onPress={onPress}
+        />
+        <View style={style.fillContainer}>
+          {minutes != null ? (
+            <TouchableWithoutFeedback
+              onPress={isWarningText ? handlePress : undefined}
+            >
+              <Text
+                numberOfLines={1}
+                style={[style.durationText, isWarningText && style.warningText]}
+              >
                 {formatMinutes(minutes)}
               </Text>
-            ) : null}
-          </View>
+            </TouchableWithoutFeedback>
+          ) : null}
         </View>
-        <DashedVerticalLine height={VERTICAL_LINE_HEIGHT} />
-        {minutes != null ? (
-          <TouchableWithoutFeedback
-            onPress={isWarningText ? handlePress : undefined}
-          >
-            <Text
-              numberOfLines={1}
-              style={[style.durationText, isWarningText && style.warningText]}
-            >
-              {formatMinutes(minutes)}
-            </Text>
-          </TouchableWithoutFeedback>
-        ) : null}
       </View>
-    );
-  };
+      <DashedVerticalLine height={VERTICAL_LINE_HEIGHT} />
+    </View>
+  );
 };
 
 const createStyles = (theme: MD3ThemeExtended) =>
@@ -162,7 +157,7 @@ const createStyles = (theme: MD3ThemeExtended) =>
     wrapper: {
       position: "relative",
       alignItems: "center",
-      width: 100,
+      width: "100%",
     },
     iconButton: {
       backgroundColor: theme.colors.surfaceContainer,
