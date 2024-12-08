@@ -37,7 +37,11 @@ import useTripDayDetails from "@/composables/useTripDay";
 import { useSnackbar } from "@/context/SnackbarContext";
 import { useAuth } from "@/app/ctx";
 import { conditionalItem } from "@/utils/ArrayUtils";
-import { formatTimeRange, formatMinutes } from "@/utils/TimeUtils";
+import {
+  formatTimeRange,
+  formatMinutes,
+  convertTimestampToDateTime,
+} from "@/utils/TimeUtils";
 import ActionTextButtons from "@/components/ActionTextButtons";
 import CustomModal from "@/components/CustomModal";
 import { useDeleteTripPoint } from "@/composables/useTripPoint";
@@ -499,28 +503,40 @@ const TripDayView = () => {
     });
   }, [tripPoints]);
 
+  const checkTransferTime = (
+    fromTripPoint: TripPointCompact,
+    toTripPoint: TripPointCompact,
+    seconds: number = 0,
+  ) => {
+    const fromEndTime = convertTimestampToDateTime(fromTripPoint.endTime);
+    const toStartTime = convertTimestampToDateTime(toTripPoint.startTime);
+    const differenceInMilliseconds =
+      toStartTime.getTime() - fromEndTime.getTime();
+
+    const differenceInSeconds = differenceInMilliseconds / 1000;
+    return differenceInSeconds < seconds;
+  };
+
   const renderTransferPoint = useCallback(
     (fromTripPoint: TripPointCompact, index: number) => {
-      if (index === sortedTripPoints.length - 1) {
-        return null;
-      }
+      if (index === sortedTripPoints.length - 1) return null;
 
       const transferPoint = transferPointMap.get(fromTripPoint.id);
-      const toTripPointId = sortedTripPoints[index + 1].id;
+      const toTripPoint = sortedTripPoints[index + 1];
 
-      const toTripPoint = getTripPoint(toTripPointId);
-
-      if (!toTripPoint) {
-        return null;
-      }
-
+      const isTransferTooLong: boolean = checkTransferTime(
+        fromTripPoint,
+        toTripPoint,
+        transferPoint?.seconds,
+      );
       return (
         <TransferPointNode
           onPress={() =>
-            handleTransferPointPress(fromTripPoint.id, toTripPointId)
+            handleTransferPointPress(fromTripPoint.id, toTripPoint.id)
           }
           tripPointContext={{ fromTripPoint, toTripPoint }}
           transferPoint={transferPoint}
+          isWarningText={isTransferTooLong}
         />
       );
     },

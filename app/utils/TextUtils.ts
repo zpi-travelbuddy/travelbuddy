@@ -1,7 +1,7 @@
-import { Place, PlaceDetails } from "@/types/Place";
+import { Place, PlaceDetails, PlaceOverview } from "@/types/Place";
 
 export function formatAddress(
-  place: PlaceDetails | Place,
+  place: PlaceDetails | Place | PlaceOverview,
   compact: boolean = true,
 ): string {
   if (!place) return "";

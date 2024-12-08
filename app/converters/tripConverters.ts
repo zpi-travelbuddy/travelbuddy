@@ -1,30 +1,16 @@
 import { Place, PlaceDetails } from "@/types/Place";
+import { CategoryProfile, ConditionProfile } from "@/types/Profile";
 import {
   TripCompact,
   TripSummary,
   TripViewModel,
-  EditTripRequest,
+  TripRequest,
   TripDetails,
 } from "@/types/Trip";
 import { getMoneyWithCurrency } from "@/utils/CurrencyUtils";
 import { formatDateFromISO, formatDateRange } from "@/utils/TimeUtils";
 
 const RANDOM_IMAGE = "https://picsum.photos/891";
-
-// Temporary mocked functions
-function getCategoryProfileName(
-  categoryProfileId?: string | null | undefined,
-): string {
-  if (!categoryProfileId) return "";
-  return "Zwiedzanie i jedzenie";
-}
-
-function getConditionProfileName(
-  conditionProfileId?: string | null | undefined,
-): string {
-  if (!conditionProfileId) return "";
-  return "Potrzebuję internetu dla psa";
-}
 
 function getDestinationName(
   destinationDetails: PlaceDetails | undefined,
@@ -55,6 +41,8 @@ export function convertTripResponseToViewModel(
   tripDetails: TripDetails | undefined,
   tripSummary: TripSummary | undefined,
   destinationDetails: PlaceDetails | undefined,
+  categoryProfile: CategoryProfile | null,
+  conditionProfile: ConditionProfile | null,
 ): TripViewModel {
   if (!tripDetails) throw new Error("Trip details are undefined.");
   if (!destinationDetails)
@@ -76,10 +64,8 @@ export function convertTripResponseToViewModel(
       tripDetails.currencyCode,
     ),
     budget: getMoneyWithCurrency(tripDetails.budget, tripDetails.currencyCode),
-    categoryProfileName: getCategoryProfileName(tripDetails?.categoryProfileId),
-    conditionProfileName: getConditionProfileName(
-      tripDetails?.conditionProfileId,
-    ),
+    categoryProfileName: categoryProfile?.name || "Brak",
+    conditionProfileName: conditionProfile?.name || "Brak",
   };
 }
 
@@ -97,11 +83,11 @@ export const convertTripsFromAPI = (
   }));
 };
 
-export function convertTripResponseToEditTripRequest(
+export function convertTripResponseToTripRequest(
   response: TripDetails,
   destination: Place,
-): EditTripRequest {
-  const editTripRequest: EditTripRequest = {
+): TripRequest {
+  const tripRequest: TripRequest = {
     name: response.name,
     numberOfTravelers: response.numberOfTravelers,
     startDate: response.startDate,
@@ -109,7 +95,9 @@ export function convertTripResponseToEditTripRequest(
     destinationProviderId: destination.providerId || "",
     budget: response.budget,
     currencyCode: response.currencyCode,
+    categoryProfileId: response.categoryProfileId as string | null,
+    conditionProfileId: response.conditionProfileId as string | null,
   };
 
-  return editTripRequest;
+  return tripRequest;
 }

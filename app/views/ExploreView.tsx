@@ -20,7 +20,7 @@ import ActionTextButtons from "@/components/ActionTextButtons";
 import { truncateText } from "@/utils/TextUtils";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import SingleDatePickerModal from "@/components/SingleDatePickerModal";
-import useTripDetails from "@/composables/useTripDetails";
+import { useTripDetails } from "@/composables/useTripDetails";
 import { CalendarDate } from "react-native-paper-dates/lib/typescript/Date/Calendar";
 import { TripDay } from "@/types/Trip";
 import { useSnackbar } from "@/context/SnackbarContext";

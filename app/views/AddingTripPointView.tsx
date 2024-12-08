@@ -31,7 +31,7 @@ import { Place } from "@/types/Place";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import LoadingView from "./LoadingView";
 import { useSnackbar } from "@/context/SnackbarContext";
-import useTripDetails from "@/composables/useTripDetails";
+import { useTripDetails } from "@/composables/useTripDetails";
 import usePlaceDetails from "@/composables/usePlace";
 import { useAuth } from "@/app/ctx";
 import {

@@ -51,7 +51,7 @@ import { useSnackbar } from "@/context/SnackbarContext";
 import { useTripNotificationManager } from "@/hooks/useTripNotificationManager";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import NotificationFormBottomSheet from "@/components/NotificationFormBottomSheet";
-import useTripDetails from "@/composables/useTripDetails";
+import { useTripDetails } from "@/composables/useTripDetails";
 
 const LABELS: Record<string, string> = {
   name: "Nazwa punktu",

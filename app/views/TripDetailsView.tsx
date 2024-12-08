@@ -22,7 +22,7 @@ import {
 } from "expo-router";
 import SingleDatePickerModal from "@/components/SingleDatePickerModal";
 import { CalendarDate } from "react-native-paper-dates/lib/typescript/Date/Calendar";
-import useTripDetails from "@/composables/useTripDetails";
+import { useTripDetails } from "@/composables/useTripDetails";
 import { TripDay, TripViewModel } from "@/types/Trip";
 import { useSnackbar } from "@/context/SnackbarContext";
 import { convertTripResponseToViewModel } from "@/converters/tripConverters";
@@ -33,6 +33,7 @@ import CustomModal from "@/components/CustomModal";
 import ActionTextButtons from "@/components/ActionTextButtons";
 import { useAuth } from "@/app/ctx";
 import { formatDateToISO } from "@/utils/TimeUtils";
+import { useGetProfile } from "@/composables/useProfiles";
 
 const { height, width } = Dimensions.get("window");
 
@@ -88,13 +89,50 @@ const TripDetailsView = () => {
     refetch: destinationRefetch,
   } = usePlaceDetails(tripDetails?.destinationId);
 
+  const {
+    profile: categoryProfile,
+    error: categoryProfileError,
+    refetch: refetchCategoryProfile,
+  } = useGetProfile("Category", tripDetails?.categoryProfileId as string, {
+    immediate: false,
+  });
+  const {
+    profile: conditionProfile,
+    error: conditionProfileError,
+    refetch: refetchConditionProfile,
+  } = useGetProfile("Condition", tripDetails?.conditionProfileId as string, {
+    immediate: false,
+  });
+
+  useEffect(() => {
+    const refetch = async () => {
+      if (tripDetails) {
+        if (tripDetails.categoryProfileId) await refetchCategoryProfile();
+        if (tripDetails.conditionProfileId) await refetchConditionProfile();
+      }
+    };
+    console.log(JSON.stringify(tripDetails));
+    refetch();
+  }, [tripDetails]);
+
   const loading = useMemo(() => {
-    return tripLoading || destinationLoading;
+    return tripLoading || destinationLoading || false;
   }, [tripLoading, destinationLoading]);
 
   const error = useMemo(() => {
-    return tripError || destinationError || null;
-  }, [tripError, destinationError]);
+    return (
+      tripError ||
+      destinationError ||
+      categoryProfileError ||
+      conditionProfileError ||
+      null
+    );
+  }, [
+    tripError,
+    destinationError,
+    categoryProfileError,
+    conditionProfileError,
+  ]);
 
   const { showSnackbar } = useSnackbar();
 
@@ -146,10 +184,18 @@ const TripDetailsView = () => {
           tripDetails,
           tripSummary,
           destinationDetails,
+          categoryProfile,
+          conditionProfile,
         ),
       );
     }
-  }, [tripDetails, tripSummary, destinationDetails]);
+  }, [
+    tripDetails,
+    tripSummary,
+    destinationDetails,
+    categoryProfile,
+    conditionProfile,
+  ]);
 
   const labels: Record<string, string> = {
     name: "Nazwa wycieczki",

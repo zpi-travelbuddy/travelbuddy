@@ -14,7 +14,7 @@ import React, {
   useState,
 } from "react";
 import { MD3ThemeExtended } from "@/constants/Themes";
-import { router, useFocusEffect } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useTheme, FAB, MD3Theme } from "react-native-paper";
 import { Profile, ProfileType } from "@/types/Profile";
@@ -53,6 +53,7 @@ const ProfileBrowseView: React.FC<ProfileBrowseViewProps> = ({
   const styles = createStyles(theme as MD3ThemeExtended);
   const { showSnackbar } = useSnackbar();
   const { api } = useAuth();
+  const router = useRouter();
 
   const [isBottomSheetVisible, setIsBottomSheetVisible] =
     useState<boolean>(false);
@@ -62,6 +63,7 @@ const ProfileBrowseView: React.FC<ProfileBrowseViewProps> = ({
   const [selectedProfile, setSelectedProfile] = useState<Profile | null>(null);
 
   const [path, setPath] = useState<string>("");
+  const flatListRef = useRef<FlatList>(null);
 
   useEffect(() => {
     if (profileType === "Category")
@@ -74,20 +76,20 @@ const ProfileBrowseView: React.FC<ProfileBrowseViewProps> = ({
     loading: loadingProfiles,
     error: loadingProfilesError,
     refetch,
-  } = useDynamicProfiles(profileType);
+  } = useDynamicProfiles(profileType, { immediate: false });
 
   const {
     favouriteProfiles,
     loading: loadingFavouritesLoading,
     error: loadingFavouritesError,
     refetch: refetchFavourites,
-  } = useGetFavouriteProfiles();
+  } = useGetFavouriteProfiles({ immediate: false });
 
   useFocusEffect(
     useCallback(() => {
       refetch();
       refetchFavourites();
-    }, [refetch, refetchFavourites, profileType]),
+    }, [refetch, refetchFavourites]),
   );
 
   const sortedProfiles = useMemo(() => {
@@ -108,8 +110,6 @@ const ProfileBrowseView: React.FC<ProfileBrowseViewProps> = ({
   useEffect(() => {
     if (error) showSnackbar(error);
   }, [error]);
-
-  const flatListRef = useRef<FlatList>(null);
 
   const renderProfileCard = ({ item }: { item: Profile }) => (
     <ProfileCard
@@ -166,7 +166,7 @@ const ProfileBrowseView: React.FC<ProfileBrowseViewProps> = ({
       setLoading(true);
       try {
         await api!.delete(endpoint, {});
-        await refetch();
+        refetch();
         showSnackbar("Pomyślnie usunięto profil!", "success");
       } catch (err: any) {
         showSnackbar("Wystąpił błąd podczas usuwania profilu!", "error");
@@ -264,7 +264,7 @@ const ProfileBrowseView: React.FC<ProfileBrowseViewProps> = ({
             </View>
             <ActionTextButtons
               onAction1={hideModal}
-              onAction2={() => deleteProfile(selectedProfile)}
+              onAction2={async () => await deleteProfile(selectedProfile)}
               action1ButtonLabel="Anuluj"
               action2ButtonLabel="Usuń"
               action1Icon={undefined}

@@ -16,6 +16,7 @@ export interface PlaceViewModel {
   subtitle?: string;
   imageUrl?: string;
 }
+
 export interface Place extends PlaceCompact {
   superCategoryId?: string;
   street?: string;

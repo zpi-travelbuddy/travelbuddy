@@ -55,9 +55,7 @@ const AttractionDetailsView = () => {
     return category?.name ?? DEFAULT_CATEGORY_NAME;
   };
 
-  if (loading) {
-    return <LoadingView />;
-  }
+  if (loading) return <LoadingView />;
 
   if (error) {
     router.back();

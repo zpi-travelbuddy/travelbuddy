@@ -1,9 +1,14 @@
 import {
+  Linking,
+  StyleSheet,
+  TouchableWithoutFeedback,
+  View,
+} from "react-native";
+import {
   TransferPoint,
   TransferType,
   TripPointCompact,
 } from "@/types/TripDayData";
-import { Linking, StyleSheet, View } from "react-native";
 import { useTheme, Text, IconButton } from "react-native-paper";
 import { DashedVerticalLine } from "./DashedVerticalLine";
 import { formatMinutes } from "@/utils/TimeUtils";
@@ -18,8 +23,9 @@ import {
 } from "@/constants/Icons";
 import { useMemo } from "react";
 import { MD3ThemeExtended } from "@/constants/Themes";
-import { createNavigationURL } from "@/utils/maps";
+import { useSnackbar } from "@/context/SnackbarContext";
 import { TRANSFER_TYPE_MAP_GOOGLE } from "@/constants/TravelModes";
+import { createNavigationURL } from "@/utils/maps";
 
 const VERTICAL_LINE_HEIGHT = 20;
 const ICON_SIZE = 40;
@@ -42,15 +48,20 @@ interface TransferPointNodeProps {
     toTripPoint: TripPointCompact;
   };
   onPress?: () => void;
+  onPressEmpty?: () => void;
+  isWarningText?: boolean;
 }
 
 export const TransferPointNode = ({
   transferPoint,
   tripPointContext,
   onPress,
+  onPressEmpty,
+  isWarningText = false,
 }: TransferPointNodeProps) => {
   const theme = useTheme();
   const style = createStyles(theme as MD3ThemeExtended);
+  const { showSnackbar } = useSnackbar();
 
   const { fromTripPoint, toTripPoint } = tripPointContext;
 
@@ -64,6 +75,12 @@ export const TransferPointNode = ({
     ? TRANSFER_TYPE_MAP[mode as TransferType]
     : EMPTY_ICON;
 
+  const handlePress = () => {
+    showSnackbar(
+      "Czas transferu pomiędzy punktami jest za długi. Zalecamy zmianę godziny.",
+      "warning",
+    );
+  };
   const { latitude: fromLatitude, longitude: fromLongitude } = fromTripPoint;
   const { latitude: toLatitude, longitude: toLongitude } = toTripPoint;
 
@@ -117,9 +134,16 @@ export const TransferPointNode = ({
         />
         <View style={style.fillContainer}>
           {minutes != null ? (
-            <Text numberOfLines={1} style={style.durationText}>
-              {formatMinutes(minutes)}
-            </Text>
+            <TouchableWithoutFeedback
+              onPress={isWarningText ? handlePress : undefined}
+            >
+              <Text
+                numberOfLines={1}
+                style={[style.durationText, isWarningText && style.warningText]}
+              >
+                {formatMinutes(minutes)}
+              </Text>
+            </TouchableWithoutFeedback>
           ) : null}
         </View>
       </View>
@@ -157,5 +181,8 @@ const createStyles = (theme: MD3ThemeExtended) =>
       alignItems: "center",
       justifyContent: "center",
       width: "100%",
+    },
+    warningText: {
+      color: "#FFCC00",
     },
   });
