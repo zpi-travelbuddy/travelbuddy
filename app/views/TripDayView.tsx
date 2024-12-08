@@ -732,7 +732,11 @@ const TripDayView = () => {
             isVisible === VisibilityState.Transfer
           }
           onClose={onSelectorClose}
-          label={dynamicLabel}
+          label={
+            isVisible === VisibilityState.TripPoint
+              ? "Wybierz metodę"
+              : dynamicLabel
+          }
           extendedView={
             extendedView ? (
               <ExampleExtendedView
