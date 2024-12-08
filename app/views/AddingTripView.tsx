@@ -28,8 +28,8 @@ import { useSnackbar } from "@/context/SnackbarContext";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useAuth } from "@/app/ctx";
 import LoadingView from "./LoadingView";
-import { ConditionProfile, Profile, ProfileType } from "@/types/Profile";
-import { DateRange, TripErrors, TripRequest } from "@/types/Trip";
+import { Profile, ProfileType } from "@/types/Profile";
+import { CreateTripRequest, DateRange, TripErrors } from "@/types/Trip";
 import { MARKER_ICON, CALENDAR_ICON } from "@/constants/Icons";
 import { API_TRIPS } from "@/constants/Endpoints";
 import { onEndEditingString, validateTripForm } from "@/utils/validations";
@@ -134,8 +134,15 @@ const AddingTripView = () => {
 
   const handleProfileSelection = useCallback(
     (profile: Profile) => {
-      if (profileType === "Category") setCategoryProfileId(profile.id);
-      else setConditionProfileId(profile.id);
+      if (profileType === "Category") {
+        setCategoryProfileId((prevId) =>
+          prevId === profile.id ? null : profile.id,
+        );
+      } else {
+        setConditionProfileId((prevId) =>
+          prevId === profile.id ? null : profile.id,
+        );
+      }
     },
     [profileType],
   );
@@ -171,7 +178,7 @@ const AddingTripView = () => {
   const handleSubmit = async () => {
     if (!validateForm()) return;
 
-    const tripRequest: TripRequest = {
+    const tripRequest: CreateTripRequest = {
       name: tripName,
       numberOfTravelers: parseInt(numberOfPeople),
       startDate: formatDateToISO(range.startDate),
