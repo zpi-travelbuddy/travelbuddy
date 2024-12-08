@@ -24,6 +24,7 @@ import { useTripDetails } from "@/composables/useTripDetails";
 import { CalendarDate } from "react-native-paper-dates/lib/typescript/Date/Calendar";
 import { TripDay } from "@/types/Trip";
 import { useSnackbar } from "@/context/SnackbarContext";
+import { formatDateToISO } from "@/utils/TimeUtils";
 
 const convertPlace = (place: PlaceCompact): PlaceViewModel => {
   const subtitle = [place.city, place.state, place.country]
@@ -213,7 +214,7 @@ const ExploreView = ({ tripId }: ExploreViewProps) => {
     ({ date }: { date: CalendarDate }) => {
       setTripModalVisible(false);
       const fixedDate = date as Date;
-      const formattedDate = fixedDate.toISOString().split("T")[0];
+      const formattedDate = formatDateToISO(fixedDate);
       const tripDayId = dateToIdMap.get(formattedDate);
       if (tripDetails?.id && tripDayId) {
         console.log("Redirecting to day with id " + tripDayId);
