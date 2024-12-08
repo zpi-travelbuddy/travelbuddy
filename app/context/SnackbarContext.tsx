@@ -4,7 +4,7 @@ import React, { createContext, useContext, useState, ReactNode } from "react";
 import { Dimensions, StyleSheet, Text } from "react-native";
 import { MD3Theme, Snackbar, useTheme } from "react-native-paper";
 
-type SnackbarType = "success" | "error";
+type SnackbarType = "success" | "warning" | "error";
 
 interface SnackbarContextType {
   showSnackbar: (message: string, type?: SnackbarType) => void;
@@ -57,17 +57,9 @@ export const SnackbarProvider: React.FC<SnackbarProviderProps> = ({
         visible={visible}
         onDismiss={hideSnackbar}
         duration={3000}
-        style={[
-          styles.snackbar,
-          type === "success" ? styles.success : styles.error,
-        ]}
+        style={[styles.snackbar, styles[type]]}
       >
-        <Text
-          style={[
-            styles.snackbarText,
-            type === "success" ? styles.successText : styles.errorText,
-          ]}
-        >
+        <Text style={[styles.snackbarText, styles[`${type}Text`]]}>
           {message}
         </Text>
       </Snackbar>
@@ -90,11 +82,17 @@ const createStyles = (theme: MD3Theme) =>
     success: {
       backgroundColor: theme.colors.inverseSurface,
     },
+    warning: {
+      backgroundColor: "#FFCC00",
+    },
     error: {
       backgroundColor: theme.colors.errorContainer,
     },
     successText: {
       color: theme.colors.inverseOnSurface,
+    },
+    warningText: {
+      color: "#000000",
     },
     errorText: {
       color: theme.colors.onErrorContainer,

@@ -1,5 +1,5 @@
 import { TransferPoint, TransferType } from "@/types/TripDayData";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, TouchableWithoutFeedback, View } from "react-native";
 import { useTheme, Text, IconButton } from "react-native-paper";
 import { DashedVerticalLine } from "./DashedVerticalLine";
 import { formatMinutes } from "@/utils/TimeUtils";
@@ -13,6 +13,7 @@ import {
 } from "@/constants/Icons";
 import { useMemo } from "react";
 import { MD3ThemeExtended } from "@/constants/Themes";
+import { useSnackbar } from "@/context/SnackbarContext";
 
 const VERTICAL_LINE_HEIGHT = 20;
 const ICON_SIZE = 40;
@@ -30,15 +31,18 @@ interface TransferPointNodeProps {
   transferPoint?: TransferPoint;
   onPress?: () => void;
   onPressEmpty?: () => void;
+  isWarningText?: boolean;
 }
 
 export const TransferPointNode = ({
   transferPoint,
   onPress,
   onPressEmpty,
+  isWarningText = false,
 }: TransferPointNodeProps) => {
   const theme = useTheme();
   const style = createStyles(theme as MD3ThemeExtended);
+  const { showSnackbar } = useSnackbar();
 
   const { mode, seconds } = transferPoint || {};
 
@@ -49,6 +53,13 @@ export const TransferPointNode = ({
   const icon = transferPoint
     ? TRANSFER_TYPE_MAP[mode as TransferType]
     : EMPTY_ICON;
+
+  const handlePress = () => {
+    showSnackbar(
+      "Czas transferu pomiędzy punktami jest za długi. Zalecamy zmianę godziny.",
+      "warning",
+    );
+  };
 
   return (
     <View style={style.wrapper}>
@@ -62,9 +73,16 @@ export const TransferPointNode = ({
       />
       <DashedVerticalLine height={VERTICAL_LINE_HEIGHT} />
       {minutes != null ? (
-        <Text numberOfLines={1} style={style.durationText}>
-          {formatMinutes(minutes)}
-        </Text>
+        <TouchableWithoutFeedback
+          onPress={isWarningText ? handlePress : undefined}
+        >
+          <Text
+            numberOfLines={1}
+            style={[style.durationText, isWarningText && style.warningText]}
+          >
+            {formatMinutes(minutes)}
+          </Text>
+        </TouchableWithoutFeedback>
       ) : null}
     </View>
   );
@@ -75,7 +93,7 @@ const createStyles = (theme: MD3ThemeExtended) =>
     wrapper: {
       position: "relative",
       alignItems: "center",
-      width: 80,
+      width: 100,
     },
     iconButton: {
       backgroundColor: theme.colors.surfaceContainer,
@@ -87,5 +105,8 @@ const createStyles = (theme: MD3ThemeExtended) =>
       transform: [{ translateY: -10 }],
       left: "100%",
       height: 20,
+    },
+    warningText: {
+      color: "#FFCC00",
     },
   });
