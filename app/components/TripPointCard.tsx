@@ -4,7 +4,7 @@ import { Card, Icon, Text, useTheme } from "react-native-paper";
 import { formatTimeFromString, formatTimeRange } from "@/utils/TimeUtils";
 import { MD3ThemeExtended } from "@/constants/Themes";
 import {
-  FILL_SURVEY_ICON,
+  FILL_SURVEY_ICON_MATERIAL,
   LOCATION_ICON,
   NOTIFICATION_ICON,
 } from "@/constants/Icons";
@@ -60,7 +60,11 @@ export const TripPointCard = ({
             {hasLocation && <Icon size={20} source={LOCATION_ICON} />}
             {hasReminder && <Icon size={20} source={NOTIFICATION_ICON} />}
             {hasSurveyToFillOut && (
-              <Icon size={20} color={YELLOW} source={FILL_SURVEY_ICON} />
+              <Icon
+                size={20}
+                color={YELLOW}
+                source={FILL_SURVEY_ICON_MATERIAL}
+              />
             )}
           </View>
         }

@@ -69,6 +69,7 @@ export const REMOVE_NOTIFICATION_ICON_MATERIAL = "bell-off";
 
 // Survey
 export const FILL_SURVEY_ICON = "edit-document";
+export const FILL_SURVEY_ICON_MATERIAL = "file-document-edit-outline";
 export const COMPLETED_SURVEY_ICON = "file-check-outline";
 
 // Other
