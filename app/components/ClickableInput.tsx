@@ -1,3 +1,4 @@
+import { MD3ThemeExtended } from "@/constants/Themes";
 import React, { ReactNode } from "react";
 import {
   TouchableOpacity,
@@ -17,6 +18,7 @@ interface ClickableInputProps {
   left?: ReactNode;
   right?: ReactNode;
   error?: boolean;
+  disabled?: boolean;
 }
 
 const ClickableInput: React.FC<ClickableInputProps> = ({
@@ -29,18 +31,25 @@ const ClickableInput: React.FC<ClickableInputProps> = ({
   left,
   right,
   error,
+  disabled,
 }) => {
   const theme = useTheme();
+  const styles = createStyles(theme as MD3ThemeExtended);
 
   return (
     <TouchableOpacity
-      onPress={onPress}
-      style={[styles(theme).container, touchableStyle]}
+      onPress={disabled ? undefined : onPress}
+      activeOpacity={disabled ? 1 : 0.2}
+      style={[styles.container, touchableStyle]}
     >
       <TextInput
         mode="outlined"
         label={label}
-        style={[{ backgroundColor: theme.colors.surface }, inputStyle]}
+        style={[
+          styles.textInput,
+          inputStyle,
+          disabled ? styles.textInputDisabled : {},
+        ]}
         value={value}
         editable={false}
         error={error || false}
@@ -62,16 +71,21 @@ const ClickableInput: React.FC<ClickableInputProps> = ({
               })
             : undefined
         }
+        disabled={disabled || false}
       />
     </TouchableOpacity>
   );
 };
 
-const styles = (theme: MD3Theme) =>
+const createStyles = (theme: MD3ThemeExtended) =>
   StyleSheet.create({
     container: {
       width: "90%",
       backgroundColor: theme.colors.surface,
+    },
+    textInput: { backgroundColor: theme.colors.surface },
+    textInputDisabled: {
+      backgroundColor: theme.colors.inverseOnSurface,
     },
   });
 
