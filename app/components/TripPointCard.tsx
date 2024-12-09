@@ -4,6 +4,7 @@ import { Card, Icon, Text, useTheme } from "react-native-paper";
 import { formatTimeFromString, formatTimeRange } from "@/utils/TimeUtils";
 import { MD3ThemeExtended } from "@/constants/Themes";
 import { LOCATION_ICON, NOTIFICATION_ICON } from "@/constants/Icons";
+import useTripNotificationManager from "@/hooks/useTripNotificationManager";
 
 const { width } = Dimensions.get("window");
 
@@ -11,17 +12,16 @@ interface TripPointCardProps {
   tripPoint: TripPointCompact;
   onPress?: () => void;
   onLongPress?: () => void;
-  isRegistered: (tripPointId: string) => boolean;
 }
 
 export const TripPointCard = ({
   tripPoint,
   onPress,
   onLongPress,
-  isRegistered,
 }: TripPointCardProps) => {
   const theme = useTheme();
   const style = createStyles(theme as MD3ThemeExtended);
+  const { isRegistered } = useTripNotificationManager();
 
   const { name, startTime, endTime } = tripPoint;
 

@@ -47,7 +47,7 @@ import {
   schedulePushNotification,
 } from "@/utils/notifications";
 import { useSnackbar } from "@/context/SnackbarContext";
-import { useTripNotificationManager } from "@/hooks/useTripNotificationManager";
+import useTripNotificationManager from "@/hooks/useTripNotificationManager";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import NotificationFormBottomSheet from "@/components/NotificationFormBottomSheet";
 import { useTripDetails } from "@/composables/useTripDetails";
@@ -184,12 +184,8 @@ const TripPointDetailsView = () => {
     refetch: refetchTripDay,
   } = useTripDayDetails(tripPoint?.tripDayId ?? null);
 
-  const {
-    isRegistered,
-    registerNotification,
-    unregisterNotification,
-    getNotificationId,
-  } = useTripNotificationManager();
+  const { registerNotification, unregisterNotification, getNotificationId } =
+    useTripNotificationManager();
 
   const {
     deleteTripPoint,

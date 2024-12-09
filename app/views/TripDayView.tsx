@@ -46,7 +46,7 @@ import ActionTextButtons from "@/components/ActionTextButtons";
 import CustomModal from "@/components/CustomModal";
 import { useDeleteTripPoint } from "@/composables/useTripPoint";
 import ActionMenuBottomSheet from "@/components/ActionMenu/ActionMenuBottomSheet";
-import { useTripNotificationManager } from "@/hooks/useTripNotificationManager";
+import useTripNotificationManager from "@/hooks/useTripNotificationManager";
 import {
   cancelNotification,
   schedulePushNotification,
@@ -78,12 +78,8 @@ const TripDayView = () => {
   const { trip_id, day_id, refresh } = params;
   const { showSnackbar } = useSnackbar();
 
-  const {
-    registerNotification,
-    unregisterNotification,
-    getNotificationId,
-    isRegistered,
-  } = useTripNotificationManager();
+  const { registerNotification, unregisterNotification, getNotificationId } =
+    useTripNotificationManager();
 
   const [selectedTripPoint, setSelectedTripPoint] =
     useState<TripPointCompact | null>(null);
@@ -730,7 +726,6 @@ const TripDayView = () => {
                     onPress={() => handleTripPointPress(fromTripPoint)}
                     onLongPress={() => handleTripPointLongPress(fromTripPoint)}
                     tripPoint={fromTripPoint}
-                    isRegistered={isRegistered}
                   />
                   {renderTransferPoint(fromTripPoint, index)}
                 </Fragment>
