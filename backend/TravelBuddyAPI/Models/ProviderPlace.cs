@@ -48,6 +48,19 @@ public class ProviderPlace : Place
         return Utilities.OpeningHoursParser.ParseOpeningHours(OpeningHours, date);
     }
 
+    public static bool operator ==(ProviderPlace? left, ProviderPlace? right)
+    {
+        if (left is null)
+            return right is null;
+
+        return left.Equals(right);
+    }
+
+    public static bool operator !=(ProviderPlace? left, ProviderPlace? right)
+    {
+        return !(left == right);
+    }
+
     public override bool Equals(object? obj)
     {
         if (obj is not ProviderPlace place)
