@@ -66,7 +66,11 @@ export function convertTripResponseToViewModel(
     numberOfTripPoints: totalTripPoints,
     numberOfTravelers: tripDetails.numberOfTravelers,
     predictedCost: getMoneyWithCurrency(
-      totalSpendings,
+      tripDetails.predictedCost,
+      tripDetails.currencyCode,
+    ),
+    actualCost: getMoneyWithCurrency(
+      tripDetails.actualCost,
       tripDetails.currencyCode,
     ),
     budget: getMoneyWithCurrency(tripDetails.budget, tripDetails.currencyCode),
@@ -94,6 +98,7 @@ export function convertTripResponseToTripRequest(
   destination: Place,
 ): TripRequest {
   const tripRequest: TripRequest = {
+    id: response.id,
     name: response.name,
     numberOfTravelers: response.numberOfTravelers,
     startDate: response.startDate,

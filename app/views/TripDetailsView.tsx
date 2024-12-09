@@ -111,7 +111,6 @@ const TripDetailsView = () => {
         if (tripDetails.conditionProfileId) await refetchConditionProfile();
       }
     };
-    console.log(JSON.stringify(tripDetails));
     refetch();
   }, [tripDetails]);
 
@@ -178,7 +177,6 @@ const TripDetailsView = () => {
   );
 
   useEffect(() => {
-    console.log(JSON.stringify(tripSummary));
     if (tripDetails && destinationDetails) {
       setTripViewModel(
         convertTripResponseToViewModel(
@@ -205,6 +203,7 @@ const TripDetailsView = () => {
     numberOfTripPoints: "Liczba punktów wycieczki",
     numberOfTravelers: "Liczba osób",
     predictedCost: "Przewidywany koszt wycieczki",
+    actualCost: "Ogólny koszt wycieczki",
     budget: "Budżet wycieczki",
     categoryProfileName: "Profil preferencji",
     conditionProfileName: "Profil udogodnień",
