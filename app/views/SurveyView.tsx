@@ -162,7 +162,7 @@ const SurveyView = () => {
             label={"Koszt"}
             budget={cost}
             currency={currency ? (currency as string) : ""}
-            disable={true}
+            currencyDisable={true}
             handleBudgetChange={handleChange(setCost)}
           />
 
