@@ -35,7 +35,7 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
             decimal exchangeRate = await _nbpService.GetRateAsync(trip?.CurrencyCode ?? string.Empty) ?? throw new InvalidOperationException(ErrorMessage.RetriveExchangeRate);
 
             _ = trip?.DestinationProviderId ?? throw new InvalidOperationException(ErrorMessage.DestinationProviderIdIsNull);
-            Guid destinationId = await GetDestinationId(trip.DestinationProviderId) ?? await AddDestinationAsync(trip.DestinationProviderId);
+            Guid destinationId = await AddDestinationAsync(trip.DestinationProviderId);
 
             Trip newTrip = new()
             {
@@ -68,19 +68,6 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
             if (_dbContext.Database.CurrentTransaction != null) await _dbContext.Database.RollbackTransactionAsync();
             throw new InvalidOperationException($"{ErrorMessage.CreateTrip} {e.Message}");
         }
-    }
-
-    private async Task<Guid?> GetDestinationId(string providerId)
-    {
-        var fetchedPlace = await _placesService.GetProviderPlaceAsync(providerId) ?? throw new InvalidOperationException(ErrorMessage.ProviderPlaceNotFound);
-
-        Guid? id = await _dbContext.Places
-            .OfType<ProviderPlace>()
-            .Where(p => fetchedPlace.ProviderId == p.ProviderId)
-            .Select(p => (Guid?)p.Id)
-            .FirstOrDefaultAsync();
-
-        return id;
     }
 
     private async Task<Guid> AddDestinationAsync(string providerId)
@@ -215,7 +202,7 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
             }
 
             _ = trip?.DestinationProviderId ?? throw new InvalidOperationException(ErrorMessage.DestinationProviderIdIsNull);
-            Guid destinationId = await GetDestinationId(trip.DestinationProviderId) ?? await AddDestinationAsync(trip.DestinationProviderId);
+            Guid destinationId = await AddDestinationAsync(trip.DestinationProviderId);
 
             existingTrip.Name = trip!.Name;
             existingTrip.NumberOfTravelers = trip.NumberOfTravelers;
