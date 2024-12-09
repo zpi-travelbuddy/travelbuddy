@@ -46,7 +46,7 @@ const ClickableInput: React.FC<ClickableInputProps> = ({
         mode="outlined"
         label={label}
         style={[
-          { backgroundColor: theme.colors.surface },
+          styles.textInput,
           inputStyle,
           disabled ? styles.textInputDisabled : {},
         ]}
@@ -83,6 +83,7 @@ const createStyles = (theme: MD3ThemeExtended) =>
       width: "90%",
       backgroundColor: theme.colors.surface,
     },
+    textInput: { backgroundColor: theme.colors.surface },
     textInputDisabled: {
       backgroundColor: theme.colors.inverseOnSurface,
     },
