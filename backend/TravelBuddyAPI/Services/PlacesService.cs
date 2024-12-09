@@ -83,12 +83,16 @@ public class PlacesService(TravelBuddyDbContext dbContext, IGeoapifyService geoa
         try
         {
             var places = await _geoapifyService.GetAddressAutocompleteAsync(query, Enums.AddressLevel.city) ?? [];
-            var results = await PlacesToOverviewDTOsAsync(places);
-            return results
+
+            var results = places
                 .Where(p => p.City != null)
                 .GroupBy(p => p.ProviderId)
-                .Select(g => g.First())
+                .Select(g => g.OrderBy(p => p.ProviderId).First())
+                .GroupBy(p => new { p.Name, p.Country, p.State, p.City, p.Street, p.HouseNumber })
+                .Select(g => g.OrderBy(p => p.ProviderId).First())
                 .ToList();
+
+            return await PlacesToOverviewDTOsAsync(places);
         }
         catch (HttpRequestException)
         {
@@ -109,11 +113,9 @@ public class PlacesService(TravelBuddyDbContext dbContext, IGeoapifyService geoa
         {
             var places = await _geoapifyService
                 .GetAddressAutocompleteAsync(query, Enums.AddressLevel.amenity, bias: bias) ?? [];
-            var results = await PlacesToOverviewDTOsAsync(places);
-            return results
-                .GroupBy(p => p.ProviderId)
-                .Select(g => g.First())
-                .ToList();
+            var results = FilterAmmenities(places);
+
+            return await PlacesToOverviewDTOsAsync(places);
         }
         catch (HttpRequestException)
         {
@@ -123,14 +125,11 @@ public class PlacesService(TravelBuddyDbContext dbContext, IGeoapifyService geoa
 
     private async Task<List<PlaceOverviewDTO>> PlacesToOverviewDTOsAsync(List<ProviderPlace> places)
     {
-        var existingPlaces = await _dbContext.Places
-            .OfType<ProviderPlace>()
-            .Where(p => places.Select(pl => pl.ProviderId).Contains(p.ProviderId))
-            .ToListAsync();
+        var existingPlaces = await GetExistingProviderPlacesListAsync(places);
 
         return places?.Select(p =>
             {
-                var existingPlace = existingPlaces.FirstOrDefault(ep => ep.ProviderId == p.ProviderId);
+                var existingPlace = existingPlaces.FirstOrDefault(ep => ep == p);
                 return new PlaceOverviewDTO
                 {
                     Id = existingPlace?.Id,
@@ -212,22 +211,18 @@ public class PlacesService(TravelBuddyDbContext dbContext, IGeoapifyService geoa
     {
         ProviderPlace fetchedPlace;
 
-        try{
-            fetchedPlace = await GetProviderPlaceAsync(providerId) ?? throw new ArgumentException(ErrorMessages.IncorrectProviderPlaceId);
+        try
+        {
+            fetchedPlace = await _geoapifyService.GetPlaceDetailsAsync(providerId) ?? throw new ArgumentException(ErrorMessages.IncorrectProviderPlaceId);
         }
-        catch (HttpRequestException){
+        catch (HttpRequestException)
+        {
             throw new ArgumentException(ErrorMessages.IncorrectProviderPlaceId);
         }
 
-        ProviderPlace? place = await _dbContext.Places
-            .OfType<ProviderPlace>()
-            .Where(p => p.ProviderId == fetchedPlace.ProviderId)
-            .Include(p => p.Categories)
-            .Include(p => p.Conditions)
-            .Include(p => p.Reviews)
-            .FirstOrDefaultAsync();
+        ProviderPlace? existingPlace = await GetExistingProviderPlaceAsync(fetchedPlace);
 
-        if (place is null)
+        if (existingPlace is null)
         {
             return new PlaceDetailsDTO()
             {
@@ -256,11 +251,11 @@ public class PlacesService(TravelBuddyDbContext dbContext, IGeoapifyService geoa
         }
         else
         {
-            return await GetPlaceDetailsAsync(place.Id);
+            return await GetPlaceDetailsAsync(existingPlace.Id);
         }
     }
 
-    public async Task<ProviderPlace?> GetProviderPlaceAsync(string providerId)
+    public async Task<ProviderPlace?> GetProviderPlaceAsync(string providerId) // TODO refactor
     {
         return await _geoapifyService.GetPlaceDetailsAsync(providerId);
     }
@@ -269,20 +264,51 @@ public class PlacesService(TravelBuddyDbContext dbContext, IGeoapifyService geoa
     {
         List<ProviderPlace> places = await _geoapifyService.GetNearbyPlacesAsync(location, radius, categories, conditions, limit) ?? [];
 
-        var existingPlaces = await _dbContext.Places
-            .OfType<ProviderPlace>()
-            .Where(p => places.Select(pl => pl.ProviderId).Contains(p.ProviderId))
-            .Include(p => p.Reviews)
-            .ToListAsync();
+        places = FilterAmmenities(places);
+
+        var existingPlaces = await GetExistingProviderPlacesListAsync(places);
 
         var recommendations = places.Select(p =>
             {
-                var existingPlace = existingPlaces.FirstOrDefault(ep => ep.ProviderId == p.ProviderId);
+                var existingPlace = existingPlaces.FirstOrDefault(ep => ep == p);
                 return existingPlace ?? p;
             })
             .OrderByDescending(p => p.AverageRating)
             .ToList();
 
         return await PlacesToOverviewDTOsAsync(recommendations);
+    }
+
+    private static List<ProviderPlace> FilterAmmenities(List<ProviderPlace> places)
+    {
+        return places
+                .Where(p => p.Name != null)
+                .GroupBy(p => p.ProviderId)
+                .Select(g => g.OrderBy(p => p.ProviderId).First())
+                .GroupBy(p => new { p.Name, p.Country, p.State, p.City, p.Street, p.HouseNumber })
+                .Select(g => g.OrderBy(p => p.ProviderId).First())
+                .ToList();
+    }
+
+    private async Task<ProviderPlace?> GetExistingProviderPlaceAsync(ProviderPlace place)
+    {
+        return await _dbContext.Places
+            .OfType<ProviderPlace>()
+            .Where(p => p == place)
+            .Include(p => p.Categories)
+            .Include(p => p.Conditions)
+            .Include(p => p.Reviews)
+            .FirstOrDefaultAsync();
+    }
+
+    private async Task<List<ProviderPlace>> GetExistingProviderPlacesListAsync(List<ProviderPlace> places)
+    {
+        return await _dbContext.Places
+            .OfType<ProviderPlace>()
+            .Where(p => places.Contains(p))
+            .Include(p => p.Categories)
+            .Include(p => p.Conditions)
+            .Include(p => p.Reviews)
+            .ToListAsync();
     }
 }
