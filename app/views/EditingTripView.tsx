@@ -415,6 +415,7 @@ const EditTripView = () => {
               currency={editTripRequest.currencyCode}
               handleBudgetChange={handleChange("budget")}
               error={!!errors.budget}
+              currencyDisable={true}
             />
             {errors.budget && (
               <Text style={styles.textError}>{errors.budget}</Text>

@@ -62,9 +62,7 @@ const CurrencyValueInput = ({
         error={error ?? false}
       />
 
-      {currencyDisable ? (
-        <Text style={styles.currencyLabel}>{currency}</Text>
-      ) : (
+      {
         <ClickableInput
           label="Waluta"
           value={currency}
@@ -72,8 +70,9 @@ const CurrencyValueInput = ({
           touchableStyle={styles.currencyTouchable}
           inputStyle={styles.currencyInput}
           left={undefined}
+          disabled={currencyDisable}
         />
-      )}
+      }
     </View>
   );
 };
