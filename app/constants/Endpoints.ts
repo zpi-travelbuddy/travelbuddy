@@ -24,6 +24,7 @@ export const API_FAVOURITE_PROFILES = "/favourites";
 
 // Review
 export const API_SUBMIT_REVIEW = "/tripPoints/submitReview";
+export const API_REJECT_REVIEW = "/tripPoints/rejectReview";
 
 // Categories & Conditions
 export const API_CATEGORIES = "/categoryProfiles/categories";

@@ -1,5 +1,6 @@
 // SnackbarContext.tsx
 
+import { BLACK, YELLOW } from "@/constants/Colors";
 import React, { createContext, useContext, useState, ReactNode } from "react";
 import { Dimensions, StyleSheet, Text } from "react-native";
 import { MD3Theme, Snackbar, useTheme } from "react-native-paper";
@@ -83,7 +84,7 @@ const createStyles = (theme: MD3Theme) =>
       backgroundColor: theme.colors.inverseSurface,
     },
     warning: {
-      backgroundColor: "#FFCC00",
+      backgroundColor: YELLOW,
     },
     error: {
       backgroundColor: theme.colors.errorContainer,
@@ -92,7 +93,7 @@ const createStyles = (theme: MD3Theme) =>
       color: theme.colors.inverseOnSurface,
     },
     warningText: {
-      color: "#000000",
+      color: BLACK,
     },
     errorText: {
       color: theme.colors.onErrorContainer,
