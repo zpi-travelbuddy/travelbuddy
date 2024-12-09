@@ -9,6 +9,7 @@ import {
   NOTIFICATION_ICON,
 } from "@/constants/Icons";
 import { YELLOW } from "@/constants/Colors";
+import useTripNotificationManager from "@/hooks/useTripNotificationManager";
 
 const { width } = Dimensions.get("window");
 
@@ -16,7 +17,6 @@ interface TripPointCardProps {
   tripPoint: TripPointCompact;
   onPress?: () => void;
   onLongPress?: () => void;
-  isRegistered: (tripPointId: string) => boolean;
   isFillSurvey: (tripPoint: TripPointCompact) => boolean;
   openSurveyModal: () => void;
 }
@@ -25,12 +25,12 @@ export const TripPointCard = ({
   tripPoint,
   onPress,
   onLongPress,
-  isRegistered,
   isFillSurvey,
   openSurveyModal,
 }: TripPointCardProps) => {
   const theme = useTheme();
   const style = createStyles(theme as MD3ThemeExtended);
+  const { isRegistered } = useTripNotificationManager();
 
   const { name, startTime, endTime } = tripPoint;
 

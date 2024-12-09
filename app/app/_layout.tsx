@@ -15,6 +15,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { AuthProvider } from "./ctx";
 import { SnackbarProvider } from "@/context/SnackbarContext";
 import { NavigationDataProvider } from "@/context/NavigationDataContext";
+import { NotificationDataProvider } from "@/context/NotificationsContext";
 import { AppSettingsProvider } from "@/context/AppSettingsContext";
 import Notification from "@/utils/notifications";
 import Calendar from "@/utils/calendar";
@@ -62,15 +63,17 @@ function RootLayout() {
     <PaperProvider theme={appTheme}>
       <NavigationDataProvider>
         <SnackbarProvider>
-          <Portal.Host>
-            <StatusBar
-              backgroundColor={appTheme.colors.surface}
-              barStyle={theme === "dark" ? "light-content" : "dark-content"}
-            />
-            <View style={styles.container}>
-              <Slot />
-            </View>
-          </Portal.Host>
+          <NotificationDataProvider>
+            <Portal.Host>
+              <StatusBar
+                backgroundColor={appTheme.colors.surface}
+                barStyle={theme === "dark" ? "light-content" : "dark-content"}
+              />
+              <View style={styles.container}>
+                <Slot />
+              </View>
+            </Portal.Host>
+          </NotificationDataProvider>
         </SnackbarProvider>
       </NavigationDataProvider>
     </PaperProvider>

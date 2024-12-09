@@ -16,6 +16,7 @@ interface Action {
 interface NativeStackNavigationOptionsWithActions
   extends NativeStackNavigationOptions {
   actions?: Action[];
+  onBackPress?: () => void;
 }
 
 export const AppBar = ({ options, navigation }: NativeStackHeaderProps) => {
@@ -38,11 +39,12 @@ export const AppBar = ({ options, navigation }: NativeStackHeaderProps) => {
   const theme = useTheme();
 
   // Destructure the dynamic actions passed from the screen options
-  const { actions = [] } = options as NativeStackNavigationOptionsWithActions;
+  const { actions = [], onBackPress = navigation.goBack } =
+    options as NativeStackNavigationOptionsWithActions;
 
   return (
     <Appbar.Header>
-      {showBackButton && <Appbar.BackAction onPress={navigation.goBack} />}
+      {showBackButton && <Appbar.BackAction onPress={onBackPress} />}
       <Appbar.Content title={options.title} />
       {actions.map((action: Action, index: number) =>
         action.hasMenu ? (

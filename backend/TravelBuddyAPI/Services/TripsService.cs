@@ -383,6 +383,7 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
                 td.Date,
                 td.TripPoints?.Select(tp => new TripPointStatistics(
                     tp.Name,
+                    Math.Round(tp.PredictedCost / tp.ExchangeRate, 2),
                     tp.Review != null && tp.Review.ActualCostPerPerson.HasValue && tp.Review.ExchangeRate.HasValue 
                         ? Math.Round(tp.Review.ActualCostPerPerson.Value * trip.NumberOfTravelers / tp.Review.ExchangeRate.Value, 2) : 0
                 )).ToList() ?? []
@@ -433,9 +434,11 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
             throw new ArgumentException(ErrorMessage.NoCoordinatesInDestination);
         }
 
-        if (trip.CategoryProfile == null || trip.CategoryProfile.Categories == null || trip.CategoryProfile.Categories.Count == 0)
+        _ = trip.CategoryProfile ?? throw new ArgumentException(ICategoryProfilesService.ErrorMessage.CategoryProfileNotFound);
+
+        if (trip.CategoryProfile.Categories == null || trip.CategoryProfile.Categories.Count == 0)
         {
-            throw new ArgumentException(ICategoryProfilesService.ErrorMessage.CategoryProfileNotFound);
+            throw new ArgumentException(ICategoryProfilesService.ErrorMessage.NoCategoriesInProfile);
         }
 
         return await _placesService.GetPlaceRecommendationsAsync((trip.Destination.Latitude.Value, trip.Destination.Longitude.Value), radius, trip.CategoryProfile.Categories, trip.ConditionProfile?.Conditions, limit);
