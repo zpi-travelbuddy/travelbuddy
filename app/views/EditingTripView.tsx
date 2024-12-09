@@ -6,8 +6,9 @@ import {
   Dimensions,
   ScrollView,
   FlatList,
+  TouchableOpacity,
 } from "react-native";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTheme, MD3Theme, TextInput, Text } from "react-native-paper";
 import {
   DatePickerModal,
@@ -41,6 +42,9 @@ import { Profile, ProfileType } from "@/types/Profile";
 import { useDynamicProfiles } from "@/composables/useProfiles";
 
 import { onEndEditingStringOnObject } from "@/utils/validations";
+import { DEFAULT_TRIP_IMAGE, TRIP_IMAGES } from "@/constants/Images";
+import useTripImageStorage from "@/hooks/useTripImageStore";
+import ImagePickerPopup from "@/components/ImagePickerPopup";
 
 const { height, width } = Dimensions.get("window");
 
@@ -61,6 +65,8 @@ const EditTripView = () => {
     destinationId: new_destination_id,
     destinationName: new_destination_name,
   } = params;
+
+  const { saveImage } = useTripImageStorage();
 
   const [editTripRequest, setEditTripRequest] = useState<TripRequest>(
     {} as TripRequest,
@@ -113,6 +119,12 @@ const EditTripView = () => {
 
   const [isOpen, setOpen] = useState<boolean>(false);
   const [visible, setVisible] = useState<boolean>(false);
+  const [imagePickerVisible, setImagePickerVisible] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+
+  const imageSource = selectedImage
+    ? TRIP_IMAGES[selectedImage]
+    : DEFAULT_TRIP_IMAGE;
 
   const [categoryProfileId, setCategoryProfileId] = useState<string | null>(
     null,
@@ -282,6 +294,9 @@ const EditTripView = () => {
 
     try {
       await editTrip();
+      if (trip_id && selectedImage) {
+        await saveImage(trip_id as string, selectedImage);
+      }
     } catch (error) {
       showSnackbar("Błąd przy zapisie wycieczki", "error");
       console.error(error);
@@ -353,13 +368,16 @@ const EditTripView = () => {
     <>
       <ScrollView style={styles.scrollView}>
         <View style={styles.container}>
-          <Image
-            source={{
-              uri: "https://upload.wikimedia.org/wikipedia/commons/1/1a/Big_Ben..JPG",
-            }}
-            style={styles.image}
-            resizeMode="cover"
-          />
+          <TouchableOpacity
+            style={styles.touchable}
+            onPress={() => setImagePickerVisible(true)}
+          >
+            <Image
+              source={imageSource}
+              style={styles.image}
+              resizeMode="cover"
+            />
+          </TouchableOpacity>
           <View style={styles.form}>
             <TextInput
               mode="outlined"
@@ -518,6 +536,16 @@ const EditTripView = () => {
           action2Icon={undefined}
         />
       </ScrollView>
+      <ImagePickerPopup
+        images={TRIP_IMAGES}
+        visible={imagePickerVisible}
+        onClose={() => {
+          setImagePickerVisible(false);
+        }}
+        onSave={(image: string) => {
+          setSelectedImage(image);
+        }}
+      />
     </>
   );
 };
@@ -536,6 +564,9 @@ const createStyles = (theme: MD3Theme) =>
       alignItems: "center",
       paddingBottom: 20,
       backgroundColor: theme.colors.surface,
+    },
+    touchable: {
+      width: "100%",
     },
     form: {
       flex: 1,

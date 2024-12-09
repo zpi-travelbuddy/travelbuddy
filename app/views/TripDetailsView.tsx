@@ -34,6 +34,8 @@ import ActionTextButtons from "@/components/ActionTextButtons";
 import { useAuth } from "@/app/ctx";
 import { formatDateToISO } from "@/utils/TimeUtils";
 import { useGetProfile } from "@/composables/useProfiles";
+import useTripImageStorage from "@/hooks/useTripImageStore";
+import { DEFAULT_TRIP_IMAGE, TRIP_IMAGES } from "@/constants/Images";
 
 const { height, width } = Dimensions.get("window");
 
@@ -63,6 +65,7 @@ const TripDetailsView = () => {
     hideModal();
     try {
       await api!.delete(`/trips/${tripId}`);
+      await removeImage(tripId);
       router.navigate({ pathname: "/trips", params: { refresh: "true" } });
       showSnackbar("Usunięto wycieczkę!");
     } catch (error: any) {
@@ -103,6 +106,22 @@ const TripDetailsView = () => {
   } = useGetProfile("Condition", tripDetails?.conditionProfileId as string, {
     immediate: false,
   });
+
+  const { getImageName, removeImage } = useTripImageStorage();
+  const [resolvedImage, setResolvedImage] = useState(null);
+
+  const resolvedImageSource = resolvedImage ?? DEFAULT_TRIP_IMAGE;
+
+  useEffect(() => {
+    const fetchImageName = async () => {
+      const storedImageName = await getImageName(trip_id as string);
+      if (storedImageName) {
+        setResolvedImage(TRIP_IMAGES[storedImageName]);
+      }
+    };
+
+    fetchImageName();
+  }, [trip_id, getImageName]);
 
   useEffect(() => {
     const refetch = async () => {
@@ -253,9 +272,7 @@ const TripDetailsView = () => {
       <View style={styles.container}>
         <ScrollView contentContainerStyle={styles.scrollContent}>
           <Image
-            source={{
-              uri: "https://upload.wikimedia.org/wikipedia/commons/1/1a/Big_Ben..JPG",
-            }}
+            source={resolvedImageSource}
             style={styles.image}
             resizeMode="cover"
           />

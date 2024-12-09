@@ -88,7 +88,6 @@ export const convertTripsFromAPI = (
     name: trip.name,
     startDate: formatDateFromISO(trip.startDate),
     endDate: formatDateFromISO(trip.endDate),
-    imageUri: RANDOM_IMAGE,
     isArchived: isArchived,
   }));
 };

@@ -1,11 +1,13 @@
 import { Dimensions, StyleSheet } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Card, MD3Theme, Text, useTheme } from "react-native-paper";
+import useTripImageStorage from "@/hooks/useTripImageStore";
+import { DEFAULT_TRIP_IMAGE, TRIP_IMAGES } from "@/constants/Images";
 
 interface TripCardProps {
+  id: string;
   title: string;
   subtitle: string;
-  imageUri: string;
   isArchived: boolean;
   onPress?: () => void;
   onLongPress?: () => void;
@@ -17,15 +19,28 @@ const CARD_ASPECT_RATIO = 4 / 3;
 const CARD_HEIGHT = CARD_WIDTH / CARD_ASPECT_RATIO + 10;
 
 export const TripCard: React.FC<TripCardProps> = ({
+  id,
   title,
   subtitle,
-  imageUri,
   isArchived,
   onPress,
   onLongPress,
 }) => {
   const theme = useTheme();
   const styles = createStyles(theme);
+  const { getImageName } = useTripImageStorage();
+  const [resolvedImage, setResolvedImage] = useState(null);
+
+  const resolvedImageSource = resolvedImage ?? DEFAULT_TRIP_IMAGE;
+
+  useEffect(() => {
+    const fetchImageName = async () => {
+      const storedImageName = await getImageName(id);
+      setResolvedImage(storedImageName ? TRIP_IMAGES[storedImageName] : null);
+    };
+
+    fetchImageName();
+  }, [id, getImageName]);
 
   const handlePress = () => {
     if (onPress) onPress();
@@ -46,7 +61,7 @@ export const TripCard: React.FC<TripCardProps> = ({
     >
       <Card.Cover
         style={{ ...styles.image, opacity: isArchived ? 0.25 : 1 }}
-        source={{ uri: imageUri }}
+        source={resolvedImageSource}
       />
       <Card.Content style={styles.textContent}>
         <Text style={{ ...styles.text, ...styles.title }}>{title}</Text>
