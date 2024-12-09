@@ -206,9 +206,12 @@ const TripDayView = () => {
     useCallback(() => {
       if (refresh && refresh === "true") {
         refetchDayData();
-        router.setParams({ refresh: undefined });
         hideAll();
       }
+      return () => {
+        if (refresh && refresh === "true")
+          router.setParams({ refresh: "true" });
+      };
     }, [refetchDayData, router, refresh]),
   );
 
