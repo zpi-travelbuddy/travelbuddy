@@ -44,8 +44,6 @@ const AttractionDetailsView = () => {
     place_id as string,
   );
 
-  useEffect(() => console.log(JSON.stringify(placeDetails)), [placeDetails]);
-
   const findAttractionCategory = (placeDetails: PlaceDetails) => {
     if (placeDetails.superCategory) return placeDetails.superCategory.name;
 

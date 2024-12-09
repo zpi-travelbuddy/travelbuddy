@@ -14,6 +14,7 @@ import {
   ScrollView,
   FlatList,
   BackHandler,
+  TouchableOpacity,
 } from "react-native";
 import { useTheme, MD3Theme, TextInput, Text } from "react-native-paper";
 import {
@@ -47,6 +48,9 @@ import {
   useGetFavouriteProfiles,
 } from "@/composables/useProfiles";
 import ActionTextButtons from "@/components/ActionTextButtons";
+import ImagePickerPopup from "@/components/ImagePickerPopup";
+import { DEFAULT_TRIP_IMAGE, TRIP_IMAGES } from "@/constants/Images";
+import useTripImageStorage from "@/hooks/useTripImageStore";
 
 const { height, width } = Dimensions.get("window");
 registerTranslation("pl", pl);
@@ -72,6 +76,7 @@ const AddingTripView = () => {
   }>();
 
   const { showSnackbar } = useSnackbar();
+  const { saveImage } = useTripImageStorage();
 
   const [tripName, setTripName] = useState("");
   const [budget, setBudget] = useState<number>(0);
@@ -79,6 +84,12 @@ const AddingTripView = () => {
   const [dateRangeText, setDateRangeText] = useState("");
   const [numberOfPeople, setNumberOfPeople] = useState("");
   const [visible, setVisible] = useState(false);
+  const [imagePickerVisible, setImagePickerVisible] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+
+  const imageSource = selectedImage
+    ? TRIP_IMAGES[selectedImage]
+    : DEFAULT_TRIP_IMAGE;
 
   const [range, setRange] = useState<DateRange>({});
   const [errors, setErrors] = useState<TripErrors>({});
@@ -234,7 +245,12 @@ const AddingTripView = () => {
     };
     setLoading(true);
     try {
-      await api!.post(API_TRIPS, tripRequest);
+      const { id } = (await api!.post(API_TRIPS, tripRequest)).data as {
+        id: string;
+      };
+      if (id && selectedImage) {
+        await saveImage(id, selectedImage);
+      }
       router.navigate({ pathname: "/trips", params: { refresh: "true" } });
       showSnackbar("Zapisano wycieczkę!", "success");
     } catch (error: any) {
@@ -260,13 +276,16 @@ const AddingTripView = () => {
     <>
       <ScrollView style={styles.scrollView}>
         <View style={styles.container}>
-          <Image
-            source={{
-              uri: "https://upload.wikimedia.org/wikipedia/commons/1/1a/Big_Ben..JPG",
-            }}
-            style={styles.image}
-            resizeMode="cover"
-          />
+          <TouchableOpacity
+            style={styles.touchable}
+            onPress={() => setImagePickerVisible(true)}
+          >
+            <Image
+              source={imageSource}
+              style={styles.image}
+              resizeMode="cover"
+            />
+          </TouchableOpacity>
           <View style={styles.form}>
             <TextInput
               mode="outlined"
@@ -417,6 +436,16 @@ const AddingTripView = () => {
           action2Icon={undefined}
         />
       </CustomModal>
+      <ImagePickerPopup
+        images={TRIP_IMAGES}
+        visible={imagePickerVisible}
+        onClose={() => {
+          setImagePickerVisible(false);
+        }}
+        onSave={(image: string) => {
+          setSelectedImage(image);
+        }}
+      />
     </>
   );
 };
@@ -435,6 +464,9 @@ const createStyles = (theme: MD3Theme) =>
       alignItems: "center",
       paddingBottom: 20,
       backgroundColor: theme.colors.surface,
+    },
+    touchable: {
+      width: "100%",
     },
     form: {
       flex: 1,
