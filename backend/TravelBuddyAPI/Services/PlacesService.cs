@@ -96,9 +96,9 @@ public class PlacesService(TravelBuddyDbContext dbContext, IGeoapifyService geoa
                 .Select(g => g.OrderBy(p => p.ProviderId).First())
                 .GroupBy(p => new { p.Name, p.Country, p.State, p.City, p.Street, p.HouseNumber })
                 .Select(g => g.OrderBy(p => p.ProviderId).First())
-                .ToList();
+                .ToList();       
 
-            return await PlacesToOverviewDTOsAsync(places);
+            return await PlacesToOverviewDTOsAsync(results);
         }
         catch (HttpRequestException)
         {
@@ -121,7 +121,7 @@ public class PlacesService(TravelBuddyDbContext dbContext, IGeoapifyService geoa
                 .GetAddressAutocompleteAsync(query, Enums.AddressLevel.amenity, bias: bias) ?? [];
             var results = FilterAmmenities(places);
 
-            return await PlacesToOverviewDTOsAsync(places);
+            return await PlacesToOverviewDTOsAsync(results);
         }
         catch (HttpRequestException)
         {
@@ -277,12 +277,9 @@ public class PlacesService(TravelBuddyDbContext dbContext, IGeoapifyService geoa
     private static List<ProviderPlace> FilterAmmenities(List<ProviderPlace> places)
     {
         return places
-                .Where(p => p.Name != null)
-                .GroupBy(p => p.ProviderId)
-                .Select(g => g.OrderBy(p => p.ProviderId).First())
-                .GroupBy(p => new { p.Name, p.Country, p.State, p.City, p.Street, p.HouseNumber })
-                .Select(g => g.OrderBy(p => p.ProviderId).First())
-                .ToList();
+            .Where(p => p.Name != null)
+            .Distinct()
+            .ToList();
     }
 
     private async Task<ProviderPlace?> GetExistingProviderPlaceAsync(ProviderPlace place)
