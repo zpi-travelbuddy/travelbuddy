@@ -47,36 +47,4 @@ public class ProviderPlace : Place
     {
         return Utilities.OpeningHoursParser.ParseOpeningHours(OpeningHours, date);
     }
-
-    public static bool operator ==(ProviderPlace? left, ProviderPlace? right)
-    {
-        if (left is null)
-            return right is null;
-
-        return left.Equals(right);
-    }
-
-    public static bool operator !=(ProviderPlace? left, ProviderPlace? right)
-    {
-        return !(left == right);
-    }
-
-    public override bool Equals(object? obj)
-    {
-        if (obj is not ProviderPlace place)
-            return false;
-
-        return ProviderId == place.ProviderId ||
-               (Name == place.Name &&
-                Country == place.Country &&
-                State == place.State &&
-                City == place.City &&
-                Street == place.Street &&
-                HouseNumber == place.HouseNumber);
-    }
-
-    public override int GetHashCode()
-    {
-        return HashCode.Combine(ProviderId, Name, Country, State, City, Street, HouseNumber);
-    }
 }

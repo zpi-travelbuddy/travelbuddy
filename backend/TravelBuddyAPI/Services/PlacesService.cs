@@ -96,7 +96,7 @@ public class PlacesService(TravelBuddyDbContext dbContext, IGeoapifyService geoa
                 .Select(g => g.OrderBy(p => p.ProviderId).First())
                 .GroupBy(p => new { p.Name, p.Country, p.State, p.City, p.Street, p.HouseNumber })
                 .Select(g => g.OrderBy(p => p.ProviderId).First())
-                .ToList();       
+                .ToList();
 
             return await PlacesToOverviewDTOsAsync(results);
         }
@@ -135,7 +135,14 @@ public class PlacesService(TravelBuddyDbContext dbContext, IGeoapifyService geoa
 
         return places?.Select(p =>
             {
-                var existingPlace = existingPlaces.FirstOrDefault(ep => ep == p);
+                var existingPlace = existingPlaces.FirstOrDefault(ep => 
+                    ep.ProviderId == p.ProviderId
+                    || (ep.Name == p.Name &&
+                        ep.Country == p.Country &&
+                        ep.State == p.State &&
+                        ep.City == p.City &&
+                        ep.Street == p.Street &&
+                        ep.HouseNumber == p.HouseNumber));
                 return new PlaceOverviewDTO
                 {
                     Id = existingPlace?.Id,
@@ -265,7 +272,14 @@ public class PlacesService(TravelBuddyDbContext dbContext, IGeoapifyService geoa
 
         var recommendations = places.Select(p =>
             {
-                var existingPlace = existingPlaces.FirstOrDefault(ep => ep == p);
+                var existingPlace = existingPlaces.FirstOrDefault(ep => 
+                    ep.ProviderId == p.ProviderId
+                    || (ep.Name == p.Name &&
+                        ep.Country == p.Country &&
+                        ep.State == p.State &&
+                        ep.City == p.City &&
+                        ep.Street == p.Street &&
+                        ep.HouseNumber == p.HouseNumber));
                 return existingPlace ?? p;
             })
             .OrderByDescending(p => p.AverageRating)
@@ -278,7 +292,10 @@ public class PlacesService(TravelBuddyDbContext dbContext, IGeoapifyService geoa
     {
         return places
             .Where(p => p.Name != null)
-            .Distinct()
+            .GroupBy(p => p.ProviderId)
+            .Select(g => g.OrderBy(p => p.ProviderId).First())
+            .GroupBy(p => new { p.Name, p.Country, p.State, p.City, p.Street, p.HouseNumber })
+            .Select(g => g.OrderBy(p => p.ProviderId).First())
             .ToList();
     }
 
@@ -286,7 +303,14 @@ public class PlacesService(TravelBuddyDbContext dbContext, IGeoapifyService geoa
     {
         return await _dbContext.Places
             .OfType<ProviderPlace>()
-            .Where(p => p == place)
+            .Where(p =>
+                place.ProviderId == p.ProviderId
+                 || (place.Name == p.Name &&
+                    place.Country == p.Country &&
+                    place.State == p.State &&
+                    place.City == p.City &&
+                    place.Street == p.Street &&
+                    place.HouseNumber == p.HouseNumber))
             .Include(p => p.Categories)
             .Include(p => p.Conditions)
             .Include(p => p.Reviews)
@@ -295,12 +319,26 @@ public class PlacesService(TravelBuddyDbContext dbContext, IGeoapifyService geoa
 
     private async Task<List<ProviderPlace>> GetExistingProviderPlacesListAsync(List<ProviderPlace> places)
     {
-        return await _dbContext.Places
+        var providerIds = places.Select(p => p.ProviderId).ToList();
+        var placeDetails = places.Select(p => new { p.Name, p.Country, p.State, p.City, p.Street, p.HouseNumber }).ToList();
+
+        var existingPlaces = await _dbContext.Places
             .OfType<ProviderPlace>()
-            .Where(p => places.Contains(p))
             .Include(p => p.Categories)
             .Include(p => p.Conditions)
             .Include(p => p.Reviews)
             .ToListAsync();
+
+        existingPlaces = existingPlaces
+            .Where(p => providerIds.Contains(p.ProviderId) ||
+                placeDetails.Any(pd => pd.Name == p.Name &&
+                               pd.Country == p.Country &&
+                               pd.State == p.State &&
+                               pd.City == p.City &&
+                               pd.Street == p.Street &&
+                               pd.HouseNumber == p.HouseNumber))
+            .ToList();
+
+        return existingPlaces;
     }
 }
