@@ -1,5 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useState,
+} from "react";
 import {
   StyleSheet,
   View,
@@ -7,6 +13,7 @@ import {
   Dimensions,
   ScrollView,
   FlatList,
+  BackHandler,
 } from "react-native";
 import { useTheme, MD3Theme, TextInput, Text } from "react-native-paper";
 import {
@@ -25,7 +32,7 @@ import { RenderItem } from "@/components/RenderItem";
 import ActionButtons from "@/components/ActionButtons";
 import ClickableInput from "@/components/ClickableInput";
 import { useSnackbar } from "@/context/SnackbarContext";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 import { useAuth } from "@/app/ctx";
 import LoadingView from "./LoadingView";
 import { Profile, ProfileType } from "@/types/Profile";
@@ -39,6 +46,7 @@ import {
   useGetConditionProfiles,
   useGetFavouriteProfiles,
 } from "@/composables/useProfiles";
+import ActionTextButtons from "@/components/ActionTextButtons";
 
 const { height, width } = Dimensions.get("window");
 registerTranslation("pl", pl);
@@ -50,6 +58,7 @@ const AddingTripView = () => {
 
   useAnimatedKeyboard();
 
+  const navigation = useNavigation();
   const theme = useTheme();
   const router = useRouter();
   const styles = useMemo(() => createStyles(theme), [theme]);
@@ -83,6 +92,9 @@ const AddingTripView = () => {
 
   const [profileType, setProfileType] = useState<ProfileType>("Category");
 
+  const [isWarningModalVisible, setIsWarningModalVisible] =
+    useState<boolean>(false);
+
   const {
     profiles: categoryProfiles,
     loading: categoryProfilesLoading,
@@ -102,6 +114,14 @@ const AddingTripView = () => {
     loading: favouriteProfilesLoading,
     error: favouriteProfilesError,
   } = useGetFavouriteProfiles();
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      onBackPress: () => {
+        setIsWarningModalVisible(true);
+      },
+    });
+  }, [navigation]);
 
   useEffect(() => {
     setCategoryProfileId(favouriteProfiles.Category);
@@ -131,6 +151,27 @@ const AddingTripView = () => {
         "",
     }));
   }, [categoryProfilesError, conditionProfilesError, favouriteProfilesError]);
+
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      () => {
+        setIsWarningModalVisible(true);
+        return true;
+      },
+    );
+
+    return () => backHandler.remove();
+  }, []);
+
+  const handleDismissWarningModal = () => {
+    setIsWarningModalVisible(false);
+  };
+
+  const goBack = () => {
+    setIsWarningModalVisible(false);
+    router.back();
+  };
 
   const handleProfileSelection = useCallback(
     (profile: Profile) => {
@@ -172,13 +213,13 @@ const AddingTripView = () => {
   }, [tripName, range, destinationId, numberOfPeople, budget]);
 
   const handleCancel = async () => {
-    router.navigate("/trips");
+    setIsWarningModalVisible(true);
   };
 
   const handleSubmit = async () => {
     if (!validateForm()) return;
 
-    const tripRequest: CreateTripRequest = {
+    const tripRequest: Omit<CreateTripRequest, "id"> = {
       name: tripName,
       numberOfTravelers: parseInt(numberOfPeople),
       startDate: formatDateToISO(range.startDate),
@@ -360,6 +401,22 @@ const AddingTripView = () => {
         />
       </ScrollView>
       <LoadingView show={loading} />
+      <CustomModal
+        visible={isWarningModalVisible}
+        onDismiss={handleDismissWarningModal}
+      >
+        <Text style={styles.modalTitleText}>
+          Czy na pewno chcesz opuścić tworzenie wycieczki?
+        </Text>
+        <ActionTextButtons
+          onAction1={handleDismissWarningModal}
+          onAction2={goBack}
+          action1ButtonLabel="Nie"
+          action2ButtonLabel="Tak"
+          action1Icon={undefined}
+          action2Icon={undefined}
+        />
+      </CustomModal>
     </>
   );
 };
@@ -395,5 +452,9 @@ const createStyles = (theme: MD3Theme) =>
       marginHorizontal: "5%",
       color: theme.colors.error,
       alignSelf: "flex-start",
+    },
+    modalTitleText: {
+      ...theme.fonts.titleLarge,
+      color: theme.colors.onBackground,
     },
   });

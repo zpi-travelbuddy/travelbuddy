@@ -13,6 +13,6 @@ public class TripSummaryDTO
     public List<TripDayStatistics>? TripDays { get; set; }
 }
 
-public record TripPointStatistics(string? Name, decimal TotalSpendings);
+public record TripPointStatistics(string? Name, decimal PredictedCost, decimal ActualCost);
 
 public record TripDayStatistics(DateOnly Date, List<TripPointStatistics> TripPoints);

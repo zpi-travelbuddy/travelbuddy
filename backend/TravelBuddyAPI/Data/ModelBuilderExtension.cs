@@ -48,7 +48,7 @@ public static class ModelBuilderExtension
                     {"cave_entrance", new PlaceCategory { Id = Guid.NewGuid(), Name = "cave_entrance" }},
                 {"sand", new PlaceCategory { Id = Guid.NewGuid(), Name = "sand" }},
                     {"dune", new PlaceCategory { Id = Guid.NewGuid(), Name = "dune" }},
-            {"national park", new PlaceCategory { Id = Guid.NewGuid(), Name = "national park" }},
+            {"national park", new PlaceCategory { Id = Guid.NewGuid(), Name = "national_park" }},
             {"tourism", new PlaceCategory { Id = Guid.NewGuid(), Name = "tourism" }},
                 {"attraction", new PlaceCategory { Id = Guid.NewGuid(), Name = "attraction" }},
                     {"artwork", new PlaceCategory { Id = Guid.NewGuid(), Name = "artwork" }},
@@ -434,7 +434,7 @@ public static class ModelBuilderExtension
             {"dogs", new PlaceCondition { Id = Guid.NewGuid(), Name = "dogs" }},
                 {"yes_dogs", new PlaceCondition { Id = Guid.NewGuid(), Name = "yes" }},
                 {"leashed_dogs", new PlaceCondition { Id = Guid.NewGuid(), Name = "leashed" }},
-            {"no-dogs", new PlaceCondition { Id = Guid.NewGuid(), Name = "no-dogs" }},
+            {"no-dogs", new PlaceCondition { Id = Guid.NewGuid(), Name = "no_dogs" }},
             {"access", new PlaceCondition { Id = Guid.NewGuid(), Name = "access" }},
                 {"yes_access", new PlaceCondition { Id = Guid.NewGuid(), Name = "yes" ,Description="Places that are available for public"}},
                 {"not_specified_access", new PlaceCondition { Id = Guid.NewGuid(), Name = "not_specified" }},
@@ -710,7 +710,7 @@ public static class ModelBuilderExtension
 
             new TripPoint { Id = Guid.NewGuid(), Name = "Samolot MIG", Comment = "Czy to lata?", TripDayId = tripDays[1].Id, PredictedCost = 0, StartTime = new TimeOnly(12,30,0), EndTime = new TimeOnly(12,40,0), Status = 0, PlaceId = providerPlaces[4].Id, ExchangeRate = 1},
             new TripPoint { Id = Guid.NewGuid(), Name = "Pomnik 60 Pułku Piechoty", TripDayId = tripDays[1].Id, PredictedCost = 0, StartTime = new TimeOnly(13,0,0), EndTime = new TimeOnly(13,10,0), Status = 0, PlaceId = providerPlaces[5].Id, ExchangeRate = 1},
-            new TripPoint { Id = Guid.NewGuid(), Name = "Bistro Bravo", Comment = "Czas na jedzonko", TripDayId = tripDays[1].Id, PredictedCost = 30, StartTime = new TimeOnly(14,0,0), EndTime = new TimeOnly(15,30,0), Status = 0, PlaceId = providerPlaces[6].Id, ExchangeRate = 1, OpeningTime = new TimeOnly(12,0,0), ClosingTime = new TimeOnly(0,0,0)},
+            new TripPoint { Id = Guid.NewGuid(), Name = "Bistro Bravo", Comment = "Czas na jedzonko", TripDayId = tripDays[1].Id, PredictedCost = 30, StartTime = new TimeOnly(14,0,0), EndTime = new TimeOnly(15,30,0), Status = 0, PlaceId = providerPlaces[6].Id, ExchangeRate = 1, OpeningTime = new TimeOnly(12,0,0), ClosingTime = TimeOnly.MaxValue},
             new TripPoint { Id = Guid.NewGuid(), Name = "Parowóz TKi3-120", TripDayId = tripDays[1].Id, PredictedCost = 0, StartTime = new TimeOnly(16,30,0), EndTime = new TimeOnly(17,0,0), Status = 0, PlaceId = CustomPlaces[2].Id, ExchangeRate = 1},
         
 
@@ -723,7 +723,7 @@ public static class ModelBuilderExtension
 
             new TripPoint { Id = Guid.NewGuid(), Name = "Samolot MIG", Comment = "Czy to lata?", TripDayId = tripDays[3].Id, PredictedCost = 0, StartTime = new TimeOnly(12,30,0), EndTime = new TimeOnly(12,40,0), Status = TripPointStatus.reviewPending, PlaceId = providerPlaces[4].Id, ExchangeRate = 1},
             new TripPoint { Id = Guid.NewGuid(), Name = "Pomnik 60 Pułku Piechoty", TripDayId = tripDays[3].Id, PredictedCost = 0, StartTime = new TimeOnly(13,0,0), EndTime = new TimeOnly(13,10,0), Status = TripPointStatus.reviewPending, PlaceId = providerPlaces[5].Id, ExchangeRate = 1},
-            new TripPoint { Id = Guid.NewGuid(), Name = "Bistro Bravo", Comment = "Czas na jedzonko", TripDayId = tripDays[3].Id, PredictedCost = 30, StartTime = new TimeOnly(14,0,0), EndTime = new TimeOnly(15,30,0), Status = TripPointStatus.reviewCompleted, PlaceId = providerPlaces[6].Id, ExchangeRate = 1, OpeningTime = new TimeOnly(12,0,0), ClosingTime = new TimeOnly(0,0,0)},
+            new TripPoint { Id = Guid.NewGuid(), Name = "Bistro Bravo", Comment = "Czas na jedzonko", TripDayId = tripDays[3].Id, PredictedCost = 30, StartTime = new TimeOnly(14,0,0), EndTime = new TimeOnly(15,30,0), Status = TripPointStatus.reviewCompleted, PlaceId = providerPlaces[6].Id, ExchangeRate = 1, OpeningTime = new TimeOnly(12,0,0), ClosingTime = TimeOnly.MaxValue},
             new TripPoint { Id = Guid.NewGuid(), Name = "Parowóz TKi3-120", TripDayId = tripDays[3].Id, PredictedCost = 5, StartTime = new TimeOnly(16,30,0), EndTime = new TimeOnly(17,0,0), Status = TripPointStatus.reviewCompleted, PlaceId = CustomPlaces[5].Id, ExchangeRate = 1}
         };
 

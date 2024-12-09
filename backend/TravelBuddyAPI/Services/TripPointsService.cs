@@ -385,7 +385,7 @@ public class TripPointsService(TravelBuddyDbContext dbContext, INBPService nbpSe
 
             if (tripPointReview.ActualCostPerPerson * 100 % 1 != 0) throw new ArgumentException(ErrorMessage.TooManyDecimalPlaces);
             if (tripPoint.Review != null) throw new InvalidOperationException(ErrorMessage.TripPointReviewExists);
-            if (tripPoint.Status != TripPointStatus.reviewPending) throw new InvalidOperationException($"{ErrorMessage.TripPointWrongStatus} {tripPoint.Status.ToString()}");
+            if (tripPoint.Status != TripPointStatus.reviewPending && tripPoint.Status != TripPointStatus.reviewRejected) throw new InvalidOperationException($"{ErrorMessage.TripPointWrongStatus} {tripPoint.Status.ToString()}");
 
             decimal? exchangeRate = tripPointReview.ActualCostPerPerson.HasValue ? (await _nbpService.GetRateAsync(tripPoint?.TripDay?.Trip?.CurrencyCode ?? string.Empty) ?? throw new InvalidOperationException(ErrorMessage.RetriveExchangeRate)) : null;
 
