@@ -40,6 +40,12 @@ public class PlacesService(TravelBuddyDbContext dbContext, IGeoapifyService geoa
         {
             var placeDetails = await _geoapifyService.GetPlaceDetailsAsync(providerPlace.ProviderId);
             _ = placeDetails ?? throw new ArgumentException(ErrorMessages.IncorrectProviderPlaceId);
+            var existingPlace = await GetExistingProviderPlaceAsync(placeDetails);
+            if (existingPlace is not null)
+            {
+                return await GetPlaceDetailsAsync(existingPlace.Id);
+            }
+
             providerPlace.Id = Guid.NewGuid();
 
             var categories = placeDetails.Categories is not null
@@ -125,7 +131,7 @@ public class PlacesService(TravelBuddyDbContext dbContext, IGeoapifyService geoa
 
     private async Task<List<PlaceOverviewDTO>> PlacesToOverviewDTOsAsync(List<ProviderPlace> places)
     {
-        var existingPlaces = await GetExistingProviderPlacesListAsync(places);
+        var existingPlaces = await GetExistingProviderPlacesListAsync(places); // TODO refactor
 
         return places?.Select(p =>
             {
@@ -163,15 +169,9 @@ public class PlacesService(TravelBuddyDbContext dbContext, IGeoapifyService geoa
             Longitude = place.Longitude,
         };
 
-        if (place is ProviderPlace)
+        if (place is ProviderPlace providerPlace)
         {
-            ProviderPlace providerPlace = await _dbContext.Places
-                .OfType<ProviderPlace>()
-                .Include(p => p.Categories)
-                .Include(p => p.Conditions)
-                .Include(p => p.Reviews)
-                .Where(p => p.Id == place.Id)
-                .FirstAsync();
+            providerPlace = await GetExistingProviderPlaceAsync(providerPlace) ?? providerPlace;
 
             placeDetails.ProviderId = providerPlace.ProviderId;
             placeDetails.Categories = providerPlace.Categories?
@@ -253,11 +253,6 @@ public class PlacesService(TravelBuddyDbContext dbContext, IGeoapifyService geoa
         {
             return await GetPlaceDetailsAsync(existingPlace.Id);
         }
-    }
-
-    public async Task<ProviderPlace?> GetProviderPlaceAsync(string providerId) // TODO refactor
-    {
-        return await _geoapifyService.GetPlaceDetailsAsync(providerId);
     }
 
     public async Task<List<PlaceOverviewDTO>> GetPlaceRecommendationsAsync((decimal latitude, decimal longitude) location, double radius, IEnumerable<PlaceCategory> categories, IEnumerable<PlaceCondition>? conditions = null, int? limit = null)

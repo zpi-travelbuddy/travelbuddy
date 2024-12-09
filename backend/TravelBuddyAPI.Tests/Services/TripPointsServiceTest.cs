@@ -85,8 +85,6 @@ public class TripPointsServiceTest : IDisposable
         _mockPlacesService.Setup(s => s.AddPlaceAsync(It.IsAny<PlaceRequestDTO>()))
             .ReturnsAsync(new PlaceDetailsDTO { Id = place.Id, Name = place.Name, City = place.City, Country = place.Country });
 
-        _mockPlacesService.Setup(s => s.GetProviderPlaceAsync(It.IsAny<string>()))
-            .ReturnsAsync(place);
 
 
         // Act
@@ -366,9 +364,6 @@ public class TripPointsServiceTest : IDisposable
         _mockPlacesService.Setup(s => s.AddPlaceAsync(It.IsAny<PlaceRequestDTO>()))
             .ReturnsAsync(new PlaceDetailsDTO { Id = place.Id, Name = place.Name, City = place.City, Country = place.Country });
 
-        _mockPlacesService.Setup(s => s.GetProviderPlaceAsync(It.IsAny<string>()))
-            .ReturnsAsync(place);
-
         // Act & Assert
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _tripPointsService.CreateTripPointAsync(userId, tripPointRequest));
         Assert.Equal($"{ITripPointsService.ErrorMessage.CreateTripPoint} {ITripPointsService.ErrorMessage.TripPointOverlap}", exception.Message);
@@ -443,9 +438,6 @@ public class TripPointsServiceTest : IDisposable
 
         _mockPlacesService.Setup(s => s.AddPlaceAsync(It.IsAny<PlaceRequestDTO>()))
             .ReturnsAsync(new PlaceDetailsDTO { Id = place.Id, Name = place.Name, City = place.City, Country = place.Country });
-
-        _mockPlacesService.Setup(s => s.GetProviderPlaceAsync(It.IsAny<string>()))
-            .ReturnsAsync(place);
 
         // Act
         var result = await _tripPointsService.CreateTripPointAsync(userId, tripPointRequest);
@@ -845,8 +837,6 @@ public class TripPointsServiceTest : IDisposable
         _mockPlacesService.Setup(s => s.AddPlaceAsync(It.IsAny<PlaceRequestDTO>()))
             .ReturnsAsync(new PlaceDetailsDTO { Id = place.Id, Name = place.Name, City = place.City, Country = place.Country });
 
-        _mockPlacesService.Setup(s => s.GetProviderPlaceAsync(It.IsAny<string>()))
-            .ReturnsAsync(place);
 
         // Act
         var result = await _tripPointsService.CreateTripPointAsync(userId, tripPointRequest);
@@ -937,9 +927,6 @@ public class TripPointsServiceTest : IDisposable
         _mockPlacesService.Setup(s => s.AddPlaceAsync(It.IsAny<PlaceRequestDTO>()))
             .ReturnsAsync(new PlaceDetailsDTO { Id = place.Id, Name = place.Name, City = place.City, Country = place.Country });
 
-        _mockPlacesService.Setup(s => s.GetProviderPlaceAsync(It.IsAny<string>()))
-            .ReturnsAsync(place);
-
         // Act
         var result = await _tripPointsService.CreateTripPointAsync(userId, tripPointRequest);
 
@@ -1010,9 +997,6 @@ public class TripPointsServiceTest : IDisposable
 
         _mockPlacesService.Setup(s => s.AddPlaceAsync(It.IsAny<PlaceRequestDTO>()))
             .ReturnsAsync(new PlaceDetailsDTO { Id = newPlace.Id, Name = newPlace.Name, City = newPlace.City, Country = newPlace.Country });
-
-        _mockPlacesService.Setup(s => s.GetProviderPlaceAsync(It.IsAny<string>()))
-            .ReturnsAsync(newPlace);
 
         // Act
         var result = await _tripPointsService.EditTripPointAsync(userId, tripPointId, tripPointRequest);
