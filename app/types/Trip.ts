@@ -25,7 +25,7 @@ export interface TripViewModel {
   conditionProfileName: string;
 }
 
-export interface TripRequest {
+export interface CreateTripRequest {
   id: string;
   name: string;
   numberOfTravelers: number;
@@ -36,6 +36,10 @@ export interface TripRequest {
   currencyCode: string;
   categoryProfileId?: string | null;
   conditionProfileId?: string | null;
+}
+
+export interface TripRequest extends CreateTripRequest {
+  id: string;
 }
 
 export interface TripDetails extends TripRequest {

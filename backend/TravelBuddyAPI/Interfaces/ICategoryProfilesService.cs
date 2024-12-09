@@ -15,6 +15,7 @@ public interface ICategoryProfilesService
         public const string CreatingCategoryProfile = "An error occurred while creating a category profile.";
         public const string EditingCategoryProfile = "An error occurred while editing a category profile.";
         public const string DeletingCategoryProfile = "An error occurred while deleting a category profile.";
+        public const string NoCategoriesInProfile = "Category profile has no categories.";
     }
 
     /// <summary>

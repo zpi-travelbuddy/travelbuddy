@@ -39,6 +39,7 @@ import { Place } from "@/types/Place";
 import { getDisplayPlace } from "@/utils/TextUtils";
 import { Profile, ProfileType } from "@/types/Profile";
 import { useDynamicProfiles } from "@/composables/useProfiles";
+
 import { onEndEditingStringOnObject } from "@/utils/validations";
 
 const { height, width } = Dimensions.get("window");
@@ -319,13 +320,18 @@ const EditTripView = () => {
 
   const handleProfileSelection = useCallback(
     (profile: Profile) => {
-      console.log("New selected profile: " + profile.name);
       if (profileType === "Category") {
-        setCategoryProfileId(profile.id);
-        handleChange("categoryProfileId")(profile.id);
+        setCategoryProfileId((prevId) => {
+          const newId = prevId === profile.id ? null : profile.id;
+          handleChange("categoryProfileId")(newId);
+          return newId;
+        });
       } else {
-        setConditionProfileId(profile.id);
-        handleChange("conditionProfileId")(profile.id);
+        setConditionProfileId((prevId) => {
+          const newId = prevId === profile.id ? null : profile.id;
+          handleChange("conditionProfileId")(newId);
+          return newId;
+        });
       }
     },
     [profileType],

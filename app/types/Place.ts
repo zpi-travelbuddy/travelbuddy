@@ -17,41 +17,21 @@ export interface PlaceViewModel {
   imageUrl?: string;
 }
 
-export interface Place {
-  id: string;
-  providerId: string;
+export interface Place extends PlaceCompact {
   superCategoryId?: string;
-  name: string;
-  country?: string;
-  state?: string;
-  city: string;
   street?: string;
   houseNumber?: string;
   latitude?: number;
   longitude?: number;
 }
 
-export interface PlaceOverview {
-  id?: string;
-  providerId?: string;
-  name: string;
-  country?: string;
-  state?: string;
-  city?: string;
+export interface PlaceOverview extends PlaceCompact {
   street?: string;
   houseNumber?: string;
   superCategory: Category;
 }
 
-export interface PlaceDetails {
-  id: string;
-  providerId: string;
-  name: string;
-  country: string;
-  state: string;
-  city: string;
-  street: string;
-  houseNumber: string;
+export interface PlaceDetails extends PlaceOverview {
   latitude: number;
   longitude: number;
   averageCostPerPerson: number;
@@ -59,5 +39,4 @@ export interface PlaceDetails {
   averageRating: number;
   conditions: Condition[];
   categories: Category[];
-  superCategory: Category;
 }

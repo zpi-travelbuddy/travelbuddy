@@ -468,9 +468,13 @@ const TripDayView = () => {
   ]);
 
   const handleTripPointPress = (tripPoint: TripPointCompact) => {
-    router.navigate(
-      `/trips/details/${trip_id}/day/${day_id}/tripPoints/details/${tripPoint.id}`,
-    );
+    router.navigate({
+      // @ts-ignore
+      pathname: `/trips/details/${trip_id}/day/${day_id}/tripPoints/details/${tripPoint.id}`,
+      params: {
+        date: new Date(tripDay?.date as string).toLocaleDateString(),
+      },
+    });
   };
 
   const handleTripPointLongPress = (tripPoint: TripPointCompact) => {
@@ -599,9 +603,13 @@ const TripDayView = () => {
         onPress: () => {
           setIsTripPointSheetVisible(false);
           setIsVisible(VisibilityState.None);
-          router.navigate(
-            `/trips/details/${trip_id}/day/${day_id}/tripPoints/details/${selectedTripPoint.id}`,
-          );
+          router.navigate({
+            // @ts-ignore
+            pathname: `/trips/details/${trip_id}/day/${day_id}/tripPoints/details/${selectedTripPoint.id}`,
+            params: {
+              date: new Date(tripDay?.date as string).toLocaleDateString(),
+            },
+          });
         },
       },
       {
@@ -610,6 +618,7 @@ const TripDayView = () => {
         onPress: () => {
           setIsTripPointSheetVisible(false);
           router.push({
+            // @ts-ignore
             pathname: `/(auth)/(tabs)/trips/details/${trip_id}/day/${day_id}/tripPoints/edit/${selectedTripPoint.id}`,
             params: {
               date: new Date(tripDay?.date as string).toLocaleDateString(),
