@@ -21,6 +21,7 @@ import {
 import {
   ADD_NOTIFICATION_ICON_MATERIAL,
   CALENDAR_ADD_ICON_MATERIAL,
+  DEFAULT_ICON_SIZE,
   DELETE_ICON,
   EDIT_ICON_MATERIAL,
   REMOVE_NOTIFICATION_ICON_MATERIAL,
@@ -51,6 +52,12 @@ import useTripNotificationManager from "@/hooks/useTripNotificationManager";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import NotificationFormBottomSheet from "@/components/NotificationFormBottomSheet";
 import { useTripDetails } from "@/composables/useTripDetails";
+import IconComponent from "@/components/IconComponent";
+import {
+  CategoryIcons,
+  DEFAULT_CATEGORY_NAME,
+  CategoryLabelsForTripCategory,
+} from "@/types/Profile";
 
 const LABELS: Record<string, string> = {
   name: "Nazwa punktu",
@@ -205,7 +212,6 @@ const TripPointDetailsView = () => {
   );
 
   const notificationId = getNotificationId(tripPoint?.id || "");
-
   const hideModal = () => setIsModalVisible(false);
   const showRemovalModal = () => setIsModalVisible(true);
 
@@ -379,9 +385,33 @@ const TripPointDetailsView = () => {
                 key={key}
                 title={LABELS[key]}
                 element={
-                  <Text style={styles.value}>
-                    {value?.toString() || "Brak danych"}
-                  </Text>
+                  key === "category" ? (
+                    <View style={styles.rowContainer}>
+                      <IconComponent
+                        source={
+                          CategoryIcons[
+                            tripPoint?.place?.superCategory?.name ??
+                              DEFAULT_CATEGORY_NAME
+                          ]
+                        }
+                        iconSize={DEFAULT_ICON_SIZE}
+                        color={theme.colors.onSurface}
+                        backgroundColor={theme.colors.primaryContainer}
+                      />
+                      <Text style={styles.label}>
+                        {
+                          CategoryLabelsForTripCategory[
+                            tripPoint?.place?.superCategory?.name ??
+                              DEFAULT_CATEGORY_NAME
+                          ]
+                        }
+                      </Text>
+                    </View>
+                  ) : (
+                    <Text style={styles.value}>
+                      {value?.toString() || "Brak danych"}
+                    </Text>
+                  )
                 }
               />
             ))}
@@ -507,4 +537,17 @@ const createStyles = (theme: MD3ThemeExtended) =>
       marginBottom: 80,
     },
     divider: { marginVertical: 10 },
+    rowContainer: {
+      flexDirection: "row",
+      alignItems: "center",
+      flex: 3,
+      paddingTop: 10,
+      width: "100%",
+    },
+    label: {
+      ...theme.fonts.bodyLarge,
+      marginLeft: 10,
+      textAlign: "center",
+      color: theme.colors.onBackground,
+    },
   });
