@@ -53,13 +53,6 @@ public interface IPlacesService
     Task<PlaceDetailsDTO> GetPlaceDetailsAsync(string providerId);
 
     /// <summary>
-    /// Retrieves the ProviderPlace based on the provider identifier.
-    /// </summary>
-    /// <param name="providerId">The unique identifier of the provider place.</param>
-    /// <returns>A task that represents the asynchronous operation. The task result contains a <see cref="ProviderPlace"/>.</returns>
-    Task<ProviderPlace?> GetProviderPlaceAsync(string providerId);
-
-    /// <summary>
     /// Adds a new place based on the provided place request data.
     /// </summary>
     /// <param name="place">The data transfer object containing the place information.</param>

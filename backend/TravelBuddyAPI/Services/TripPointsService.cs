@@ -64,7 +64,7 @@ public class TripPointsService(TravelBuddyDbContext dbContext, INBPService nbpSe
 
             _ = tripPoint.Place ?? throw new InvalidOperationException(ErrorMessage.EmptyPlace);
 
-            Guid placeId = (tripPoint.Place.ProviderId is not null ? await GetPlaceIdAsync(tripPoint.Place.ProviderId) : null) ?? (await _placesService.AddPlaceAsync(tripPoint.Place)).Id;
+            Guid placeId = (await _placesService.AddPlaceAsync(tripPoint.Place)).Id;
 
             ProviderPlace? providerPlace = await _dbContext.Places.OfType<ProviderPlace>().FirstOrDefaultAsync(pp => pp.Id == placeId);
             var openingHours = providerPlace?.GetOpenningHours(tripDay!.Date);
@@ -99,17 +99,6 @@ public class TripPointsService(TravelBuddyDbContext dbContext, INBPService nbpSe
             if (_dbContext.Database.CurrentTransaction != null) await _dbContext.Database.RollbackTransactionAsync();
             throw new InvalidOperationException($"{ErrorMessage.CreateTripPoint} {e.Message}");
         }
-    }
-
-    private async Task<Guid?> GetPlaceIdAsync(string providerId)
-    {
-        var fetchedPlace = await _placesService.GetProviderPlaceAsync(providerId) ?? throw new InvalidOperationException(ErrorMessage.ProviderPlaceNotFound);
-
-        return await _dbContext.Places
-            .OfType<ProviderPlace>()
-            .Where(p => p.ProviderId == fetchedPlace.ProviderId)
-            .Select(p => (Guid?)p.Id)
-            .FirstOrDefaultAsync();
     }
 
     public async Task<bool> DeleteTripPointAsync(string userId, Guid tripPointId)
@@ -235,7 +224,7 @@ public class TripPointsService(TravelBuddyDbContext dbContext, INBPService nbpSe
             }
 
             _ = tripPoint.Place ?? throw new InvalidOperationException(ErrorMessage.EmptyPlace);
-            Guid placeId = (tripPoint.Place.ProviderId is not null ? await GetPlaceIdAsync(tripPoint.Place.ProviderId) : null) ?? (await _placesService.AddPlaceAsync(tripPoint.Place)).Id;
+            Guid placeId = (await _placesService.AddPlaceAsync(tripPoint.Place)).Id;
 
             if (existingTripPoint.PlaceId != placeId && existingTripPoint.Place is CustomPlace customPlace)
             {
