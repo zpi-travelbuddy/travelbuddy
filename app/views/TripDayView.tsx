@@ -164,6 +164,13 @@ const TripDayView = () => {
         icon: RECOMMENDATION_ICON,
         label: "Rekomendacje",
         onPress: () => {
+          router.navigate({
+            // @ts-ignore
+            pathname: `/trips/details/${trip_id}/day/${day_id}/recommendations`,
+            params: {
+              date: new Date(tripDay?.date as string).toLocaleDateString(),
+            },
+          });
           setIsVisible(VisibilityState.None);
         },
       },
