@@ -15,6 +15,7 @@ import {
   TransferPoint,
   TransferTypeLabels,
   TransferType,
+  TripPointStatus,
 } from "@/types/TripDayData";
 import {
   BICYCLE_ICON,
@@ -31,6 +32,7 @@ import {
   ADD_NOTIFICATION_ICON,
   REMOVE_NOTIFICATION_ICON,
   CALENDAR_ADD_ICON,
+  FILL_SURVEY_ICON,
 } from "@/constants/Icons";
 import { Option } from "@/types/TripDayData";
 import useTripDayDetails from "@/composables/useTripDay";
@@ -41,6 +43,8 @@ import {
   formatTimeRange,
   formatMinutes,
   convertTimestampToDateTime,
+  combineDateAndTime,
+  getTimeWithoutSeconds,
 } from "@/utils/TimeUtils";
 import ActionTextButtons from "@/components/ActionTextButtons";
 import CustomModal from "@/components/CustomModal";
@@ -53,6 +57,7 @@ import {
 } from "@/utils/notifications";
 import NotificationFormBottomSheet from "@/components/NotificationFormBottomSheet";
 import { addEventToMainCalendar } from "@/utils/calendar";
+import { API_REJECT_REVIEW } from "@/constants/Endpoints";
 
 const { width } = Dimensions.get("window");
 
@@ -68,6 +73,8 @@ enum VisibilityState {
 type TransferPointData =
   | TransferPoint
   | { fromTripPointId: string; toTripPointId: string };
+
+type ModalMode = "delete" | "survey";
 
 const TripDayView = () => {
   const theme = useTheme();
@@ -129,6 +136,37 @@ const TripDayView = () => {
   const [isNotificationFormVisible, setIsNotificationFormVisible] =
     useState<boolean>(false);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
+
+  const [modalMode, setModalMode] = useState<ModalMode>("delete");
+
+  const onSurveyFillOut = () => {
+    console.log("onSurveyFillOut");
+    hideModal();
+    if (selectedTripPoint)
+      router.push(
+        `/(auth)/(tabs)/trips/details/${trip_id}/day/${day_id}/tripPoints/${selectedTripPoint.id}/survey`,
+      );
+    else showSnackbar("Wystąpił błąd!", "error");
+  };
+
+  const onSurveyReject = async () => {
+    console.log("onSurveyReject");
+    if (selectedTripPoint)
+      try {
+        setLoadingOverlay(true);
+        const response = await api!.patch(
+          `${API_REJECT_REVIEW}/${selectedTripPoint.id}`,
+        );
+        console.log(JSON.stringify(response.data));
+        await refetchDayData();
+      } catch (err: any) {
+        console.error(JSON.stringify(err.response.data));
+      } finally {
+        setLoadingOverlay(false);
+      }
+    hideModal();
+    setSelectedTripPoint(null);
+  };
 
   const options: Option[] = useMemo(
     () => [
@@ -467,6 +505,7 @@ const TripDayView = () => {
   ]);
 
   const handleTripPointPress = (tripPoint: TripPointCompact) => {
+    setSelectedTripPoint(tripPoint);
     router.navigate({
       // @ts-ignore
       pathname: `/trips/details/${trip_id}/day/${day_id}/tripPoints/details/${tripPoint.id}`,
@@ -649,6 +688,17 @@ const TripDayView = () => {
           },
         },
       ),
+      ...conditionalItem(
+        [
+          TripPointStatus.REVIEW_PENDING,
+          TripPointStatus.REVIEW_REJECTED,
+        ].includes(selectedTripPoint.status as TripPointStatus),
+        {
+          label: "Wypełnij ankietę",
+          icon: FILL_SURVEY_ICON,
+          onPress: onSurveyFillOut,
+        },
+      ),
       {
         label: "Dodaj do kalendarza",
         icon: CALENDAR_ADD_ICON,
@@ -697,9 +747,25 @@ const TripDayView = () => {
     await refetchDayData();
   };
 
-  if (loading) {
-    return <LoadingView />;
-  }
+  const openSurveyModal = (fromTripPoint: TripPointCompact) => {
+    return () => {
+      setSelectedTripPoint(fromTripPoint);
+      setModalMode("survey");
+      setIsModalVisible(true);
+    };
+  };
+
+  const isFillSurvey = (tripPoint: TripPointCompact): boolean => {
+    if (tripPoint.status !== TripPointStatus.REVIEW_PENDING) return false;
+    if (tripDay?.date) {
+      const formattedDate = new Date(tripDay?.date as string);
+      const today = combineDateAndTime(new Date(), tripPoint.endTime);
+      return formattedDate < today;
+    }
+    return false;
+  };
+
+  if (loading) return <LoadingView />;
 
   if (error) {
     router.back();
@@ -729,6 +795,8 @@ const TripDayView = () => {
                     onPress={() => handleTripPointPress(fromTripPoint)}
                     onLongPress={() => handleTripPointLongPress(fromTripPoint)}
                     tripPoint={fromTripPoint}
+                    isFillSurvey={isFillSurvey}
+                    openSurveyModal={openSurveyModal(fromTripPoint)}
                   />
                   {renderTransferPoint(fromTripPoint, index)}
                 </Fragment>
@@ -776,22 +844,26 @@ const TripDayView = () => {
         <CustomModal visible={isModalVisible} onDismiss={hideModal}>
           <View>
             <Text style={styles.modalTitleText}>
-              Czy na pewno chcesz usunąć tą wycieczkę?
+              {modalMode === "delete"
+                ? "Czy na pewno chcesz usunąć ten punkt wycieczki?"
+                : "Czy chcesz wypełnić ankietę dot. odwiedzonego punktu wycieczki?"}
             </Text>
             <View style={styles.modalContent}>
               <Text style={styles.boldText}>{selectedTripPoint?.name}</Text>
               <Text style={styles.modalSubtitle}>
                 {formatTimeRange(
-                  selectedTripPoint?.startTime || "",
-                  selectedTripPoint?.endTime || "",
+                  getTimeWithoutSeconds(selectedTripPoint?.startTime || ""),
+                  getTimeWithoutSeconds(selectedTripPoint?.endTime || ""),
                 )}
               </Text>
             </View>
             <ActionTextButtons
-              onAction1={hideModal}
-              onAction2={onDeleteTripPoint}
-              action1ButtonLabel="Anuluj"
-              action2ButtonLabel="Usuń"
+              onAction1={modalMode === "delete" ? hideModal : onSurveyReject}
+              onAction2={
+                modalMode === "delete" ? onDeleteTripPoint : onSurveyFillOut
+              }
+              action1ButtonLabel={modalMode === "delete" ? "Anuluj" : "Nie"}
+              action2ButtonLabel={modalMode === "delete" ? "Usuń" : "Tak"}
               action1Icon={undefined}
               action2Icon={undefined}
             />

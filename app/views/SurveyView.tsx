@@ -107,6 +107,7 @@ const SurveyView = () => {
         reviewRequest,
       );
       router.back();
+      router.setParams({ refresh: "true" });
       showSnackbar("Pomyślnie dodano recenzję!", "success");
     } catch (err: any) {
       console.error(err.response.data);

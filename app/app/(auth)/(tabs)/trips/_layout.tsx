@@ -48,6 +48,10 @@ export default function StackLayout() {
         name="place/[place_id]"
         options={{ title: "Szczegóły atrakcji" }}
       />
+      <Stack.Screen
+        name="details/[trip_id]/day/[day_id]/tripPoints/[trip_point_id]/survey/index"
+        options={{ title: "Ankieta punktu wycieczki" }}
+      />
     </Stack>
   );
 }
