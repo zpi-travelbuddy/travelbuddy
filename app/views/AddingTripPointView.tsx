@@ -53,6 +53,7 @@ import {
   requiredFieldsForTripPoint,
   onEndEditingString,
 } from "@/utils/validations";
+import { findAttractionCategory } from "@/utils/CategoryUtils";
 
 const { height, width } = Dimensions.get("window");
 
@@ -177,7 +178,8 @@ const AddingTripPointView = () => {
         );
         setTripPointCategory(
           getCategoryByName(
-            destinationDetails.superCategory?.name ?? DEFAULT_CATEGORY_NAME,
+            destinationDetails.superCategory?.name ??
+              findAttractionCategory(destinationDetails),
           ),
         );
       } else {

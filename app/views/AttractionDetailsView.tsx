@@ -19,14 +19,9 @@ import LoadingView from "./LoadingView";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useSnackbar } from "@/context/SnackbarContext";
 import ConditionIcons from "@/components/ConditionIcons";
-import {
-  CATEGORY_NAME_LIST,
-  CategoryIcons,
-  CategoryLabelsForTripCategory,
-  DEFAULT_CATEGORY_NAME,
-} from "@/types/Profile";
-import { PlaceDetails } from "@/types/Place";
+import { CategoryIcons, CategoryLabelsForTripCategory } from "@/types/Profile";
 import { createLocationURL } from "@/utils/maps";
+import { findAttractionCategory } from "@/utils/CategoryUtils";
 
 const { height, width } = Dimensions.get("window");
 
@@ -45,15 +40,6 @@ const AttractionDetailsView = () => {
   );
 
   useEffect(() => console.log(JSON.stringify(placeDetails)), [placeDetails]);
-
-  const findAttractionCategory = (placeDetails: PlaceDetails) => {
-    if (placeDetails.superCategory) return placeDetails.superCategory.name;
-
-    const category = placeDetails.categories.find((category) =>
-      CATEGORY_NAME_LIST.includes(category.name),
-    );
-    return category?.name ?? DEFAULT_CATEGORY_NAME;
-  };
 
   if (loading) return <LoadingView />;
 
@@ -114,7 +100,11 @@ const AttractionDetailsView = () => {
                 backgroundColor={theme.colors.primaryContainer}
               />
               <Text style={styles.label}>
-                {CategoryLabelsForTripCategory["tourism"]}
+                {
+                  CategoryLabelsForTripCategory[
+                    findAttractionCategory(placeDetails)
+                  ]
+                }
               </Text>
             </View>
 
