@@ -410,14 +410,6 @@ const EditingTripPointView = () => {
       <GestureHandlerRootView>
         <ScrollView style={styles.scrollView}>
           <View style={styles.container}>
-            <Image
-              source={{
-                uri: "https://upload.wikimedia.org/wikipedia/commons/1/1a/Big_Ben..JPG",
-              }}
-              style={styles.image}
-              resizeMode="cover"
-            />
-
             <TextInput
               mode="outlined"
               style={styles.textInput}
