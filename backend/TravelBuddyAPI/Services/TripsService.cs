@@ -74,7 +74,7 @@ public class TripsService(TravelBuddyDbContext dbContext, INBPService nbpService
     {
         PlaceRequestDTO placeRequest = new() { ProviderId = providerId };
         var newDestination = await _placesService.AddPlaceAsync(placeRequest);
-        return (Guid)newDestination.Id!;  //can't be null
+        return newDestination.Id!.Value;  //can't be null
     }
 
     private async Task<bool> AddTripDaysAsync(Guid tripId, DateOnly from, DateOnly to)
