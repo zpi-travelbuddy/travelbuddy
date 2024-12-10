@@ -402,7 +402,7 @@ const EditingTripPointView = () => {
   }, [startTime, endTime]);
 
   if (loading) {
-    return <LoadingView transparent={true} />;
+    return <LoadingView transparent={false} />;
   }
 
   return (
