@@ -27,7 +27,7 @@ import {
   CALENDAR_ADD_ICON_MATERIAL,
   DELETE_ICON,
   EDIT_ICON_MATERIAL,
-  FILL_SURVEY_ICON,
+  FILL_SURVEY_ICON_MATERIAL,
   REMOVE_NOTIFICATION_ICON_MATERIAL,
 } from "@/constants/Icons";
 import CustomModal from "@/components/CustomModal";
@@ -360,8 +360,9 @@ const TripPointDetailsView = () => {
                   TripPointStatus.REVIEW_REJECTED,
                 ].includes(tripPoint?.status as TripPointStatus),
               {
-                label: "Wypełnij ankietę",
-                icon: FILL_SURVEY_ICON,
+                title: "Wypełnij ankietę",
+                color: theme.colors.onSurface,
+                icon: FILL_SURVEY_ICON_MATERIAL,
                 onPress: onSurveyFillOut,
               },
             ),
@@ -377,7 +378,7 @@ const TripPointDetailsView = () => {
         },
       ],
     });
-  }, [tripDay, navigation, notificationId, tripPoint, tripDay]);
+  }, [tripDay, navigation, notificationId, tripPoint, tripDay, theme]);
 
   const handleScheduleNotification = async (
     minutes: number,
@@ -507,8 +508,8 @@ const TripPointDetailsView = () => {
               <Text style={styles.boldText}>{parsedTripPoint.name}</Text>
               <Text style={styles.modalSubtitle}>
                 {formatTimeRange(
-                  parsedTripPoint.startTime || "",
-                  parsedTripPoint.endTime || "",
+                  getTimeWithoutSeconds(parsedTripPoint.startTime || ""),
+                  getTimeWithoutSeconds(parsedTripPoint.endTime || ""),
                 )}
               </Text>
             </View>

@@ -44,6 +44,7 @@ import {
   formatMinutes,
   convertTimestampToDateTime,
   combineDateAndTime,
+  getTimeWithoutSeconds,
 } from "@/utils/TimeUtils";
 import ActionTextButtons from "@/components/ActionTextButtons";
 import CustomModal from "@/components/CustomModal";
@@ -848,8 +849,8 @@ const TripDayView = () => {
               <Text style={styles.boldText}>{selectedTripPoint?.name}</Text>
               <Text style={styles.modalSubtitle}>
                 {formatTimeRange(
-                  selectedTripPoint?.startTime || "",
-                  selectedTripPoint?.endTime || "",
+                  getTimeWithoutSeconds(selectedTripPoint?.startTime || ""),
+                  getTimeWithoutSeconds(selectedTripPoint?.endTime || ""),
                 )}
               </Text>
             </View>
