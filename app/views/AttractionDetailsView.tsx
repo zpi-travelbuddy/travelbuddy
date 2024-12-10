@@ -40,8 +40,6 @@ const AttractionDetailsView = () => {
     place_id as string,
   );
 
-  if (loading) return <LoadingView />;
-
   if (error) {
     router.back();
     showSnackbar(error?.toString() || "Unknown error", "error");
@@ -79,18 +77,13 @@ const AttractionDetailsView = () => {
       },
     });
   };
-
-  if (placeDetails) {
-    return (
+  if (!placeDetails) {
+    return <LoadingView transparent={false} />;
+  }
+  return (
+    <>
       <View style={styles.container}>
         <ScrollView contentContainerStyle={styles.scrollContent}>
-          <Image
-            source={{
-              uri: "https://upload.wikimedia.org/wikipedia/commons/1/1a/Big_Ben..JPG",
-            }}
-            style={styles.image}
-            resizeMode="cover"
-          />
           <View style={styles.labelContainer}>
             <Text variant="headlineSmall">{placeDetails.name}</Text>
             <Text variant="titleSmall">{formatAddress(placeDetails)}</Text>
@@ -153,12 +146,9 @@ const AttractionDetailsView = () => {
           action2Icon={ADD_ICON}
         />
       </View>
-    );
-  } else {
-    router.back();
-    showSnackbar("Wystąpił błąd", "error");
-    return null;
-  }
+      <LoadingView show={loading} transparent={false} />
+    </>
+  );
 };
 
 export default AttractionDetailsView;

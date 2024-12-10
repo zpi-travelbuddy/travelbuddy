@@ -415,12 +415,14 @@ const TripPointDetailsView = () => {
     return true;
   };
 
-  if (loading) return <LoadingView />;
-
   if (error) {
     router.back();
     showSnackbar(error?.toString() || "Unknown error", "error");
     return null;
+  }
+
+  if (loading) {
+    return <LoadingView transparent={false} />;
   }
 
   return (

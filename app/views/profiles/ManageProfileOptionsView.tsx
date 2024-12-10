@@ -225,7 +225,9 @@ const ManageProfileCategoryView: React.FC<ManageProfileCategoryViewProps> = ({
     );
   };
 
-  if (loading) return <LoadingView />;
+  if (loading) {
+    return <LoadingView transparent={false} />;
+  }
 
   if (error) {
     navigation.goBack();

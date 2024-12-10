@@ -272,6 +272,10 @@ const AddingTripView = () => {
     } else return "Brak";
   };
 
+  if (loading) {
+    <LoadingView transparent={false} />;
+  }
+
   return (
     <>
       <ScrollView style={styles.scrollView}>
@@ -419,7 +423,7 @@ const AddingTripView = () => {
           action2Icon={undefined}
         />
       </ScrollView>
-      <LoadingView show={loading} />
+
       <CustomModal
         visible={isWarningModalVisible}
         onDismiss={handleDismissWarningModal}

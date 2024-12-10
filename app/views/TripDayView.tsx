@@ -772,7 +772,9 @@ const TripDayView = () => {
     return false;
   };
 
-  if (loading) return <LoadingView />;
+  if (loading) {
+    return <LoadingView transparent={false} />;
+  }
 
   if (error) {
     router.back();
@@ -902,7 +904,6 @@ const TripDayView = () => {
           }}
         />
       </GestureHandlerRootView>
-      <LoadingView show={loadingOverlay} />
     </>
   );
 };

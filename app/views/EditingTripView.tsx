@@ -356,7 +356,9 @@ const EditTripView = () => {
   // SECTION: Return JSX (UI rendering)
   // =====================
 
-  if (loading) return <LoadingView />;
+  if (loading) {
+    return <LoadingView transparent={false} />;
+  }
 
   if (error) {
     router.back();

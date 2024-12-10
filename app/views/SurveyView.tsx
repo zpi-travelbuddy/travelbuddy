@@ -117,7 +117,9 @@ const SurveyView = () => {
     }
   };
 
-  if (loading) return <LoadingView transparent={true} />;
+  if (loading) {
+    return <LoadingView transparent={false} />;
+  }
 
   if (tripError) {
     router.back();
