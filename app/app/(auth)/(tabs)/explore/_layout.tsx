@@ -15,6 +15,10 @@ export default function StackLayout() {
         name="place/[place_id]"
         options={{ title: "Szczegóły atrakcji" }}
       />
+      <Stack.Screen
+        name="create/index"
+        options={{ title: "Dodanie punktu wycieczki" }}
+      />
     </Stack>
   );
 }
