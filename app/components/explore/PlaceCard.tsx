@@ -8,12 +8,21 @@ import { useRouter } from "expo-router";
 interface PlaceCardProps {
   place: PlaceViewModel;
   handleAddPress: () => void;
+  handleDetailsPress?: () => void;
 }
 
-export function PlaceCard({ place, handleAddPress }: PlaceCardProps) {
+export function PlaceCard({
+  place,
+  handleAddPress,
+  handleDetailsPress,
+}: PlaceCardProps) {
   const router = useRouter();
 
   const onDetailsPress = () => {
+    if (handleDetailsPress) {
+      handleDetailsPress();
+      return;
+    }
     console.log("Go to attraction's details", place.providerId);
     router.push(`/explore/place/${place.providerId}`);
   };

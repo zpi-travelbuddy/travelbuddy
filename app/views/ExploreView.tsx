@@ -321,15 +321,16 @@ const makeStyles = (theme: MD3ThemeExtended) =>
   StyleSheet.create({
     contentContainer: {
       paddingBottom: 20,
+      marginHorizontal: 20,
     },
     container: {
       flex: 1,
-      paddingHorizontal: 20,
-      backgroundColor: theme.colors.background,
+      backgroundColor: theme.colors.surface,
     },
     searchbar: {
       backgroundColor: theme.colors.surfaceContainerHigh,
       marginVertical: 20,
+      marginHorizontal: 20,
     },
     emptyText: {
       textAlign: "center",
