@@ -64,7 +64,7 @@ public class TripPointsService(TravelBuddyDbContext dbContext, INBPService nbpSe
 
             _ = tripPoint.Place ?? throw new InvalidOperationException(ErrorMessage.EmptyPlace);
 
-            Guid placeId = (await _placesService.AddPlaceAsync(tripPoint.Place)).Id;
+            Guid placeId = (await _placesService.AddPlaceAsync(tripPoint.Place)).Id!.Value;  //can't be null
 
             ProviderPlace? providerPlace = await _dbContext.Places.OfType<ProviderPlace>().FirstOrDefaultAsync(pp => pp.Id == placeId);
             var openingHours = providerPlace?.GetOpenningHours(tripDay!.Date);
@@ -224,7 +224,7 @@ public class TripPointsService(TravelBuddyDbContext dbContext, INBPService nbpSe
             }
 
             _ = tripPoint.Place ?? throw new InvalidOperationException(ErrorMessage.EmptyPlace);
-            Guid placeId = (await _placesService.AddPlaceAsync(tripPoint.Place)).Id;
+            Guid placeId = (await _placesService.AddPlaceAsync(tripPoint.Place)).Id!.Value; //can't be null
 
             if (existingTripPoint.PlaceId != placeId && existingTripPoint.Place is CustomPlace customPlace)
             {
