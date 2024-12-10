@@ -20,6 +20,10 @@ export default function StackLayout() {
         options={{ title: "Dodanie punktu wycieczki" }}
       />
       <Stack.Screen
+        name="details/[trip_id]/day/[day_id]/tripPoints/edit/[trip_point_id]"
+        options={{ title: "Edytowanie punktu wycieczki" }}
+      />
+      <Stack.Screen
         name="details/[trip_id]/day/[day_id]/explore/index"
         options={{ title: "Wyszukaj atrakcję" }}
       />
