@@ -233,6 +233,7 @@ public class PlacesService(TravelBuddyDbContext dbContext, IGeoapifyService geoa
         {
             return new PlaceDetailsDTO()
             {
+                Id = null,
                 ProviderId = fetchedPlace?.ProviderId,
                 Name = fetchedPlace?.Name,
                 Country = fetchedPlace?.Country,

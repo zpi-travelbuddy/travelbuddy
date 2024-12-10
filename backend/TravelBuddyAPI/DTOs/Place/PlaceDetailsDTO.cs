@@ -9,9 +9,8 @@ namespace TravelBuddyAPI.DTOs.Place;
 [NotMapped]
 public class PlaceDetailsDTO
 {
-    [Required]
     [Key]
-    public Guid Id { get; set; }
+    public Guid? Id { get; set; }
 
     public string? ProviderId { get; set; }
 
