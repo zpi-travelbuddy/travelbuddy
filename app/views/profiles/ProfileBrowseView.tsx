@@ -122,7 +122,8 @@ const ProfileBrowseView: React.FC<ProfileBrowseViewProps> = ({
 
   const handleProfileClick = (profile: Profile) => {
     console.log("Clicked profile:", profile.name);
-    router.push(`${path}/${profile.id}`);
+    // @ts-ignore
+    router.navigate(`${path}/${profile.id}`);
   };
 
   const handleProfileLongClick = (profile: Profile) => {

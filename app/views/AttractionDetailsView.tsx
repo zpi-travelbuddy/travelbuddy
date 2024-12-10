@@ -34,7 +34,7 @@ const AttractionDetailsView = () => {
   const { showSnackbar } = useSnackbar();
 
   const params = useLocalSearchParams();
-  const { place_id } = params;
+  const { place_id, trip_id, day_id, date } = params;
 
   const { placeDetails, loading, error } = useAttractionDetails(
     place_id as string,
@@ -69,6 +69,16 @@ const AttractionDetailsView = () => {
     } catch (error: any) {
       console.error(error);
     }
+  };
+
+  const onAddButtonPress = () => {
+    router.navigate({
+      pathname: `/trips/details/${trip_id}/day/${day_id}/tripPoints/create`,
+      params: {
+        attractionProviderId: place_id,
+        date: date,
+      },
+    });
   };
 
   if (placeDetails) {
@@ -138,9 +148,7 @@ const AttractionDetailsView = () => {
         <ActionButtons
           onAction1={onLocationButtonPress}
           action1ButtonLabel={"Mapa"}
-          onAction2={() => {
-            console.log("Adding to trip");
-          }}
+          onAction2={onAddButtonPress}
           action2ButtonLabel={"Dodaj"}
           action1Icon={LOCATION_ICON}
           action2Icon={ADD_ICON}
