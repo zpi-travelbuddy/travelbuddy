@@ -204,7 +204,6 @@ const TripPointDetailsView = () => {
 
   const {
     tripDetails: trip,
-    tripSummary,
     loading: tripLoading,
     error: tripError,
     refetch: refetchTrip,
@@ -215,7 +214,7 @@ const TripPointDetailsView = () => {
     loading: tripDayLoading,
     error: tripDayError,
     refetch: refetchTripDay,
-  } = useTripDayDetails(tripPoint?.tripDayId ?? null);
+  } = useTripDayDetails(day_id as string);
 
   const { registerNotification, unregisterNotification, getNotificationId } =
     useTripNotificationManager();
@@ -283,7 +282,7 @@ const TripPointDetailsView = () => {
     hideModal();
     if (tripPoint)
       router.push(
-        `/(auth)/(tabs)/trips/details/${trip_id}/day/${day_id}/tripPoints/${tripPoint.id}/survey`,
+        `/trips/details/${trip_id}/day/${day_id}/tripPoints/${tripPoint.id}/survey`,
       );
     else showSnackbar("Wystąpił błąd!", "error");
   };
