@@ -24,6 +24,7 @@ import { useAnimatedKeyboard } from "react-native-reanimated";
 import { TripCompact } from "@/types/Trip";
 import { formatTimeRange } from "@/utils/TimeUtils";
 import { convertTripsFromAPI } from "@/converters/tripConverters";
+import useTripImageStorage from "@/hooks/useTripImageStore";
 
 type TripViewMode = "actual" | "archive";
 
@@ -37,6 +38,8 @@ const TripBrowseView = () => {
 
   const theme = useTheme();
   const styles = createStyles(theme);
+
+  const { removeImage } = useTripImageStorage();
 
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -102,6 +105,7 @@ const TripBrowseView = () => {
     hideModal();
     try {
       await api!.delete(`/trips/${trip.id}`);
+      await removeImage(trip.id);
       await fetchTrips();
       showSnackbar("Usunięto wycieczkę!");
     } catch (error: any) {
@@ -183,9 +187,9 @@ const TripBrowseView = () => {
 
   const renderItem = ({ item }: { item: TripCompact }) => (
     <TripCard
+      id={item.id}
       title={item.name}
       subtitle={formatTimeRange(item.startDate, item.endDate)}
-      imageUri={item.imageUri || ""}
       isArchived={item.isArchived}
       onPress={() => handlePress(item)}
       onLongPress={() => {

@@ -40,8 +40,6 @@ const AttractionDetailsView = () => {
     place_id as string,
   );
 
-  useEffect(() => console.log(JSON.stringify(placeDetails)), [placeDetails]);
-
   if (loading) return <LoadingView />;
 
   if (error) {
@@ -73,6 +71,7 @@ const AttractionDetailsView = () => {
 
   const onAddButtonPress = () => {
     router.navigate({
+      // @ts-ignore
       pathname: `/trips/details/${trip_id}/day/${day_id}/tripPoints/create`,
       params: {
         attractionProviderId: place_id,

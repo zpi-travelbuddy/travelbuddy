@@ -10,7 +10,6 @@ export interface TripCompact {
   startDate: string;
   endDate: string;
   isArchived: boolean; // these 2 are not included in API data
-  imageUri?: string;
 }
 
 export interface TripViewModel {

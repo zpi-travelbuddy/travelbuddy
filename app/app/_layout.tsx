@@ -16,6 +16,7 @@ import { AuthProvider } from "./ctx";
 import { SnackbarProvider } from "@/context/SnackbarContext";
 import { NavigationDataProvider } from "@/context/NavigationDataContext";
 import { NotificationDataProvider } from "@/context/NotificationsContext";
+import { TripImageContextProvider } from "@/context/TripImageContext";
 import { AppSettingsProvider } from "@/context/AppSettingsContext";
 import Notification from "@/utils/notifications";
 import Calendar from "@/utils/calendar";
@@ -64,15 +65,17 @@ function RootLayout() {
       <NavigationDataProvider>
         <SnackbarProvider>
           <NotificationDataProvider>
-            <Portal.Host>
-              <StatusBar
-                backgroundColor={appTheme.colors.surface}
-                barStyle={theme === "dark" ? "light-content" : "dark-content"}
-              />
-              <View style={styles.container}>
-                <Slot />
-              </View>
-            </Portal.Host>
+            <TripImageContextProvider>
+              <Portal.Host>
+                <StatusBar
+                  backgroundColor={appTheme.colors.surface}
+                  barStyle={theme === "dark" ? "light-content" : "dark-content"}
+                />
+                <View style={styles.container}>
+                  <Slot />
+                </View>
+              </Portal.Host>
+            </TripImageContextProvider>
           </NotificationDataProvider>
         </SnackbarProvider>
       </NavigationDataProvider>
