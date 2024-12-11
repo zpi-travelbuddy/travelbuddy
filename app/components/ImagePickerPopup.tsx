@@ -65,12 +65,13 @@ const ImagePickerPopup: React.FC<ImagePickerPopupProps> = ({
 const createStyles = (theme: MD3ThemeExtended) =>
   StyleSheet.create({
     modalContainer: {
-      backgroundColor: "white",
+      backgroundColor: theme.colors.surfaceContainer,
       padding: 20,
       margin: 20,
       borderRadius: 10,
     },
     title: {
+      color: theme.colors.onSurface,
       fontSize: 21,
       marginBottom: 15,
       textAlign: "center",

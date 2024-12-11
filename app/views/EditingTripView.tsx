@@ -132,8 +132,20 @@ const EditTripView = () => {
   const [conditionProfileId, setConditionProfileId] = useState<string | null>(
     null,
   );
+  const { getImageName } = useTripImageStorage();
 
   const [profileType, setProfileType] = useState<ProfileType>("Category");
+
+  useEffect(() => {
+    const fetchImageName = async () => {
+      const storedImageName = await getImageName(trip_id as string);
+      if (storedImageName) {
+        setSelectedImage(storedImageName);
+      }
+    };
+
+    fetchImageName();
+  }, [trip_id, getImageName]);
 
   const {
     profiles: categoryProfiles,
@@ -576,7 +588,7 @@ const createStyles = (theme: MD3Theme) =>
       alignItems: "center",
       width: width,
     },
-    image: { marginVertical: 25, width: "100%", height: height * 0.2 },
+    image: { marginVertical: 25, width: "100%", height: height * 0.25 },
     textInput: {
       width: "90%",
       height: 50,
