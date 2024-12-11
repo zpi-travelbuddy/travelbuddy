@@ -23,6 +23,7 @@ import ConditionIcons from "@/components/ConditionIcons";
 import { CategoryIcons, CategoryLabelsForTripCategory } from "@/types/Profile";
 import { createLocationURL } from "@/utils/maps";
 import { findAttractionCategory } from "@/utils/CategoryUtils";
+import { formatMinutes, getTotalMinutesFromTimestamp } from "@/utils/TimeUtils";
 
 const { height, width } = Dimensions.get("window");
 
@@ -125,14 +126,18 @@ const AttractionDetailsView = () => {
               Średni koszt na osobę
             </Text>
             <Text variant="titleSmall">
-              {displayCost(placeDetails.averageCostPerPerson)}
+              {`${displayCost(placeDetails.averageCostPerPerson)} ${placeDetails.averageCostPerPerson > 0 ? "PLN" : ""}`}
             </Text>
 
             <Text style={styles.doubleSpace} variant="bodySmall">
               Średni czas pobytu
             </Text>
             <Text variant="titleSmall">
-              {displayTime(placeDetails.averageTimeSpent)}
+              {placeDetails.averageTimeSpent
+                ? formatMinutes(
+                    getTotalMinutesFromTimestamp(placeDetails.averageTimeSpent),
+                  )
+                : "Brak informacji"}
             </Text>
           </View>
         </ScrollView>
