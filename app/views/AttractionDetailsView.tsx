@@ -194,7 +194,7 @@ const AttractionDetailsView = () => {
         <ScrollView contentContainerStyle={styles.scrollContent}>
           <View style={styles.labelContainer}>
             <Text variant="headlineSmall">{placeDetails.name}</Text>
-            <Text variant="titleSmall">{formatAddress(placeDetails)}</Text>
+            <Text style={styles.label}>{formatAddress(placeDetails)}</Text>
 
             <StarRatingDisplayComponent
               style={styles.starRatingPadding}
@@ -202,7 +202,7 @@ const AttractionDetailsView = () => {
               editable={false}
             />
 
-            <Text variant="bodySmall">Rodzaj</Text>
+            <Text style={styles.title}>Rodzaj</Text>
             <View style={styles.rowContainer}>
               <IconComponent
                 source={CategoryIcons[findAttractionCategory(placeDetails)]}
@@ -210,7 +210,7 @@ const AttractionDetailsView = () => {
                 color={theme.colors.onSurface}
                 backgroundColor={theme.colors.primaryContainer}
               />
-              <Text style={styles.label}>
+              <Text style={styles.categoryLabel}>
                 {
                   CategoryLabelsForTripCategory[
                     findAttractionCategory(placeDetails)
@@ -219,9 +219,7 @@ const AttractionDetailsView = () => {
               </Text>
             </View>
 
-            <Text style={styles.doubleSpace} variant="bodySmall">
-              Udogodnienia
-            </Text>
+            <Text style={styles.title}>Udogodnienia</Text>
 
             <ConditionIcons
               placeConditions={placeDetails.conditions}
@@ -229,17 +227,13 @@ const AttractionDetailsView = () => {
               iconColor={theme.colors.onSurface}
             />
 
-            <Text style={styles.doubleSpace} variant="bodySmall">
-              Średni koszt na osobę
-            </Text>
-            <Text variant="titleSmall">
+            <Text style={styles.title}>Średni koszt na osobę</Text>
+            <Text style={styles.label}>
               {`${displayCost(placeDetails.averageCostPerPerson)} ${placeDetails.averageCostPerPerson > 0 ? "PLN" : ""}`}
             </Text>
 
-            <Text style={styles.doubleSpace} variant="bodySmall">
-              Średni czas pobytu
-            </Text>
-            <Text variant="titleSmall">
+            <Text style={styles.title}>Średni czas pobytu</Text>
+            <Text style={styles.label}>
               {placeDetails.averageTimeSpent
                 ? formatMinutes(
                     getTotalMinutesFromTimestamp(placeDetails.averageTimeSpent),
@@ -340,10 +334,18 @@ const createStyles = (theme: MD3ThemeExtended) =>
       height: height * 0.2,
     },
     label: {
-      ...theme.fonts.bodyLarge,
-      marginLeft: 10,
-      textAlign: "center",
+      ...theme.fonts.titleMedium,
       color: theme.colors.onBackground,
+    },
+    categoryLabel: {
+      ...theme.fonts.bodyLarge,
+      color: theme.colors.onBackground,
+      marginLeft: 10,
+    },
+    title: {
+      ...theme.fonts.bodyMedium,
+      marginBottom: 4,
+      marginTop: 10,
     },
     starRatingPadding: {
       paddingVertical: 10,

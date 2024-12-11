@@ -68,7 +68,7 @@ import {
 } from "@/types/Profile";
 
 const LABELS: Record<string, string> = {
-  name: "Nazwa punktu",
+  // name: "Nazwa punktu",
   address: "Adres punktu",
   category: "Rodzaj",
   predictedCost: "Przewidywany koszt łączny",
@@ -428,6 +428,9 @@ const TripPointDetailsView = () => {
     <>
       <GestureHandlerRootView>
         <ScrollView style={styles.container}>
+          <Text variant="headlineSmall" style={styles.tripPointName}>
+            {parsedTripPoint.name}
+          </Text>
           {Object.entries(parsedTripPoint)
             .filter(([key]) => key in LABELS)
             .map(([key, value]) => (
@@ -636,5 +639,8 @@ const createStyles = (theme: MD3ThemeExtended) =>
       ...theme.fonts.bodyLarge,
       marginLeft: 10,
       textAlign: "center",
+    },
+    tripPointName: {
+      marginLeft: 15,
     },
   });
