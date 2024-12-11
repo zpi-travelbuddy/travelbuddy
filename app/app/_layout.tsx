@@ -20,6 +20,9 @@ import { TripImageContextProvider } from "@/context/TripImageContext";
 import { AppSettingsProvider } from "@/context/AppSettingsContext";
 import Notification from "@/utils/notifications";
 import Calendar from "@/utils/calendar";
+import { pl, registerTranslation } from "react-native-paper-dates";
+
+registerTranslation("pl", pl);
 
 SplashScreen.preventAutoHideAsync();
 

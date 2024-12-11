@@ -10,11 +10,7 @@ import {
 } from "react-native";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTheme, MD3Theme, TextInput, Text } from "react-native-paper";
-import {
-  DatePickerModal,
-  pl,
-  registerTranslation,
-} from "react-native-paper-dates";
+import { DatePickerModal } from "react-native-paper-dates";
 import {
   formatDateRange,
   formatDateToISO,
@@ -47,8 +43,6 @@ import useTripImageStorage from "@/hooks/useTripImageStore";
 import ImagePickerPopup from "@/components/ImagePickerPopup";
 
 const { height, width } = Dimensions.get("window");
-
-registerTranslation("pl", pl);
 
 const EditTripView = () => {
   // =====================

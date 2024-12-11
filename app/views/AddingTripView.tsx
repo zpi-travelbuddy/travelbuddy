@@ -17,11 +17,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { useTheme, MD3Theme, TextInput, Text } from "react-native-paper";
-import {
-  DatePickerModal,
-  registerTranslation,
-  pl,
-} from "react-native-paper-dates";
+import { DatePickerModal } from "react-native-paper-dates";
 import {
   formatDateRange,
   formatDateToISO,
@@ -53,7 +49,6 @@ import { DEFAULT_TRIP_IMAGE, TRIP_IMAGES } from "@/constants/Images";
 import useTripImageStorage from "@/hooks/useTripImageStore";
 
 const { height, width } = Dimensions.get("window");
-registerTranslation("pl", pl);
 
 const DEFAULT_CURRENCY = "PLN";
 
@@ -398,6 +393,8 @@ const AddingTripView = () => {
             </CustomModal>
           </View>
           <DatePickerModal
+            startLabel="Początek"
+            endLabel="Koniec"
             mode="range"
             visible={isOpen}
             onDismiss={() => setOpen(false)}
