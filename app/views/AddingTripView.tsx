@@ -478,7 +478,7 @@ const createStyles = (theme: MD3Theme) =>
       alignItems: "center",
       width: width,
     },
-    image: { marginVertical: 25, width: "100%", height: height * 0.2 },
+    image: { marginVertical: 25, width: "100%", height: height * 0.25 },
     textInput: {
       width: "90%",
       height: 50,
