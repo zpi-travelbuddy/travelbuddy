@@ -211,7 +211,7 @@ const createStyles = (theme: MD3ThemeExtended) =>
   StyleSheet.create({
     wrapper: {
       flex: 1,
-      backgroundColor: theme.colors.background,
+      backgroundColor: theme.colors.surface,
     },
     scrollView: {
       flex: 1,
@@ -227,7 +227,7 @@ const createStyles = (theme: MD3ThemeExtended) =>
     },
     timeLabel: {
       ...theme.fonts.bodySmall,
-      color: theme.colors.onBackground,
+      color: theme.colors.onSurface,
       alignSelf: "flex-start",
       marginLeft: 20,
       marginBottom: 8,
@@ -262,7 +262,7 @@ const createStyles = (theme: MD3ThemeExtended) =>
     },
     currencyLabel: {
       ...theme.fonts.bodySmall,
-      color: theme.colors.onBackground,
+      color: theme.colors.onSurface,
       height: 50,
       lineHeight: 60,
       textAlign: "center",
@@ -280,11 +280,11 @@ const createStyles = (theme: MD3ThemeExtended) =>
       bottom: 0,
       width: "100%",
       padding: 16,
-      backgroundColor: theme.colors.background,
+      backgroundColor: theme.colors.surface,
     },
     label: {
       ...theme.fonts.bodySmall,
-      color: theme.colors.onBackground,
+      color: theme.colors.onSurface,
       marginHorizontal: 8,
     },
   });

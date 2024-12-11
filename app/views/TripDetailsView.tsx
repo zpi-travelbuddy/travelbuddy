@@ -341,7 +341,7 @@ const createStyles = (theme: MD3ThemeExtended) =>
   StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: theme.colors.background,
+      backgroundColor: theme.colors.surface,
     },
     scrollContent: {
       alignItems: "center",
@@ -374,13 +374,13 @@ const createStyles = (theme: MD3ThemeExtended) =>
       flex: 1,
       justifyContent: "center",
       alignItems: "center",
-      backgroundColor: theme.colors.background,
+      backgroundColor: theme.colors.surface,
     },
     errorContainer: {
       flex: 1,
       justifyContent: "center",
       alignItems: "center",
-      backgroundColor: theme.colors.background,
+      backgroundColor: theme.colors.surface,
     },
     errorText: {
       color: theme.colors.error,

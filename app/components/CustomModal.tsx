@@ -34,7 +34,7 @@ const CustomModal: React.FC<CustomModalProps> = ({
 const createStyles = (theme: MD3Theme) =>
   StyleSheet.create({
     modalContainer: {
-      backgroundColor: theme.colors.background,
+      backgroundColor: theme.colors.surface,
       width: width * 0.8,
       padding: 20,
       borderRadius: 10,

@@ -61,7 +61,7 @@ const createStyles = (theme: MD3ThemeExtended) =>
   StyleSheet.create({
     listContainer: {
       padding: 10,
-      backgroundColor: theme.colors.background,
+      backgroundColor: theme.colors.surface,
     },
     row: {
       flex: 1,

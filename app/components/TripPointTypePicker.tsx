@@ -66,13 +66,13 @@ const createStyles = (theme: MD3Theme) =>
     header: {
       width: 0.85 * width,
       marginTop: 15,
-      color: theme.colors.onBackground,
+      color: theme.colors.onSurface,
     },
     label: {
       ...theme.fonts.bodyLarge,
       marginLeft: 10,
       textAlign: "left",
-      color: theme.colors.onBackground,
+      color: theme.colors.onSurface,
       flexShrink: 1,
     },
     rowContainer: {

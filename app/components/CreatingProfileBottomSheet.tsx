@@ -205,7 +205,7 @@ const createStyles = (theme: MD3Theme) =>
       width: "80%",
       textAlign: "left",
       alignSelf: "center",
-      color: theme.colors.onBackground,
+      color: theme.colors.onSurface,
       marginTop: 10,
     },
     containerStyle: { zIndex: 3 },

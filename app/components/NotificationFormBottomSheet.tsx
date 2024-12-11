@@ -178,7 +178,7 @@ const createStyles = (theme: MD3Theme) =>
     label: {
       ...theme.fonts.titleMedium,
       textAlign: "center",
-      color: theme.colors.onBackground,
+      color: theme.colors.onSurface,
     },
     containerStyle: { zIndex: 3 },
     textInput: {
