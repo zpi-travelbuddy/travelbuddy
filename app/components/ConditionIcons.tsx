@@ -48,7 +48,7 @@ export default ConditionIcons;
 const createStyles = (theme: MD3ThemeExtended, iconColor: string) =>
   StyleSheet.create({
     text: {
-      ...theme.fonts.bodyLarge,
+      ...theme.fonts.titleMedium,
       color: iconColor,
     },
   });
