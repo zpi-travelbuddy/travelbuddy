@@ -1,6 +1,11 @@
 export function stringToDate(date: string): Date {
   const [year, month, day] = date.split("-").map(Number);
   return new Date(year, month - 1, day);
+
+
+}export function stringToDateDots(date: string): Date {
+  const [year, month, day] = date.split(".").map(Number).reverse();
+  return new Date(year, month - 1, day);
 }
 
 export function getISOToday(): Date {

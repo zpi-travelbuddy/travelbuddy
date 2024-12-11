@@ -9,7 +9,7 @@ export interface TripCompact {
   name: string;
   startDate: string;
   endDate: string;
-  isArchived: boolean; // these 2 are not included in API data
+  isArchived: boolean;
 }
 
 export interface TripViewModel {
