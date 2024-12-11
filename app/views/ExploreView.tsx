@@ -146,8 +146,23 @@ const ExploreView = ({ tripId }: ExploreViewProps) => {
     console.log("Selected trip", item.id);
   };
 
+  const handleDetailsPress = (place: PlaceViewModel) => {
+    if (trip_id && day_id) {
+      router.navigate({
+        // @ts-ignore
+        pathname: `/trips/place/${place.providerId}`,
+        params: {
+          trip_id,
+          day_id,
+          date,
+        },
+      });
+    } else {
+      router.navigate(`/explore/place/${place.providerId}`);
+    }
+  };
+
   const handleAddPress = (place: PlaceViewModel) => {
-    console.log("Selected place", place);
     if (trip_id && day_id && date) {
       router.push({
         // @ts-ignore
@@ -185,6 +200,9 @@ const ExploreView = ({ tripId }: ExploreViewProps) => {
     return (
       <PlaceCard
         place={item}
+        handleDetailsPress={() => {
+          handleDetailsPress(item);
+        }}
         handleAddPress={() => {
           handleAddPress(item);
         }}
@@ -225,8 +243,10 @@ const ExploreView = ({ tripId }: ExploreViewProps) => {
         setIsDateModalVisible(false);
         router.push({
           // @ts-ignore
-          pathname: `/trips/details/${tripDetails?.id}/day/${tripDayId}/tripPoints/create`,
+          pathname: `/explore/create`,
           params: {
+            trip_id: tripDetails?.id,
+            day_id: tripDayId,
             date: fixedDate.toLocaleDateString(),
             attractionProviderId: selectedAttractionProviderId,
           },

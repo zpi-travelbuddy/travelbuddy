@@ -127,7 +127,7 @@ const parseTripPoint = (
       ? `${tripPoint.review?.actualCostPerPerson} ${tripPoint.review?.currencyCode}`
       : "Brak danych";
   const actualTimeSpent: string = tripPoint.review?.actualTimeSpent
-    ? `${formatMinutesInWords(getTotalMinutesFromTimestamp(tripPoint.review?.actualTimeSpent))}`
+    ? `${formatMinutes(getTotalMinutesFromTimestamp(tripPoint.review?.actualTimeSpent))}`
     : "Brak danych";
   const rating = tripPoint.review?.rating;
 
