@@ -53,6 +53,14 @@ export const validateTripForm = (
   if (!numberOfPeople) newErrors.numberOfPeople = "Podaj liczbę osób";
   if (budget === undefined) newErrors.budget = "Podaj budżet";
 
+  if (parseInt(numberOfPeople) <= 0) {
+    newErrors.numberOfPeople = "Liczba osób musi być dodatnia";
+  }
+
+  if (budget !== undefined && budget < 0) {
+    newErrors.budget = "Budżet nie może być ujemny";
+  }
+
   return newErrors;
 };
 

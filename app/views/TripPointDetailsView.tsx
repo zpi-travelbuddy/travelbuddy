@@ -465,7 +465,7 @@ const TripPointDetailsView = () => {
                 }
               />
             ))}
-          {tripPoint?.place && (
+          {tripPoint?.place?.providerId && (
             <View style={styles.placeDetails}>
               <Divider style={styles.divider} />
               <Text variant="titleLarge" style={styles.placeTitle}>
@@ -491,7 +491,9 @@ const TripPointDetailsView = () => {
                 }
               />
               <Text style={styles.placeUrl} variant="titleMedium">
-                <Link href={`/trips/place/${tripPoint.place.providerId}`}>
+                <Link
+                  href={`/trips/place/${tripPoint.place.providerId}${tripPoint.place.id ? "?custom_place_id=" + tripPoint.place.id : ""}`}
+                >
                   Sprawdź szczegóły
                 </Link>
               </Text>
