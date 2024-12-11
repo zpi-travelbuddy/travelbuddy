@@ -22,9 +22,10 @@ import { useAuth } from "@/app/ctx";
 import { API_TRIPS_CURRENT, API_TRIPS_PAST } from "@/constants/Endpoints";
 import { useAnimatedKeyboard } from "react-native-reanimated";
 import { TripCompact } from "@/types/Trip";
-import { formatTimeRange } from "@/utils/TimeUtils";
+import { formatTimeRange, stringToDateDots } from "@/utils/TimeUtils";
 import { convertTripsFromAPI } from "@/converters/tripConverters";
 import useTripImageStorage from "@/hooks/useTripImageStore";
+import { conditionalItem } from "@/utils/ArrayUtils";
 
 type TripViewMode = "actual" | "archive";
 
@@ -210,15 +211,16 @@ const TripBrowseView = () => {
           router.push(`/trips/details/${selectedTrip.id}`);
         },
       },
-      {
+      ...conditionalItem(stringToDateDots(selectedTrip.endDate) >= new Date(), {
         label: "Edytuj szczegóły wycieczki",
         icon: EDIT_ICON,
         onPress: () => {
+          console.log(selectedTrip.endDate);
           console.log(`Edytuj`);
           setIsVisible(false);
           router.push(`/trips/edit/${selectedTrip.id}`);
         },
-      },
+      }),
       {
         label: "Usuń wycieczkę",
         icon: DELETE_ICON,

@@ -36,12 +36,12 @@ import { formatDateToISO } from "@/utils/TimeUtils";
 import { useGetProfile } from "@/composables/useProfiles";
 import useTripImageStorage from "@/hooks/useTripImageStore";
 import { DEFAULT_TRIP_IMAGE, TRIP_IMAGES } from "@/constants/Images";
+import { conditionalItem } from "@/utils/ArrayUtils";
 
 const { height, width } = Dimensions.get("window");
 
 const TripDetailsView = () => {
   const { api } = useAuth();
-
   const theme = useTheme();
   const styles = useMemo(
     () => createStyles(theme as MD3ThemeExtended),
@@ -72,10 +72,8 @@ const TripDetailsView = () => {
       showSnackbar("Wystąpił błąd podczas usuwania wycieczki", "error");
     }
   };
-
-  const navigation = useNavigation();
-
   const { trip_id, refresh } = useLocalSearchParams();
+  const navigation = useNavigation();
 
   const {
     tripDetails,
@@ -154,34 +152,6 @@ const TripDetailsView = () => {
 
   const { showSnackbar } = useSnackbar();
 
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      actions: [
-        {
-          hasMenu: true,
-          menuActions: [
-            {
-              title: "Edytuj",
-              icon: EDIT_ICON_MATERIAL,
-              color: theme.colors.onSurface,
-              onPress: () => {
-                router.push(`/trips/edit/${trip_id}`);
-              },
-            },
-            {
-              title: "Usuń",
-              icon: DELETE_ICON,
-              color: theme.colors.error,
-              onPress: () => {
-                showRemovalModal();
-              },
-            },
-          ],
-        },
-      ],
-    });
-  }, [navigation]);
-
   useFocusEffect(
     useCallback(() => {
       const refreshOnFocus = async () => {
@@ -237,6 +207,37 @@ const TripDetailsView = () => {
   const handlePress = () => {
     setDateModalVisible(true);
   };
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      actions: [
+        {
+          hasMenu: true,
+          menuActions: [
+            ...conditionalItem(
+              new Date(tripDetails?.endDate ?? new Date()) >= new Date(),
+              {
+                title: "Edytuj",
+                icon: EDIT_ICON_MATERIAL,
+                color: theme.colors.onSurface,
+                onPress: () => {
+                  router.push(`/trips/edit/${trip_id}`);
+                },
+              },
+            ),
+            {
+              title: "Usuń",
+              icon: DELETE_ICON,
+              color: theme.colors.error,
+              onPress: () => {
+                showRemovalModal();
+              },
+            },
+          ],
+        },
+      ],
+    });
+  }, [navigation, tripDetails]);
 
   const handleDismiss = useCallback(() => {
     setDateModalVisible(false);
