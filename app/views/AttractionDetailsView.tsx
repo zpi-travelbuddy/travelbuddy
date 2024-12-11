@@ -21,7 +21,7 @@ import {
 } from "@/utils/TextUtils";
 import StarRatingDisplayComponent from "@/components/StarRatingDisplayComponent";
 import IconComponent from "@/components/IconComponent";
-import { useAttractionDetails } from "@/composables/usePlace";
+import usePlaceDetails, { useAttractionDetails } from "@/composables/usePlace";
 import LoadingView from "./LoadingView";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { useSnackbar } from "@/context/SnackbarContext";
@@ -52,11 +52,10 @@ const AttractionDetailsView = () => {
   const { api } = useAuth();
 
   const params = useLocalSearchParams();
-  const { place_id, trip_id, day_id, date } = params;
+  const { place_id, trip_id, day_id, date, custom_place_id } = params;
 
   // Trip and day selection
   const [selectedTripId, setSelectedTripId] = useState<string | null>(null);
-  const [selectedDayId, setSelectedDayId] = useState<string | null>(null);
 
   const [currentTrips, setCurrentTrips] = useState<any[]>([]);
 
@@ -107,7 +106,6 @@ const AttractionDetailsView = () => {
   const handleDismissDatePicker = useCallback(() => {
     setIsDaySelectorVisible(false);
     setSelectedTripId(null);
-    setSelectedDayId(null);
   }, [setIsDaySelectorVisible]);
 
   const dateToIdMap = useMemo(() => {
@@ -142,9 +140,9 @@ const AttractionDetailsView = () => {
 
   // ---
 
-  const { placeDetails, loading, error } = useAttractionDetails(
-    place_id as string,
-  );
+  const { placeDetails, loading, error } = custom_place_id
+    ? usePlaceDetails(custom_place_id as string)
+    : useAttractionDetails(place_id as string);
 
   if (error) {
     router.back();
