@@ -37,6 +37,7 @@ import { useGetProfile } from "@/composables/useProfiles";
 import useTripImageStorage from "@/hooks/useTripImageStore";
 import { DEFAULT_TRIP_IMAGE, TRIP_IMAGES } from "@/constants/Images";
 import { conditionalItem } from "@/utils/ArrayUtils";
+import { useShouldRefresh } from "@/context/ShouldRefreshContext";
 
 const { height, width } = Dimensions.get("window");
 
@@ -50,6 +51,14 @@ const TripDetailsView = () => {
   const [dateModalVisible, setDateModalVisible] = useState(false);
   const [tripViewModel, setTripViewModel] = useState<TripViewModel | undefined>(
     undefined,
+  );
+
+  const { refreshScreens, addRefreshScreen, removeRefreshScreen } =
+    useShouldRefresh();
+
+  const shouldRefresh = useMemo(
+    () => refreshScreens.includes("trip-details"),
+    [refreshScreens],
   );
 
   // Removal modal
@@ -66,7 +75,9 @@ const TripDetailsView = () => {
     try {
       await api!.delete(`/trips/${tripId}`);
       await removeImage(tripId);
-      router.navigate({ pathname: "/trips", params: { refresh: "true" } });
+
+      addRefreshScreen("trips");
+      router.navigate("/trips");
       showSnackbar("Usunięto wycieczkę!");
     } catch (error: any) {
       showSnackbar("Wystąpił błąd podczas usuwania wycieczki", "error");
@@ -152,18 +163,16 @@ const TripDetailsView = () => {
 
   const { showSnackbar } = useSnackbar();
 
-  useFocusEffect(
-    useCallback(() => {
-      const refreshOnFocus = async () => {
-        if (refresh && refresh === "true") {
-          router.setParams({ refresh: undefined });
-          await tripRefetch();
-          await destinationRefetch();
-        }
-      };
-      refreshOnFocus();
-    }, [router, refresh]),
-  );
+  useEffect(() => {
+    const refreshOnFocus = async () => {
+      if (shouldRefresh) {
+        await tripRefetch();
+        await destinationRefetch();
+        removeRefreshScreen("trip-details");
+      }
+    };
+    refreshOnFocus();
+  }, [shouldRefresh]);
 
   useEffect(() => {
     if (tripDetails && destinationDetails) {

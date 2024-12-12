@@ -1,5 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Fragment, useCallback, useMemo, useRef, useState } from "react";
+import {
+  Fragment,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { Dimensions, ScrollView, StyleSheet, View } from "react-native";
 import { useTheme, FAB, TextInput, Text } from "react-native-paper";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -58,6 +65,7 @@ import {
 import NotificationFormBottomSheet from "@/components/NotificationFormBottomSheet";
 import { addEventToMainCalendar } from "@/utils/calendar";
 import { API_REJECT_REVIEW } from "@/constants/Endpoints";
+import { useShouldRefresh } from "@/context/ShouldRefreshContext";
 
 const { width } = Dimensions.get("window");
 
@@ -84,6 +92,13 @@ const TripDayView = () => {
   const { api } = useAuth();
   const { trip_id, day_id, refresh } = params;
   const { showSnackbar } = useSnackbar();
+
+  const { refreshScreens, removeRefreshScreen } = useShouldRefresh();
+
+  const shouldRefresh = useMemo(
+    () => refreshScreens.includes("trip-day"),
+    [refreshScreens],
+  );
 
   const { registerNotification, unregisterNotification, getNotificationId } =
     useTripNotificationManager();
@@ -157,7 +172,6 @@ const TripDayView = () => {
         const response = await api!.patch(
           `${API_REJECT_REVIEW}/${selectedTripPoint.id}`,
         );
-        console.log(JSON.stringify(response.data));
         await refetchDayData();
       } catch (err: any) {
         console.error(JSON.stringify(err.response.data));
@@ -247,18 +261,20 @@ const TripDayView = () => {
     return "Brak";
   }, [selectedTransferPointData, extendedView]);
 
-  useFocusEffect(
-    useCallback(() => {
-      if (refresh && refresh === "true") {
-        refetchDayData();
-        hideAll();
-      }
-      return () => {
-        if (refresh && refresh === "true")
-          router.setParams({ refresh: "true" });
-      };
-    }, [refetchDayData, router, refresh]),
-  );
+  const hideAll = () => {
+    console.log("Hide all");
+    setIsVisible(VisibilityState.None);
+    setIsTripPointSheetVisible(false);
+    setIsModalVisible(false);
+  };
+
+  useEffect(() => {
+    if (shouldRefresh) {
+      refetchDayData();
+      hideAll();
+      removeRefreshScreen("trip-day");
+    }
+  }, [shouldRefresh]);
 
   const getTripPoint = useCallback(
     (tripPointId: string): TripPointCompact | null => {
@@ -740,13 +756,6 @@ const TripDayView = () => {
       },
     ];
   }, [selectedTripPoint, getNotificationId]);
-
-  const hideAll = () => {
-    console.log("Hide all");
-    setIsVisible(VisibilityState.None);
-    setIsTripPointSheetVisible(false);
-    setIsModalVisible(false);
-  };
 
   const onDeleteTripPoint = async () => {
     await deleteTripPoint(selectedTripPoint?.id);

@@ -48,6 +48,7 @@ import {
 } from "@/utils/validations";
 import usePlaceDetails from "@/composables/usePlace";
 import { findAttractionCategory } from "@/utils/CategoryUtils";
+import { useShouldRefresh } from "@/context/ShouldRefreshContext";
 
 const { height, width } = Dimensions.get("window");
 
@@ -131,6 +132,8 @@ const EditingTripPointView = () => {
   const [isSheetVisible, setIsSheetVisible] = useState<boolean>(false);
 
   const [filteredCategories, setFilteredCategories] = useState<Category[]>([]);
+
+  const { addRefreshScreen } = useShouldRefresh();
 
   useEffect(() => {
     if (tripPointDetails?.place?.id) {
@@ -284,10 +287,8 @@ const EditingTripPointView = () => {
       }
 
       showSnackbar("Punkt wycieczki zapisany!");
+      addRefreshScreen("trip-day");
       router.back();
-      router.setParams({
-        refresh: "true",
-      });
     } catch (err: any) {
       console.error(
         "Błąd podczas zapisywania punktu: ",

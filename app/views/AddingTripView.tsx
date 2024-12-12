@@ -47,6 +47,7 @@ import ActionTextButtons from "@/components/ActionTextButtons";
 import ImagePickerPopup from "@/components/ImagePickerPopup";
 import { DEFAULT_TRIP_IMAGE, TRIP_IMAGES } from "@/constants/Images";
 import useTripImageStorage from "@/hooks/useTripImageStore";
+import { useShouldRefresh } from "@/context/ShouldRefreshContext";
 
 const { height, width } = Dimensions.get("window");
 
@@ -88,6 +89,8 @@ const AddingTripView = () => {
 
   const [range, setRange] = useState<DateRange>({});
   const [errors, setErrors] = useState<TripErrors>({});
+
+  const { addRefreshScreen } = useShouldRefresh();
 
   const [categoryProfileId, setCategoryProfileId] = useState<string | null>(
     null,
@@ -246,7 +249,8 @@ const AddingTripView = () => {
       if (id && selectedImage) {
         await saveImage(id, selectedImage);
       }
-      router.navigate({ pathname: "/trips", params: { refresh: "true" } });
+      addRefreshScreen("trips");
+      router.navigate("/trips");
       showSnackbar("Zapisano wycieczkę!", "success");
     } catch (error: any) {
       console.error(error.response.data);
