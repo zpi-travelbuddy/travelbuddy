@@ -18,6 +18,7 @@ import { NavigationDataProvider } from "@/context/NavigationDataContext";
 import { NotificationDataProvider } from "@/context/NotificationsContext";
 import { TripImageContextProvider } from "@/context/TripImageContext";
 import { AppSettingsProvider } from "@/context/AppSettingsContext";
+import { ShouldRefreshProvider } from "@/context/ShouldRefreshContext";
 import Notification from "@/utils/notifications";
 import Calendar from "@/utils/calendar";
 import { pl, registerTranslation } from "react-native-paper-dates";
@@ -69,15 +70,19 @@ function RootLayout() {
         <SnackbarProvider>
           <NotificationDataProvider>
             <TripImageContextProvider>
-              <Portal.Host>
-                <StatusBar
-                  backgroundColor={appTheme.colors.surface}
-                  barStyle={theme === "dark" ? "light-content" : "dark-content"}
-                />
-                <View style={styles.container}>
-                  <Slot />
-                </View>
-              </Portal.Host>
+              <ShouldRefreshProvider>
+                <Portal.Host>
+                  <StatusBar
+                    backgroundColor={appTheme.colors.surface}
+                    barStyle={
+                      theme === "dark" ? "light-content" : "dark-content"
+                    }
+                  />
+                  <View style={styles.container}>
+                    <Slot />
+                  </View>
+                </Portal.Host>
+              </ShouldRefreshProvider>
             </TripImageContextProvider>
           </NotificationDataProvider>
         </SnackbarProvider>

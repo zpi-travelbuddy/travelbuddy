@@ -41,6 +41,7 @@ import { onEndEditingStringOnObject } from "@/utils/validations";
 import { DEFAULT_TRIP_IMAGE, TRIP_IMAGES } from "@/constants/Images";
 import useTripImageStorage from "@/hooks/useTripImageStore";
 import ImagePickerPopup from "@/components/ImagePickerPopup";
+import { useShouldRefresh } from "@/context/ShouldRefreshContext";
 
 const { height, width } = Dimensions.get("window");
 
@@ -110,6 +111,8 @@ const EditTripView = () => {
   const [dateRangeText, setDateRangeText] = useState<string>(
     formatDateRange(dateRange.startDate, dateRange.endDate),
   );
+
+  const { addRefreshScreen } = useShouldRefresh();
 
   const [isOpen, setOpen] = useState<boolean>(false);
   const [visible, setVisible] = useState<boolean>(false);
@@ -225,10 +228,9 @@ const EditTripView = () => {
     if (editSuccess !== null) {
       if (editSuccess) {
         showSnackbar("Wycieczka została zapisana!", "success");
+        addRefreshScreen("trips");
+        addRefreshScreen("trip-details");
         router.back();
-        router.setParams({
-          refresh: "true",
-        });
       } else showSnackbar("Błąd przy zapisie wycieczki", "error");
     }
   }, [editSuccess]);

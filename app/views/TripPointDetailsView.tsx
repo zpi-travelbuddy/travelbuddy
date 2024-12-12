@@ -66,6 +66,7 @@ import {
   DEFAULT_CATEGORY_NAME,
   CategoryLabelsForTripCategory,
 } from "@/types/Profile";
+import { useShouldRefresh } from "@/context/ShouldRefreshContext";
 
 const LABELS: Record<string, string> = {
   // name: "Nazwa punktu",
@@ -195,6 +196,14 @@ const TripPointDetailsView = () => {
   const navigation = useNavigation();
   const { showSnackbar } = useSnackbar();
 
+  const { refreshScreens, addRefreshScreen, removeRefreshScreen } =
+    useShouldRefresh();
+
+  const shouldRefresh = useMemo(
+    () => refreshScreens.includes("trip-point-details"),
+    [refreshScreens],
+  );
+
   const {
     tripPointDetails: tripPoint,
     loading: tripPointLoading,
@@ -240,27 +249,19 @@ const TripPointDetailsView = () => {
   const hideModal = () => setIsModalVisible(false);
   const showRemovalModal = () => setIsModalVisible(true);
 
-  useFocusEffect(
-    useCallback(() => {
-      if (refresh && refresh === "true") {
-        refetchTrip();
-        refetchTripPoint();
-        refetchTripDay();
-      }
-      return () => {
-        if (refresh && refresh === "true")
-          router.setParams({ refresh: "true" });
-      };
-    }, [refetchTrip, refetchTripPoint, router, refresh]),
-  );
+  useEffect(() => {
+    if (shouldRefresh) {
+      refetchTrip();
+      refetchTripPoint();
+      refetchTripDay();
+      removeRefreshScreen("trip-point-details");
+    }
+  }, [shouldRefresh]);
 
   const onDeleteTripPoint = async () => {
     await deleteTripPoint(tripPoint?.id);
-    router.navigate({
-      // @ts-ignore
-      pathname: `/trips/details/${trip_id}/day/${day_id}`,
-      params: { refresh: "true" },
-    });
+    addRefreshScreen("trip-day");
+    router.navigate(`/trips/details/${trip_id}/day/${day_id}`);
   };
 
   useEffect(() => {

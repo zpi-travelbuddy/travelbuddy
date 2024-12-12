@@ -26,12 +26,12 @@ import { formatTimeRange, stringToDateDots } from "@/utils/TimeUtils";
 import { convertTripsFromAPI } from "@/converters/tripConverters";
 import useTripImageStorage from "@/hooks/useTripImageStore";
 import { conditionalItem } from "@/utils/ArrayUtils";
+import { useShouldRefresh } from "@/context/ShouldRefreshContext";
 
 type TripViewMode = "actual" | "archive";
 
 const TripBrowseView = () => {
   const { api } = useAuth();
-  const { refresh } = useLocalSearchParams();
 
   const flatListRef = useRef<FlatList>(null);
 
@@ -39,6 +39,8 @@ const TripBrowseView = () => {
 
   const theme = useTheme();
   const styles = createStyles(theme);
+
+  const { refreshScreens, removeRefreshScreen } = useShouldRefresh();
 
   const { removeImage } = useTripImageStorage();
 
@@ -56,6 +58,11 @@ const TripBrowseView = () => {
   const [selectedTrip, setSelectedTrip] = useState<TripCompact | null>(null);
 
   const [value, setValue] = useState<TripViewMode>("actual");
+
+  const shouldRefresh = useMemo(
+    () => refreshScreens.includes("trips"),
+    [refreshScreens],
+  );
 
   const trips = useMemo(() => {
     const tripsToFilter = value === "actual" ? currentTrips : pastTrips;
@@ -173,18 +180,15 @@ const TripBrowseView = () => {
     }
   }, [selectedTrip]);
 
-  // hack to refresh trips after adding a new one
-  useFocusEffect(
-    useCallback(() => {
-      const refreshOnFocus = async () => {
-        if (refresh && refresh === "true") {
-          router.setParams({ refresh: undefined });
-          await fetchTrips();
-        }
-      };
-      refreshOnFocus();
-    }, [router, refresh]),
-  );
+  useEffect(() => {
+    const refreshOnFocus = async () => {
+      if (shouldRefresh) {
+        await fetchTrips();
+        removeRefreshScreen("trips");
+      }
+    };
+    refreshOnFocus();
+  }, [shouldRefresh]);
 
   const renderItem = ({ item }: { item: TripCompact }) => (
     <TripCard

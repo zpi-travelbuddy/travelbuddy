@@ -15,6 +15,7 @@ import { useAuth } from "@/app/ctx";
 import { API_SUBMIT_REVIEW } from "@/constants/Endpoints";
 import { formatTimeSpan } from "@/utils/TimeUtils";
 import { useSnackbar } from "@/context/SnackbarContext";
+import { useShouldRefresh } from "@/context/ShouldRefreshContext";
 
 const SurveyView = () => {
   const theme = useTheme();
@@ -43,6 +44,8 @@ const SurveyView = () => {
   const [currency, setCurrency] = useState<string>("");
   const [cost, setCost] = useState<number>(0);
   const [rating, setRating] = useState<number>(3);
+
+  const { addRefreshScreen } = useShouldRefresh();
 
   useEffect(() => {
     if (tripDetails) setCurrency(tripDetails?.currencyCode);
@@ -106,8 +109,9 @@ const SurveyView = () => {
         `${API_SUBMIT_REVIEW}/${trip_point_id as string}`,
         reviewRequest,
       );
+      addRefreshScreen("trip-point-details");
+      addRefreshScreen("trip-day");
       router.back();
-      router.setParams({ refresh: "true" });
       showSnackbar("Pomyślnie dodano recenzję!", "success");
     } catch (err: any) {
       console.error(err.response.data);
