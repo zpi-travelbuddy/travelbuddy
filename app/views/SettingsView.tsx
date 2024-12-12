@@ -271,7 +271,7 @@ const createStyles = (theme: MD3Theme) =>
     },
     modalTitleText: {
       ...theme.fonts.titleLarge,
-      color: theme.colors.onBackground,
+      color: theme.colors.onSurface,
     },
   });
 

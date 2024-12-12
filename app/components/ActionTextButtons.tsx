@@ -12,7 +12,7 @@ const ActionTextButtons: React.FC<ActionButtonsProps> = ({
   const action1Label = action2ButtonLabel || "Usuń";
   const action2Label = action1ButtonLabel || "Anuluj";
   const confirmLabelColor = action2ButtonLabel
-    ? theme.colors.onBackground
+    ? theme.colors.onSurface
     : theme.colors.error;
   const styles = createStyles(theme);
   return (
@@ -41,7 +41,7 @@ const createStyles = (theme: MD3Theme) =>
     },
     text: {
       ...theme.fonts.bodyMedium,
-      color: theme.colors.onBackground,
+      color: theme.colors.onSurface,
       marginLeft: 30,
     },
   });

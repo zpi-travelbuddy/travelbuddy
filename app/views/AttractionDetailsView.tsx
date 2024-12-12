@@ -315,7 +315,7 @@ const createStyles = (theme: MD3ThemeExtended) =>
     },
     container: {
       flex: 1,
-      backgroundColor: theme.colors.background,
+      backgroundColor: theme.colors.surface,
     },
     labelContainer: {
       paddingHorizontal: 20,
@@ -335,11 +335,11 @@ const createStyles = (theme: MD3ThemeExtended) =>
     },
     label: {
       ...theme.fonts.titleMedium,
-      color: theme.colors.onBackground,
+      color: theme.colors.onSurface,
     },
     categoryLabel: {
       ...theme.fonts.bodyLarge,
-      color: theme.colors.onBackground,
+      color: theme.colors.onSurface,
       marginLeft: 10,
     },
     title: {

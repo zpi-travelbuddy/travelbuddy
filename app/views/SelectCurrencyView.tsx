@@ -131,14 +131,14 @@ const createStyles = (theme: MD3Theme) =>
       flex: 1,
       paddingHorizontal: 20,
       paddingBottom: 20,
-      backgroundColor: theme.colors.background,
+      backgroundColor: theme.colors.surface,
     },
     container: {
       flexGrow: 1,
       flexDirection: "column",
       alignItems: "stretch",
       paddingBottom: 20,
-      backgroundColor: theme.colors.background,
+      backgroundColor: theme.colors.surface,
     },
     searchbar: {
       backgroundColor: theme.colors.elevation.level3,

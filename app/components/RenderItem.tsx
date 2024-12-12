@@ -59,11 +59,11 @@ const createStyles = (theme: MD3Theme) =>
     text: {
       ...theme.fonts,
       fontSize: 16,
-      color: theme.colors.onBackground,
+      color: theme.colors.onSurface,
     },
     card: {
       padding: 15,
-      backgroundColor: theme.colors.background,
+      backgroundColor: theme.colors.surface,
       elevation: 3,
     },
     content: {

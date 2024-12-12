@@ -160,7 +160,7 @@ const createStyles = (theme: MD3Theme) =>
       ...theme.fonts.bodySmall,
       marginVertical: 10,
       textAlign: "center",
-      color: theme.colors.onBackground,
+      color: theme.colors.onSurface,
     },
     scrim: {
       ...StyleSheet.absoluteFillObject,
@@ -170,7 +170,7 @@ const createStyles = (theme: MD3Theme) =>
     label: {
       ...theme.fonts.titleMedium,
       textAlign: "center",
-      color: theme.colors.onBackground,
+      color: theme.colors.onSurface,
     },
     containerStyle: { zIndex: 3 },
     extendedViewContainer: {
