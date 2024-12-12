@@ -262,7 +262,6 @@ const TripDayView = () => {
   }, [selectedTransferPointData, extendedView]);
 
   const hideAll = () => {
-    console.log("Hide all");
     setIsVisible(VisibilityState.None);
     setIsTripPointSheetVisible(false);
     setIsModalVisible(false);

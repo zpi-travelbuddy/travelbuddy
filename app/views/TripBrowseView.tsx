@@ -183,8 +183,6 @@ const TripBrowseView = () => {
   useEffect(() => {
     const refreshOnFocus = async () => {
       if (shouldRefresh) {
-        console.log("Refetching day data");
-
         await fetchTrips();
         removeRefreshScreen("trips");
       }
