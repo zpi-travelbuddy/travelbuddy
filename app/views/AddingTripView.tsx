@@ -272,7 +272,7 @@ const AddingTripView = () => {
   };
 
   if (loading) {
-    <LoadingView transparent={false} />;
+    return <LoadingView transparent={false} />;
   }
 
   return (
